@@ -61,6 +61,7 @@ export default class User extends Model {
   @BelongsToMany(() => Group, () => UserBelongsToGroup)
   groups?: Group[];
 
+  // many-to-many relation between user and tweet through likes
   @BelongsToMany(() => Tweet, () => Likes, 'tweetId', 'userId')
   likes?: Tweet[];
 }

@@ -1,4 +1,4 @@
-import {Table, Column, Model, AutoIncrement, AllowNull, PrimaryKey, BelongsTo, ForeignKey} from 'sequelize-typescript';
+import {Table, Column, Model, AutoIncrement, AllowNull, PrimaryKey, BelongsTo, ForeignKey, HasMany} from 'sequelize-typescript';
 import User from "./user"
 
 @Table({
@@ -28,7 +28,14 @@ export default class Tweet extends Model {
   @AllowNull(false)
   state?: string;
 
+  // one-to-many relation between original tweet and sub tweets
   @Column
-  @AllowNull(false)
-  originalTweet!: string;
+  @ForeignKey(() => Tweet)
+  originalTweetID!: number;
+
+  @BelongsTo(() => Tweet)
+  originalTweet!: Tweet;
+
+  @HasMany(() => Tweet)
+  subTweets!: Tweet[];
 }

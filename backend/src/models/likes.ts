@@ -24,5 +24,5 @@ class Likes extends Model {
     tweetId!: number;
 }
 
-export default Likes;
 
+export default Likes;

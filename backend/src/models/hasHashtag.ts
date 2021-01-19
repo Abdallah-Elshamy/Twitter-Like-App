@@ -9,6 +9,7 @@ import {
 import Hashtag from './hashtag'
 import Tweet from './tweet'
 
+
 @Table({
     tableName: 'hasHashtags'
 })
@@ -24,5 +25,5 @@ class HasHashtag extends Model {
     tweetId!: number;
 }
 
-export default HasHashtag;
 
+export default HasHashtag;

@@ -33,6 +33,7 @@
     "dotenv": "^8.2.0",
     "mocha": "^8.2.1",
     "nodemon": "^2.0.7",
+    "reflect-metadata": "^0.1.13",
     "sequelize-typescript": "^2.0.0",
     "sinon": "^9.2.3",
     "supertest": "^6.0.1",

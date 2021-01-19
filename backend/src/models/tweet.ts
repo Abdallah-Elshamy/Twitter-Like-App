@@ -1,15 +1,16 @@
-import {Table, 
-  Column, 
-  Model, 
-  AutoIncrement, 
-  AllowNull, 
-  PrimaryKey, 
-  BelongsTo, 
-  ForeignKey, 
-  HasMany, 
-  HasOne,
-  BelongsToMany,
-  DataType
+import {
+    Table, 
+    Column, 
+    Model, 
+    AutoIncrement, 
+    AllowNull, 
+    PrimaryKey, 
+    BelongsTo, 
+    ForeignKey, 
+    HasMany, 
+    HasOne,
+    BelongsToMany,
+    DataType
 } from 'sequelize-typescript';
 import User from "./user"
 import Likes from './likes'
@@ -20,73 +21,75 @@ import HasHashtag from './hasHashtag'
     timestamps: true,
     tableName: 'tweets',
 })
-  
-export default class Tweet extends Model {
+class Tweet extends Model {
+    @PrimaryKey
+    @AutoIncrement
+    @Column(DataType.INTEGER)
+    id!: number;
+    
+    // one-to-many relation between user and tweets
+    @ForeignKey(() => User)
+    @Column(DataType.INTEGER)
+    userId!: number;
 
-  @PrimaryKey
-  @AutoIncrement
-  @Column(DataType.INTEGER)
-  id!: number;
-  
-  // one-to-many relation between user and tweets
-  @ForeignKey(() => User)
-  @Column(DataType.INTEGER)
-  userID!: number;
+    @BelongsTo(() => User, 'userId')
+    user!: User;
 
-  @BelongsTo(() => User)
-  user!: User;
+    @AllowNull(false)
+    @Column(DataType.STRING)
+    text!: string;
 
-  @Column
-  @AllowNull(false)
-  text!: string;
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    media?: string;
 
-  @Column
-  media?: string;
+    @AllowNull(false)
+    @Column(DataType.STRING)
+    state?: string;
 
-  @Column
-  @AllowNull(false)
-  state?: string;
+    // one-to-many relation between original tweet and sub tweets
+    @Column
+    @ForeignKey(() => Tweet)
+    originalTweetId!: number;
 
-  // one-to-many relation between original tweet and sub tweets
-  @Column
-  @ForeignKey(() => Tweet)
-  originalTweetID!: number;
+    @BelongsTo(() => Tweet, 'originalTweetId')
+    originalTweet!: Tweet;
 
-  @BelongsTo(() => Tweet)
-  originalTweet!: Tweet;
+    @HasMany(() => Tweet, 'originalTweetId')
+    subTweets!: Tweet[];
 
-  @HasMany(() => Tweet)
-  subTweets!: Tweet[];
+    // many-to-many relation between user and tweet through likes
+    @BelongsToMany(() => User, () => Likes, 'userId', 'tweetId')
+    likes?: User[];
 
-  // many-to-many relation between user and tweet through likes
-  @BelongsToMany(() => User, () => Likes, 'userId', 'tweetId')
-  likes?: User[];
+    // many-to-many relation between hastag and tweet through hasHashtag
+    @BelongsToMany(() => Hashtag, () => HasHashtag, 'hashtag', 'tweetId')
+    hashtags?: Hashtag[];
 
-  // many-to-many relation between hastag and tweet through hasHashtag
-  @BelongsToMany(() => Hashtag, () => HasHashtag, 'hashtag', 'tweetId')
-  hashtags?: Hashtag[];
+    // one-to-many relation between tweets representing replies 
+    //and one to many relation to the thread tweet
+    @HasMany(() => Tweet, 'repliedToTweet')
+    replies?: Tweet[];
 
-  // one-to-many relation between tweets representing replies 
-  //and one to many relation to the thread tweet
-  @HasMany(() => Tweet, 'repliedToTweet')
-  replies?: Tweet[];
+    @BelongsTo(() => Tweet, 'repliedToTweet')
+    repliedTo?: Tweet;
 
-  @BelongsTo(() => Tweet, 'repliedToTweet')
-  repliedTo?: Tweet;
+    @HasMany(() => Tweet, 'threadTweet')
+    threadChildren?: Tweet[];
 
-  @HasMany(() => Tweet, 'threadTweet')
-  threadChildren?: Tweet[];
+    @BelongsTo(() => Tweet, 'threadTweet')
+    thread?: Tweet;
 
-  @BelongsTo(() => Tweet, 'threadTweet')
-  thread?: Tweet;
+    @ForeignKey(() => Tweet)
+    @AllowNull(true)
+    @Column(DataType.INTEGER)
+    repliedToTweet?: number;
 
-  @ForeignKey(() => Tweet)
-  @AllowNull(true)
-  @Column(DataType.INTEGER)
-  repliedToTweet?: number;
-
-  @ForeignKey(() => Tweet)
-  @AllowNull(true)
-  @Column(DataType.INTEGER)
-  threadTweet?: number;
+    @ForeignKey(() => Tweet)
+    @AllowNull(true)
+    @Column(DataType.INTEGER)
+    threadTweet?: number;
 }
+
+
+export default Tweet;

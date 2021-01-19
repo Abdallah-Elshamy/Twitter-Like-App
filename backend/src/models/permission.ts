@@ -1,23 +1,26 @@
 import {
-  Table,
-  Column,
-  Model,
-  PrimaryKey,
-  BelongsToMany,
+    Table,
+    Column,
+    Model,
+    PrimaryKey,
+    DataType,
+    BelongsToMany,
 } from 'sequelize-typescript';
-
 import HasPermission from './hasPermission';
 import Group from './group';
 
-@Table({
-  timestamps: true,
-  tableName: 'permissions',
-})
-export default class Permission extends Model {
-  @Column
-  @PrimaryKey
-  name!: string;
 
-  @BelongsToMany(() => Group, () => HasPermission)
-  groups?: Group[];
+@Table({
+    tableName: 'permissions',
+})
+class Permission extends Model {
+    @PrimaryKey
+    @Column(DataType.STRING)
+    name!: string;
+
+    @BelongsToMany(() => Group, () => HasPermission, 'groupName', 'permissionName')
+    groups?: Group[];
 }
+
+
+export default Permission;

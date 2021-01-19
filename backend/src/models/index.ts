@@ -9,15 +9,16 @@ import UserBelongsToGroup from './userBelongsToGroup';
 import Likes from './likes'
 import HasHashtag from './hasHashtag'
 
+
 export {
-  Tweet,
-  User,
-  Group,
-  Permission,
-  Hashtag,
-  Follows,
-  HasPermission,
-  UserBelongsToGroup,
-  Likes,
-  HasHashtag
+    Tweet,
+    User,
+    Group,
+    Permission,
+    Hashtag,
+    Follows,
+    HasPermission,
+    UserBelongsToGroup,
+    Likes,
+    HasHashtag
 };

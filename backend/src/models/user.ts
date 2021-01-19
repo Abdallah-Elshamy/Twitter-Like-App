@@ -1,14 +1,14 @@
 import {
-  Table,
-  Column,
-  Model,
-  AutoIncrement,
-  AllowNull,
-  PrimaryKey,
-  HasMany,
-  BelongsToMany,
+    Table,
+    Column,
+    Model,
+    AutoIncrement,
+    AllowNull,
+    PrimaryKey,
+    HasMany,
+    DataType,
+    BelongsToMany,
 } from 'sequelize-typescript';
-
 import Follows from './follows';
 import Tweet from './tweet';
 import Group from './group';
@@ -16,52 +16,57 @@ import UserBelongsToGroup from './userBelongsToGroup';
 import Likes from './likes'
 
 @Table({
-  timestamps: true,
-  tableName: 'users',
+    tableName: 'users',
 })
-export default class User extends Model {
-  @Column
-  @PrimaryKey
-  @AutoIncrement
-  id!: number;
+class User extends Model {
+    @PrimaryKey
+    @AutoIncrement
+    @Column(DataType.INTEGER)
+    id!: number;
 
-  @Column
-  @AllowNull(false)
-  name!: string;
+    @AllowNull(false)
+    @Column(DataType.STRING)
+    name!: string;
 
-  @Column
-  @AllowNull(false)
-  userName!: string;
+    @AllowNull(false)
+    @Column(DataType.STRING)
+    userName!: string;
 
-  @Column
-  @AllowNull(false)
-  mail!: string;
+    @AllowNull(false)
+    @Column(DataType.STRING)
+    email!: string;
 
-  @Column
-  image?: string;
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    image?: string;
 
-  @Column
-  bio?: string;
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    bio?: string;
 
-  @Column
-  coverImage?: string;
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    coverImage?: string;
 
-  // one-to-many relation between user and tweets
-  @HasMany(() => Tweet)
-  tweets!: Tweet[];
+    // one-to-many relation between user and tweets
+    @HasMany(() => Tweet, 'userId')
+    tweets!: Tweet[];
 
-  // many-to-many  relation between user and user
-  @BelongsToMany(() => User, () => Follows, 'following', 'follower')
-  followings?: User[];
+    // many-to-many  relation between user and user
+    @BelongsToMany(() => User, () => Follows, 'following', 'follower')
+    followings?: User[];
 
-  @BelongsToMany(() => User, () => Follows, 'follower', 'following')
-  followers?: User[];
+    @BelongsToMany(() => User, () => Follows, 'follower', 'following')
+    followers?: User[];
 
-  // many-to-many relation between user and group
-  @BelongsToMany(() => Group, () => UserBelongsToGroup)
-  groups?: Group[];
+    // many-to-many relation between user and group
+    @BelongsToMany(() => Group, () => UserBelongsToGroup, 'groupName')
+    groups?: Group[];
 
-  // many-to-many relation between user and tweet through likes
-  @BelongsToMany(() => Tweet, () => Likes, 'tweetId', 'userId')
-  likes?: Tweet[];
+    // many-to-many relation between user and tweet through likes
+    @BelongsToMany(() => Tweet, () => Likes, 'tweetId', 'userId')
+    likes?: Tweet[];
 }
+
+
+export default User;

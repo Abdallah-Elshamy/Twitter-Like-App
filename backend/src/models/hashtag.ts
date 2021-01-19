@@ -19,7 +19,7 @@ class Hashtag extends Model {
     word!: string;
 
     // many-to-many relation between hastag and tweet through hasHashtag
-    @BelongsToMany(() => Tweet, () => HasHashtag, 'tweetId', 'hashtag')
+    @BelongsToMany(() => Tweet, () => HasHashtag, 'hashtag', 'tweetId')
     tweets?: Tweet[];
 }
 

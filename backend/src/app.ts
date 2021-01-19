@@ -3,6 +3,7 @@ import { ApolloServer } from 'apollo-server-express';
 import { resolvers, typeDefs } from './graphql';
 import path from 'path';
 import db from './db';
+import {User} from './models'
 
 const dir: string = path.resolve();
 
@@ -36,9 +37,14 @@ app.use((req: Request, res: Response, next: NextFunction): void => {
     next();
 });
 
-const server = app.listen(process.env.PORT!, (): void => {
-    console.log(`Server is running on port ${process.env.PORT}!`);
-});
+
+const server = db.sync().then(() => {
+    const server = app.listen(process.env.PORT!, (): void => {
+        console.log(`Server is running on port ${process.env.PORT}!`);
+    });
+    return server;
+})
+
 
 export {
     server

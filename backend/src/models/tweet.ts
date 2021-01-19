@@ -61,11 +61,11 @@ class Tweet extends Model {
     subTweets!: Tweet[];
 
     // many-to-many relation between user and tweet through likes
-    @BelongsToMany(() => User, () => Likes, 'userId', 'tweetId')
+    @BelongsToMany(() => User, () => Likes, 'tweetId', 'userId')
     likes?: User[];
 
     // many-to-many relation between hastag and tweet through hasHashtag
-    @BelongsToMany(() => Hashtag, () => HasHashtag, 'hashtag', 'tweetId')
+    @BelongsToMany(() => Hashtag, () => HasHashtag, 'tweetId', 'hashtag')
     hashtags?: Hashtag[];
 
     // one-to-many relation between tweets representing replies 

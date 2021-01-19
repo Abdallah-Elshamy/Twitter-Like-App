@@ -18,7 +18,7 @@ class Permission extends Model {
     @Column(DataType.STRING)
     name!: string;
 
-    @BelongsToMany(() => Group, () => HasPermission, 'groupName', 'permissionName')
+    @BelongsToMany(() => Group, () => HasPermission, 'permissionName', 'groupName')
     groups?: Group[];
 }
 

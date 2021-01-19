@@ -53,18 +53,18 @@ class User extends Model {
     tweets!: Tweet[];
 
     // many-to-many  relation between user and user
-    @BelongsToMany(() => User, () => Follows, 'following', 'follower')
+    @BelongsToMany(() => User, () => Follows, 'follower', 'following')
     followings?: User[];
 
-    @BelongsToMany(() => User, () => Follows, 'follower', 'following')
+    @BelongsToMany(() => User, () => Follows, 'following', 'follower')
     followers?: User[];
 
     // many-to-many relation between user and group
-    @BelongsToMany(() => Group, () => UserBelongsToGroup, 'groupName')
+    @BelongsToMany(() => Group, () => UserBelongsToGroup, 'userId', 'groupName')
     groups?: Group[];
 
     // many-to-many relation between user and tweet through likes
-    @BelongsToMany(() => Tweet, () => Likes, 'tweetId', 'userId')
+    @BelongsToMany(() => Tweet, () => Likes, 'userId', 'tweetId')
     likes?: Tweet[];
 }
 

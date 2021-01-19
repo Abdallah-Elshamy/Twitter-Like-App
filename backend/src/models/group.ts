@@ -22,11 +22,11 @@ class Group extends Model {
     name!: string;
 
     // many-to-many relation between group and permission
-    @BelongsToMany(() => Permission, () => HasPermission, 'permissionName', 'groupName')
+    @BelongsToMany(() => Permission, () => HasPermission, 'groupName', 'permissionName')
     permissions?: Permission[];
 
     // many-to-many relation between group and user
-    @BelongsToMany(() => User, () => UserBelongsToGroup, 'userId', 'groupName')
+    @BelongsToMany(() => User, () => UserBelongsToGroup, 'groupName', 'userId')
     users?: User[];
 }
 

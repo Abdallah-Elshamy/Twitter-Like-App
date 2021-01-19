@@ -29,6 +29,7 @@ class Tweet extends Model {
     
     // one-to-many relation between user and tweets
     @ForeignKey(() => User)
+    @AllowNull(false)
     @Column(DataType.INTEGER)
     userId!: number;
 
@@ -48,8 +49,9 @@ class Tweet extends Model {
     state?: string;
 
     // one-to-many relation between original tweet and sub tweets
-    @Column
     @ForeignKey(() => Tweet)
+    @AllowNull(false)
+    @Column(DataType.INTEGER)
     originalTweetId!: number;
 
     @BelongsTo(() => Tweet, 'originalTweetId')

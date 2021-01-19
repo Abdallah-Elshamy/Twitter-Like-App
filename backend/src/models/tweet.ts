@@ -12,10 +12,14 @@ export default class Tweet extends Model {
   @PrimaryKey
   @AutoIncrement
   id!: number;
-    
+  
+  // one-to-many relation between user and tweets
   @Column
   @ForeignKey(() => User)
   userID!: number;
+
+  @BelongsTo(() => User)
+  user!: User;
 
   @Column
   @AllowNull(false)

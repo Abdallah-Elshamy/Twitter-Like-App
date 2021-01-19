@@ -1,12 +1,22 @@
-import {Table, Column, Model, AutoIncrement, AllowNull, PrimaryKey, HasMany} from 'sequelize-typescript';
-import Tweet from "./tweet"
-@Table({
-    timestamps: true,
-    tableName: 'users',
-  })
-  
-export default class User extends Model {
+import {
+  Table,
+  Column,
+  Model,
+  AutoIncrement,
+  AllowNull,
+  PrimaryKey,
+  HasMany,
+  BelongsToMany,
+} from 'sequelize-typescript';
 
+import Follows from './follows';
+import Tweet from './tweet';
+
+@Table({
+  timestamps: true,
+  tableName: 'users',
+})
+export default class User extends Model {
   @Column
   @PrimaryKey
   @AutoIncrement
@@ -36,4 +46,11 @@ export default class User extends Model {
   // one-to-many relation between user and tweets
   @HasMany(() => Tweet)
   tweets!: Tweet[];
+
+  // many-to-many  relation between user and user
+  @BelongsToMany(() => User, () => Follows, 'following', 'follower')
+  followings?: User[];
+
+  @BelongsToMany(() => User, () => Follows, 'follower', 'following')
+  followers?: User[];
 }

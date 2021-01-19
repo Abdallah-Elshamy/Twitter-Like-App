@@ -7,7 +7,9 @@ import {Table,
   BelongsTo, 
   ForeignKey, 
   HasMany, 
-  BelongsToMany
+  HasOne,
+  BelongsToMany,
+  DataType
 } from 'sequelize-typescript';
 import User from "./user"
 import Likes from './likes'
@@ -17,18 +19,18 @@ import HasHashtag from './hasHashtag'
 @Table({
     timestamps: true,
     tableName: 'tweets',
-  })
+})
   
 export default class Tweet extends Model {
 
-  @Column
   @PrimaryKey
   @AutoIncrement
+  @Column(DataType.INTEGER)
   id!: number;
   
   // one-to-many relation between user and tweets
-  @Column
   @ForeignKey(() => User)
+  @Column(DataType.INTEGER)
   userID!: number;
 
   @BelongsTo(() => User)
@@ -63,4 +65,28 @@ export default class Tweet extends Model {
   // many-to-many relation between hastag and tweet through hasHashtag
   @BelongsToMany(() => Hashtag, () => HasHashtag, 'hashtag', 'tweetId')
   hashtags?: Hashtag[];
+
+  // one-to-many relation between tweets representing replies 
+  //and one to many relation to the thread tweet
+  @HasMany(() => Tweet, 'repliedToTweet')
+  replies?: Tweet[];
+
+  @BelongsTo(() => Tweet, 'repliedToTweet')
+  repliedTo?: Tweet;
+
+  @HasMany(() => Tweet, 'threadTweet')
+  threadChildren?: Tweet[];
+
+  @BelongsTo(() => Tweet, 'threadTweet')
+  thread?: Tweet;
+
+  @ForeignKey(() => Tweet)
+  @AllowNull(true)
+  @Column(DataType.INTEGER)
+  repliedToTweet?: number;
+
+  @ForeignKey(() => Tweet)
+  @AllowNull(true)
+  @Column(DataType.INTEGER)
+  threadTweet?: number;
 }

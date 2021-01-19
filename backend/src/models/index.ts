@@ -6,6 +6,8 @@ import Hashtag from './hashtag';
 import Follows from './follows';
 import HasPermission from './hasPermission';
 import UserBelongsToGroup from './userBelongsToGroup';
+import Likes from './likes'
+import HasHashtag from './hasHashtag'
 
 export {
   Tweet,
@@ -16,4 +18,6 @@ export {
   Follows,
   HasPermission,
   UserBelongsToGroup,
+  Likes,
+  HasHashtag
 };

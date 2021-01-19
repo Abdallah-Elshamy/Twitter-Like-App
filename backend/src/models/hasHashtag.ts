@@ -24,5 +24,5 @@ class HasHashtag extends Model {
     tweetId!: number;
 }
 
-export default Likes;
+export default HasHashtag;
 

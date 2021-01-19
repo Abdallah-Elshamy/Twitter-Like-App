@@ -11,6 +11,8 @@ import {Table,
 } from 'sequelize-typescript';
 import User from "./user"
 import Likes from './likes'
+import Hashtag from './hashtag'
+import HasHashtag from './hasHashtag'
 
 @Table({
     timestamps: true,
@@ -57,4 +59,8 @@ export default class Tweet extends Model {
   // many-to-many relation between user and tweet through likes
   @BelongsToMany(() => User, () => Likes, 'userId', 'tweetId')
   likes?: User[];
+
+  // many-to-many relation between hastag and tweet through hasHashtag
+  @BelongsToMany(() => Hashtag, () => HasHashtag, 'hashtag', 'tweetId')
+  hashtags?: Hashtag[];
 }

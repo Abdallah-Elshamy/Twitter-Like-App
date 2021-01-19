@@ -11,6 +11,8 @@ import {
 
 import Follows from './follows';
 import Tweet from './tweet';
+import Group from './group';
+import UserBelongsToGroup from './userBelongsToGroup';
 
 @Table({
   timestamps: true,
@@ -53,4 +55,8 @@ export default class User extends Model {
 
   @BelongsToMany(() => User, () => Follows, 'follower', 'following')
   followers?: User[];
+
+  // many-to-many relation between user and group
+  @BelongsToMany(() => Group, () => UserBelongsToGroup)
+  groups?: Group[];
 }

@@ -1,5 +1,16 @@
-import {Table, Column, Model, AutoIncrement, AllowNull, PrimaryKey, BelongsTo, ForeignKey, HasMany} from 'sequelize-typescript';
+import {Table, 
+  Column, 
+  Model, 
+  AutoIncrement, 
+  AllowNull, 
+  PrimaryKey, 
+  BelongsTo, 
+  ForeignKey, 
+  HasMany, 
+  BelongsToMany
+} from 'sequelize-typescript';
 import User from "./user"
+import Likes from './likes'
 
 @Table({
     timestamps: true,
@@ -42,4 +53,8 @@ export default class Tweet extends Model {
 
   @HasMany(() => Tweet)
   subTweets!: Tweet[];
+
+  // many-to-many relation between user and tweet through likes
+  @BelongsToMany(() => User, () => Likes, 'userId', 'tweetId')
+  likes?: User[];
 }

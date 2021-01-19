@@ -13,6 +13,7 @@ import Follows from './follows';
 import Tweet from './tweet';
 import Group from './group';
 import UserBelongsToGroup from './userBelongsToGroup';
+import Likes from './likes'
 
 @Table({
   timestamps: true,
@@ -59,4 +60,7 @@ export default class User extends Model {
   // many-to-many relation between user and group
   @BelongsToMany(() => Group, () => UserBelongsToGroup)
   groups?: Group[];
+
+  @BelongsToMany(() => Tweet, () => Likes, 'tweetId', 'userId')
+  likes?: Tweet[];
 }

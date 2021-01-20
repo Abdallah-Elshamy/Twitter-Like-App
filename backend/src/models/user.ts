@@ -38,6 +38,10 @@ class User extends Model {
     @Column(DataType.STRING)
     email!: string;
 
+    @AllowNull(false)
+    @Column(DataType.STRING)
+    hashedPassword!: string;
+
     @AllowNull(true)
     @Column(DataType.STRING)
     image?: string;

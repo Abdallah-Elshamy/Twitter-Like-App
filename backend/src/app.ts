@@ -42,12 +42,12 @@ app.use((req: Request, res: Response, next: NextFunction): void => {
     next();
 });
 
-const server = db.sync().then(() => {
+const serverPromise = db.sync().then(() => {
     const server = app.listen(process.env.PORT!, (): void => {
         console.log(`Server is running on port ${process.env.PORT}!`);
     });
     return server;
 });
 
-export { server };
+export { serverPromise };
 export default app;

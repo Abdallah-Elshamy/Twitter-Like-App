@@ -8,6 +8,7 @@ import {
     HasMany,
     DataType,
     BelongsToMany,
+    Unique,
 } from "sequelize-typescript";
 import Follows from "./follows";
 import Tweet from "./tweet";
@@ -32,6 +33,7 @@ class User extends Model {
     @Column(DataType.STRING)
     userName!: string;
 
+    @Unique
     @AllowNull(false)
     @Column(DataType.STRING)
     email!: string;

@@ -1,17 +1,17 @@
 import {
-    Table, 
-    Column, 
-    Model, 
+    Table,
+    Column,
+    Model,
     PrimaryKey,
-    DataType, 
-    BelongsToMany
-} from 'sequelize-typescript';
-import Tweet from './tweet'
-import HasHashtag from './hasHashtag'
+    DataType,
+    BelongsToMany,
+} from "sequelize-typescript";
+import Tweet from "./tweet";
+import HasHashtag from "./hasHashtag";
 
 @Table({
     timestamps: true,
-    tableName: 'hashtags',
+    tableName: "hashtags",
 })
 class Hashtag extends Model {
     @PrimaryKey
@@ -19,9 +19,8 @@ class Hashtag extends Model {
     word!: string;
 
     // many-to-many relation between hastag and tweet through hasHashtag
-    @BelongsToMany(() => Tweet, () => HasHashtag, 'hashtag', 'tweetId')
+    @BelongsToMany(() => Tweet, () => HasHashtag, "hashtag", "tweetId")
     tweets?: Tweet[];
 }
-
 
 export default Hashtag;

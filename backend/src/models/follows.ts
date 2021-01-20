@@ -5,12 +5,11 @@ import {
     ForeignKey,
     PrimaryKey,
     DataType,
-} from 'sequelize-typescript';
-import User from './user';
-
+} from "sequelize-typescript";
+import User from "./user";
 
 @Table({
-    tableName: 'follows',
+    tableName: "follows",
 })
 class Follows extends Model {
     @PrimaryKey
@@ -23,6 +22,5 @@ class Follows extends Model {
     @Column(DataType.INTEGER)
     following!: number;
 }
-
 
 export default Follows;

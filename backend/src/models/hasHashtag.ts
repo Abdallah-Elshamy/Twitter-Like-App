@@ -5,13 +5,12 @@ import {
     ForeignKey,
     PrimaryKey,
     DataType,
-} from 'sequelize-typescript';
-import Hashtag from './hashtag'
-import Tweet from './tweet'
-
+} from "sequelize-typescript";
+import Hashtag from "./hashtag";
+import Tweet from "./tweet";
 
 @Table({
-    tableName: 'hasHashtags'
+    tableName: "hasHashtags",
 })
 class HasHashtag extends Model {
     @PrimaryKey
@@ -24,6 +23,5 @@ class HasHashtag extends Model {
     @Column(DataType.INTEGER)
     tweetId!: number;
 }
-
 
 export default HasHashtag;

@@ -5,12 +5,12 @@ import {
     ForeignKey,
     PrimaryKey,
     DataType,
-} from 'sequelize-typescript';
-import User from './user';
-import Group from './group';
+} from "sequelize-typescript";
+import User from "./user";
+import Group from "./group";
 
 @Table({
-    tableName: 'userBelongsToGroup',
+    tableName: "userBelongsToGroup",
 })
 class UserBelongsToGroup extends Model {
     @PrimaryKey
@@ -23,6 +23,5 @@ class UserBelongsToGroup extends Model {
     @Column(DataType.INTEGER)
     groupName!: string;
 }
-
 
 export default UserBelongsToGroup;

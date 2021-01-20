@@ -8,15 +8,15 @@ import {
     HasMany,
     DataType,
     BelongsToMany,
-} from 'sequelize-typescript';
-import Follows from './follows';
-import Tweet from './tweet';
-import Group from './group';
-import UserBelongsToGroup from './userBelongsToGroup';
-import Likes from './likes'
+} from "sequelize-typescript";
+import Follows from "./follows";
+import Tweet from "./tweet";
+import Group from "./group";
+import UserBelongsToGroup from "./userBelongsToGroup";
+import Likes from "./likes";
 
 @Table({
-    tableName: 'users',
+    tableName: "users",
 })
 class User extends Model {
     @PrimaryKey
@@ -49,24 +49,23 @@ class User extends Model {
     coverImage?: string;
 
     // one-to-many relation between user and tweets
-    @HasMany(() => Tweet, 'userId')
+    @HasMany(() => Tweet, "userId")
     tweets!: Tweet[];
 
     // many-to-many  relation between user and user
-    @BelongsToMany(() => User, () => Follows, 'follower', 'following')
+    @BelongsToMany(() => User, () => Follows, "follower", "following")
     followings?: User[];
 
-    @BelongsToMany(() => User, () => Follows, 'following', 'follower')
+    @BelongsToMany(() => User, () => Follows, "following", "follower")
     followers?: User[];
 
     // many-to-many relation between user and group
-    @BelongsToMany(() => Group, () => UserBelongsToGroup, 'userId', 'groupName')
+    @BelongsToMany(() => Group, () => UserBelongsToGroup, "userId", "groupName")
     groups?: Group[];
 
     // many-to-many relation between user and tweet through likes
-    @BelongsToMany(() => Tweet, () => Likes, 'userId', 'tweetId')
+    @BelongsToMany(() => Tweet, () => Likes, "userId", "tweetId")
     likes?: Tweet[];
 }
-
 
 export default User;

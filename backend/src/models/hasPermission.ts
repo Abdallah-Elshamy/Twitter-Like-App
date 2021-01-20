@@ -5,12 +5,12 @@ import {
     ForeignKey,
     PrimaryKey,
     DataType,
-} from 'sequelize-typescript';
-import Group from './group';
-import Permission from './permission';
+} from "sequelize-typescript";
+import Group from "./group";
+import Permission from "./permission";
 
 @Table({
-    tableName: 'hasPermissions',
+    tableName: "hasPermissions",
 })
 class HasPermission extends Model {
     @PrimaryKey
@@ -23,6 +23,5 @@ class HasPermission extends Model {
     @Column(DataType.STRING)
     permissionName!: string;
 }
-
 
 export default HasPermission;

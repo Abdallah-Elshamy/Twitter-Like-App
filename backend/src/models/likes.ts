@@ -5,12 +5,12 @@ import {
     ForeignKey,
     PrimaryKey,
     DataType,
-} from 'sequelize-typescript';
-import User from './user'
-import Tweet from './tweet'
+} from "sequelize-typescript";
+import User from "./user";
+import Tweet from "./tweet";
 
 @Table({
-    tableName: 'likes'
+    tableName: "likes",
 })
 class Likes extends Model {
     @PrimaryKey
@@ -23,6 +23,5 @@ class Likes extends Model {
     @Column(DataType.INTEGER)
     tweetId!: number;
 }
-
 
 export default Likes;

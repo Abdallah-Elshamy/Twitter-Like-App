@@ -5,16 +5,15 @@ import {
     PrimaryKey,
     DataType,
     BelongsToMany,
-} from 'sequelize-typescript';
-import Permission from './permission';
-import HasPermission from './hasPermission';
-import User from './user';
-import UserBelongsToGroup from './userBelongsToGroup';
-
+} from "sequelize-typescript";
+import Permission from "./permission";
+import HasPermission from "./hasPermission";
+import User from "./user";
+import UserBelongsToGroup from "./userBelongsToGroup";
 
 @Table({
     timestamps: true,
-    tableName: 'groups',
+    tableName: "groups",
 })
 class Group extends Model {
     @PrimaryKey
@@ -22,13 +21,17 @@ class Group extends Model {
     name!: string;
 
     // many-to-many relation between group and permission
-    @BelongsToMany(() => Permission, () => HasPermission, 'groupName', 'permissionName')
+    @BelongsToMany(
+        () => Permission,
+        () => HasPermission,
+        "groupName",
+        "permissionName"
+    )
     permissions?: Permission[];
 
     // many-to-many relation between group and user
-    @BelongsToMany(() => User, () => UserBelongsToGroup, 'groupName', 'userId')
+    @BelongsToMany(() => User, () => UserBelongsToGroup, "groupName", "userId")
     users?: User[];
 }
-
 
 export default Group;

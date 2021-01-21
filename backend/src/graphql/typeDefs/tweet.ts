@@ -26,8 +26,8 @@ export default gql`
     }
 
     input TweetCreateInput {
-        text: String!,
+        text: String!
         mediaURL: [String]
-        state: String!, 
+        state: String! 
     }
 `;

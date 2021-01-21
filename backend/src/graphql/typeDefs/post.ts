@@ -1,6 +1,6 @@
-import { gql } from 'apollo-server-express';
+import { gql } from "apollo-server-express";
 
-export default gql `
+export default gql`
     extend type Query {
         hello: Post!
     }

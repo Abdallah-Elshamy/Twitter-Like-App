@@ -4,7 +4,7 @@
   "description": "The backend part for the twitter like graduation project",
   "main": "app.js",
   "scripts": {
-    "test": "ts-mocha -r dotenv/config src/tests/*.ts",
+    "test": "TEST_ENVIROMENT=true ts-mocha -r dotenv/config src/tests/*.ts --timeout 10000",
     "start": "node dist/app.js",
     "dev": "nodemon -r dotenv/config src/app.ts",
     "build": "tsc -p ."

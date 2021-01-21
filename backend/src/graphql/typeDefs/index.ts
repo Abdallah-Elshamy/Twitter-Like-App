@@ -1,10 +1,6 @@
-import base from './base';
-import post from './post';
-import user from './user';
+import base from "./base";
+import post from "./post";
+import tweet from "./tweet";
+import user from "./user";
 
-
-export default [
-    base,
-    post,
-    user
-];
+export default [base, post, user, tweet];

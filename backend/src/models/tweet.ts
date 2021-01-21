@@ -50,15 +50,15 @@ class Tweet extends Model {
 
     // one-to-many relation between original tweet and sub tweets
     @ForeignKey(() => Tweet)
-    @AllowNull(false)
+    @AllowNull(true)
     @Column(DataType.INTEGER)
-    originalTweetId!: number;
+    originalTweetId?: number;
 
     @BelongsTo(() => Tweet, "originalTweetId")
-    originalTweet!: Tweet;
+    originalTweet?: Tweet;
 
     @HasMany(() => Tweet, "originalTweetId")
-    subTweets!: Tweet[];
+    subTweets?: Tweet[];
 
     // many-to-many relation between user and tweet through likes
     @BelongsToMany(() => User, () => Likes, "tweetId", "userId")

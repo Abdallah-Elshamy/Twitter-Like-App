@@ -29,6 +29,7 @@ class User extends Model {
     @Column(DataType.STRING)
     name!: string;
 
+    @Unique
     @AllowNull(false)
     @Column(DataType.STRING)
     userName!: string;
@@ -56,7 +57,7 @@ class User extends Model {
 
     // one-to-many relation between user and tweets
     @HasMany(() => Tweet, "userId")
-    tweets!: Tweet[];
+    tweets?: Tweet[];
 
     // many-to-many  relation between user and user
     @BelongsToMany(() => User, () => Follows, "follower", "following")

@@ -97,18 +97,18 @@ export default {
             context: any,
             info: any
         ) => {
-            const id = args.id
-            const tweet = await Tweet.findByPk(id)
-            if(!tweet) {
+            //check authentication and if user owns the tweet
+            const id = args.id;
+            const tweet = await Tweet.findByPk(id);
+            if (!tweet) {
                 const error: any = new Error(
                     "No tweet was found with that id!"
                 );
                 error.statusCode = 404;
                 throw error;
             }
-            await tweet.destroy()
-            return "Successfully deleted!"
-
+            await tweet.destroy();
+            return "Successfully deleted!";
         },
     },
 };

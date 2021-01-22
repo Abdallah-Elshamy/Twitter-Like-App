@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import './routes/Profile'
-import { ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import Profile from './routes/Profile';
 
 const client = new ApolloClient({
@@ -18,15 +18,15 @@ function App() {
     </ApolloProvider>
   );
 }
-      /* routes {
-        Profile 
-        Logein
-        Signup 
-        LandingPage
-        Home 
-        User
-        Tweet
-        Explore
-        Hashtg
-      } */
+/* routes {
+  Profile 
+  Logein
+  Signup 
+  LandingPage
+  Home 
+  User
+  Tweet
+  Explore
+  Hashtg
+} */
 export default App;

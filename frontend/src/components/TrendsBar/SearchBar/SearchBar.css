@@ -1,0 +1,32 @@
+@import '../../../styles/color-schema.css';
+
+.search-bar, .search-input {
+  background-color: var(--extra-light);
+  color: var(--dark-grey);
+}
+.search-input::placeholder {
+  color: var(--dark-grey);
+}
+.search-bar {
+  
+  border: 1px solid var(--super-light) 
+}
+
+
+.search-input:focus{
+  border: none;
+  outline: none;
+  inset: none;
+  background-color: var(--super-light);
+  color: var(--main-black);
+} 
+
+.focus  {
+  background-color: var(--super-light);
+ color: var(--main-color);
+  border: 1px solid var(--main-color);
+  
+}
+
+.icon-focus {
+}

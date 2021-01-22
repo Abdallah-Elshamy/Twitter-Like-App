@@ -1,14 +1,18 @@
+@import './color-schema.css';
+
 .main-container {
   display: grid;
   grid-template-columns: 0.7fr 1.4fr 0.9fr;
-  padding-right: 260px;
-  padding-left: 260px;
+  height: 100vh;
+  background-color: var(--super-light);
 }
 .sb-left {
   grid-column: 1 / 2;
+  background-color: var(--main-color);
 }
 .wall {
   grid-column: 2 / 3;
+   background-color: var(--main-black);
 }
 .sb-right {
   grid-column: 3 / 4;

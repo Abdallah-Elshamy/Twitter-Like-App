@@ -17,25 +17,9 @@ const createTweet = async (text: any, state: any) => {
                     state: "${state}"
                 }){
                     id
-                }
-            }
-        `,
-        });
-};
-
-const createTweetWithMedia = async (text: any, state: any, media: any) => {
-    console.log(`[${media}]`);
-    return await request(app)
-        .post("/graphql")
-        .send({
-            query: `
-            mutation {
-                createTweet(tweet: {
-                    text: "${text}"
-                    state: "${state}"
-                    mediaURLs: [${media}]
-                }){
-                    id
+                    text
+                    state
+                    mediaURLs
                 }
             }
         `,
@@ -60,7 +44,12 @@ describe("tweet-resolvers", (): void => {
         const response = await createTweet("hello world", "O");
         expect(response.body).to.has.property("data");
         expect(response.body.data).to.has.property("createTweet");
-        expect(response.body.data.createTweet).to.has.property("id");
+        expect(response.body.data.createTweet).to.include({
+            id: "1",
+            text: "hello world",
+            state: "O",
+        })
+        expect(response.body.data.createTweet.mediaURLs).to.has.length(0)
     });
 
     it("createTweet with media", async () => {
@@ -73,13 +62,26 @@ describe("tweet-resolvers", (): void => {
                     mediaURLs: ["a","b","c","d"]
                 }){
                     id
+                    text
+                    state
+                    mediaURLs
                 }
             }
         `,
         });
         expect(response.body).to.has.property("data");
         expect(response.body.data).to.has.property("createTweet");
-        expect(response.body.data.createTweet).to.has.property("id");
+        expect(response.body.data.createTweet).to.include({
+            id: "2",
+            text: "hello world",
+            state: "C",
+        })
+        expect(response.body.data.createTweet.mediaURLs).to.has.length(4)
+        expect(response.body.data.createTweet.mediaURLs).to.include("a")
+        expect(response.body.data.createTweet.mediaURLs).to.include("b")
+        expect(response.body.data.createTweet.mediaURLs).to.include("c")
+        expect(response.body.data.createTweet.mediaURLs).to.include("d")
+
     });
 
     it("fail createTweet with state other than O or R or C or Q", async () => {
@@ -129,7 +131,6 @@ describe("tweet-resolvers", (): void => {
             }
         `,
         });
-        // console.log(response)
         expect(response.body).to.has.property("errors");
         expect(response.body.errors).to.has.length(1);
         expect(response.body.errors[0].validators).to.has.length(1);

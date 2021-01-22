@@ -20,7 +20,7 @@ export default {
                 text,
                 userId: 1, //assume the logged in user is with id 1
                 state,
-                mediaURL
+                mediaURLs: mediaURL
             },{transaction})
             tweet.originalTweetId = tweet.id;
             await tweet.save({transaction});

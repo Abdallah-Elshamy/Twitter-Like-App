@@ -3,11 +3,11 @@ import Validator from "validator";
 interface TweetInput {
     text: string;
     state: string;
-    mediaURL: string[];
+    mediaURLs: string[];
 }
 
 const tweetValidator = (tweetInput: TweetInput) => {
-    const { text, state, mediaURL } = tweetInput;
+    const { text, state, mediaURLs } = tweetInput;
     const validators: { message: string; value: string }[] = [];
     if (
         !Validator.isLength(text, {
@@ -26,10 +26,10 @@ const tweetValidator = (tweetInput: TweetInput) => {
             value: "state",
         });
     }
-    if (mediaURL !== undefined && mediaURL.length > 4) {
+    if (mediaURLs !== undefined && mediaURLs.length > 4) {
         validators.push({
-            message: "mediaURL array must not exceed 4 urls!",
-            value: "mediaURL",
+            message: "mediaURLs array must not exceed 4 urls!",
+            value: "mediaURLs",
         });
     }
     return validators;

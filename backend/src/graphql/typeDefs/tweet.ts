@@ -8,7 +8,7 @@ export default gql`
         id: ID!
         user: User!
         text: String!
-        mediaURL: [String]!
+        mediaURLs: [String]!
         state: String!
         originalTweet: Tweet!
         likes(page: Int): PaginatedUsers!
@@ -30,7 +30,7 @@ export default gql`
 
     input TweetCreateInput {
         text: String!
-        mediaURL: [String]
+        mediaURLs: [String]
         state: String!
     }
 `;

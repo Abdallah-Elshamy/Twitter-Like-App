@@ -33,7 +33,7 @@ const createTweetWithMedia = async (text: any, state: any, media: any) => {
                 createTweet(tweet: {
                     text: "${text}"
                     state: "${state}"
-                    mediaURL: [${media}]
+                    mediaURLs: [${media}]
                 }){
                     id
                 }
@@ -70,7 +70,7 @@ describe("tweet-resolvers", (): void => {
                 createTweet(tweet: {
                     text: "hello world"
                     state: "C"
-                    mediaURL: ["a","b","c","d"]
+                    mediaURLs: ["a","b","c","d"]
                 }){
                     id
                 }
@@ -115,14 +115,14 @@ describe("tweet-resolvers", (): void => {
         );
     });
 
-    it("fail createTweet with mediaURL array of more than 4 urls", async () => {
+    it("fail createTweet with mediaURLs array of more than 4 urls", async () => {
         const response = await request(app).post("/graphql").send({
             query: `
             mutation {
                 createTweet(tweet: {
                     text: "hello world"
                     state: "C"
-                    mediaURL: ["a","b","c","d","e"]
+                    mediaURLs: ["a","b","c","d","e"]
                 }){
                     id
                 }
@@ -134,7 +134,7 @@ describe("tweet-resolvers", (): void => {
         expect(response.body.errors).to.has.length(1);
         expect(response.body.errors[0].validators).to.has.length(1);
         expect(response.body.errors[0].validators[0].message).to.be.equal(
-            "mediaURL array must not exceed 4 urls!"
+            "mediaURLs array must not exceed 4 urls!"
         );
     });
 

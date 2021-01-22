@@ -23,6 +23,25 @@ const createTweet = async (text: any, state: any) => {
         });
 };
 
+const createTweetWithMedia = async (text: any, state: any, media: any) => {
+    console.log(`[${media}]`);
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+            mutation {
+                createTweet(tweet: {
+                    text: "${text}"
+                    state: "${state}"
+                    mediaURL: [${media}]
+                }){
+                    id
+                }
+            }
+        `,
+        });
+};
+
 describe("tweet-resolvers", (): void => {
     before(async () => {
         server = await serverPromise;
@@ -37,8 +56,27 @@ describe("tweet-resolvers", (): void => {
         });
     });
 
-    it("createTweet with text and state inputs", async () => {
+    it("createTweet with no media", async () => {
         const response = await createTweet("hello world", "O");
+        expect(response.body).to.has.property("data");
+        expect(response.body.data).to.has.property("createTweet");
+        expect(response.body.data.createTweet).to.has.property("id");
+    });
+
+    it("createTweet with media", async () => {
+        const response = await request(app).post("/graphql").send({
+            query: `
+            mutation {
+                createTweet(tweet: {
+                    text: "hello world"
+                    state: "C"
+                    mediaURL: ["a","b","c","d"]
+                }){
+                    id
+                }
+            }
+        `,
+        });
         expect(response.body).to.has.property("data");
         expect(response.body.data).to.has.property("createTweet");
         expect(response.body.data.createTweet).to.has.property("id");
@@ -74,6 +112,29 @@ describe("tweet-resolvers", (): void => {
         expect(response.body.errors[0].validators).to.has.length(1);
         expect(response.body.errors[0].validators[0].message).to.be.equal(
             "text length must be between 1 to 280 chars!"
+        );
+    });
+
+    it("fail createTweet with mediaURL array of more than 4 urls", async () => {
+        const response = await request(app).post("/graphql").send({
+            query: `
+            mutation {
+                createTweet(tweet: {
+                    text: "hello world"
+                    state: "C"
+                    mediaURL: ["a","b","c","d","e"]
+                }){
+                    id
+                }
+            }
+        `,
+        });
+        // console.log(response)
+        expect(response.body).to.has.property("errors");
+        expect(response.body.errors).to.has.length(1);
+        expect(response.body.errors[0].validators).to.has.length(1);
+        expect(response.body.errors[0].validators[0].message).to.be.equal(
+            "mediaURL array must not exceed 4 urls!"
         );
     });
 

@@ -1,9 +1,9 @@
 import Validator from "validator";
 
 interface TweetInput {
-    text: any;
-    state: any;
-    mediaURL: any;
+    text: string;
+    state: string;
+    mediaURL: string[];
 }
 
 const tweetValidator = (tweetInput: TweetInput) => {
@@ -24,6 +24,12 @@ const tweetValidator = (tweetInput: TweetInput) => {
         validators.push({
             message: "state must have the value of O or C or R or Q only!",
             value: "state",
+        });
+    }
+    if (mediaURL !== undefined && mediaURL.length > 4) {
+        validators.push({
+            message: "mediaURL array must not exceed 4 urls!",
+            value: "mediaURL",
         });
     }
     return validators;

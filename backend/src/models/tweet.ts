@@ -47,7 +47,7 @@ class Tweet extends Model {
     mediaURLs!: string[];
 
     @AllowNull(false)
-    @Column(DataType.CHAR)
+    @Column(DataType.CHAR(1))
     state!: string;
 
     // one-to-many relation between original tweet and sub tweets

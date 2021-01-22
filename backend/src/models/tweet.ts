@@ -37,7 +37,7 @@ class Tweet extends Model {
     user!: User;
 
     @AllowNull(false)
-    @Column(DataType.STRING)
+    @Column(DataType.TEXT)
     text!: string;
 
     @AllowNull(true)

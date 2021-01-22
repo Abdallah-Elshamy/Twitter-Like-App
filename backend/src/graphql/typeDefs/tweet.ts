@@ -3,6 +3,7 @@ import { gql } from "apollo-server-express";
 export default gql`
     extend type Mutation {
         createTweet(tweet: TweetCreateInput!): Tweet!
+        createReply(tweet: TweetCreateInput!, repliedToTweet: ID!): Tweet!
     }
     type Tweet {
         id: ID!

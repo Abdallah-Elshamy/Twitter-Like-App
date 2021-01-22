@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import request from "supertest";
 import app, { serverPromise } from "../app";
-import { User } from "../models";
+import { User, Tweet } from "../models";
 import db from "../db";
 
 let server: any;
@@ -16,6 +16,29 @@ const createTweet = async (text: any, state: any) => {
                     text: "${text}"
                     state: "${state}"
                 }){
+                    id
+                    text
+                    state
+                    mediaURLs
+                }
+            }
+        `,
+        });
+};
+
+const createReply = async (text: any, state: any, repliedToTweet: any) => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+            mutation {
+                createReply(
+                    tweet: {
+                        text: "${text}"
+                        state: "${state}"
+                    }
+                    repliedToTweet: ${repliedToTweet}
+                ){
                     id
                     text
                     state
@@ -48,8 +71,8 @@ describe("tweet-resolvers", (): void => {
             id: "1",
             text: "hello world",
             state: "O",
-        })
-        expect(response.body.data.createTweet.mediaURLs).to.has.length(0)
+        });
+        expect(response.body.data.createTweet.mediaURLs).to.has.length(0);
     });
 
     it("createTweet with media", async () => {
@@ -75,13 +98,12 @@ describe("tweet-resolvers", (): void => {
             id: "2",
             text: "hello world",
             state: "C",
-        })
-        expect(response.body.data.createTweet.mediaURLs).to.has.length(4)
-        expect(response.body.data.createTweet.mediaURLs).to.include("a")
-        expect(response.body.data.createTweet.mediaURLs).to.include("b")
-        expect(response.body.data.createTweet.mediaURLs).to.include("c")
-        expect(response.body.data.createTweet.mediaURLs).to.include("d")
-
+        });
+        expect(response.body.data.createTweet.mediaURLs).to.has.length(4);
+        expect(response.body.data.createTweet.mediaURLs).to.include("a");
+        expect(response.body.data.createTweet.mediaURLs).to.include("b");
+        expect(response.body.data.createTweet.mediaURLs).to.include("c");
+        expect(response.body.data.createTweet.mediaURLs).to.include("d");
     });
 
     it("fail createTweet with state other than O or R or C or Q", async () => {
@@ -89,9 +111,10 @@ describe("tweet-resolvers", (): void => {
         expect(response.body).to.has.property("errors");
         expect(response.body.errors).to.has.length(1);
         expect(response.body.errors[0].validators).to.has.length(1);
-        expect(response.body.errors[0].validators[0].message).to.be.equal(
-            "state must have the value of O or C or R or Q only!"
-        );
+        expect(response.body.errors[0].validators[0]).to.include({
+            message: "state must have the value of O or C or R or Q only!",
+            value: "state",
+        });
     });
 
     it("fail createTweet with text less than 1 char", async () => {
@@ -137,6 +160,65 @@ describe("tweet-resolvers", (): void => {
         expect(response.body.errors[0].validators[0].message).to.be.equal(
             "mediaURLs array must not exceed 4 urls!"
         );
+    });
+
+    it("createReply to originalTweet", async () => {
+        const originalTweet: any = await Tweet.findByPk(1);
+        let replies = await originalTweet.getReplies();
+        expect(replies).to.has.length(0);
+        const response = await createReply("hello world", "C", 1);
+        expect(response.body).to.has.property("data");
+        expect(response.body.data).to.has.property("createReply");
+        expect(response.body.data.createReply).to.include({
+            id: "3",
+            text: "hello world",
+            state: "C",
+        });
+        replies = await originalTweet.getReplies();
+        expect(replies).to.has.length(1);
+        expect(replies[0].dataValues).to.include({
+            id: 3,
+            text: "hello world",
+            state: "C",
+            repliedToTweet: 1,
+            threadTweet: 1
+        })
+        expect(response.body.data.createReply.mediaURLs).to.has.length(0);
+    });
+
+    it("createReply to replyTweet", async () => {
+        const originalTweet: any = await Tweet.findByPk(3);
+        let replies = await originalTweet.getReplies();
+        expect(replies).to.has.length(0);
+        const response = await createReply("reply tweet2", "C", 3);
+        expect(response.body).to.has.property("data");
+        expect(response.body.data).to.has.property("createReply");
+        expect(response.body.data.createReply).to.include({
+            id: "4",
+            text: "reply tweet2",
+            state: "C",
+        });
+        replies = await originalTweet.getReplies();
+        expect(replies).to.has.length(1);
+        expect(replies[0].dataValues).to.include({
+            id: 4,
+            text: "reply tweet2",
+            state: "C",
+            repliedToTweet: 3,
+            threadTweet: 1
+        })
+        expect(response.body.data.createReply.mediaURLs).to.has.length(0);
+    });
+
+    it("fail createReply to a non existant tweet", async () => {
+        const response = await createReply("reply tweet2", "C", 20);
+        console.log(response)
+        expect(response.body).to.has.property("errors");
+        expect(response.body.errors).to.has.length(1);
+        expect(response.body.errors[0]).to.include({
+            statusCode: 404,
+            message: "No tweet was found with that id!"
+        });
     });
 
     after(async () => {

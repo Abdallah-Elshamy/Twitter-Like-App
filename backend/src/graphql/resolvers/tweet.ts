@@ -12,7 +12,7 @@ const addTweetInDataBase = async (
     repliedToTweet: number | undefined = undefined,
     threadTweet: number | undefined = undefined
 ) => {
-    const validators = tweetValidator({ text, state, mediaURLs });
+    const validators = tweetValidator({ text, mediaURLs });
     if (validators.length > 0) {
         const error: any = new Error("Validation error!");
         error.statusCode = 422;
@@ -45,12 +45,12 @@ export default {
             info: any
         ) => {
             //check authentication here first
-            const { text, state, mediaURLs } = args.tweet;
+            const { text, mediaURLs } = args.tweet;
             const userId = 1; //assume the logged in user is with id 1
             const tweet = await db.transaction(async (transaction) => {
                 return await addTweetInDataBase(
                     text,
-                    state,
+                    "O",
                     mediaURLs,
                     1,
                     transaction
@@ -65,7 +65,7 @@ export default {
             info: any
         ) => {
             //check authentication here first
-            const { text, state, mediaURLs } = args.tweet;
+            const { text, mediaURLs } = args.tweet;
             const repliedToTweetId = args.repliedToTweet;
             const repliedToTweet = await Tweet.findByPk(repliedToTweetId);
             if (!repliedToTweet) {
@@ -78,7 +78,7 @@ export default {
             const tweet = await db.transaction(async (transaction) => {
                 const tweet = await addTweetInDataBase(
                     text,
-                    state,
+                    "C",
                     mediaURLs,
                     1,
                     transaction,

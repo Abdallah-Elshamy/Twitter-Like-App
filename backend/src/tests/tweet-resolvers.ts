@@ -6,7 +6,7 @@ import db from "../db";
 
 let server: any;
 
-const createTweet = async (text: any, state: any) => {
+const createTweet = async (text: any) => {
     return await request(app)
         .post("/graphql")
         .send({
@@ -14,7 +14,6 @@ const createTweet = async (text: any, state: any) => {
             mutation {
                 createTweet(tweet: {
                     text: "${text}"
-                    state: "${state}"
                 }){
                     id
                     text
@@ -26,7 +25,7 @@ const createTweet = async (text: any, state: any) => {
         });
 };
 
-const createTweetWithMedia = async (text: any, state: any) => {
+const createTweetWithMedia = async (text: any) => {
     return await request(app)
         .post("/graphql")
         .send({
@@ -34,7 +33,6 @@ const createTweetWithMedia = async (text: any, state: any) => {
             mutation {
                 createTweet(tweet: {
                     text: "${text}"
-                    state: "${state}"
                     mediaURLs: ["a","b","c","d"]
                 }){
                     id
@@ -49,11 +47,10 @@ const createTweetWithMedia = async (text: any, state: any) => {
 
 const failcreateTweetValidation = async (
     text: string,
-    state: string,
     message: string,
     value: string
 ) => {
-    const response = await createTweet(text, state);
+    const response = await createTweet(text);
     expect(response.body.errors).to.has.length(1);
     expect(response.body.errors[0]).to.include({
         message: "Validation error!",
@@ -66,7 +63,7 @@ const failcreateTweetValidation = async (
     });
 };
 
-const createReply = async (text: any, state: any, repliedToTweet: any) => {
+const createReply = async (text: any, repliedToTweet: any) => {
     return await request(app)
         .post("/graphql")
         .send({
@@ -75,7 +72,6 @@ const createReply = async (text: any, state: any, repliedToTweet: any) => {
                 createReply(
                     tweet: {
                         text: "${text}"
-                        state: "${state}"
                     }
                     repliedToTweet: ${repliedToTweet}
                 ){
@@ -99,7 +95,7 @@ const succeedCreateReply = async (
     const repliedToTweet: any = await Tweet.findByPk(repliedToTweetId);
     let replies = await repliedToTweet.getReplies();
     expect(replies).to.has.length(0);
-    const response = await createReply(text, state, repliedToTweetId);
+    const response = await createReply(text, repliedToTweetId);
     expect(response.body.data.createReply).to.include({
         id: "" + id,
         text,
@@ -132,7 +128,7 @@ describe("tweet-resolvers", (): void => {
     });
 
     it("createTweet with no media", async () => {
-        const response = await createTweet("hello world", "O");
+        const response = await createTweet("hello world");
         expect(response.body.data.createTweet).to.include({
             id: "1",
             text: "hello world",
@@ -142,11 +138,11 @@ describe("tweet-resolvers", (): void => {
     });
 
     it("createTweet with media", async () => {
-        const response = await createTweetWithMedia("hello world", "C");
+        const response = await createTweetWithMedia("hello world");
         expect(response.body.data.createTweet).to.include({
             id: "2",
             text: "hello world",
-            state: "C",
+            state: "O",
         });
         expect(response.body.data.createTweet.mediaURLs).to.has.length(4);
         expect(response.body.data.createTweet.mediaURLs).to.include("a");
@@ -155,19 +151,9 @@ describe("tweet-resolvers", (): void => {
         expect(response.body.data.createTweet.mediaURLs).to.include("d");
     });
 
-    it("fail createTweet with state other than O or R or C or Q", async () => {
-        await failcreateTweetValidation(
-            "hello",
-            "z",
-            "state must have the value of O or C or R or Q only!",
-            "state"
-        );
-    });
-
     it("fail createTweet with text less than 1 char", async () => {
         await failcreateTweetValidation(
             "",
-            "C",
             "text length must be between 1 to 280 chars!",
             "text"
         );
@@ -176,7 +162,6 @@ describe("tweet-resolvers", (): void => {
     it("fail createTweet with text more than 280 char", async () => {
         await failcreateTweetValidation(
             ".........................................................................................................................................................................................................................................................................................",
-            "C",
             "text length must be between 1 to 280 chars!",
             "text"
         );
@@ -188,7 +173,6 @@ describe("tweet-resolvers", (): void => {
             mutation {
                 createTweet(tweet: {
                     text: "hello world"
-                    state: "C"
                     mediaURLs: ["a","b","c","d","e"]
                 }){
                     id
@@ -213,7 +197,7 @@ describe("tweet-resolvers", (): void => {
     });
 
     it("fail createReply to a non existant tweet", async () => {
-        const response = await createReply("reply tweet2", "C", 20);
+        const response = await createReply("reply tweet2", 20);
         expect(response.body.errors).to.has.length(1);
         expect(response.body.errors[0]).to.include({
             statusCode: 404,

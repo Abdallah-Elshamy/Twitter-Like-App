@@ -113,6 +113,18 @@ const succeedCreateReply = async (
     expect(response.body.data.createReply.mediaURLs).to.has.length(0);
 };
 
+const deleteTweet = async (id: number) => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+                mutation {
+                    deleteTweet(id: ${id})
+                }
+            `,
+        });
+};
+
 describe("tweet-resolvers", (): void => {
     before(async () => {
         server = await serverPromise;
@@ -196,8 +208,28 @@ describe("tweet-resolvers", (): void => {
         await succeedCreateReply(3, 1, "hello world2", "C", 4);
     });
 
-    it("fail createReply to a non existant tweet", async () => {
+    it("fail createReply to a non existing tweet", async () => {
         const response = await createReply("reply tweet2", 20);
+        expect(response.body.errors).to.has.length(1);
+        expect(response.body.errors[0]).to.include({
+            statusCode: 404,
+            message: "No tweet was found with that id!",
+        });
+    });
+
+    it("delete tweet", async () => {
+        const tweet = await Tweet.findByPk(4);
+        expect(tweet).to.be.not.null;
+        const response = await deleteTweet(4);
+        expect(response.body.data.deleteTweet).to.be.equal(
+            "Successfully deleted!"
+        );
+        const tweet2 = await Tweet.findByPk(4);
+        expect(tweet2).to.be.null;
+    });
+
+    it("fail delete tweet to non existing tweet", async () => {
+        const response = await deleteTweet(20);
         expect(response.body.errors).to.has.length(1);
         expect(response.body.errors[0]).to.include({
             statusCode: 404,

@@ -26,7 +26,7 @@ const addTweetInDataBase = async (
             state,
             mediaURLs,
             repliedToTweet,
-            threadTweet
+            threadTweet,
         },
         { transaction }
     );
@@ -58,6 +58,7 @@ export default {
             });
             return tweet;
         },
+
         createReply: async (
             parent: any,
             args: any,
@@ -88,6 +89,26 @@ export default {
                 return tweet;
             });
             return tweet;
+        },
+
+        deleteTweet: async (
+            parent: any,
+            args: any,
+            context: any,
+            info: any
+        ) => {
+            const id = args.id
+            const tweet = await Tweet.findByPk(id)
+            if(!tweet) {
+                const error: any = new Error(
+                    "No tweet was found with that id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+            await tweet.destroy()
+            return "Successfully deleted!"
+
         },
     },
 };

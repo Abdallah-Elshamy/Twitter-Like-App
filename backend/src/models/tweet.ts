@@ -11,6 +11,7 @@ import {
     HasOne,
     BelongsToMany,
     DataType,
+    Default,
 } from "sequelize-typescript";
 import User from "./user";
 import Likes from "./likes";
@@ -40,9 +41,10 @@ class Tweet extends Model {
     @Column(DataType.TEXT)
     text!: string;
 
-    @AllowNull(true)
-    @Column(DataType.STRING)
-    media?: string;
+    @AllowNull(false)
+    @Default([])
+    @Column(DataType.ARRAY(DataType.STRING))
+    mediaURLs!: string[];
 
     @AllowNull(false)
     @Column(DataType.STRING)

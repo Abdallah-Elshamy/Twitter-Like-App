@@ -19,7 +19,8 @@
     "graphql-fields": "^2.0.3",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.3",
-    "sequelize": "^6.3.5"
+    "sequelize": "^6.3.5",
+    "validator": "^13.5.2"
   },
   "devDependencies": {
     "@types/chai": "^4.2.14",

@@ -165,6 +165,7 @@ const getTweet = async (id: number, likesPage: number, repliesPage: number) => {
                         repliedToTweet{
                             id
                         }
+                        isLiked
                     }
                 }
             `,
@@ -443,16 +444,29 @@ describe("tweet-resolvers", (): void => {
     });
 
     it("get thread tweet", async () => {
-        const resOriginalTweet = await createTweet("test")
-        const resReplyTweet = await createReply("reply1", resOriginalTweet.body.data.createTweet.id)
-        await createReply("reply2", resReplyTweet.body.data.createReply.id)
+        const resOriginalTweet = await createTweet("test");
+        const resReplyTweet = await createReply(
+            "reply1",
+            resOriginalTweet.body.data.createTweet.id
+        );
+        await createReply("reply2", resReplyTweet.body.data.createReply.id);
         const response = await getTweet(34, 1, 1);
-        expect(response.body.data.tweet.threadTweet.id).to.be.equal('32')
+        expect(response.body.data.tweet.threadTweet.id).to.be.equal("32");
     });
 
     it("get replied to tweet", async () => {
         const response = await getTweet(34, 1, 1);
-        expect(response.body.data.tweet.repliedToTweet.id).to.be.equal('33')
+        expect(response.body.data.tweet.repliedToTweet.id).to.be.equal("33");
+    });
+
+    it("get is liked", async () => {
+        const tweet = await Tweet.findByPk(34);
+        const user = await User.findByPk(1);
+        await user?.$add("likes", tweet!);
+        const response = await getTweet(34, 1, 1);
+        expect(response.body.data.tweet.isLiked).to.be.true;
+        const response2 = await getTweet(33, 1, 1);
+        expect(response2.body.data.tweet.isLiked).to.be.false;
     });
 
     after(async () => {

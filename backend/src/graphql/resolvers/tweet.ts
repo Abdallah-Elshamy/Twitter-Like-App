@@ -1,4 +1,4 @@
-import { Tweet } from "../../models";
+import { Tweet, Likes } from "../../models";
 import { tweetValidator } from "../../validators";
 import db from "../../db";
 import { Transaction } from "sequelize";
@@ -178,10 +178,19 @@ export default {
             return parent.$count("replies");
         },
         threadTweet: async (parent: Tweet) => {
-            return parent.$get('thread')
+            return parent.$get("thread");
         },
-        repliedToTweet: async(parent: Tweet) => {
-            return parent.$get('repliedTo')
-        }
+        repliedToTweet: async (parent: Tweet) => {
+            return parent.$get("repliedTo");
+        },
+        isLiked: async (parent: Tweet) => {
+            const like = await Likes.findOne({
+                where: {
+                    userId: parent.userId,
+                    tweetId: parent.id,
+                },
+            });
+            return like !== null;
+        },
     },
 };

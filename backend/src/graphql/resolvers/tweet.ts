@@ -38,9 +38,9 @@ const addTweetInDataBase = async (
 export default {
     Query: {
         tweet: async (parent: any, args: any, context: any, info: any) => {
-            const id = args.id
-            const tweet = await Tweet.findByPk(id)
-            if(!tweet) {
+            const id = args.id;
+            const tweet = await Tweet.findByPk(id);
+            if (!tweet) {
                 const error: any = new Error(
                     "No tweet was found with that id!"
                 );
@@ -132,6 +132,11 @@ export default {
             }
             await tweet.destroy();
             return "Successfully deleted!";
+        },
+    },
+    Tweet: {
+        user: (parent: Tweet) => {
+            return parent.$get("user");
         },
     },
 };

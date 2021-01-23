@@ -125,7 +125,7 @@ const deleteTweet = async (id: number) => {
         });
 };
 
-const getTweet = async(id: number) => {
+const getTweet = async (id: number) => {
     return await request(app)
         .post("/graphql")
         .send({
@@ -136,13 +136,17 @@ const getTweet = async(id: number) => {
                         text
                         state
                         mediaURLs
-                        createdAt
-                        updatedAt
+                        user{
+                            id,
+                            name,
+                            userName,
+                            email
+                        }
                     }
                 }
-            `
-        })
-}
+            `,
+        });
+};
 
 describe("tweet-resolvers", (): void => {
     before(async () => {
@@ -240,7 +244,7 @@ describe("tweet-resolvers", (): void => {
         const rTweet = await Tweet.create({
             text: "retweet tweet",
             userId: 1,
-            state: "R"
+            state: "R",
         });
         const response = await createReply("reply tweet4", rTweet.id);
         expect(response.body.errors).to.has.length(1);
@@ -279,18 +283,22 @@ describe("tweet-resolvers", (): void => {
         });
     });
 
-    it("get tweet query main fields by id", async() => {
+    it("get tweet query all fields", async () => {
         const response = await getTweet(3);
-        console.log(response)
-        expect(response.body.data.tweet).to.include.keys([
-            'id',
-            'text',
-            'state',
-            'mediaURLs',
-            'createdAt',
-            'updatedAt'
-        ])
-    })
+        console.log(response);
+        expect(response.body.data.tweet).to.include({
+            id: "3",
+            text: "hello world",
+            state: "C",
+        });
+        expect(response.body.data.tweet.mediaURLs).to.has.length(0);
+        expect(response.body.data.tweet.user).to.include({
+            id: "1",
+            name: "Test",
+            userName: "test123",
+            email: "test@gmail.com",
+        });
+    });
 
     after(async () => {
         await server.close();

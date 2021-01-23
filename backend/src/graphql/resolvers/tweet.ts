@@ -76,6 +76,13 @@ export default {
                 error.statusCode = 404;
                 throw error;
             }
+            if (repliedToTweet.state === "R") {
+                const error: any = new Error(
+                    "Can't reply to or like a retweeted tweet!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
             const tweet = await db.transaction(async (transaction) => {
                 const tweet = await addTweetInDataBase(
                     text,

@@ -217,6 +217,20 @@ describe("tweet-resolvers", (): void => {
         expect(tweet?.threadTweet).to.be.null;
     });
 
+    it("fail createReply to a retweeted tweet", async () => {
+        const rTweet = await Tweet.create({
+            text: "retweet tweet",
+            userId: 1,
+            state: "R"
+        });
+        const response = await createReply("reply tweet4", rTweet.id);
+        expect(response.body.errors).to.has.length(1);
+        expect(response.body.errors[0]).to.include({
+            statusCode: 422,
+            message: "Can't reply to or like a retweeted tweet!",
+        });
+    });
+
     it("fail createReply to a non existing tweet", async () => {
         const response = await createReply("reply tweet2", 20);
         expect(response.body.errors).to.has.length(1);

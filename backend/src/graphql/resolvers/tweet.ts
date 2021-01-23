@@ -183,10 +183,11 @@ export default {
         repliedToTweet: async (parent: Tweet) => {
             return parent.$get("repliedTo");
         },
-        isLiked: async (parent: Tweet) => {
+        isLiked: async (parent: Tweet, args: any, context: any) => {
+            //add logged in condition here and return null if no logged in user
             const like = await Likes.findOne({
                 where: {
-                    userId: parent.userId,
+                    userId: 1, //this will be replaced with real logged in user
                     tweetId: parent.id,
                 },
             });

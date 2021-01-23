@@ -37,7 +37,18 @@ const addTweetInDataBase = async (
 
 export default {
     Query: {
-        tweet: async (parent: any, args: any, context: any, info: any) => {},
+        tweet: async (parent: any, args: any, context: any, info: any) => {
+            const id = args.id
+            const tweet = await Tweet.findByPk(id)
+            if(!tweet) {
+                const error: any = new Error(
+                    "No tweet was found with that id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+            return tweet;
+        },
     },
     Mutation: {
         createTweet: async (

@@ -125,6 +125,25 @@ const deleteTweet = async (id: number) => {
         });
 };
 
+const getTweet = async(id: number) => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+                query {
+                    tweet(id: ${id}){
+                        id
+                        text
+                        state
+                        mediaURLs
+                        createdAt
+                        updatedAt
+                    }
+                }
+            `
+        })
+}
+
 describe("tweet-resolvers", (): void => {
     before(async () => {
         server = await serverPromise;
@@ -259,6 +278,19 @@ describe("tweet-resolvers", (): void => {
             message: "No tweet was found with that id!",
         });
     });
+
+    it("get tweet query main fields by id", async() => {
+        const response = await getTweet(3);
+        console.log(response)
+        expect(response.body.data.tweet).to.include.keys([
+            'id',
+            'text',
+            'state',
+            'mediaURLs',
+            'createdAt',
+            'updatedAt'
+        ])
+    })
 
     after(async () => {
         await server.close();

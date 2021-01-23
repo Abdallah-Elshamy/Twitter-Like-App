@@ -174,5 +174,8 @@ export default {
                 },
             };
         },
+        repliesCount: async (parent: Tweet) => {
+            return parent.$count("replies");
+        },
     },
 };

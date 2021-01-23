@@ -177,5 +177,8 @@ export default {
         repliesCount: async (parent: Tweet) => {
             return parent.$count("replies");
         },
+        threadTweet: async (parent: Tweet) => {
+            return parent.$get('thread')
+        }
     },
 };

@@ -141,23 +141,38 @@ export default {
             return parent.$get("user");
         },
         originalTweet: (parent: Tweet) => {
-            return parent.$get('originalTweet')
+            return parent.$get("originalTweet");
         },
         likes: (parent: Tweet, args: any) => {
             return {
                 users: () => {
-                    return parent.$get('likes', {
+                    return parent.$get("likes", {
                         offset: ((args.page || 1) - 1) * PAGE_SIZE,
                         limit: PAGE_SIZE,
-                        order: [
-                            ['createdAt', 'DESC']
-                        ]
-                    })
+                        order: [["createdAt", "DESC"]],
+                    });
                 },
                 totalCount: () => {
-                    return parent.$count('likes')
-                }
-            }
-        }
+                    return parent.$count("likes");
+                },
+            };
+        },
+        likesCount: async (parent: Tweet) => {
+            return parent.$count("likes");
+        },
+        replies: async (parent: Tweet, args: any) => {
+            return {
+                tweets: () => {
+                    return parent.$get("replies", {
+                        offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                        order: [["createdAt", "ASC"]],
+                    });
+                },
+                totalCount: () => {
+                    return parent.$count("replies");
+                },
+            };
+        },
     },
 };

@@ -125,7 +125,7 @@ const deleteTweet = async (id: number) => {
         });
 };
 
-const getTweet = async (id: number, likesPage: number) => {
+const getTweet = async (id: number, likesPage: number, repliesPage: number) => {
     return await request(app)
         .post("/graphql")
         .send({
@@ -151,31 +151,54 @@ const getTweet = async (id: number, likesPage: number) => {
                             }
                             totalCount
                         }
+                        likesCount
+                        replies(page: ${repliesPage}) {
+                            tweets{
+                                id
+                            }
+                            totalCount
+                        }
                     }
                 }
             `,
         });
 };
 
-const createUsers = async() => {
-    const users = []
-    for(let i = 0; i<30; i++) {
-        users.push(await User.create({
-            name: `Test${i}`,
-            userName: `test${i}`,
-            email: `test${i}@gmail.com`,
-            hashedPassword: `123456789`
-        }))
+const createUsers = async () => {
+    const users = [];
+    for (let i = 0; i < 30; i++) {
+        users.push(
+            await User.create({
+                name: `Test${i}`,
+                userName: `test${i}`,
+                email: `test${i}@gmail.com`,
+                hashedPassword: `123456789`,
+            })
+        );
     }
     return users;
-}
+};
 
-const addLikesToTweet = async(users: User[], tweet: Tweet) => {
-    const usersPromises = users.map(async(user) => {
-        return await user.$add('likes', tweet)
-    })
-    return await Promise.all(usersPromises)
-}
+const addLikesToTweet = async (users: User[], tweet: Tweet) => {
+    const usersPromises = users.map(async (user) => {
+        return await user.$add("likes", tweet);
+    });
+    return await Promise.all(usersPromises);
+};
+
+const createTweets = async () => {
+    const tweets = [];
+    for (let i = 0; i < 24; i++) {
+        tweets.push(
+            await Tweet.create({
+                text: `reply tweet${i}`,
+                state: "C",
+                userId: 3,
+            })
+        );
+    }
+    return tweets;
+};
 
 describe("tweet-resolvers", (): void => {
     before(async () => {
@@ -307,54 +330,90 @@ describe("tweet-resolvers", (): void => {
         });
     });
 
-    it("get tweet query all non relational fields + user + originalTweet + likes", async () => {
+    it("get tweet query", async () => {
         const tweet = await Tweet.findByPk(3);
-        const users = await User.findAll()
-        await addLikesToTweet(users, tweet!)
-        const response = await getTweet(3, 1);
+        const users = await User.findAll();
+        await addLikesToTweet(users, tweet!);
+        const response = await getTweet(3, 1, 1);
         expect(response.body.data.tweet).to.include({
             id: "3",
             text: "hello world",
             state: "C",
         });
         expect(response.body.data.tweet.mediaURLs).to.has.length(0);
+    });
+
+    it("get tweet user", async () => {
+        const response = await getTweet(3, 1, 1);
         expect(response.body.data.tweet.user).to.include({
             id: "1",
             name: "Test0",
             userName: "test0",
             email: "test0@gmail.com",
         });
+    });
+
+    it("get tweet original tweet", async () => {
+        const response = await getTweet(3, 1, 1);
         expect(response.body.data.tweet.originalTweet).to.include({
             id: "3",
         });
-        expect(response.body.data.tweet.likes).to.include.keys([
-            'users',
-            'totalCount'
-        ]);
-        
-        
     });
 
-    it("get tweet likes with paging", async() => {
-        let response = await getTweet(3, 1);
-        expect(response.body.data.tweet.likes.totalCount).to.be.equal(30)
-        expect(response.body.data.tweet.likes.users).to.has.length(10)
-        expect(response.body.data.tweet.likes.users[0].id).to.be.equal('30')
-        expect(response.body.data.tweet.likes.users[9].id).to.be.equal('21')
-        response = await getTweet(3, 2);
-        expect(response.body.data.tweet.likes.totalCount).to.be.equal(30)
-        expect(response.body.data.tweet.likes.users).to.has.length(10)
-        expect(response.body.data.tweet.likes.users[0].id).to.be.equal('20')
-        expect(response.body.data.tweet.likes.users[9].id).to.be.equal('11')
-        response = await getTweet(3, 3);
-        expect(response.body.data.tweet.likes.totalCount).to.be.equal(30)
-        expect(response.body.data.tweet.likes.users).to.has.length(10)
-        expect(response.body.data.tweet.likes.users[0].id).to.be.equal('10')
-        expect(response.body.data.tweet.likes.users[9].id).to.be.equal('1')
-        response = await getTweet(3, 4);
-        expect(response.body.data.tweet.likes.totalCount).to.be.equal(30)
-        expect(response.body.data.tweet.likes.users).to.has.length(0)
-    }) 
+    it("get tweet likes with paging", async () => {
+        let response = await getTweet(3, 1, 1);
+        expect(response.body.data.tweet.likes.totalCount).to.be.equal(30);
+        expect(response.body.data.tweet.likes.users).to.has.length(10);
+        expect(response.body.data.tweet.likes.users[0].id).to.be.equal("30");
+        expect(response.body.data.tweet.likes.users[9].id).to.be.equal("21");
+        response = await getTweet(3, 2, 1);
+        expect(response.body.data.tweet.likes.totalCount).to.be.equal(30);
+        expect(response.body.data.tweet.likes.users).to.has.length(10);
+        expect(response.body.data.tweet.likes.users[0].id).to.be.equal("20");
+        expect(response.body.data.tweet.likes.users[9].id).to.be.equal("11");
+        response = await getTweet(3, 3, 1);
+        expect(response.body.data.tweet.likes.totalCount).to.be.equal(30);
+        expect(response.body.data.tweet.likes.users).to.has.length(10);
+        expect(response.body.data.tweet.likes.users[0].id).to.be.equal("10");
+        expect(response.body.data.tweet.likes.users[9].id).to.be.equal("1");
+        response = await getTweet(3, 4, 1);
+        expect(response.body.data.tweet.likes.totalCount).to.be.equal(30);
+        expect(response.body.data.tweet.likes.users).to.has.length(0);
+    });
+
+    it("get tweet likes count", async () => {
+        const response = await getTweet(3, 1, 1);
+        expect(response.body.data.tweet.likesCount).to.be.equal(30);
+    });
+
+    it("get tweet replies", async () => {
+        const tweet = await Tweet.create({
+            text: "hello world",
+            userId: 2,
+            state: "O",
+            originalTweetId: 7
+        });
+        const tweets = await createTweets();
+        await tweet.$add("replies", tweets);
+        let response = await getTweet(7, 1, 1);
+        let replies = response.body.data.tweet.replies;
+        expect(replies.totalCount).to.be.equal(24);
+        expect(replies.tweets).to.has.length(10);
+        expect(replies.tweets[0].id).to.be.equal("8");
+        expect(replies.tweets[9].id).to.be.equal("17");
+        response = await getTweet(7, 1, 2);
+        replies = response.body.data.tweet.replies;
+        expect(replies.totalCount).to.be.equal(24);
+        expect(replies.tweets).to.has.length(10);
+        expect(replies.tweets[0].id).to.be.equal("18");
+        expect(replies.tweets[9].id).to.be.equal("27");
+        response = await getTweet(7, 1, 3);
+        replies = response.body.data.tweet.replies;
+        expect(replies.totalCount).to.be.equal(24);
+        expect(replies.tweets).to.has.length(4);
+        expect(replies.tweets[0].id).to.be.equal("28");
+        expect(replies.tweets[3].id).to.be.equal("31");
+    });
 
     after(async () => {
         await server.close();

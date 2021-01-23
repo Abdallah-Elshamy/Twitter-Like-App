@@ -138,5 +138,8 @@ export default {
         user: (parent: Tweet) => {
             return parent.$get("user");
         },
+        originalTweet: (parent: Tweet) => {
+            return parent.$get('originalTweet')
+        }
     },
 };

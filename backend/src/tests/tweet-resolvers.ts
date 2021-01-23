@@ -142,6 +142,9 @@ const getTweet = async (id: number) => {
                             userName,
                             email
                         }
+                        originalTweet{
+                            id
+                        }
                     }
                 }
             `,
@@ -283,7 +286,7 @@ describe("tweet-resolvers", (): void => {
         });
     });
 
-    it("get tweet query all fields", async () => {
+    it("get tweet query all non relational fields + user + originalTweet", async () => {
         const response = await getTweet(3);
         console.log(response);
         expect(response.body.data.tweet).to.include({
@@ -297,6 +300,9 @@ describe("tweet-resolvers", (): void => {
             name: "Test",
             userName: "test123",
             email: "test@gmail.com",
+        });
+        expect(response.body.data.tweet.originalTweet).to.include({
+            id: "3",
         });
     });
 

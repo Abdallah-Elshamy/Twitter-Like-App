@@ -162,6 +162,9 @@ const getTweet = async (id: number, likesPage: number, repliesPage: number) => {
                         threadTweet{
                             id
                         }
+                        repliedToTweet{
+                            id
+                        }
                     }
                 }
             `,
@@ -445,6 +448,11 @@ describe("tweet-resolvers", (): void => {
         await createReply("reply2", resReplyTweet.body.data.createReply.id)
         const response = await getTweet(34, 1, 1);
         expect(response.body.data.tweet.threadTweet.id).to.be.equal('32')
+    });
+
+    it("get replied to tweet", async () => {
+        const response = await getTweet(34, 1, 1);
+        expect(response.body.data.tweet.repliedToTweet.id).to.be.equal('33')
     });
 
     after(async () => {

@@ -179,6 +179,9 @@ export default {
         },
         threadTweet: async (parent: Tweet) => {
             return parent.$get('thread')
+        },
+        repliedToTweet: async(parent: Tweet) => {
+            return parent.$get('repliedTo')
         }
     },
 };

@@ -36,7 +36,9 @@ const addTweetInDataBase = async (
 };
 
 export default {
-    Query: {},
+    Query: {
+        tweet: async (parent: any, args: any, context: any, info: any) => {},
+    },
     Mutation: {
         createTweet: async (
             parent: any,

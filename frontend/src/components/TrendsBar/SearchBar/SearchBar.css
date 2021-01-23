@@ -1,4 +1,3 @@
-@import '../../../styles/color-schema.css';
 
 .search-bar, .search-input {
   background-color: var(--extra-light);
@@ -9,7 +8,8 @@
 }
 .search-bar {
   
-  border: 1px solid var(--super-light) 
+  border: 1px solid var(--extra-light) ;
+
 }
 
 

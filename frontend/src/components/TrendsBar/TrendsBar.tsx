@@ -1,7 +1,10 @@
-import React, { Fragment } from 'react';
 import CurrentTrends from './CurrentTrends/CurrentTrends';
 import FollowRecommendations from './FollowRecommendations/FollowRecommendations';
 import SearchBar from './SearchBar/SearchBar';
+import Footer from './Footer/Footer'
+
+import './TrendsBar.css'
+
 type Props = {
 
 }
@@ -13,6 +16,8 @@ const TrendsBar: React.FC<Props> = (Props) => {
       <SearchBar />
       <FollowRecommendations />
       <CurrentTrends />
+      <Footer/>
+      
     </div>
   )
 }

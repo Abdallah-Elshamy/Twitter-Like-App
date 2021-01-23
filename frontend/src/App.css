@@ -2,15 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --main-color: #1da1f2;
-  --main-black: #14171a;
-  --dark-grey: #657786;
-  --light-grey: #aab8c2;
-  --extra-light: #e1e8ed;
-  --super-light: #f5f8fa;
-  --disable-btn: #93cdf6;
-}
+@import './styles/color-schema.css';
 /*  class pf--sb */
 /* app main and globle style */
 /* .App {

@@ -19,7 +19,7 @@ const addTweetInDataBase = async (
         error.validators = validators;
         throw error;
     }
-    const tweet: any = await Tweet.create(
+    const tweet = await Tweet.create(
         {
             text,
             userId,
@@ -84,7 +84,10 @@ export default {
                     1,
                     transaction,
                     repliedToTweet.id,
-                    repliedToTweet.threadTweet || repliedToTweet.id
+                    repliedToTweet.threadTweet ||
+                        (repliedToTweet.state === "O"
+                            ? repliedToTweet.id
+                            : undefined)
                 );
                 return tweet;
             });

@@ -208,6 +208,15 @@ describe("tweet-resolvers", (): void => {
         await succeedCreateReply(3, 1, "hello world2", "C", 4);
     });
 
+    it("createReply to replyTweet with deleted thread tweet", async () => {
+        await Tweet.destroy({ where: { id: 1 } });
+        const response = await createReply("reply tweet3", 3);
+        const tweet = await Tweet.findByPk(5);
+        expect(tweet?.id).to.be.equal(5);
+        expect(tweet?.repliedToTweet).to.be.equal(3);
+        expect(tweet?.threadTweet).to.be.null;
+    });
+
     it("fail createReply to a non existing tweet", async () => {
         const response = await createReply("reply tweet2", 20);
         expect(response.body.errors).to.has.length(1);

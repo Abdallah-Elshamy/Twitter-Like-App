@@ -1,4 +1,4 @@
-import Validator from "validator";
+import validator from "validator";
 
 interface TweetInput {
     text: string;
@@ -9,7 +9,7 @@ const tweetValidator = (tweetInput: TweetInput) => {
     const { text, mediaURLs } = tweetInput;
     const validators: { message: string; value: string }[] = [];
     if (
-        !Validator.isLength(text, {
+        !validator.isLength(text, {
             min: 1,
             max: 280,
         })

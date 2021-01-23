@@ -3,6 +3,8 @@ import { tweetValidator } from "../../validators";
 import db from "../../db";
 import { Transaction } from "sequelize";
 
+const PAGE_SIZE = 10;
+
 const addTweetInDataBase = async (
     text: string,
     state: string,
@@ -140,6 +142,22 @@ export default {
         },
         originalTweet: (parent: Tweet) => {
             return parent.$get('originalTweet')
+        },
+        likes: (parent: Tweet, args: any) => {
+            return {
+                users: () => {
+                    return parent.$get('likes', {
+                        offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                        order: [
+                            ['createdAt', 'DESC']
+                        ]
+                    })
+                },
+                totalCount: () => {
+                    return parent.$count('likes')
+                }
+            }
         }
     },
 };

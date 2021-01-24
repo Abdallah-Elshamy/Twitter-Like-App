@@ -495,6 +495,20 @@ describe("tweet-resolvers", (): void => {
         expect(tweets.tweets).to.has.length(0);
     });
 
+    it("tweets query with likes filter", async () => {
+        let response = await getTweets(1, 1, "likes")
+        let tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(2);
+        expect(tweets.tweets).to.has.length(2);
+        expect(tweets.tweets[0].id).to.be.equal("34");
+        expect(tweets.tweets[1].id).to.be.equal("3"); 
+
+        response = await getTweets(1, 2, "likes")
+        tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(2);
+        expect(tweets.tweets).to.has.length(0);
+    });
+
     after(async () => {
         await server.close();
     });

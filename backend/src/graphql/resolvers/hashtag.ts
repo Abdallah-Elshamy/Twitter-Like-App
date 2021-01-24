@@ -12,7 +12,6 @@ export default {
                     "Empty query argument!"
                 );
                 error.statusCode = 422;
-                console.log(error.message);
                 throw error;
             }
             const hashtag: any = await Hashtag.findByPk(word);
@@ -21,7 +20,6 @@ export default {
                     "No hashtag found with this word!"
                 );
                 error.statusCode = 404;
-                console.log(error.message);
                 throw error;
             }
 

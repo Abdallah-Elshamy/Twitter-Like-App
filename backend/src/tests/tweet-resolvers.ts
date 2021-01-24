@@ -401,6 +401,15 @@ describe("tweet-resolvers", (): void => {
         expect(hashtags.hashtags).to.has.length(0);
     });
 
+    it("fail tweet query for a non existant tweet", async () => {
+        const response = await getTweet(100)
+        expect(response.body.errors).to.has.length(1);
+        expect(response.body.errors[0]).to.include({
+            statusCode: 404,
+            message: "No tweet was found with that id!",
+        });
+    });
+
     after(async () => {
         await server.close();
     });

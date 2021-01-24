@@ -67,7 +67,7 @@ export default {
                         return await user.$get("tweets", {
                             where: {
                                 state: {
-                                    [Op.not]: "C"
+                                    [Op.ne]: "C"
                                 }
                             },
                             order: [
@@ -95,13 +95,27 @@ export default {
                             limit: PAGE_SIZE,
                         })
                     }
+                    else if(filter === "media") {
+                        return await user.$get("tweets", {
+                            where: {
+                                mediaURLs: {
+                                    [Op.ne]: []
+                                }
+                            },
+                            order: [
+                                ["createdAt", "DESC"]
+                            ],
+                            offset: ((page || 1) - 1) * PAGE_SIZE,
+                            limit: PAGE_SIZE,
+                        })
+                    }
                 },
                 totalCount: async() => {
                     if(!filter) {
                         return await user.$count("tweets", {
                             where: {
                                 state: {
-                                    [Op.not]: "C"
+                                    [Op.ne]: "C"
                                 }
                             },
                         })
@@ -111,6 +125,15 @@ export default {
                     }
                     else if(filter === "likes") {
                         return await user.$count("likes")
+                    }
+                    else if(filter === "media") {
+                        return await user.$count("tweets", {
+                            where: {
+                                mediaURLs: {
+                                    [Op.ne]: []
+                                }
+                            }
+                        })
                     }
                 }
             }

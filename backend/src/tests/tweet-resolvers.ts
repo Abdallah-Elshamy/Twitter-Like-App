@@ -509,6 +509,19 @@ describe("tweet-resolvers", (): void => {
         expect(tweets.tweets).to.has.length(0);
     });
 
+    it("tweets query with media filter", async () => {
+        let response = await getTweets(1, 1, "media")
+        let tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(1);
+        expect(tweets.tweets).to.has.length(1);
+        expect(tweets.tweets[0].id).to.be.equal("2");
+
+        response = await getTweets(1, 2, "likes")
+        tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(2);
+        expect(tweets.tweets).to.has.length(0);
+    });
+
     after(async () => {
         await server.close();
     });

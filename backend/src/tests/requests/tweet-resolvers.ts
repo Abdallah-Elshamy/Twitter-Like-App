@@ -132,13 +132,20 @@ export const getTweet = async (
         });
 };
 
-export const getTweets = async (userId: number, page: number = 1) => {
-    return await request(app).post("/graphql").send({
-        query: `
+export const getTweets = async (
+    userId: number,
+    page: number = 1,
+    filter: string | null = ""
+) => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
             query {
                 tweets(
                     userId: ${userId}
                     page: ${page}
+                    filter: "${filter}"
                 ){
                     tweets{
                         id
@@ -148,5 +155,5 @@ export const getTweets = async (userId: number, page: number = 1) => {
                 }
             }    
          `,
-    });
+        });
 };

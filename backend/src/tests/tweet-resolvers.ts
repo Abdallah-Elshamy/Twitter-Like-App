@@ -461,6 +461,40 @@ describe("tweet-resolvers", (): void => {
         expect(tweets.tweets).to.has.length(0);
     });
 
+    it("tweets query with replies&tweets filter", async () => {
+        let response = await getTweets(10, 1, "replies&tweets")
+        let tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(30);
+        expect(tweets.tweets).to.has.length(10);
+        expect(tweets.tweets[0].id).to.be.equal("64");
+        expect(tweets.tweets[0].state).to.be.equal("C");
+        expect(tweets.tweets[9].id).to.be.equal("55");
+        expect(tweets.tweets[9].state).to.be.equal("Q");  
+
+        response = await getTweets(10, 2, "replies&tweets")
+        tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(30);
+        expect(tweets.tweets).to.has.length(10);
+        expect(tweets.tweets[0].id).to.be.equal("54");
+        expect(tweets.tweets[0].state).to.be.equal("R");
+        expect(tweets.tweets[9].id).to.be.equal("45");
+        expect(tweets.tweets[9].state).to.be.equal("R");
+        
+        response = await getTweets(10, 3, "replies&tweets")
+        tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(30);
+        expect(tweets.tweets).to.has.length(10);
+        expect(tweets.tweets[0].id).to.be.equal("44");
+        expect(tweets.tweets[0].state).to.be.equal("O");
+        expect(tweets.tweets[9].id).to.be.equal("35");
+        expect(tweets.tweets[9].state).to.be.equal("O");
+        
+        response = await getTweets(10, 4, "replies&tweets")
+        tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(30);
+        expect(tweets.tweets).to.has.length(0);
+    });
+
     after(async () => {
         await server.close();
     });

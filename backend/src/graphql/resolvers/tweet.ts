@@ -63,27 +63,43 @@ export default {
             }
             return {
                 tweets: async() => {
-                    return await user.$get("tweets", {
-                        where: {
-                            state: {
-                                [Op.not]: "C"
-                            }
-                        },
-                        order: [
-                            ["createdAt", "DESC"]
-                        ],
-                        offset: ((page || 1) - 1) * PAGE_SIZE,
-                        limit: PAGE_SIZE,
-                    })
+                    if(!filter) {
+                        return await user.$get("tweets", {
+                            where: {
+                                state: {
+                                    [Op.not]: "C"
+                                }
+                            },
+                            order: [
+                                ["createdAt", "DESC"]
+                            ],
+                            offset: ((page || 1) - 1) * PAGE_SIZE,
+                            limit: PAGE_SIZE,
+                        })
+                    }
+                    else if(filter === "replies&tweets") {
+                        return await user.$get("tweets", {
+                            order: [
+                                ["createdAt", "DESC"]
+                            ],
+                            offset: ((page || 1) - 1) * PAGE_SIZE,
+                            limit: PAGE_SIZE,
+                        })
+                    }
                 },
                 totalCount: async() => {
-                    return await user.$count("tweets", {
-                        where: {
-                            state: {
-                                [Op.not]: "C"
-                            }
-                        },
-                    })
+                    if(!filter) {
+                        return await user.$count("tweets", {
+                            where: {
+                                state: {
+                                    [Op.not]: "C"
+                                }
+                            },
+                        })
+                    }
+                    else if(filter === "replies&tweets") {
+                        return await user.$count("tweets")
+                    }
                 }
             }
             

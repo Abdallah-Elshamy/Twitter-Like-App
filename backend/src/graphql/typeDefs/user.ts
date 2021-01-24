@@ -1,8 +1,11 @@
 import { gql } from "apollo-server-express";
 
 export default gql`
-    extend type Query {
-        bye: String!
+    
+    extend type Mutation { 
+        updateUser(id: ID!, userInput: UserUpdateInput!) : User! 
+        unlike(tweetId: ID!): Boolean
+        unfollow(userId: ID!): Boolean
     }
 
     type User {

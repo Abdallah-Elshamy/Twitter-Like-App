@@ -1,8 +1,12 @@
 import { gql } from "apollo-server-express";
 
 export default gql`
+    extend type Query {
+        hashtag(word: String!): Hashtag
+    }
+
     type Hashtag {
-        name: String!
+        word: String!
         tweets(page: Int): PaginatedTweets
         createdAt: String
         updatedAt: String

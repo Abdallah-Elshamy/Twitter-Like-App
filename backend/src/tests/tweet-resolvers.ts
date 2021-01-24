@@ -4,48 +4,17 @@ import app, { serverPromise } from "../app";
 import { User, Tweet, Hashtag } from "../models";
 import db from "../db";
 
+import {
+    createTweet,
+    createTweetWithMedia,
+    createReply,
+    deleteTweet,
+    getTweet,
+} from "./requests/tweet-resolvers";
+
 let server: any;
 
-const createTweet = async (text: any) => {
-    return await request(app)
-        .post("/graphql")
-        .send({
-            query: `
-            mutation {
-                createTweet(tweet: {
-                    text: "${text}"
-                }){
-                    id
-                    text
-                    state
-                    mediaURLs
-                }
-            }
-        `,
-        });
-};
-
-const createTweetWithMedia = async (text: any) => {
-    return await request(app)
-        .post("/graphql")
-        .send({
-            query: `
-            mutation {
-                createTweet(tweet: {
-                    text: "${text}"
-                    mediaURLs: ["a","b","c","d"]
-                }){
-                    id
-                    text
-                    state
-                    mediaURLs
-                }
-            }
-        `,
-        });
-};
-
-const failcreateTweetValidation = async (
+const failCreateTweetValidation = async (
     text: string,
     message: string,
     value: string
@@ -61,28 +30,6 @@ const failcreateTweetValidation = async (
         message,
         value,
     });
-};
-
-const createReply = async (text: any, repliedToTweet: any) => {
-    return await request(app)
-        .post("/graphql")
-        .send({
-            query: `
-            mutation {
-                createReply(
-                    tweet: {
-                        text: "${text}"
-                    }
-                    repliedToTweet: ${repliedToTweet}
-                ){
-                    id
-                    text
-                    state
-                    mediaURLs
-                }
-            }
-        `,
-        });
 };
 
 const succeedCreateReply = async (
@@ -111,76 +58,6 @@ const succeedCreateReply = async (
         threadTweet,
     });
     expect(response.body.data.createReply.mediaURLs).to.has.length(0);
-};
-
-const deleteTweet = async (id: number) => {
-    return await request(app)
-        .post("/graphql")
-        .send({
-            query: `
-                mutation {
-                    deleteTweet(id: ${id})
-                }
-            `,
-        });
-};
-
-const getTweet = async (
-    id: number,
-    likesPage: number,
-    repliesPage: number,
-    hashtagPage: number
-) => {
-    return await request(app)
-        .post("/graphql")
-        .send({
-            query: `
-                query {
-                    tweet(id: ${id}){
-                        id
-                        text
-                        state
-                        mediaURLs
-                        user{
-                            id,
-                            name,
-                            userName,
-                            email
-                        }
-                        originalTweet{
-                            id
-                        }
-                        likes(page: ${likesPage}) {
-                            users{
-                                id
-                            }
-                            totalCount
-                        }
-                        likesCount
-                        replies(page: ${repliesPage}) {
-                            tweets{
-                                id
-                            }
-                            totalCount
-                        }
-                        repliesCount
-                        threadTweet{
-                            id
-                        }
-                        repliedToTweet{
-                            id
-                        }
-                        isLiked
-                        hashtags(page: ${hashtagPage}) {
-                            hashtags{
-                                word
-                            }
-                            totalCount
-                        }
-                    }
-                }
-            `,
-        });
 };
 
 const createUsers = async () => {
@@ -265,7 +142,7 @@ describe("tweet-resolvers", (): void => {
     });
 
     it("fail createTweet with text less than 1 char", async () => {
-        await failcreateTweetValidation(
+        await failCreateTweetValidation(
             "",
             "text length must be between 1 to 280 chars!",
             "text"
@@ -273,7 +150,7 @@ describe("tweet-resolvers", (): void => {
     });
 
     it("fail createTweet with text more than 280 char", async () => {
-        await failcreateTweetValidation(
+        await failCreateTweetValidation(
             ".........................................................................................................................................................................................................................................................................................",
             "text length must be between 1 to 280 chars!",
             "text"

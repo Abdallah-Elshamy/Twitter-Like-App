@@ -51,6 +51,7 @@ export default {
             }
             return tweet;
         },
+        tweets: async (parent: any, args: any, context: any, info: any) => {},
     },
     Mutation: {
         createTweet: async (
@@ -145,7 +146,7 @@ export default {
         },
         likes: async (parent: Tweet, args: any) => {
             return {
-                users: async() => {
+                users: async () => {
                     return await parent.$get("likes", {
                         offset: ((args.page || 1) - 1) * PAGE_SIZE,
                         limit: PAGE_SIZE,
@@ -162,14 +163,14 @@ export default {
         },
         replies: async (parent: Tweet, args: any) => {
             return {
-                tweets: async() => {
+                tweets: async () => {
                     return await parent.$get("replies", {
                         offset: ((args.page || 1) - 1) * PAGE_SIZE,
                         limit: PAGE_SIZE,
                         order: [["createdAt", "ASC"]],
                     });
                 },
-                totalCount: async() => {
+                totalCount: async () => {
                     return await parent.$count("replies");
                 },
             };

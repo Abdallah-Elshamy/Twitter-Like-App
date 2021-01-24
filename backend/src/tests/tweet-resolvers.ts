@@ -531,6 +531,15 @@ describe("tweet-resolvers", (): void => {
         });
     });
 
+    it("fail tweets query for a non valid filter", async () => {
+        const response = await getTweets(1, 2 ,"test");
+        expect(response.body.errors).to.has.length(1);
+        expect(response.body.errors[0]).to.include({
+            statusCode: 422,
+            message: "Filter must be null or media or replies&tweets or likes only!",
+        });
+    });
+
     after(async () => {
         await server.close();
     });

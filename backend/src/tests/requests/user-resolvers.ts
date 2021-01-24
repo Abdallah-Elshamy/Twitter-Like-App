@@ -37,7 +37,7 @@ export const createUserWithImage = async (
                 createUser(user: {
                     userName: "${userName}",
                     name: "${name}",
-                    email: "bilbo_baggins@shire.com",
+                    email: "frodo_baggins@shire.com",
                     password: "myPrecious",
                     imageURL: "https://picsum.photos/200/300"
                 }){
@@ -63,14 +63,13 @@ export const createUserWithBio = async (
                 createUser(user: {
                     userName: "${userName}",
                     name: "${name}",
-                    email: "bilbo_baggins@shire.com",
+                    email: "gandalf@shire.com",
                     password: "myPrecious",
                     bio: "RUN YOU FOOLS!"
                 }){
                     id,
                     userName,
                     name,
-                    image,
                     bio
                 }
             }
@@ -90,8 +89,8 @@ export const createUserWithCoverImage = async (
                 createUser(user: {
                     userName: "${userName}",
                     name: "${name}",
-                    email: "bilbo_baggins@shire.com",
-                    password: "myPrecious",
+                    email: "roronoa_zoro@grandline.com",
+                    password: "strawhat",
                     coverImageURL: "https://picsum.photos/200/300"
                 }){
                     id,
@@ -116,9 +115,9 @@ export const createUserComplete = async (
                 createUser(user: {
                     userName: "${userName}",
                     name: "${name}",
-                    email: "bilbo_baggins@shire.com",
-                    password: "myPrecious",
-                    bio: "RUN YOU FOOLS!",
+                    email: "monkey_d_luffy@grandline.com",
+                    password: "strawhat",
+                    bio: "But a hero is a guy who gives out the meat to everyone else. I want to eat the damn meat!",
                     imageURL: "https://picsum.photos/200/300",
                     coverImageURL: "https://picsum.photos/200/300"
                     
@@ -126,7 +125,6 @@ export const createUserComplete = async (
                     id,
                     userName,
                     name,
-                    image,
                     bio,
                     imageURL,
                     coverImageURL

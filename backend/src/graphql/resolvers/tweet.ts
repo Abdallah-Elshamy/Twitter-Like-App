@@ -137,51 +137,64 @@ export default {
         },
     },
     Tweet: {
-        user: (parent: Tweet) => {
-            return parent.$get("user");
+        user: async (parent: Tweet) => {
+            return await parent.$get("user");
         },
-        originalTweet: (parent: Tweet) => {
-            return parent.$get("originalTweet");
+        originalTweet: async (parent: Tweet) => {
+            return await parent.$get("originalTweet");
         },
-        likes: (parent: Tweet, args: any) => {
+        likes: async (parent: Tweet, args: any) => {
             return {
-                users: () => {
-                    return parent.$get("likes", {
+                users: async() => {
+                    return await parent.$get("likes", {
                         offset: ((args.page || 1) - 1) * PAGE_SIZE,
                         limit: PAGE_SIZE,
                         order: [["createdAt", "DESC"]],
                     });
                 },
-                totalCount: () => {
-                    return parent.$count("likes");
+                totalCount: async () => {
+                    return await parent.$count("likes");
                 },
             };
         },
         likesCount: async (parent: Tweet) => {
-            return parent.$count("likes");
+            return await parent.$count("likes");
         },
         replies: async (parent: Tweet, args: any) => {
             return {
-                tweets: () => {
-                    return parent.$get("replies", {
+                tweets: async() => {
+                    return await parent.$get("replies", {
                         offset: ((args.page || 1) - 1) * PAGE_SIZE,
                         limit: PAGE_SIZE,
                         order: [["createdAt", "ASC"]],
                     });
                 },
-                totalCount: () => {
-                    return parent.$count("replies");
+                totalCount: async() => {
+                    return await parent.$count("replies");
                 },
             };
         },
         repliesCount: async (parent: Tweet) => {
-            return parent.$count("replies");
+            return await parent.$count("replies");
         },
         threadTweet: async (parent: Tweet) => {
-            return parent.$get("thread");
+            return await parent.$get("thread");
+        },
+        hashtags: async (parent: Tweet, args: any) => {
+            return {
+                hashtags: async () => {
+                    return await parent.$get("hashtags", {
+                        offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                    });
+                },
+                totalCount: async () => {
+                    return await parent.$count("hashtags");
+                },
+            };
         },
         repliedToTweet: async (parent: Tweet) => {
-            return parent.$get("repliedTo");
+            return await parent.$get("repliedTo");
         },
         isLiked: async (parent: Tweet, args: any, context: any) => {
             //add logged in condition here and return null if no logged in user

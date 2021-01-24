@@ -10,6 +10,7 @@ import {
     createReply,
     deleteTweet,
     getTweet,
+    getTweets,
 } from "./requests/tweet-resolvers";
 
 let server: any;
@@ -82,17 +83,30 @@ const addLikesToTweet = async (users: User[], tweet: Tweet) => {
     return await Promise.all(usersPromises);
 };
 
-const createTweets = async () => {
+const createTweets = async (
+    userId: number = 3,
+    state: string = "C",
+    it: number = 24
+) => {
     const tweets = [];
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < it; i++) {
         tweets.push(
             await Tweet.create({
-                text: `reply tweet${i}`,
-                state: "C",
-                userId: 3,
+                text: `tweet${i}`,
+                state,
+                userId,
             })
         );
     }
+    return tweets;
+};
+
+const createDifferentTypesOfTweets = async () => {
+    const tweets = [];
+    tweets.push(...await createTweets(10, "O", 10));
+    tweets.push(...await createTweets(10, "R", 10));
+    tweets.push(...await createTweets(10, "Q", 4));
+    tweets.push(...await createTweets(10, "C", 6));
     return tweets;
 };
 
@@ -402,12 +416,49 @@ describe("tweet-resolvers", (): void => {
     });
 
     it("fail tweet query for a non existant tweet", async () => {
-        const response = await getTweet(100)
+        const response = await getTweet(100);
         expect(response.body.errors).to.has.length(1);
         expect(response.body.errors[0]).to.include({
             statusCode: 404,
             message: "No tweet was found with that id!",
         });
+    });
+
+    it("tweets query with default filter", async () => {
+        const user = await User.findByPk(10)
+        const tweetsArray = await createDifferentTypesOfTweets()
+        await user?.$add("tweets", tweetsArray)
+        let response = await getTweets(10)
+        let tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(24);
+        expect(tweets.tweets).to.has.length(10);
+        expect(tweets.tweets[0].id).to.be.equal("58");
+        expect(tweets.tweets[0].state).to.be.equal("Q");
+        expect(tweets.tweets[9].id).to.be.equal("49");
+        expect(tweets.tweets[9].state).to.be.equal("R");  
+
+        response = await getTweets(10, 2)
+        tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(24);
+        expect(tweets.tweets).to.has.length(10);
+        expect(tweets.tweets[0].id).to.be.equal("48");
+        expect(tweets.tweets[0].state).to.be.equal("R");
+        expect(tweets.tweets[9].id).to.be.equal("39");
+        expect(tweets.tweets[9].state).to.be.equal("O");
+        
+        response = await getTweets(10, 3)
+        tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(24);
+        expect(tweets.tweets).to.has.length(4);
+        expect(tweets.tweets[0].id).to.be.equal("38");
+        expect(tweets.tweets[0].state).to.be.equal("O");
+        expect(tweets.tweets[3].id).to.be.equal("35");
+        expect(tweets.tweets[3].state).to.be.equal("O");
+        
+        response = await getTweets(10, 4)
+        tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(24);
+        expect(tweets.tweets).to.has.length(0);
     });
 
     after(async () => {

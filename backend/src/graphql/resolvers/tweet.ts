@@ -1,7 +1,7 @@
-import { Tweet, Likes } from "../../models";
+import { Tweet, Likes, User } from "../../models";
 import { tweetValidator } from "../../validators";
 import db from "../../db";
-import { Transaction } from "sequelize";
+import { Transaction, Op } from "sequelize";
 
 const PAGE_SIZE = 10;
 
@@ -51,7 +51,43 @@ export default {
             }
             return tweet;
         },
-        tweets: async (parent: any, args: any, context: any, info: any) => {},
+        tweets: async (parent: any, args: any, context: any, info: any) => {
+            const {userId, page, filter} = args
+            const user = await User.findByPk(userId)
+            if(!user) {
+                const error: any = new Error(
+                    "No user was found with that id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+            return {
+                tweets: async() => {
+                    return await user.$get("tweets", {
+                        where: {
+                            state: {
+                                [Op.not]: "C"
+                            }
+                        },
+                        order: [
+                            ["createdAt", "DESC"]
+                        ],
+                        offset: ((page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                    })
+                },
+                totalCount: async() => {
+                    return await user.$count("tweets", {
+                        where: {
+                            state: {
+                                [Op.not]: "C"
+                            }
+                        },
+                    })
+                }
+            }
+            
+        },
     },
     Mutation: {
         createTweet: async (

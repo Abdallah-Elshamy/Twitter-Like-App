@@ -61,7 +61,7 @@ class User extends Model {
 
     // many-to-many  relation between user and user
     @BelongsToMany(() => User, () => Follows, "follower", "following")
-    followings?: User[];
+    following?: User[];
 
     @BelongsToMany(() => User, () => Follows, "following", "follower")
     followers?: User[];

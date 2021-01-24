@@ -74,7 +74,7 @@ export const deleteTweet = async (id: number) => {
         });
 };
 
-export const getTweet = async (id: number, likesPage: number, repliesPage: number) => {
+export const getTweet = async (id: number, likesPage: number = 1, repliesPage: number = 1, hashtagePage: number = 1) => {
     return await request(app)
         .post("/graphql")
         .send({
@@ -115,6 +115,12 @@ export const getTweet = async (id: number, likesPage: number, repliesPage: numbe
                             id
                         }
                         isLiked
+                        hashtags(page: ${hashtagePage}){
+                            hashtags{
+                                word
+                            }
+                            totalCount
+                        }
                     }
                 }
             `,

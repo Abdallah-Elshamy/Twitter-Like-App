@@ -522,6 +522,15 @@ describe("tweet-resolvers", (): void => {
         expect(tweets.tweets).to.has.length(0);
     });
 
+    it("fail tweets query for a non existing user", async () => {
+        const response = await getTweets(100);
+        expect(response.body.errors).to.has.length(1);
+        expect(response.body.errors[0]).to.include({
+            statusCode: 404,
+            message: "No user was found with that id!",
+        });
+    });
+
     after(async () => {
         await server.close();
     });

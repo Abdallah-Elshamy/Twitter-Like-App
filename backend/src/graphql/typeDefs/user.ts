@@ -5,7 +5,8 @@ export default gql`
 
     }
 
-    extend type Mutation {  
+    extend type Mutation { 
+        updateUser(id: ID!, userInput: UserUpdateInput!) : User! 
         unlike(tweetId: ID!): Boolean
         unfollow(userId: ID!): Boolean
     }

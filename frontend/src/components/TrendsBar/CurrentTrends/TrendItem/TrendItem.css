@@ -1,0 +1,15 @@
+.trend-item{
+    border-top: 1px solid var(--light-grey);
+}
+.trend-name {
+  color: var(--main-black)
+}
+
+.trend-item:hover{
+  background-color: var(--light-grey);
+}
+
+.more-icon:hover {
+background-color: var(--disable-btn);
+color: var(--main-color);
+}

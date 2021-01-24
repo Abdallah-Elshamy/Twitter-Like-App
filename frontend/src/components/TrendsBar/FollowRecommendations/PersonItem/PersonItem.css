@@ -1,0 +1,21 @@
+.person-item {
+  border-top: 1px solid var(--light-grey)
+}
+
+.person-item-name{
+  color: var(--main-black)
+}
+.person-item-image {
+  background-color: var(--dark-grey);
+  color:var(--extra-light);
+  overflow: hidden;
+}
+
+.person-item:hover{
+  background-color: var(--light-grey);
+
+}
+
+.person-item-image:hover{
+  filter:  contrast(0.9) ;
+}

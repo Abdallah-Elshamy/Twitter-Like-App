@@ -1,21 +1,21 @@
 import React from 'react';
+import { Trend } from '../../../common/TypesAndInterfaces';
+import SideList from '../../../UI/SideList/SideList';
+import TrendItem from './TrendItem/TrendItem';
 type Props = {
-
+  trends: Trend[]
 }
-const CurrentTrends: React.FC<Props> = (Props) => {
-
+const CurrentTrends: React.FC<Props> = ({trends}) => {
+const trendsList = trends.map((trend)=>{
+  return (<TrendItem 
+    key = {trend.trendName} trendName = {trend.trendName} numOfTweets = {trend.numOfTweets}
+  />)
+})
 
   return (
-    <div className="mb-4 rounded-xl bg-gray-200 p-4 felx flex-col">
-      <h1 className="">Trends</h1>
-      <hr />
-      <div className=""> Item</div>
-
-      <div>Item</div>
-
-      <div>Item</div>
-
-    </div>
+    <SideList title="What's happening now " redirect="/trends" >
+        {trendsList}
+    </SideList>
   )
 }
 export default CurrentTrends;

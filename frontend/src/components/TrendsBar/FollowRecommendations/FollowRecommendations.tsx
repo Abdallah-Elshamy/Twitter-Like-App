@@ -1,22 +1,28 @@
 import React from 'react';
+import { PersonEntity } from '../../../common/TypesAndInterfaces';
+import SideList from '../../../UI/SideList/SideList';
+import PersonItem from './PersonItem/PersonItem';
 type Props = {
-
+  followRec: PersonEntity[]
 }
-const FollowRecommendations: React.FC<Props> = (Props) => {
+const FollowRecommendations: React.FC<Props> = ({followRec}) => {
+
+  const followList = followRec.map(person => {
+    return (
+      <PersonItem key={person.username} 
+      name = {person.name} 
+      username = {person.username} 
+      followed={person.followed} 
+      imageURI = {person.imageURI}
+      />
+    )
+  })
 
 
   return (
-    <div className="rounded-xl bg-gray-200 p-4 mb-4 felx flex-col">
-      <h1 className="">Who to follow</h1>
-      <hr />
-
-      <div className=""> Item</div>
-
-      <div>Item</div>
-
-      <div>Item</div>
-
-    </div>
+   <SideList title="Who to follow " redirect="/" >
+        {followList}
+      </SideList>
   )
 }
 export default FollowRecommendations;

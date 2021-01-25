@@ -27,6 +27,18 @@ describe("user-resolvers", (): void => {
     });
 
     describe("updateUser resolver", (): void => {
+        let userId: number = 0;
+        before(async () => {
+            const user = await User.create({
+                name: "Nicola Tesla",
+                userName: "Tesla_890",
+                hashedPassword: "123456789",
+                email: "Tesla@yahoo.com",
+            });
+            userId = user.id;
+            return user;
+        });
+
         it("succeeds in updating user info", async () => {
             const userInput = {
                 name: "Alfred Einstein",
@@ -39,7 +51,7 @@ describe("user-resolvers", (): void => {
                 coverImageURL:
                     "https://preview.redd.it/t3ikdu9pp8h41.jpg?auto=webp&s=2106d1817d77e1b55438362d11b6452b7ab77bc6",
             };
-            const response = await updateUser(1, userInput);
+            const response = await updateUser(userId, userInput);
 
             expect(response.body.data.updateUser).to.include({
                 name: "Alfred Einstein",
@@ -52,8 +64,9 @@ describe("user-resolvers", (): void => {
                     "https://preview.redd.it/t3ikdu9pp8h41.jpg?auto=webp&s=2106d1817d77e1b55438362d11b6452b7ab77bc6",
             });
         });
+
         it("fails to update user info because of empty request", async () => {
-            const response: any = await emptyUpdateUser(1);
+            const response: any = await emptyUpdateUser(userId);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -69,7 +82,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 name: "",
             };
-            const response: any = await updateUserName(1, userInput);
+            const response: any = await updateUserName(userId, userInput);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -85,7 +98,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 name: ".......................................................",
             };
-            const response: any = await updateUserName(1, userInput);
+            const response: any = await updateUserName(userId, userInput);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -102,7 +115,7 @@ describe("user-resolvers", (): void => {
                 userName: "Alf",
             };
 
-            const response: any = await updateUserUserName(1, userInput);
+            const response: any = await updateUserUserName(userId, userInput);
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
                 message: "Validation error!",
@@ -119,7 +132,7 @@ describe("user-resolvers", (): void => {
                 userName: "My_nameisalfredeinstein_22",
             };
 
-            const response: any = await updateUserUserName(1, userInput);
+            const response: any = await updateUserUserName(userId, userInput);
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
                 message: "Validation error!",
@@ -135,7 +148,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 userName: "Alfred_@!",
             };
-            const response: any = await updateUserUserName(1, userInput);
+            const response: any = await updateUserUserName(userId, userInput);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -152,7 +165,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 email: "",
             };
-            const response: any = await updateUserEmail(1, userInput);
+            const response: any = await updateUserEmail(userId, userInput);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -168,7 +181,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 email: "thisisanemail",
             };
-            const response: any = await updateUserEmail(1, userInput);
+            const response: any = await updateUserEmail(userId, userInput);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -184,7 +197,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 password: "1234",
             };
-            const response: any = await updateUserPassword(1, userInput);
+            const response: any = await updateUserPassword(userId, userInput);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -201,7 +214,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 imageURL: "ThisisaURL",
             };
-            const response: any = await updateUserImageURL(1, userInput);
+            const response: any = await updateUserImageURL(userId, userInput);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -217,7 +230,10 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 coverImageURL: "ThisisaURL",
             };
-            const response: any = await updateUserCoverImageURL(1, userInput);
+            const response: any = await updateUserCoverImageURL(
+                userId,
+                userInput
+            );
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -226,6 +242,14 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors[0].validators[0]).to.include({
                 message: "Invalid cover image URL!",
                 value: "coverImageURL",
+            });
+        });
+
+        after(async () => {
+            return await User.destroy({
+                where: {
+                    id: userId,
+                },
             });
         });
     });

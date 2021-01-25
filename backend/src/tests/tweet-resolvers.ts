@@ -152,6 +152,20 @@ describe("tweet-resolvers", (): void => {
             expect(response.body.data.createTweet.mediaURLs).to.include("d");
         });
 
+        it("createTweet with media and no text", async () => {
+            const response = await createTweetWithMedia("");
+            expect(response.body.data.createTweet).to.include({
+                id: "3",
+                text: "",
+                state: "O",
+            });
+            expect(response.body.data.createTweet.mediaURLs).to.has.length(4);
+            expect(response.body.data.createTweet.mediaURLs).to.include("a");
+            expect(response.body.data.createTweet.mediaURLs).to.include("b");
+            expect(response.body.data.createTweet.mediaURLs).to.include("c");
+            expect(response.body.data.createTweet.mediaURLs).to.include("d");
+        });
+
         it("fail createTweet with text less than 1 char", async () => {
             await failCreateTweetValidation(
                 "",

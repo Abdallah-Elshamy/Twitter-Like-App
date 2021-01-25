@@ -2,7 +2,7 @@ import { expect } from "chai";
 import request from "supertest";
 import app, { serverPromise } from "../app";
 
-import { Hashtag, User } from "../models";
+import { Hashtag, User, Tweet } from "../models";
 import {
     updateUser,
     emptyUpdateUser,
@@ -14,6 +14,7 @@ import {
     updateUserCoverImageURL,
     unfollow,
     hashtag,
+    unlike,
 } from "./requests/user-resolvers";
 
 let server: any;
@@ -275,6 +276,44 @@ describe("user-resolvers", (): void => {
             });
         });
     });
+
+    describe("unlike resolver", () => {
+        it("succeeds in unliking a liked tweet", async () => {
+            // the resolver assumes that the loggedin user is the user with id 1
+            const user: any = await User.findOne({ where: { id: 1 } });
+            const likedTweets: any = await user.$get("likes", {
+                limit: 1,
+            });
+            const response = await unlike(likedTweets[0].id);
+            expect(response.body.data).to.include({
+                unlike: true,
+            });
+        });
+        it("fails to unlikes a non existent tweet", async () => {
+            // no user has id 0
+            const response = await unlike(0);
+
+            expect(response.body).to.has.property("errors");
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No tweet found with this id",
+            });
+        });
+
+        it("fails to unlike a tweet that isn't liked by the user", async () => {
+            const user: any = await User.findOne({ where: { id: 1 } });
+            const response = await unlike(15);
+
+            expect(response.body).to.has.property("errors");
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: `The current user doesn't like tweet with id 15`,
+            });
+        });
+    });
+
     describe("hashtag resolver", () => {
         it("succeeds in finding hashtag data", async () => {
             const newHashtag = await Hashtag.create({ word: "$TEST_HASHTAG$" });

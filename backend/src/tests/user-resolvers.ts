@@ -2,6 +2,7 @@ import { expect } from "chai";
 import request from "supertest";
 import app, { serverPromise } from "../app";
 
+import { Hashtag } from "../models";
 import {
     updateUser,
     emptyUpdateUser,
@@ -12,6 +13,7 @@ import {
     updateUserImageURL,
     updateUserCoverImageURL,
     unfollow,
+    hashtag,
 } from "./requests/user-resolvers";
 
 let server: any;
@@ -253,6 +255,42 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
                 message: `The current user is not following the user with id ${id}`,
+            });
+        });
+    });
+    describe("hashtag resolver", () => {
+        it("succeeds in finding hashtag data", async () => {
+            const newHashtag = await Hashtag.create({ word: "$TEST_HASHTAG$" });
+            const response = await hashtag("$TEST_HASHTAG$");
+
+            expect(response.body.data.hashtag).to.include({
+                word: "$TEST_HASHTAG$",
+            });
+            expect(response.body.data.hashtag.tweets).to.include({
+                totalCount: 0,
+            });
+            await newHashtag.destroy();
+        });
+
+        it("fails to get hashtag for empty arguments", async () => {
+            const response = await hashtag("");
+
+            expect(response.body.errors).has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Empty query argument!",
+            });
+        });
+
+        it("fails to get a non existent hashtag", async () => {
+            const response = await hashtag(
+                "4$^*^THIS_IS_A_NON_EXISTENT_HASHTAG@_@"
+            );
+
+            expect(response.body.errors).has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No hashtag found with this word!",
             });
         });
     });

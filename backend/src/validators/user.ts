@@ -20,6 +20,20 @@ const UserValidator = (userInput: UserInput) => {
     } = userInput;
     const validators: { message: string; value: string }[] = [];
 
+    if (
+        userName === undefined &&
+        email === undefined &&
+        password === undefined &&
+        name === undefined &&
+        imageURL === undefined &&
+        coverImageURL === undefined
+    ) {
+        validators.push({
+            message: "Empty update request!",
+            value: "empty",
+        });
+    }
+
     // validate the email
     if (
         email !== undefined &&
@@ -33,7 +47,7 @@ const UserValidator = (userInput: UserInput) => {
     // validate the display name
     if (
         name !== undefined &&
-        (!validator.isEmpty(name) ||
+        (validator.isEmpty(name) ||
             !validator.isLength(name, {
                 min: 1,
                 max: 50,

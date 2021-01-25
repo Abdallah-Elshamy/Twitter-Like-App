@@ -10,6 +10,7 @@ import {
     createReply,
     deleteTweet,
     getTweet,
+    getTweets,
 } from "./requests/tweet-resolvers";
 
 let server: any;
@@ -82,17 +83,30 @@ const addLikesToTweet = async (users: User[], tweet: Tweet) => {
     return await Promise.all(usersPromises);
 };
 
-const createTweets = async () => {
+const createTweets = async (
+    userId: number = 3,
+    state: string = "C",
+    it: number = 24
+) => {
     const tweets = [];
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < it; i++) {
         tweets.push(
             await Tweet.create({
-                text: `reply tweet${i}`,
-                state: "C",
-                userId: 3,
+                text: `tweet${i}`,
+                state,
+                userId,
             })
         );
     }
+    return tweets;
+};
+
+const createDifferentTypesOfTweets = async () => {
+    const tweets = [];
+    tweets.push(...await createTweets(10, "O", 10));
+    tweets.push(...await createTweets(10, "R", 10));
+    tweets.push(...await createTweets(10, "Q", 4));
+    tweets.push(...await createTweets(10, "C", 6));
     return tweets;
 };
 
@@ -402,11 +416,127 @@ describe("tweet-resolvers", (): void => {
     });
 
     it("fail tweet query for a non existant tweet", async () => {
-        const response = await getTweet(100)
+        const response = await getTweet(100);
         expect(response.body.errors).to.has.length(1);
         expect(response.body.errors[0]).to.include({
             statusCode: 404,
             message: "No tweet was found with that id!",
+        });
+    });
+
+    it("tweets query with default filter", async () => {
+        const user = await User.findByPk(10)
+        const tweetsArray = await createDifferentTypesOfTweets()
+        await user?.$add("tweets", tweetsArray)
+        let response = await getTweets(10)
+        let tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(24);
+        expect(tweets.tweets).to.has.length(10);
+        expect(tweets.tweets[0].id).to.be.equal("58");
+        expect(tweets.tweets[0].state).to.be.equal("Q");
+        expect(tweets.tweets[9].id).to.be.equal("49");
+        expect(tweets.tweets[9].state).to.be.equal("R");  
+
+        response = await getTweets(10, 2)
+        tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(24);
+        expect(tweets.tweets).to.has.length(10);
+        expect(tweets.tweets[0].id).to.be.equal("48");
+        expect(tweets.tweets[0].state).to.be.equal("R");
+        expect(tweets.tweets[9].id).to.be.equal("39");
+        expect(tweets.tweets[9].state).to.be.equal("O");
+        
+        response = await getTweets(10, 3)
+        tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(24);
+        expect(tweets.tweets).to.has.length(4);
+        expect(tweets.tweets[0].id).to.be.equal("38");
+        expect(tweets.tweets[0].state).to.be.equal("O");
+        expect(tweets.tweets[3].id).to.be.equal("35");
+        expect(tweets.tweets[3].state).to.be.equal("O");
+        
+        response = await getTweets(10, 4)
+        tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(24);
+        expect(tweets.tweets).to.has.length(0);
+    });
+
+    it("tweets query with replies&tweets filter", async () => {
+        let response = await getTweets(10, 1, "replies&tweets")
+        let tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(30);
+        expect(tweets.tweets).to.has.length(10);
+        expect(tweets.tweets[0].id).to.be.equal("64");
+        expect(tweets.tweets[0].state).to.be.equal("C");
+        expect(tweets.tweets[9].id).to.be.equal("55");
+        expect(tweets.tweets[9].state).to.be.equal("Q");  
+
+        response = await getTweets(10, 2, "replies&tweets")
+        tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(30);
+        expect(tweets.tweets).to.has.length(10);
+        expect(tweets.tweets[0].id).to.be.equal("54");
+        expect(tweets.tweets[0].state).to.be.equal("R");
+        expect(tweets.tweets[9].id).to.be.equal("45");
+        expect(tweets.tweets[9].state).to.be.equal("R");
+        
+        response = await getTweets(10, 3, "replies&tweets")
+        tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(30);
+        expect(tweets.tweets).to.has.length(10);
+        expect(tweets.tweets[0].id).to.be.equal("44");
+        expect(tweets.tweets[0].state).to.be.equal("O");
+        expect(tweets.tweets[9].id).to.be.equal("35");
+        expect(tweets.tweets[9].state).to.be.equal("O");
+        
+        response = await getTweets(10, 4, "replies&tweets")
+        tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(30);
+        expect(tweets.tweets).to.has.length(0);
+    });
+
+    it("tweets query with likes filter", async () => {
+        let response = await getTweets(1, 1, "likes")
+        let tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(2);
+        expect(tweets.tweets).to.has.length(2);
+        expect(tweets.tweets[0].id).to.be.equal("34");
+        expect(tweets.tweets[1].id).to.be.equal("3"); 
+
+        response = await getTweets(1, 2, "likes")
+        tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(2);
+        expect(tweets.tweets).to.has.length(0);
+    });
+
+    it("tweets query with media filter", async () => {
+        let response = await getTweets(1, 1, "media")
+        let tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(1);
+        expect(tweets.tweets).to.has.length(1);
+        expect(tweets.tweets[0].id).to.be.equal("2");
+
+        response = await getTweets(1, 2, "likes")
+        tweets = response.body.data.tweets;
+        expect(tweets.totalCount).to.be.equal(2);
+        expect(tweets.tweets).to.has.length(0);
+    });
+
+    it("fail tweets query for a non existing user", async () => {
+        const response = await getTweets(100);
+        expect(response.body.errors).to.has.length(1);
+        expect(response.body.errors[0]).to.include({
+            statusCode: 404,
+            message: "No user was found with that id!",
+        });
+    });
+
+    it("fail tweets query for a non valid filter", async () => {
+        const response = await getTweets(1, 2 ,"test");
+        expect(response.body.errors).to.has.length(1);
+        expect(response.body.errors[0]).to.include({
+            statusCode: 422,
+            message: "Filter must be null or media or replies&tweets or likes only!",
         });
     });
 

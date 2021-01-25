@@ -11,6 +11,7 @@ import {
     updateUserPassword,
     updateUserImageURL,
     updateUserCoverImageURL,
+    unfollow,
 } from "./requests/user-resolvers";
 
 let server: any;
@@ -222,6 +223,36 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors[0].validators[0]).to.include({
                 message: "Invalid cover image URL!",
                 value: "coverImageURL",
+            });
+        });
+    });
+
+    describe("unfollow resolver", (): void => {
+        it("fails to unfollow a non existent user", async () => {
+            // the resolver assumes that the loggedin user is the user with id 1
+            // users in database are created starting from id 1
+            // no user has the id of 0
+            const id = 0;
+            const response = await unfollow(id);
+            expect(response.body).to.has.property("errors");
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No user found with this id",
+            });
+        });
+
+        it("fails to unfollow a user that isn't followed by the  current user", async () => {
+            // the resolver assumes that the loggedin user is the user with id 1
+            // it is assumed that a user can't follow/unfollow himself
+            const id = 1;
+            const response = await unfollow(id);
+
+            expect(response.body).to.has.property("errors");
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: `The current user is not following the user with id ${id}`,
             });
         });
     });

@@ -126,3 +126,15 @@ export const updateUserUserName = async (id: number, userInput: any) => {
         `,
         });
 };
+
+export const unlike = async (tweetId: number) => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+            mutation {
+                unlike(tweetId: ${tweetId})
+            }
+        `,
+        });
+};

@@ -33,7 +33,7 @@ const UserValidator = (userInput: UserInput) => {
     // validate the display name
     if (
         name !== undefined &&
-        (!validator.isEmpty(name) ||
+        (validator.isEmpty(name) ||
             !validator.isLength(name, {
                 min: 1,
                 max: 50,

@@ -150,3 +150,24 @@ export const unfollow = async (userId: number) => {
         `,
         });
 };
+
+export const hashtag = async (word: string) => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+            query {
+                hashtag(word: "${word}") {
+                    word
+                    tweets {
+                        totalCount
+                        tweets {
+                            id
+                            text
+                        }
+                    }
+                }
+            }
+        `,
+        });
+};

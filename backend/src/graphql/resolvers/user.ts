@@ -1,7 +1,9 @@
+import bcrypt from 'bcryptjs';
+
 import { User, Tweet } from "../../models";
 import UserValidator from "../../validators/user";
 
-const PAGE_SIZE = 1;
+const PAGE_SIZE = 10;
 
 export default {
     Query: {},
@@ -93,7 +95,8 @@ export default {
                 toBeUpdatedUser.email = email.toLowerCase();
             }
             if (password) {
-                toBeUpdatedUser.hashedPassword = password;
+                const hashedPw = await bcrypt.hash(password, 12);
+                toBeUpdatedUser.hashedPassword = hashedPw;
             }
             if (name) {
                 toBeUpdatedUser.name = name;

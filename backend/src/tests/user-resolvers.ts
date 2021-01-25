@@ -2,7 +2,7 @@ import { expect } from "chai";
 import request from "supertest";
 import app, { serverPromise } from "../app";
 
-import { Hashtag } from "../models";
+import { Hashtag, User } from "../models";
 import {
     updateUser,
     emptyUpdateUser,
@@ -230,6 +230,23 @@ describe("user-resolvers", (): void => {
     });
 
     describe("unfollow resolver", (): void => {
+        it("succeeds in unfollowing a followed user", async () => {
+            const userId1: any = await User.findOne({ where: { id: 1 } });
+            const testUser = await User.create({
+                name: "test user ",
+                userName: "testU",
+                email: "testU@yahoo.com",
+                hashedPassword: "123456789",
+            });
+
+            await userId1.$add("following", testUser);
+
+            const response = await unfollow(testUser.id);
+            expect(response.body.data).to.include({
+                unfollow: true,
+            });
+        });
+
         it("fails to unfollow a non existent user", async () => {
             // the resolver assumes that the loggedin user is the user with id 1
             // users in database are created starting from id 1

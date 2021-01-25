@@ -2,6 +2,17 @@ import { expect } from "chai";
 import request from "supertest";
 import app, { serverPromise } from "../app";
 
+import {
+    updateUser,
+    emptyUpdateUser,
+    updateUserName,
+    updateUserUserName,
+    updateUserEmail,
+    updateUserPassword,
+    updateUserImageURL,
+    updateUserCoverImageURL,
+} from "./requests/user-resolvers";
+
 let server: any;
 
 describe("user-resolvers", (): void => {
@@ -11,23 +22,208 @@ describe("user-resolvers", (): void => {
         server.listen();
     });
 
-    it("bye", async () => {
-        const response = await request(app).post("/graphql").send({
-            query: "query bye {bye}",
-        });
-        expect(response.body).has.property("data");
-        expect(response.body.data).has.property("bye");
-    });
+    describe("updateUser resolver", (): void => {
+        it("succeeds in updating user info", async () => {
+            const userInput = {
+                name: "Alfred Einstein",
+                userName: "Alfred_12",
+                email: "Einstein@yahoo.com",
+                password: "12345678",
+                bio: "This is Alfred Einstein hustlin !",
+                imageURL:
+                    "https://preview.redd.it/t3ikdu9pp8h41.jpg?auto=webp&s=2106d1817d77e1b55438362d11b6452b7ab77bc6",
+                coverImageURL:
+                    "https://preview.redd.it/t3ikdu9pp8h41.jpg?auto=webp&s=2106d1817d77e1b55438362d11b6452b7ab77bc6",
+            };
+            const response = await updateUser(1, userInput);
 
-    it("hi", async () => {
-        const response = await request(app)
-            .post("/graphql")
-            .set("Content-Type", "application/json")
-            .send({
-                query: "query bye {bye}",
+            expect(response.body.data.updateUser).to.include({
+                name: "Alfred Einstein",
+                userName: "Alfred_12",
+                email: "einstein@yahoo.com",
+                bio: "This is Alfred Einstein hustlin !",
+                imageURL:
+                    "https://preview.redd.it/t3ikdu9pp8h41.jpg?auto=webp&s=2106d1817d77e1b55438362d11b6452b7ab77bc6",
+                coverImageURL:
+                    "https://preview.redd.it/t3ikdu9pp8h41.jpg?auto=webp&s=2106d1817d77e1b55438362d11b6452b7ab77bc6",
             });
-        expect(response.body).has.property("data");
-        expect(response.body.data).has.property("bye");
+        });
+        it("fails to update user info because of empty request", async () => {
+            const response: any = await emptyUpdateUser(1);
+
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "Empty update request!",
+                value: "empty",
+            });
+        });
+
+        it("fails to update user with a short(empty) name", async () => {
+            const userInput = {
+                name: "",
+            };
+            const response: any = await updateUserName(1, userInput);
+
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "name must be between 1 and 50 characters long!",
+                value: "name",
+            });
+        });
+
+        it("fails to update user with a long name", async () => {
+            const userInput = {
+                name: ".......................................................",
+            };
+            const response: any = await updateUserName(1, userInput);
+
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "name must be between 1 and 50 characters long!",
+                value: "name",
+            });
+        });
+
+        it("fails to update user with short username", async () => {
+            const userInput = {
+                userName: "Alf",
+            };
+
+            const response: any = await updateUserUserName(1, userInput);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message:
+                    "Username must be more than 4 characters long and can be up to 15 characters or less!",
+                value: "userName",
+            });
+        });
+
+        it("fails to update user with long username", async () => {
+            const userInput = {
+                userName: "My_nameisalfredeinstein_22",
+            };
+
+            const response: any = await updateUserUserName(1, userInput);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message:
+                    "Username must be more than 4 characters long and can be up to 15 characters or less!",
+                value: "userName",
+            });
+        });
+
+        it("fails to update user with invalid characters in username", async () => {
+            const userInput = {
+                userName: "Alfred_@!",
+            };
+            const response: any = await updateUserUserName(1, userInput);
+
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message:
+                    "Username can contain only letters, numbers, and underscores—no spaces are allowed!",
+                value: "userName",
+            });
+        });
+
+        it("fails to update user with an empty email string", async () => {
+            const userInput = {
+                email: "",
+            };
+            const response: any = await updateUserEmail(1, userInput);
+
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "Invalid email!",
+                value: "email",
+            });
+        });
+
+        it("fails to update user with an invalid email format", async () => {
+            const userInput = {
+                email: "thisisanemail",
+            };
+            const response: any = await updateUserEmail(1, userInput);
+
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "Invalid email!",
+                value: "email",
+            });
+        });
+
+        it("fails to update user with a short password", async () => {
+            const userInput = {
+                password: "1234",
+            };
+            const response: any = await updateUserPassword(1, userInput);
+
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message:
+                    "Password must be equal or more than 8 characters long!",
+                value: "password",
+            });
+        });
+
+        it("fails to update user with an invalid image URL format", async () => {
+            const userInput = {
+                imageURL: "ThisisaURL",
+            };
+            const response: any = await updateUserImageURL(1, userInput);
+
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "Invalid image URL!",
+                value: "imageURL",
+            });
+        });
+
+        it("fails to update user with an invalid cover image URL format", async () => {
+            const userInput = {
+                coverImageURL: "ThisisaURL",
+            };
+            const response: any = await updateUserCoverImageURL(1, userInput);
+
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "Invalid cover image URL!",
+                value: "coverImageURL",
+            });
+        });
     });
 
     after(() => {

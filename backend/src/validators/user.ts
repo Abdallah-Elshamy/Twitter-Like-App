@@ -20,6 +20,20 @@ const UserValidator = (userInput: UserInput) => {
     } = userInput;
     const validators: { message: string; value: string }[] = [];
 
+    if (
+        userName === undefined &&
+        email === undefined &&
+        password === undefined &&
+        name === undefined &&
+        imageURL === undefined &&
+        coverImageURL === undefined
+    ) {
+        validators.push({
+            message: "Empty update request!",
+            value: "empty",
+        });
+    }
+
     // validate the email
     if (
         email !== undefined &&

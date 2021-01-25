@@ -74,7 +74,12 @@ export const deleteTweet = async (id: number) => {
         });
 };
 
-export const getTweet = async (id: number, likesPage: number = 1, repliesPage: number = 1, hashtagePage: number = 1) => {
+export const getTweet = async (
+    id: number,
+    likesPage: number = 1,
+    repliesPage: number = 1,
+    hashtagePage: number = 1
+) => {
     return await request(app)
         .post("/graphql")
         .send({
@@ -124,5 +129,31 @@ export const getTweet = async (id: number, likesPage: number = 1, repliesPage: n
                     }
                 }
             `,
+        });
+};
+
+export const getTweets = async (
+    userId: number,
+    page: number = 1,
+    filter: string | null = ""
+) => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+            query {
+                tweets(
+                    userId: ${userId}
+                    page: ${page}
+                    filter: "${filter}"
+                ){
+                    tweets{
+                        id
+                        state
+                    }
+                    totalCount
+                }
+            }    
+         `,
         });
 };

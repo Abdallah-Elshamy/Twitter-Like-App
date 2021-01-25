@@ -1,7 +1,7 @@
-import { Tweet, Likes } from "../../models";
+import { Tweet, Likes, User } from "../../models";
 import { tweetValidator } from "../../validators";
 import db from "../../db";
-import { Transaction } from "sequelize";
+import { Transaction, Op } from "sequelize";
 
 const PAGE_SIZE = 10;
 
@@ -50,6 +50,91 @@ export default {
                 throw error;
             }
             return tweet;
+        },
+        tweets: async (parent: any, args: any, context: any, info: any) => {
+            const { userId, page, filter } = args;
+            if (
+                !(
+                    !filter ||
+                    filter === "media" ||
+                    filter === "replies&tweets" ||
+                    filter === "likes"
+                )
+            ) {
+                const error: any = new Error(
+                    "Filter must be null or media or replies&tweets or likes only!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+            const user = await User.findByPk(userId);
+            if (!user) {
+                const error: any = new Error("No user was found with that id!");
+                error.statusCode = 404;
+                throw error;
+            }
+            return {
+                tweets: async () => {
+                    if (!filter) {
+                        return await user.$get("tweets", {
+                            where: {
+                                state: {
+                                    [Op.ne]: "C",
+                                },
+                            },
+                            order: [["createdAt", "DESC"]],
+                            offset: ((page || 1) - 1) * PAGE_SIZE,
+                            limit: PAGE_SIZE,
+                        });
+                    } else if (filter === "replies&tweets") {
+                        return await user.$get("tweets", {
+                            order: [["createdAt", "DESC"]],
+                            offset: ((page || 1) - 1) * PAGE_SIZE,
+                            limit: PAGE_SIZE,
+                        });
+                    } else if (filter === "likes") {
+                        return await user.$get("likes", {
+                            order: [["createdAt", "DESC"]],
+                            offset: ((page || 1) - 1) * PAGE_SIZE,
+                            limit: PAGE_SIZE,
+                        });
+                    } else if (filter === "media") {
+                        return await user.$get("tweets", {
+                            where: {
+                                mediaURLs: {
+                                    [Op.ne]: [],
+                                },
+                            },
+                            order: [["createdAt", "DESC"]],
+                            offset: ((page || 1) - 1) * PAGE_SIZE,
+                            limit: PAGE_SIZE,
+                        });
+                    }
+                },
+                totalCount: async () => {
+                    if (!filter) {
+                        return await user.$count("tweets", {
+                            where: {
+                                state: {
+                                    [Op.ne]: "C",
+                                },
+                            },
+                        });
+                    } else if (filter === "replies&tweets") {
+                        return await user.$count("tweets");
+                    } else if (filter === "likes") {
+                        return await user.$count("likes");
+                    } else if (filter === "media") {
+                        return await user.$count("tweets", {
+                            where: {
+                                mediaURLs: {
+                                    [Op.ne]: [],
+                                },
+                            },
+                        });
+                    }
+                },
+            };
         },
     },
     Mutation: {
@@ -145,7 +230,7 @@ export default {
         },
         likes: async (parent: Tweet, args: any) => {
             return {
-                users: async() => {
+                users: async () => {
                     return await parent.$get("likes", {
                         offset: ((args.page || 1) - 1) * PAGE_SIZE,
                         limit: PAGE_SIZE,
@@ -162,14 +247,14 @@ export default {
         },
         replies: async (parent: Tweet, args: any) => {
             return {
-                tweets: async() => {
+                tweets: async () => {
                     return await parent.$get("replies", {
                         offset: ((args.page || 1) - 1) * PAGE_SIZE,
                         limit: PAGE_SIZE,
                         order: [["createdAt", "ASC"]],
                     });
                 },
-                totalCount: async() => {
+                totalCount: async () => {
                     return await parent.$count("replies");
                 },
             };

@@ -138,3 +138,15 @@ export const unlike = async (tweetId: number) => {
         `,
         });
 };
+
+export const unfollow = async (userId: number) => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+            mutation {
+                unfollow(userId: ${userId})
+            }
+        `,
+        });
+};

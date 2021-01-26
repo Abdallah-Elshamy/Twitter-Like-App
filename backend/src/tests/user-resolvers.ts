@@ -22,7 +22,9 @@ import {
     follow,
     unfollow,
     hashtag,
+    like,
     unlike,
+    createTweet,
 } from "./requests/user-resolvers";
 
 let server: any;
@@ -660,6 +662,42 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
                 message: "The userId and the currentUserId are the same",
+            });
+        });
+    });
+
+    describe("like resolver", () => {
+        before(async () => {
+            await createTweet();
+        });
+
+        it("like an unliked tweet", async () => {
+            // since the table is emptied, the added tweet will have id = 1
+            const response = await like(1);
+            expect(response.body.data).to.include({
+                like: true,
+            });
+        });
+
+        it("like a liked tweet", async () => {
+            // This tweet is already liked from the previous test
+            const response = await like(1);
+            expect(response.body).to.has.property("errors");
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "This tweet is already liked",
+            });
+        });
+
+        it("like a non existent tweet", async () => {
+            // no tweet has id = 0
+            const response = await like(0);
+            expect(response.body).to.has.property("errors");
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No tweet found with this id",
             });
         });
     });

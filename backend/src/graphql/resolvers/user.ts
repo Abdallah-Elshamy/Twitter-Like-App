@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs';
+import bcrypt from "bcryptjs";
 
 import { User, Tweet } from "../../models";
 import UserValidator from "../../validators/user";
@@ -120,15 +120,15 @@ export default {
             const validators = UserValidator(userInput);
             if (await User.findOne({ where: { email: userInput.email } })) {
                 validators.push({
-                    message:
-                        "This email address is already being used",
+                    message: "This email address is already being used",
                     value: "email",
                 });
             }
-            if (await User.findOne({ where: { userName: userInput.userName } })) {
+            if (
+                await User.findOne({ where: { userName: userInput.userName } })
+            ) {
                 validators.push({
-                    message:
-                        "This user name is already being used",
+                    message: "This user name is already being used",
                     value: "userName",
                 });
             }
@@ -148,10 +148,12 @@ export default {
         },
         follow: async (parent: any, args: any, context: any, info: any) => {
             // assume logged in user id is 1
-            const currentUserId: number = 1
+            const currentUserId: number = 1;
             // check if the user is trying to follow himself
-            if(currentUserId === +args.userId) {
-                const error: any = new Error("The userId and the currentUserId are the same");
+            if (currentUserId === +args.userId) {
+                const error: any = new Error(
+                    "The userId and the currentUserId are the same"
+                );
                 error.statusCode = 422;
                 throw error;
             }
@@ -175,7 +177,31 @@ export default {
             await db.transaction(async (transaction) => {
                 return await currentUser.$add("following", toBeFollowed);
             });
-            
+
+            return true;
+        },
+        like: async (parent: any, args: any, context: any, info: any) => {
+            // assume that the logged in user has an id of 1
+            const currentUser: any = await User.findByPk(1);
+
+            const tweet: any = await Tweet.findByPk(args.tweetId);
+            if (!tweet) {
+                const error: any = new Error("No tweet found with this id");
+                error.statusCode = 404;
+                throw error;
+            }
+            const isLiked = await currentUser.hasLikes(tweet);
+
+            // check if the entered tweet is liked by the current user
+            if (isLiked) {
+                const error: any = new Error("This tweet is already liked");
+                error.statusCode = 422;
+                throw error;
+            }
+            await db.transaction(async (transaction) => {
+                return await currentUser.$add("likes", tweet);
+            });
+
             return true;
         },
     },

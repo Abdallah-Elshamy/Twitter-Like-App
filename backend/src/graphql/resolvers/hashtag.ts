@@ -1,7 +1,7 @@
 import { Hashtag } from "../../models";
 import validator from "validator";
 
-const PAGE_SIZE = 2;
+const PAGE_SIZE = 10;
 
 export default {
     Query: {

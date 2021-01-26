@@ -1,8 +1,10 @@
+import bcrypt from 'bcryptjs';
+
 import { User, Tweet } from "../../models";
 import UserValidator from "../../validators/user";
 import db from "../../db";
 
-const PAGE_SIZE = 1;
+const PAGE_SIZE = 10;
 
 export default {
     Query: {},
@@ -71,12 +73,12 @@ export default {
                 throw error;
             }
             // assume logged in user is user with id 1
-            const userId = 1;
-            if (userId !== toBeUpdatedUser.id) {
-                const error: any = new Error("Not authorized");
-                error.statusCode = 403;
-                throw error;
-            }
+            // const userId = 1;
+            // if (userId !== toBeUpdatedUser.id) {
+            //     const error: any = new Error("Not authorized");
+            //     error.statusCode = 403;
+            //     throw error;
+            // }
             const {
                 userName,
                 email,
@@ -94,7 +96,8 @@ export default {
                 toBeUpdatedUser.email = email.toLowerCase();
             }
             if (password) {
-                toBeUpdatedUser.hashedPassword = password;
+                const hashedPw = await bcrypt.hash(password, 12);
+                toBeUpdatedUser.hashedPassword = hashedPw;
             }
             if (name) {
                 toBeUpdatedUser.name = name;

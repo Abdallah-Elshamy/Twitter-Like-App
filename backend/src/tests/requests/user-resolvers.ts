@@ -172,16 +172,13 @@ export const hashtag = async (word: string) => {
         });
 };
 
-export const createUser = async (
-    userName: string,
-    name: string
-) => {
+export const createUser = async (userName: string, name: string) => {
     return await request(app)
         .post("/graphql")
         .send({
             query: `
             mutation {
-                createUser(user: {
+                createUser(userInput: {
                     userName: "${userName}",
                     name: "${name}",
                     email: "bilbo_baggins@shire.com",
@@ -196,16 +193,13 @@ export const createUser = async (
         });
 };
 
-export const createUserWithImage = async (
-    userName: string,
-    name: string
-) => {
+export const createUserWithImage = async (userName: string, name: string) => {
     return await request(app)
         .post("/graphql")
         .send({
             query: `
             mutation {
-                createUser(user: {
+                createUser(userInput: {
                     userName: "${userName}",
                     name: "${name}",
                     email: "frodo_baggins@shire.com",
@@ -222,16 +216,13 @@ export const createUserWithImage = async (
         });
 };
 
-export const createUserWithBio = async (
-    userName: string,
-    name: string
-) => {
+export const createUserWithBio = async (userName: string, name: string) => {
     return await request(app)
         .post("/graphql")
         .send({
             query: `
             mutation {
-                createUser(user: {
+                createUser(userInput: {
                     userName: "${userName}",
                     name: "${name}",
                     email: "gandalf@shire.com",
@@ -257,7 +248,7 @@ export const createUserWithCoverImage = async (
         .send({
             query: `
             mutation {
-                createUser(user: {
+                createUser(userInput: {
                     userName: "${userName}",
                     name: "${name}",
                     email: "roronoa_zoro@grandline.com",
@@ -274,16 +265,13 @@ export const createUserWithCoverImage = async (
         });
 };
 
-export const createUserComplete = async (
-    userName: string,
-    name: string
-) => {
+export const createUserComplete = async (userName: string, name: string) => {
     return await request(app)
         .post("/graphql")
         .send({
             query: `
             mutation {
-                createUser(user: {
+                createUser(userInput: {
                     userName: "${userName}",
                     name: "${name}",
                     email: "monkey_d_luffy@grandline.com",
@@ -304,3 +292,66 @@ export const createUserComplete = async (
         `,
         });
 };
+
+export const createUserWithEmailPassword = async (
+    email: string,
+    password: string
+) => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+            mutation {
+                createUser(userInput: {
+                    userName: "naruto",
+                    name: "The Seventh Hokage",
+                    email: "${email}",
+                    password: "${password}",
+                    bio: "That is MY Ninja Way!",
+                    imageURL: "https://picsum.photos/200/300",
+                    coverImageURL: "https://picsum.photos/200/300"
+                    
+                }){
+                    id,
+                    userName,
+                    name,
+                    bio,
+                    imageURL,
+                    coverImageURL
+                }
+            }
+        `,
+        });
+};
+
+export const createUserWithImages = async (
+    imageURL: string,
+    coverImageURL: string
+) => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+            mutation {
+                createUser(userInput: {
+                    userName: "naruto",
+                    name: "The Seventh Hokage",
+                    email: "naruto@konoha.com",
+                    password: "hidden_leaf",
+                    bio: "That is MY Ninja Way!",
+                    imageURL: "${imageURL}",
+                    coverImageURL: "${coverImageURL}"
+                    
+                }){
+                    id,
+                    userName,
+                    name,
+                    bio,
+                    imageURL,
+                    coverImageURL
+                }
+            }
+        `,
+        });
+};
+

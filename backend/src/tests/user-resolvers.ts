@@ -1,9 +1,17 @@
 import { expect } from "chai";
 import request from "supertest";
 import app, { serverPromise } from "../app";
-
+import db from "../db";
 import { Hashtag, User, Tweet } from "../models";
+
 import {
+    createUser,
+    createUserWithBio,
+    createUserWithImage,
+    createUserWithCoverImage,
+    createUserComplete,
+    createUserWithEmailPassword,
+    createUserWithImages,
     updateUser,
     emptyUpdateUser,
     updateUserName,
@@ -347,6 +355,240 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
                 message: "No hashtag found with this word!",
+            });
+        });
+    });
+
+    describe("createUser resolver", (): void => {
+        it("createUser with no bio, image, or cover image", async () => {
+            const response = await createUser("bilbo", "Bilbo Baggins");
+            expect(response.body.data.createUser).to.include({
+                id: "32",
+                userName: "bilbo",
+                name: "Bilbo Baggins",
+            });
+        });
+
+        it("createUser with a bio but without image or cover image", async () => {
+            const response = await createUserWithBio(
+                "gandalf",
+                "Gandalf The Grey"
+            );
+            expect(response.body.data.createUser).to.include({
+                id: "33",
+                userName: "gandalf",
+                name: "Gandalf The Grey",
+            });
+        });
+
+        it("createUser with an image but without bio or cover image", async () => {
+            const response = await createUserWithImage(
+                "frodo",
+                "Frodo Baggins"
+            );
+            expect(response.body.data.createUser).to.include({
+                id: "34",
+                userName: "frodo",
+                name: "Frodo Baggins",
+            });
+        });
+
+        it("createUser with a cover image but without bio or image", async () => {
+            const response = await createUserWithCoverImage(
+                "zoro",
+                "Roronoa Zoro"
+            );
+            expect(response.body.data.createUser).to.include({
+                id: "35",
+                userName: "zoro",
+                name: "Roronoa Zoro",
+            });
+        });
+
+        it("createUser with an existing userName", async () => {
+            const response = await createUserComplete("zoro", "Roronoa Zoro");
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "This user name is already being used",
+                value: "userName",
+            });
+        });
+
+        it("createUser with cover image, bio, and image", async () => {
+            const response = await createUserComplete(
+                "strawhat",
+                "Monkey D. Luffy"
+            );
+            expect(response.body.data.createUser).to.include({
+                id: "36",
+                userName: "strawhat",
+                name: "Monkey D. Luffy",
+            });
+        });
+
+        it("createUser with an existing email", async () => {
+            const response = await createUserComplete(
+                "sauron",
+                "Lieutenant of Morgoth"
+            );
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "This email address is already being used",
+                value: "email",
+            });
+        });
+
+        it("createUser with a short(empty) name", async () => {
+            const response = await createUser("sauron", "");
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "name must be between 1 and 50 characters long!",
+                value: "name",
+            });
+        });
+
+        it("createUser with a long name", async () => {
+            const response = await createUser(
+                "sauron",
+                "......................................................."
+            );
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "name must be between 1 and 50 characters long!",
+                value: "name",
+            });
+        });
+
+        it("createUser with a short userName", async () => {
+            const response = await createUser("Ace", "Portgas D. Ace");
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message:
+                    "Username must be more than 4 characters long and can be up to 15 characters or less!",
+                value: "userName",
+            });
+        });
+
+        it("createUser with a long userName", async () => {
+            const response = await createUser(
+                "Thorin_son_of_Thrain_son_of_Thror",
+                "Thorin Oakenshield"
+            );
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message:
+                    "Username must be more than 4 characters long and can be up to 15 characters or less!",
+                value: "userName",
+            });
+        });
+
+        it("createUser with invalid characters in username", async () => {
+            const response = await createUser(
+                "$trider",
+                "Aragorn Son of Arathorn"
+            );
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message:
+                    "Username can contain only letters, numbers, and underscores—no spaces are allowed!",
+                value: "userName",
+            });
+        });
+
+        it("createUser with an empty string as email", async () => {
+            const response = await createUserWithEmailPassword(
+                "",
+                "hidden_leaf"
+            );
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "Invalid email!",
+                value: "email",
+            });
+        });
+
+        it("createUser with an invalid email format", async () => {
+            const response = await createUserWithEmailPassword(
+                "helloThere",
+                "hidden_leaf"
+            );
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "Invalid email!",
+                value: "email",
+            });
+        });
+
+        it("createUser with a short password", async () => {
+            const response = await createUserWithEmailPassword(
+                "naruto@konoha.com",
+                "hi"
+            );
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message:
+                    "Password must be equal or more than 8 characters long!",
+                value: "password",
+            });
+        });
+
+        it("createUser with an invalid image URL format", async () => {
+            const response = await createUserWithImages(
+                "badURL",
+                "https://picsum.photos/200/300"
+            );
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "Invalid image URL!",
+                value: "imageURL",
+            });
+        });
+
+        it("fails to update user with an invalid cover image URL format", async () => {
+            const response = await createUserWithImages(
+                "https://picsum.photos/200/300",
+                "badURL"
+            );
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "Invalid cover image URL!",
+                value: "coverImageURL",
             });
         });
     });

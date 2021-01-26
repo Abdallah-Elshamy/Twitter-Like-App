@@ -146,6 +146,38 @@ export default {
             });
             return user;
         },
+        follow: async (parent: any, args: any, context: any, info: any) => {
+            // assume logged in user id is 1
+            const currentUserId: number = 1
+            // check if the user is trying to follow himself
+            if(currentUserId === +args.userId) {
+                const error: any = new Error("The userId and the currentUserId are the same");
+                error.statusCode = 422;
+                throw error;
+            }
+
+            const currentUser: any = await User.findByPk(currentUserId);
+
+            // check if the entered user is found in the database
+            const toBeFollowed: any = await User.findByPk(args.userId);
+            if (!toBeFollowed) {
+                const error: any = new Error("No user found with this id");
+                error.statusCode = 404;
+                throw error;
+            }
+            const isFollowing = await currentUser.hasFollowing(toBeFollowed);
+            // check if the current user is following the entered user
+            if (isFollowing) {
+                const error: any = new Error("This user is already followed");
+                error.statusCode = 422;
+                throw error;
+            }
+            await db.transaction(async (transaction) => {
+                return await currentUser.$add("following", toBeFollowed);
+            });
+            
+            return true;
+        },
     },
     User: {
         followingCount: async (parent: any) => {

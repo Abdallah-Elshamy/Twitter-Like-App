@@ -6,6 +6,7 @@ export default gql`
         createUser(userInput: UserCreateInput!) : User! 
         updateUser(id: ID!, userInput: UserUpdateInput!) : User! 
         unlike(tweetId: ID!): Boolean
+        follow(userId: ID!): Boolean
         unfollow(userId: ID!): Boolean
     }
 

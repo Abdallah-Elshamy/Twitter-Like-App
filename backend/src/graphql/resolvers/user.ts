@@ -1,5 +1,6 @@
 import { User, Tweet } from "../../models";
 import UserValidator from "../../validators/user";
+import db from "../../db";
 
 const PAGE_SIZE = 1;
 
@@ -110,6 +111,37 @@ export default {
             const updatedUser: any = await toBeUpdatedUser.save();
 
             return updatedUser;
+        },
+        createUser: async (parent: any, args: any, context: any, info: any) => {
+            const { userInput } = args;
+            const validators = UserValidator(userInput);
+            if (await User.findOne({ where: { email: userInput.email } })) {
+                validators.push({
+                    message:
+                        "This email address is already being used",
+                    value: "email",
+                });
+            }
+            if (await User.findOne({ where: { userName: userInput.userName } })) {
+                validators.push({
+                    message:
+                        "This user name is already being used",
+                    value: "userName",
+                });
+            }
+            if (validators.length > 0) {
+                const error: any = new Error("Validation error!");
+                error.statusCode = 422;
+                error.validators = validators;
+                throw error;
+            }
+            // TODO: Hash the password
+            userInput.hashedPassword = userInput.password;
+            delete userInput.password;
+            const user = await db.transaction(async (transaction) => {
+                return await User.create(userInput, { transaction });
+            });
+            return user;
         },
     },
     User: {

@@ -366,3 +366,32 @@ export const follow = async (userId: number) => {
         `,
         });
 };
+
+export const like = async (tweetId: number) => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+            mutation {
+                like(tweetId: ${tweetId})
+            }
+        `,
+        });
+};
+
+export const createTweet = async () => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+            mutation {
+                createTweet(tweet: {
+                    text: "One ring to rule them all",
+                }){
+                    id,
+                    text
+                }
+            }
+        `,
+        });
+};

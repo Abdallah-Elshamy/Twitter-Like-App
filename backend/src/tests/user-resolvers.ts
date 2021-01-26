@@ -275,8 +275,8 @@ describe("user-resolvers", (): void => {
                     email: `testU${i + 1}@yahoo.com`,
                     hashedPassword: "12345678910",
                 });
-                if (i == 0) loggedUser = user;
-                if (i == 1) toBeFollowed = user;
+                if (i === 0) loggedUser = user;
+                if (i === 1) toBeFollowed = user;
             }
             // make user with id 1 follow user with id 2
             return await loggedUser.$add("following", toBeFollowed);
@@ -322,42 +322,65 @@ describe("user-resolvers", (): void => {
         });
     });
 
-    // describe("unlike resolver", () => {
-    //     it("succeeds in unliking a liked tweet", async () => {
-    //         // the resolver assumes that the loggedin user is the user with id 1
-    //         const user: any = await User.findOne({ where: { id: 1 } });
-    //         const likedTweets: any = await user.$get("likes", {
-    //             limit: 1,
-    //         });
-    //         const response = await unlike(likedTweets[0].id);
-    //         expect(response.body.data).to.include({
-    //             unlike: true,
-    //         });
-    //     });
-    //     it("fails to unlikes a non existent tweet", async () => {
-    //         // no user has id 0
-    //         const response = await unlike(0);
+    describe("unlike resolver", () => {
+        before(async () => {
+            await db.sync({ force: true });
+            let likedTweet: any;
+            const user = await User.create({
+                name: "Zog The Defiler",
+                userName: "Zog_Is_a_cool_ORC99",
+                email: "Mordor@yahoo.com",
+                hashedPassword: "THISISApassword!11",
+            });
+            for (let i = 0; i < 2; i++) {
+                let newTweet = await Tweet.create({
+                    text: "This is a test tweet written by Gollum *_* ",
+                    userId: 1,
+                    mediaURLs: [],
+                    state: "O",
+                });
+                if (i === 0) likedTweet = newTweet;
+            }
+            return await user.$add("likes", likedTweet);
+        });
 
-    //         expect(response.body).to.has.property("errors");
-    //         expect(response.body.errors).to.has.length(1);
-    //         expect(response.body.errors[0]).to.include({
-    //             statusCode: 404,
-    //             message: "No tweet found with this id",
-    //         });
-    //     });
+        it("succeeds in unliking a liked tweet", async () => {
+            // the resolver assumes that the loggedin user is the user with id 1
+            const user: any = await User.findByPk(1);
+            const response = await unlike(1);
+            expect(response.body.data).to.include({
+                unlike: true,
+            });
+        });
+        it("fails to unlikes a non existent tweet", async () => {
+            // no tweet has an id of 0
+            const response = await unlike(0);
 
-    //     it("fails to unlike a tweet that isn't liked by the user", async () => {
-    //         const user: any = await User.findOne({ where: { id: 1 } });
-    //         const response = await unlike(15);
+            expect(response.body).to.has.property("errors");
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No tweet found with this id",
+            });
+        });
 
-    //         expect(response.body).to.has.property("errors");
-    //         expect(response.body.errors).to.has.length(1);
-    //         expect(response.body.errors[0]).to.include({
-    //             statusCode: 422,
-    //             message: `The current user doesn't like tweet with id 15`,
-    //         });
-    //     });
-    // });
+        it("fails to unlike a tweet that isn't liked by the user", async () => {
+            const user: any = await User.findByPk(1);
+            const response = await unlike(2);
+
+            expect(response.body).to.has.property("errors");
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: `The current user doesn't like tweet with id 2`,
+            });
+        });
+
+        after(async () => {
+            await Tweet.destroy({ where: { id: [1, 2] } });
+            return await User.destroy({ where: { id: 1 } });
+        });
+    });
 
     describe("hashtag resolver", () => {
         it("succeeds in finding hashtag data", async () => {

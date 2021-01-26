@@ -1,6 +1,5 @@
 import { expect } from "chai";
-import request from "supertest";
-import app, { serverPromise } from "../app";
+import { serverPromise } from "../app";
 import db from "../db";
 import { Hashtag, User, Tweet } from "../models";
 
@@ -20,6 +19,7 @@ import {
     updateUserPassword,
     updateUserImageURL,
     updateUserCoverImageURL,
+    follow,
     unfollow,
     hashtag,
     unlike,
@@ -384,10 +384,13 @@ describe("user-resolvers", (): void => {
     });
 
     describe("createUser resolver", (): void => {
+        before(async () => {
+            await db.sync({ force: true });
+        });
         it("createUser with no bio, image, or cover image", async () => {
             const response = await createUser("bilbo", "Bilbo Baggins");
             expect(response.body.data.createUser).to.include({
-                id: "32",
+                id: "1",
                 userName: "bilbo",
                 name: "Bilbo Baggins",
             });
@@ -399,7 +402,7 @@ describe("user-resolvers", (): void => {
                 "Gandalf The Grey"
             );
             expect(response.body.data.createUser).to.include({
-                id: "33",
+                id: "2",
                 userName: "gandalf",
                 name: "Gandalf The Grey",
             });
@@ -411,7 +414,7 @@ describe("user-resolvers", (): void => {
                 "Frodo Baggins"
             );
             expect(response.body.data.createUser).to.include({
-                id: "34",
+                id: "3",
                 userName: "frodo",
                 name: "Frodo Baggins",
             });
@@ -423,7 +426,7 @@ describe("user-resolvers", (): void => {
                 "Roronoa Zoro"
             );
             expect(response.body.data.createUser).to.include({
-                id: "35",
+                id: "4",
                 userName: "zoro",
                 name: "Roronoa Zoro",
             });
@@ -447,7 +450,7 @@ describe("user-resolvers", (): void => {
                 "Monkey D. Luffy"
             );
             expect(response.body.data.createUser).to.include({
-                id: "36",
+                id: "5",
                 userName: "strawhat",
                 name: "Monkey D. Luffy",
             });
@@ -613,6 +616,50 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors[0].validators[0]).to.include({
                 message: "Invalid cover image URL!",
                 value: "coverImageURL",
+            });
+        });
+    });
+
+    describe("follow resolver", (): void => {
+        it("follow an un-followed user", async () => {
+            const response = await follow(2);
+            expect(response.body.data).to.include({
+                follow: true,
+            });
+        });
+
+        it("follow a non existent user", async () => {
+            // users in database are created starting from id 1
+            // no user has the id of 0
+            const response = await follow(0);
+            expect(response.body).to.has.property("errors");
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No user found with this id",
+            });
+        });
+
+        it("follow a followed user", async () => {
+            // the resolver assumes that the logged in user is the user with id 1
+            // it is assumed that a user can't follow/unfollow himself
+            const response = await follow(2);
+            expect(response.body).to.has.property("errors");
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "This user is already followed",
+            });
+        });
+
+        it("follow your account", async () => {
+            const response = await follow(1);
+
+            expect(response.body).to.has.property("errors");
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "The userId and the currentUserId are the same",
             });
         });
     });

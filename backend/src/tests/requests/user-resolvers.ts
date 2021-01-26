@@ -355,3 +355,14 @@ export const createUserWithImages = async (
         });
 };
 
+export const follow = async (userId: number) => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+            mutation {
+                follow(userId: ${userId})
+            }
+        `,
+        });
+};

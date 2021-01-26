@@ -13,3 +13,18 @@
 .sb-right {
   grid-column: 3 / 4;
 }
+.p--light-color {
+  color: var(--dark-grey);
+  font-size: 15px;
+}
+.p--main-color {
+  color: var(--main-color);
+}
+.top-bar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  border-right: solid 0.5px var(--extra-light);
+  border-left: solid 0.5px var(--extra-light);
+  background-color: #fff;
+}

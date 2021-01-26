@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 :root {
-  --main-color: #1da1f2;
+  --main-color: rgb(29, 161, 242);
   --main-black: #14171a;
   --dark-grey: #657786;
-  --light-grey: #aab8c2;
+  --light-grey: #353535;
   --extra-light: #e1e8ed;
   --super-light: #f5f8fa;
   --disable-btn: #93cdf6;

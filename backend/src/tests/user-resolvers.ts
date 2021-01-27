@@ -201,6 +201,7 @@ describe("user-resolvers", (): void => {
                 id: "2",
                 userName: "gandalf",
                 name: "Gandalf The Grey",
+                bio: "RUN YOU FOOLS!",
             });
         });
 
@@ -213,6 +214,7 @@ describe("user-resolvers", (): void => {
                 id: "3",
                 userName: "frodo",
                 name: "Frodo Baggins",
+                imageURL: "https://picsum.photos/200/300",
             });
         });
 
@@ -225,6 +227,7 @@ describe("user-resolvers", (): void => {
                 id: "4",
                 userName: "zoro",
                 name: "Roronoa Zoro",
+                coverImageURL: "https://picsum.photos/200/300",
             });
         });
 
@@ -249,6 +252,10 @@ describe("user-resolvers", (): void => {
                 id: "5",
                 userName: "strawhat",
                 name: "Monkey D. Luffy",
+                bio:
+                    "But a hero is a guy who gives out the meat to everyone else. I want to eat the damn meat!",
+                imageURL: "https://picsum.photos/200/300",
+                coverImageURL: "https://picsum.photos/200/300",
             });
         });
 

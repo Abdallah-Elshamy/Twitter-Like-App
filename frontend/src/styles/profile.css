@@ -1,42 +1,53 @@
 @import "./layout.css";
 
 .pf--bg {
-  height: 205px;
-  width: 618px;
+  max-height: 205px;
   background: var(--dark-grey);
-  object-fit: cover;
+  position: relative;
+  z-index: 0;
 }
+.pf--bg img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+
 .pf--avatar {
   position: absolute;
-  height: 134px;
-  left: 22px;
-  top: 135px;
-  width: 134px;
-  background: var(--dark-grey);
+  top: 32%;
+  left: 2%;
+  z-index: 1;
+  max-height: 23%;
+  max-width: 23%;
+}
+.pf--avatar img {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   border-style: solid;
   border-width: 4px;
   border-color: #fff;
-  object-fit: cover;
-
-  /* margin-top: -65px;
-  margin-left: 20px; */
 }
+
 /* .pf--follow {
     border-style: solid;
     border-radius: 1rem;
     border-color: var(--main-color);
     color: var(--main-color);
   } */
+.pf--info {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  z-index: 0;
+}
 .pf--follow-btn {
   padding: 8px 20px 8px 20px;
   display: inline-flex;
   color: var(--main-color);
   border-color: var(--main-color);
   border: 1px solid var(--main-color);
-  position: absolute;
-  right: 15px;
-  top: 10px;
+  margin: 10px 10px 10px auto;
 }
 .pf--follow-btn:hover {
   background-color: #55abee3b;
@@ -48,6 +59,14 @@
 .pf--nav-ul {
   display: flex;
   justify-content: center;
-  height: 40px;
+  height: 55px;
   color: var(--dark-grey);
+  border-bottom: solid 0.5px var(--extra-light);
+}
+.pf--nav-ul li {
+  flex-grow: 1;
+  margin: auto;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2 ease-in-out;
 }

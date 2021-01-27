@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import '../App.css';
 import '../styles/profile.css';
 import ProfileInfo from "../components/ProfileInfo"; 
-
+import Tweet from "../components/Tweet"
 function Profile() {
   return (
     <Fragment>
@@ -10,23 +10,26 @@ function Profile() {
         <aside className="sb-left">left</aside>  
         <article className="wall">
           <ProfileInfo/>
-          <nav>
-            <ul className="pf--nav-ul">
+          <nav >
+            <ul className="pf--nav-ul active">
               <li>
-                <a href="#">Tweets</a>
+                <a href="/">Tweets</a>
               </li>
               <li>
-                <a href="#">Tweets & replies</a>
+                <a href="/">Tweets & replies</a>
               </li>
               <li>
-                <a href="#">Media</a>
+                <a href="/">Media</a>
               </li>
               <li>
-                <a href="#">Likes</a>
+                <a href="/">Likes</a>
               </li>
             </ul>
           </nav>
-
+          <div className="tweets">
+            <Tweet/>
+            <Tweet/>
+          </div>
           </article>
           <aside className="sb-right">right</aside>
           

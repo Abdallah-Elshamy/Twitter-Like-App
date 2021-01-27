@@ -1,0 +1,41 @@
+.p--light-color {
+  color: var(--dark-grey);
+  font-size: 15px;
+}
+.p--main-color {
+  color: var(--main-color);
+}
+
+.tweet-box {
+  font-size: 15px;
+  padding: 0px 15px 0px 15px;
+  display: flex;
+  width: 100%;
+  cursor: pointer;
+  border-bottom: solid 0.5px var(--extra-light);
+  height: 200px;
+}
+.tweet-wraber {
+  height: 100%;
+  width: 100%;
+}
+.tweet-content {
+  height: 60%;
+  font-weight: 400;
+  background: #aaa;
+}
+.tweet-data {
+  display: flex;
+  flex-direction: row;
+}
+.ellipsis {
+  margin-left: auto;
+}
+.tweet-icon {
+  flex-basis: 50px;
+}
+.tweet-toolbar {
+  height: 30%;
+  display: flex;
+  justify-content: space-between;
+}

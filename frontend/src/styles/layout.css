@@ -9,6 +9,8 @@
 }
 .wall {
   grid-column: 2 / 3;
+  border-right: solid 0.5px var(--extra-light);
+  border-left: solid 0.5px var(--extra-light);
 }
 .sb-right {
   grid-column: 3 / 4;
@@ -23,8 +25,9 @@
 .top-bar {
   position: sticky;
   top: 0;
-  display: flex;
-  border-right: solid 0.5px var(--extra-light);
-  border-left: solid 0.5px var(--extra-light);
   background-color: #fff;
+  max-height: 48px;
+  padding: 0px 16px 0px 16px;
+  display: flex;
+  flex-direction: row;
 }

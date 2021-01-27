@@ -45,7 +45,7 @@ class User extends Model {
 
     @AllowNull(true)
     @Column(DataType.STRING)
-    image?: string;
+    imageURL?: string;
 
     @AllowNull(true)
     @Column(DataType.STRING)
@@ -53,7 +53,7 @@ class User extends Model {
 
     @AllowNull(true)
     @Column(DataType.STRING)
-    coverImage?: string;
+    coverImageURL?: string;
 
     // one-to-many relation between user and tweets
     @HasMany(() => Tweet, "userId")

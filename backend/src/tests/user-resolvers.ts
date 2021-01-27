@@ -4,6 +4,7 @@ import { serverPromise } from "../app";
 import db from "../db";
 import { Hashtag, User, Tweet } from "../models";
 import {
+    getUser,
     createUser,
     createUserWithBio,
     createUserWithImage,
@@ -11,6 +12,7 @@ import {
     createUserComplete,
     createUserWithEmailPassword,
     createUserWithImages,
+    createTwentyUser,
     updateUser,
     emptyUpdateUser,
     updateUserName,
@@ -20,6 +22,7 @@ import {
     updateUserImageURL,
     updateUserCoverImageURL,
     follow,
+    followFifteenUser,
     unfollow,
     hashtag,
     like,
@@ -34,6 +37,146 @@ describe("user-resolvers", (): void => {
         server = await serverPromise;
         server.close();
         server.listen();
+    });
+
+    describe("user/users resolver", () => {
+        before(async () => {
+            await db.sync({ force: true });
+            await createTwentyUser();
+            await followFifteenUser();
+            // get followed by fifteen users
+            const toBeFollowed: any = await User.findByPk(1);
+            for (let i: number = 2; i <= 16; i++) {
+                let currentUser: any = await User.findByPk(i);
+                if (currentUser) {
+                    await db.transaction(async (transaction) => {
+                        await currentUser.$add("following", toBeFollowed);
+                    });
+                }
+            }
+            // Create a tweet and like it
+            await createTweet();
+            await like(1);
+        });
+
+        it("get a user", async () => {
+            const response = await getUser(1);
+            // check basic properties
+            expect(response.body.data.user).to.include({
+                id: "1",
+                userName: "kage1",
+                name: "kage bunshin no jutsu",
+                email: "kage1@konoha.com",
+                bio: "That is MY Ninja Way!",
+                imageURL: "https://picsum.photos/200/300",
+                coverImageURL: "https://picsum.photos/200/300",
+                followingCount: 15,
+                followersCount: 15,
+            });
+            // check that the followers of the followers of the user
+            // are retrieved correctly
+            expect(response.body.data.user.followers).to.have.property(
+                "totalCount"
+            );
+            expect(response.body.data.user.followers.totalCount).to.be.equal(
+                15
+            );
+            expect(response.body.data.user.followers).to.have.property("users");
+            expect(response.body.data.user.followers.users).to.have.length(10);
+            for (let i: number = 0; i < 10; i++) {
+                expect(
+                    response.body.data.user.followers.users[i]
+                ).to.have.property("followers");
+                expect(
+                    response.body.data.user.followers.users[i].followers
+                ).to.have.property("totalCount");
+                expect(
+                    response.body.data.user.followers.users[i].followers
+                        .totalCount
+                ).to.be.equal(1);
+                expect(
+                    response.body.data.user.followers.users[i].followers
+                ).to.have.property("users");
+                expect(
+                    response.body.data.user.followers.users[i].followers.users
+                ).to.have.length(1);
+                expect(
+                    response.body.data.user.followers.users[i].followers
+                        .users[0]
+                ).to.include({ id: "1" });
+            }
+
+            // check that the following users of the following users
+            // of the user are retrieved correctly
+            expect(response.body.data.user.following).to.have.property(
+                "totalCount"
+            );
+            expect(response.body.data.user.following.totalCount).to.be.equal(
+                15
+            );
+            expect(response.body.data.user.following).to.have.property("users");
+            expect(response.body.data.user.following.users).to.have.length(10);
+            for (let i: number = 0; i < 10; i++) {
+                expect(
+                    response.body.data.user.following.users[i]
+                ).to.have.property("following");
+                expect(
+                    response.body.data.user.following.users[i].following
+                ).to.have.property("totalCount");
+                expect(
+                    response.body.data.user.following.users[i].following
+                        .totalCount
+                ).to.be.equal(1);
+                expect(
+                    response.body.data.user.following.users[i].following
+                ).to.have.property("users");
+                expect(
+                    response.body.data.user.following.users[i].following.users
+                ).to.have.length(1);
+                expect(
+                    response.body.data.user.following.users[i].following
+                        .users[0]
+                ).to.include({ id: "1" });
+            }
+
+            // check the retrieval of the tweets
+            expect(response.body.data.user.tweets).to.have.property(
+                "totalCount"
+            );
+            expect(response.body.data.user.tweets.totalCount).to.be.equal(1);
+            expect(response.body.data.user.tweets).to.have.property("tweets");
+            expect(response.body.data.user.tweets.tweets).to.have.length(1);
+            expect(response.body.data.user.tweets.tweets[0]).to.have.property(
+                "text"
+            );
+            expect(response.body.data.user.tweets.tweets[0].text).to.be.equal(
+                "One ring to rule them all"
+            );
+
+            // check the retrieval of likes
+            expect(response.body.data.user.likes).to.have.property(
+                "totalCount"
+            );
+            expect(response.body.data.user.likes.totalCount).to.be.equal(1);
+            expect(response.body.data.user.likes).to.have.property("tweets");
+            expect(response.body.data.user.likes.tweets).to.have.length(1);
+            expect(response.body.data.user.likes.tweets[0]).to.have.property(
+                "text"
+            );
+            expect(response.body.data.user.likes.tweets[0].text).to.be.equal(
+                "One ring to rule them all"
+            );
+        });
+
+        it("get a non existent user", async () => {
+            const response = await getUser(0);
+            expect(response.body).to.has.property("errors");
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No user was found with this id!",
+            });
+        });
     });
 
     describe("createUser resolver", (): void => {
@@ -500,7 +643,7 @@ describe("user-resolvers", (): void => {
             });
         });
     });
-    
+
     describe("like resolver", () => {
         before(async () => {
             await db.sync({ force: true });

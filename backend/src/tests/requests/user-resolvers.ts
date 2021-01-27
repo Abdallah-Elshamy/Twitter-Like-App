@@ -380,16 +380,110 @@ export const like = async (tweetId: number) => {
 };
 
 export const createTweet = async () => {
-    return await request(app)
-        .post("/graphql")
-        .send({
-            query: `
+    return await request(app).post("/graphql").send({
+        query: `
             mutation {
                 createTweet(tweet: {
                     text: "One ring to rule them all",
                 }){
                     id,
                     text
+                }
+            }
+        `,
+    });
+};
+
+export const createTwentyUser = async () => {
+    for (let i: number = 1; i <= 20; i++) {
+        await request(app)
+            .post("/graphql")
+            .send({
+                query: `
+            mutation {
+                createUser(userInput: {
+                    userName: "kage${i}",
+                    name: "kage bunshin no jutsu",
+                    email: "kage${i}@konoha.com",
+                    password: "hidden_leaf",
+                    bio: "That is MY Ninja Way!",
+                    imageURL: "https://picsum.photos/200/300",
+                    coverImageURL: "https://picsum.photos/200/300"
+                }){
+                    id,
+                }
+            }
+        `,
+            });
+    }
+    return true;
+};
+
+export const followFifteenUser = async () => {
+    for (let i: number = 2; i <= 16; i++) {
+        await request(app)
+            .post("/graphql")
+            .send({
+                query: `
+            mutation {
+                follow(userId: ${i})
+            }
+        `,
+            });
+    }
+    return true;
+};
+
+export const getUser = async (id: number) => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+            query {
+                user(id: ${id}) {
+                    id,
+                    userName,
+                    email,
+                    name,
+                    imageURL,
+                    bio,
+                    coverImageURL,
+                    following(page: 1) {
+                        totalCount,
+                        users {
+                            following {
+                                totalCount,
+                                users {
+                                  id
+                                }
+                            }
+                        }
+                    }
+                    followingCount,
+                    followers(page: 1) {
+                        totalCount,
+                        users {
+                            followers {
+                                totalCount,
+                                users {
+                                  id
+                                }
+                            }
+                        }
+                    }
+                    followersCount,
+                    tweets {
+                        totalCount,
+                        tweets {
+                            text
+                        }
+                    },
+                    likes {
+                        totalCount,
+                        tweets {
+                            text
+                        }
+                    }
                 }
             }
         `,

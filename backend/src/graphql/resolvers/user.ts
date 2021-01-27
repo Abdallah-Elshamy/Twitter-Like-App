@@ -7,7 +7,20 @@ import db from "../../db";
 const PAGE_SIZE = 10;
 
 export default {
-    Query: {},
+    Query: {
+        user: async (parent: any, args: any, context: any, info: any) => {
+            const { id } = args;
+            const user: any = await User.findByPk(+id);
+            if(user) {
+                return user;
+            }
+            else {
+                const error: any = new Error("No user was found with this id!");
+                error.statusCode = 404;
+                throw error;
+            }
+        }
+    },
     Mutation: {
         createUser: async (parent: any, args: any, context: any, info: any) => {
             const { userInput } = args;

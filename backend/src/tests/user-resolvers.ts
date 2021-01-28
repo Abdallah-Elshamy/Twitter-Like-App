@@ -182,7 +182,7 @@ describe("user-resolvers", (): void => {
 
         it("get users without page", async () => {
             const response = await getUsersWithoutPage("ag");
-            console.log(response)
+            console.log(response);
             expect(response.body.data.users.totalCount).to.be.equal(20);
             expect(response.body.data.users.users).to.has.length(10);
         });
@@ -200,7 +200,7 @@ describe("user-resolvers", (): void => {
             expect(response.body.data.users.users[0]).to.include({
                 id: "12",
                 userName: "kage12",
-            })
+            });
         });
 
         it("get users within a page", async () => {
@@ -770,7 +770,7 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
-                message: "No tweet found with this id",
+                message: "No tweet was found with this id!",
             });
         });
 
@@ -782,7 +782,7 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
-                message: `The current user doesn't like tweet with id 2`,
+                message: "The current user doesn't like this tweet",
             });
         });
 

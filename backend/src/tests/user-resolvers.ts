@@ -182,7 +182,6 @@ describe("user-resolvers", (): void => {
 
         it("get users without page", async () => {
             const response = await getUsersWithoutPage("ag");
-            console.log(response);
             expect(response.body.data.users.totalCount).to.be.equal(20);
             expect(response.body.data.users.users).to.has.length(10);
         });
@@ -281,7 +280,7 @@ describe("user-resolvers", (): void => {
                 message: "Validation error!",
             });
             expect(response.body.errors[0].validators[0]).to.include({
-                message: "This user name is already being used",
+                message: "This user name is already being used!",
                 value: "userName",
             });
         });
@@ -312,7 +311,7 @@ describe("user-resolvers", (): void => {
                 message: "Validation error!",
             });
             expect(response.body.errors[0].validators[0]).to.include({
-                message: "This email address is already being used",
+                message: "This email address is already being used!",
                 value: "email",
             });
         });
@@ -716,7 +715,7 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
-                message: "This tweet is already liked",
+                message: "This tweet is already liked!",
             });
         });
 
@@ -727,7 +726,7 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
-                message: "No tweet found with this id",
+                message: "No tweet was found with this id!",
             });
         });
     });
@@ -814,7 +813,7 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
-                message: "No user found with this id",
+                message: "No user was found with this id!",
             });
         });
 
@@ -826,7 +825,7 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
-                message: "This user is already followed",
+                message: "This user is already followed!",
             });
         });
 
@@ -837,7 +836,7 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
-                message: "The userId and the currentUserId are the same",
+                message: "The userId and the currentUserId are the same!",
             });
         });
     });

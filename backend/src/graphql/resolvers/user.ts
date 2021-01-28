@@ -53,9 +53,11 @@ export default {
         createUser: async (parent: any, args: any, context: any, info: any) => {
             const { userInput } = args;
             const validators = UserValidator(userInput);
+            // sanitize the email before processing it
+            userInput.email = validator.normalizeEmail(userInput.email);
             if (await User.findOne({ where: { email: userInput.email } })) {
                 validators.push({
-                    message: "This email address is already being used",
+                    message: "This email address is already being used!",
                     value: "email",
                 });
             }
@@ -63,7 +65,7 @@ export default {
                 await User.findOne({ where: { userName: userInput.userName } })
             ) {
                 validators.push({
-                    message: "This user name is already being used",
+                    message: "This user name is already being used!",
                     value: "userName",
                 });
             }
@@ -167,15 +169,24 @@ export default {
 
             const tweet: any = await Tweet.findByPk(args.tweetId);
             if (!tweet) {
-                const error: any = new Error("No tweet found with this id");
+                const error: any = new Error("No tweet was found with this id!");
                 error.statusCode = 404;
                 throw error;
             }
+
+            if(tweet.state === "R") {
+                const error: any = new Error(
+                    "Can't reply to or like a retweeted tweet!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
             const isLiked = await currentUser.hasLikes(tweet);
 
             // check if the entered tweet is liked by the current user
             if (isLiked) {
-                const error: any = new Error("This tweet is already liked");
+                const error: any = new Error("This tweet is already liked!");
                 error.statusCode = 422;
                 throw error;
             }
@@ -221,7 +232,7 @@ export default {
             // check if the user is trying to follow himself
             if (currentUserId === +args.userId) {
                 const error: any = new Error(
-                    "The userId and the currentUserId are the same"
+                    "The userId and the currentUserId are the same!"
                 );
                 error.statusCode = 422;
                 throw error;
@@ -232,14 +243,14 @@ export default {
             // check if the entered user is found in the database
             const toBeFollowed: any = await User.findByPk(args.userId);
             if (!toBeFollowed) {
-                const error: any = new Error("No user found with this id");
+                const error: any = new Error("No user was found with this id!");
                 error.statusCode = 404;
                 throw error;
             }
             const isFollowing = await currentUser.hasFollowing(toBeFollowed);
             // check if the current user is following the entered user
             if (isFollowing) {
-                const error: any = new Error("This user is already followed");
+                const error: any = new Error("This user is already followed!");
                 error.statusCode = 422;
                 throw error;
             }

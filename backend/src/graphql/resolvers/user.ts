@@ -169,12 +169,14 @@ export default {
 
             const tweet: any = await Tweet.findByPk(args.tweetId);
             if (!tweet) {
-                const error: any = new Error("No tweet was found with this id!");
+                const error: any = new Error(
+                    "No tweet was found with this id!"
+                );
                 error.statusCode = 404;
                 throw error;
             }
 
-            if(tweet.state === "R") {
+            if (tweet.state === "R") {
                 const error: any = new Error(
                     "Can't reply to or like a retweeted tweet!"
                 );
@@ -191,7 +193,7 @@ export default {
                 throw error;
             }
             await db.transaction(async (transaction) => {
-                return await currentUser.$add("likes", tweet);
+                return await currentUser.$add("likes", tweet, { transaction });
             });
 
             return true;
@@ -248,7 +250,9 @@ export default {
                 throw error;
             }
             await db.transaction(async (transaction) => {
-                return await currentUser.$add("following", toBeFollowed);
+                return await currentUser.$add("following", toBeFollowed, {
+                    transaction,
+                });
             });
 
             return true;

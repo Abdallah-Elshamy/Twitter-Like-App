@@ -44,7 +44,7 @@ export default {
             const tweet = await Tweet.findByPk(id);
             if (!tweet) {
                 const error: any = new Error(
-                    "No tweet was found with that id!"
+                    "No tweet was found with this id!"
                 );
                 error.statusCode = 404;
                 throw error;
@@ -69,7 +69,7 @@ export default {
             }
             const user = await User.findByPk(userId);
             if (!user) {
-                const error: any = new Error("No user was found with that id!");
+                const error: any = new Error("No user was found with this id!");
                 error.statusCode = 404;
                 throw error;
             }
@@ -171,7 +171,7 @@ export default {
             const repliedToTweet = await Tweet.findByPk(repliedToTweetId);
             if (!repliedToTweet) {
                 const error: any = new Error(
-                    "No tweet was found with that id!"
+                    "No tweet was found with this id!"
                 );
                 error.statusCode = 404;
                 throw error;
@@ -212,13 +212,13 @@ export default {
             const tweet = await Tweet.findByPk(id);
             if (!tweet) {
                 const error: any = new Error(
-                    "No tweet was found with that id!"
+                    "No tweet was found with this id!"
                 );
                 error.statusCode = 404;
                 throw error;
             }
             await tweet.destroy();
-            return "Successfully deleted!";
+            return true;
         },
     },
     Tweet: {

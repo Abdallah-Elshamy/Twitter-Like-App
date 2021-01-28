@@ -140,16 +140,25 @@ describe("tweet-resolvers", (): void => {
 
         it("createTweet with media", async () => {
             const response = await createTweetWithMedia("hello world");
+            // console.log(response.text);
             expect(response.body.data.createTweet).to.include({
                 id: "2",
                 text: "hello world",
                 state: "O",
             });
             expect(response.body.data.createTweet.mediaURLs).to.has.length(4);
-            expect(response.body.data.createTweet.mediaURLs).to.include("a");
-            expect(response.body.data.createTweet.mediaURLs).to.include("b");
-            expect(response.body.data.createTweet.mediaURLs).to.include("c");
-            expect(response.body.data.createTweet.mediaURLs).to.include("d");
+            expect(response.body.data.createTweet.mediaURLs).to.include(
+                "https://www.vapulus.com/en/wp-content/uploads/2019/05/startup-books.jpg"
+            );
+            expect(response.body.data.createTweet.mediaURLs).to.include(
+                "https://media.btech.com/media/catalog/product/cache/22b1bed05f04d71c4a848d770186c3c4/h/p/hp-notebook-15-da1885ne_ca36.jpg"
+            );
+            expect(response.body.data.createTweet.mediaURLs).to.include(
+                "https://media.btech.com/media/catalog/product/cache/22b1bed05f04d71c4a848d770186c3c4/h/p/hp_da2001ne_1.png"
+            );
+            expect(response.body.data.createTweet.mediaURLs).to.include(
+                "https://www.rayashop.com/media/product/fc3/hp-omen-15-en0013dx-laptop-amd-ryzen-7-4800h-15-6-inch-fhd-512gb-8gb-ram-nvidia-1660-ti-6gb-win-10-22d.jpg"
+            );
         });
 
         it("createTweet with media and no text", async () => {
@@ -160,10 +169,18 @@ describe("tweet-resolvers", (): void => {
                 state: "O",
             });
             expect(response.body.data.createTweet.mediaURLs).to.has.length(4);
-            expect(response.body.data.createTweet.mediaURLs).to.include("a");
-            expect(response.body.data.createTweet.mediaURLs).to.include("b");
-            expect(response.body.data.createTweet.mediaURLs).to.include("c");
-            expect(response.body.data.createTweet.mediaURLs).to.include("d");
+            expect(response.body.data.createTweet.mediaURLs).to.include(
+                "https://www.vapulus.com/en/wp-content/uploads/2019/05/startup-books.jpg"
+            );
+            expect(response.body.data.createTweet.mediaURLs).to.include(
+                "https://media.btech.com/media/catalog/product/cache/22b1bed05f04d71c4a848d770186c3c4/h/p/hp-notebook-15-da1885ne_ca36.jpg"
+            );
+            expect(response.body.data.createTweet.mediaURLs).to.include(
+                "https://media.btech.com/media/catalog/product/cache/22b1bed05f04d71c4a848d770186c3c4/h/p/hp_da2001ne_1.png"
+            );
+            expect(response.body.data.createTweet.mediaURLs).to.include(
+                "https://www.rayashop.com/media/product/fc3/hp-omen-15-en0013dx-laptop-amd-ryzen-7-4800h-15-6-inch-fhd-512gb-8gb-ram-nvidia-1660-ti-6gb-win-10-22d.jpg"
+            );
         });
 
         it("fail createTweet with text less than 1 char", async () => {
@@ -182,7 +199,7 @@ describe("tweet-resolvers", (): void => {
             );
         });
 
-        it("fail createTweet with mediaURLs array of more than 4 urls", async () => {
+        it("fail createTweet with mediaURLs array of more than 4 urls and invalid urls!", async () => {
             const response = await request(app).post("/graphql").send({
                 query: `
                 mutation {
@@ -197,9 +214,12 @@ describe("tweet-resolvers", (): void => {
             });
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
-            expect(response.body.errors[0].validators).to.has.length(1);
+            expect(response.body.errors[0].validators).to.has.length(2);
             expect(response.body.errors[0].validators[0].message).to.be.equal(
                 "mediaURLs array must not exceed 4 urls!"
+            );
+            expect(response.body.errors[0].validators[1].message).to.be.equal(
+                "all mediaURLs must be valid urls!"
             );
         });
     });
@@ -247,7 +267,7 @@ describe("tweet-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
-                message: "No tweet was found with that id!",
+                message: "No tweet was found with this id!",
             });
         });
     });
@@ -263,9 +283,7 @@ describe("tweet-resolvers", (): void => {
             const tweet = await Tweet.findByPk(1);
             expect(tweet).to.be.not.null;
             const response = await deleteTweet(1);
-            expect(response.body.data.deleteTweet).to.be.equal(
-                "Successfully deleted!"
-            );
+            expect(response.body.data.deleteTweet).to.be.true;
             const tweet2 = await Tweet.findByPk(1);
             expect(tweet2).to.be.null;
         });
@@ -275,7 +293,7 @@ describe("tweet-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
-                message: "No tweet was found with that id!",
+                message: "No tweet was found with this id!",
             });
         });
     });
@@ -450,7 +468,7 @@ describe("tweet-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
-                message: "No tweet was found with that id!",
+                message: "No tweet was found with this id!",
             });
         });
     });
@@ -569,7 +587,7 @@ describe("tweet-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
-                message: "No user was found with that id!",
+                message: "No user was found with this id!",
             });
         });
 

@@ -28,7 +28,11 @@ export const createTweetWithMedia = async (text: any) => {
             mutation {
                 createTweet(tweet: {
                     text: "${text}"
-                    mediaURLs: ["a","b","c","d"]
+                    mediaURLs: [
+                        "https://www.vapulus.com/en/wp-content/uploads/2019/05/startup-books.jpg",
+                        "https://media.btech.com/media/catalog/product/cache/22b1bed05f04d71c4a848d770186c3c4/h/p/hp-notebook-15-da1885ne_ca36.jpg",
+                        "https://media.btech.com/media/catalog/product/cache/22b1bed05f04d71c4a848d770186c3c4/h/p/hp_da2001ne_1.png",
+                        "https://www.rayashop.com/media/product/fc3/hp-omen-15-en0013dx-laptop-amd-ryzen-7-4800h-15-6-inch-fhd-512gb-8gb-ram-nvidia-1660-ti-6gb-win-10-22d.jpg"]
                 }){
                     id
                     text

@@ -28,6 +28,17 @@ const tweetValidator = (tweetInput: TweetInput) => {
             value: "mediaURLs",
         });
     }
+    if(mediaURLs !== undefined) {
+        for(let mediaURL of mediaURLs) {
+            if(!validator.isURL(mediaURL)) {
+                validators.push({
+                    message: "all mediaURLs must be valid urls!",
+                    value: "mediaURLs",
+                });
+                break;
+            }
+        }
+    }
     return validators;
 };
 

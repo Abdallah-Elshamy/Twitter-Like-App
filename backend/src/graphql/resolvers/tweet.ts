@@ -69,7 +69,7 @@ export default {
             }
             const user = await User.findByPk(userId);
             if (!user) {
-                const error: any = new Error("No user was found with that id!");
+                const error: any = new Error("No user was found with this id!");
                 error.statusCode = 404;
                 throw error;
             }

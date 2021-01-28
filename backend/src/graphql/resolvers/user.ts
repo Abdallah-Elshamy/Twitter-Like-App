@@ -1,10 +1,10 @@
 import bcrypt from "bcryptjs";
+import validator from "validator";
 
 import { User, Tweet } from "../../models";
 import UserValidator from "../../validators/user";
 import db from "../../db";
 import { Op } from "sequelize";
-import validator from "validator" 
 
 const PAGE_SIZE = 10;
 
@@ -117,10 +117,29 @@ export default {
             } = userInput;
 
             if (userName) {
+                const user = await User.findOne({
+                    where: { userName: userName },
+                });
+                if (user) {
+                    const error: any = new Error(
+                        "This username is already used!"
+                    );
+                    error.statusCode = 422;
+                    throw error;
+                }
                 toBeUpdatedUser.userName = userName;
             }
             if (email) {
-                toBeUpdatedUser.email = email.toLowerCase();
+                const sanitized = validator.normalizeEmail(email);
+                const user = await User.findOne({
+                    where: { email: sanitized },
+                });
+                if (user) {
+                    const error: any = new Error("This email is already used!");
+                    error.statusCode = 422;
+                    throw error;
+                }
+                toBeUpdatedUser.email = sanitized;
             }
             if (password) {
                 const hashedPw = await bcrypt.hash(password, 12);
@@ -138,7 +157,9 @@ export default {
             if (coverImageURL) {
                 toBeUpdatedUser.coverImageURL = coverImageURL;
             }
-            const updatedUser: any = await toBeUpdatedUser.save();
+            const updatedUser = await db.transaction(async (transaction) => {
+                return await toBeUpdatedUser.save({ transaction });
+            });
 
             return updatedUser;
         },
@@ -272,8 +293,9 @@ export default {
                 users: async () => {
                     const { page } = args;
                     return await parent.$get("following", {
-                        offset: (page - 1) * PAGE_SIZE || 0,
-                        limit: page ? PAGE_SIZE : undefined,
+                        offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                        order: [["createdAt", "DESC"]],
                     });
                 },
             };
@@ -286,8 +308,9 @@ export default {
                 users: async () => {
                     const { page } = args;
                     return await parent.$get("followers", {
-                        offset: (page - 1) * PAGE_SIZE || 0,
-                        limit: page ? PAGE_SIZE : undefined,
+                        offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                        order: [["createdAt", "DESC"]],
                     });
                 },
             };
@@ -300,8 +323,9 @@ export default {
                 tweets: async () => {
                     const { page } = args;
                     return await parent.$get("tweets", {
-                        offset: (page - 1) * PAGE_SIZE || 0,
-                        limit: page ? PAGE_SIZE : undefined,
+                        offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                        order: [["createdAt", "DESC"]],
                     });
                 },
             };
@@ -314,18 +338,16 @@ export default {
                 tweets: async () => {
                     const { page } = args;
                     return await parent.$get("likes", {
-                        offset: (page - 1) * PAGE_SIZE || 0,
-                        limit: page ? PAGE_SIZE : undefined,
+                        offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                        order: [["createdAt", "DESC"]],
                     });
                 },
             };
         },
         groups: async (parent: any) => {
             const groups: any = await parent.$get("groups");
-            let names: string[] = [];
-            groups.forEach((group: any) => {
-                names.push(group.name);
-            });
+            const names: string[] = groups.map((group: any) => group.name);
             return names;
         },
         permissions: async (parent: any) => {

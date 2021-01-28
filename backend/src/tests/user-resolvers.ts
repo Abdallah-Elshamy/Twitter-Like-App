@@ -6,6 +6,8 @@ import { Hashtag, User, Tweet } from "../models";
 import {
     getUser,
     createUser,
+    getUsersWithoutPage,
+    getUsersWithPage,
     createUserWithBio,
     createUserWithImage,
     createUserWithCoverImage,
@@ -176,6 +178,47 @@ describe("user-resolvers", (): void => {
                 statusCode: 404,
                 message: "No user was found with this id!",
             });
+        });
+
+        it("get users without page", async () => {
+            const response = await getUsersWithoutPage("ag");
+            console.log(response)
+            expect(response.body.data.users.totalCount).to.be.equal(20);
+            expect(response.body.data.users.users).to.has.length(10);
+        });
+
+        it("get users without matching string", async () => {
+            const response = await getUsersWithoutPage("q");
+            expect(response.body.data.users.totalCount).to.be.equal(0);
+            expect(response.body.data.users.users).to.has.length(0);
+        });
+
+        it("get users where matching string matches a group of users", async () => {
+            const response = await getUsersWithoutPage("12");
+            expect(response.body.data.users.totalCount).to.be.equal(1);
+            expect(response.body.data.users.users).to.has.length(1);
+            expect(response.body.data.users.users[0]).to.include({
+                id: "12",
+                userName: "kage12",
+            })
+        });
+
+        it("get users within a page", async () => {
+            const response = await getUsersWithPage("ag", 2);
+            expect(response.body.data.users.totalCount).to.be.equal(20);
+            expect(response.body.data.users.users).to.has.length(10);
+        });
+
+        it("get users with a big page number", async () => {
+            const response = await getUsersWithPage("ag", 3);
+            expect(response.body.data.users.totalCount).to.be.equal(20);
+            expect(response.body.data.users.users).to.has.length(0);
+        });
+
+        it("get users with a search term and a big page number", async () => {
+            const response = await getUsersWithPage("2", 3);
+            expect(response.body.data.users.totalCount).to.be.equal(3);
+            expect(response.body.data.users.users).to.has.length(0);
         });
     });
 

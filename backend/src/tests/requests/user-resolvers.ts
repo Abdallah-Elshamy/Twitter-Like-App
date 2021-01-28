@@ -489,3 +489,37 @@ export const getUser = async (id: number) => {
         `,
         });
 };
+
+export const getUsersWithoutPage = async (search: string) => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+            query {
+                users(search: "${search}") {
+                    totalCount,
+                    users {
+                        id,
+                        userName
+                    }
+                }
+            }`,
+        });
+};
+
+export const getUsersWithPage = async (search: string, page: number) => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+            query {
+                users(search: "${search}", page: ${page}) {
+                    totalCount,
+                    users {
+                        id,
+                        userName
+                    }
+                }
+            }`,
+        });
+};

@@ -716,7 +716,7 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
-                message: "This tweet is already liked",
+                message: "This tweet is already liked!",
             });
         });
 
@@ -727,7 +727,7 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
-                message: "No tweet found with this id",
+                message: "No tweet was found with this id!",
             });
         });
     });

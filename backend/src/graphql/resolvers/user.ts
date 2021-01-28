@@ -145,15 +145,24 @@ export default {
 
             const tweet: any = await Tweet.findByPk(args.tweetId);
             if (!tweet) {
-                const error: any = new Error("No tweet found with this id");
+                const error: any = new Error("No tweet was found with this id!");
                 error.statusCode = 404;
                 throw error;
             }
+
+            if(tweet.state === "R") {
+                const error: any = new Error(
+                    "Can't reply to or like a retweeted tweet!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
             const isLiked = await currentUser.hasLikes(tweet);
 
             // check if the entered tweet is liked by the current user
             if (isLiked) {
-                const error: any = new Error("This tweet is already liked");
+                const error: any = new Error("This tweet is already liked!");
                 error.statusCode = 422;
                 throw error;
             }

@@ -201,7 +201,7 @@ export default {
             // check if the user is trying to follow himself
             if (currentUserId === +args.userId) {
                 const error: any = new Error(
-                    "The userId and the currentUserId are the same"
+                    "The userId and the currentUserId are the same!"
                 );
                 error.statusCode = 422;
                 throw error;
@@ -212,14 +212,14 @@ export default {
             // check if the entered user is found in the database
             const toBeFollowed: any = await User.findByPk(args.userId);
             if (!toBeFollowed) {
-                const error: any = new Error("No user found with this id");
+                const error: any = new Error("No user was found with this id!");
                 error.statusCode = 404;
                 throw error;
             }
             const isFollowing = await currentUser.hasFollowing(toBeFollowed);
             // check if the current user is following the entered user
             if (isFollowing) {
-                const error: any = new Error("This user is already followed");
+                const error: any = new Error("This user is already followed!");
                 error.statusCode = 422;
                 throw error;
             }

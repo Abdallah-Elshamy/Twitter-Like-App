@@ -182,7 +182,6 @@ describe("user-resolvers", (): void => {
 
         it("get users without page", async () => {
             const response = await getUsersWithoutPage("ag");
-            console.log(response)
             expect(response.body.data.users.totalCount).to.be.equal(20);
             expect(response.body.data.users.users).to.has.length(10);
         });
@@ -281,7 +280,7 @@ describe("user-resolvers", (): void => {
                 message: "Validation error!",
             });
             expect(response.body.errors[0].validators[0]).to.include({
-                message: "This user name is already being used",
+                message: "This user name is already being used!",
                 value: "userName",
             });
         });
@@ -312,7 +311,7 @@ describe("user-resolvers", (): void => {
                 message: "Validation error!",
             });
             expect(response.body.errors[0].validators[0]).to.include({
-                message: "This email address is already being used",
+                message: "This email address is already being used!",
                 value: "email",
             });
         });

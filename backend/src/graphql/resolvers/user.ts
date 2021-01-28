@@ -4,6 +4,7 @@ import { User, Tweet } from "../../models";
 import UserValidator from "../../validators/user";
 import db from "../../db";
 import { Op } from "sequelize";
+import validator from "validator" 
 
 const PAGE_SIZE = 10;
 
@@ -52,9 +53,11 @@ export default {
         createUser: async (parent: any, args: any, context: any, info: any) => {
             const { userInput } = args;
             const validators = UserValidator(userInput);
+            // sanitize the email before processing it
+            userInput.email = validator.normalizeEmail(userInput.email);
             if (await User.findOne({ where: { email: userInput.email } })) {
                 validators.push({
-                    message: "This email address is already being used",
+                    message: "This email address is already being used!",
                     value: "email",
                 });
             }
@@ -62,7 +65,7 @@ export default {
                 await User.findOne({ where: { userName: userInput.userName } })
             ) {
                 validators.push({
-                    message: "This user name is already being used",
+                    message: "This user name is already being used!",
                     value: "userName",
                 });
             }

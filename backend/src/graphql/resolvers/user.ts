@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { User, Tweet } from "../../models";
 import UserValidator from "../../validators/user";
 import db from "../../db";
+import { Op } from "sequelize";
 
 const PAGE_SIZE = 10;
 
@@ -11,15 +12,41 @@ export default {
         user: async (parent: any, args: any, context: any, info: any) => {
             const { id } = args;
             const user: any = await User.findByPk(+id);
-            if(user) {
+            if (user) {
                 return user;
-            }
-            else {
+            } else {
                 const error: any = new Error("No user was found with this id!");
                 error.statusCode = 404;
                 throw error;
             }
-        }
+        },
+        users: async (parent: any, args: any, context: any, info: any) => {
+            const { search, page } = args;
+            const searchConditions = {
+                where: {
+                    [Op.or]: [
+                        {
+                            userName: {
+                                [Op.iLike]: "%" + search + "%",
+                            },
+                        },
+                        {
+                            name: {
+                                [Op.iLike]: "%" + search + "%",
+                            },
+                        },
+                    ],
+                },
+            };
+            return {
+                users: await User.findAll({
+                    ...searchConditions,
+                    offset: ((page || 1) - 1) * PAGE_SIZE,
+                    limit: PAGE_SIZE,
+                }),
+                totalCount: User.count(searchConditions),
+            };
+        },
     },
     Mutation: {
         createUser: async (parent: any, args: any, context: any, info: any) => {

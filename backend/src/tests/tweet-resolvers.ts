@@ -247,7 +247,7 @@ describe("tweet-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
-                message: "No tweet was found with that id!",
+                message: "No tweet was found with this id!",
             });
         });
     });
@@ -275,7 +275,7 @@ describe("tweet-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
-                message: "No tweet was found with that id!",
+                message: "No tweet was found with this id!",
             });
         });
     });
@@ -450,7 +450,7 @@ describe("tweet-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
-                message: "No tweet was found with that id!",
+                message: "No tweet was found with this id!",
             });
         });
     });
@@ -569,7 +569,7 @@ describe("tweet-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
-                message: "No user was found with that id!",
+                message: "No user was found with this id!",
             });
         });
 

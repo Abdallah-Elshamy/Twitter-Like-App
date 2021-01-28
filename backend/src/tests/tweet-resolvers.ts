@@ -263,9 +263,7 @@ describe("tweet-resolvers", (): void => {
             const tweet = await Tweet.findByPk(1);
             expect(tweet).to.be.not.null;
             const response = await deleteTweet(1);
-            expect(response.body.data.deleteTweet).to.be.equal(
-                "Successfully deleted!"
-            );
+            expect(response.body.data.deleteTweet).to.be.true;
             const tweet2 = await Tweet.findByPk(1);
             expect(tweet2).to.be.null;
         });

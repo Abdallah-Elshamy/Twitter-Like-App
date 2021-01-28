@@ -218,7 +218,7 @@ export default {
                 throw error;
             }
             await tweet.destroy();
-            return "Successfully deleted!";
+            return true;
         },
     },
     Tweet: {

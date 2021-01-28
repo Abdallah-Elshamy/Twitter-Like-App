@@ -271,7 +271,7 @@ export default {
             // check if the entered user is found in the database
             const toBeUnfollowed: any = await User.findByPk(args.userId);
             if (!toBeUnfollowed) {
-                const error: any = new Error("No user found with this id");
+                const error: any = new Error("No user was found with this id!");
                 error.statusCode = 404;
                 throw error;
             }
@@ -279,11 +279,16 @@ export default {
             // check if the current user is following the entered user
             if (!isFollowing) {
                 const error: any = new Error(
-                    `The current user is not following the user with id ${toBeUnfollowed.id}`
+                    "The current user is not following this user"
                 );
                 error.statusCode = 422;
                 throw error;
             }
+            await db.transaction(async (transaction) => {
+                await currentUser.$remove("following", toBeUnfollowed, {
+                    transaction,
+                });
+            });
             await currentUser.$remove("following", toBeUnfollowed);
 
             return true;

@@ -879,7 +879,7 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
-                message: "No user found with this id",
+                message: "No user was found with this id!",
             });
         });
 
@@ -892,7 +892,7 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
-                message: "The current user is not following the user with id 3",
+                message: "The current user is not following this user",
             });
         });
 

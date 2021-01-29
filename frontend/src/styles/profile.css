@@ -1,5 +1,9 @@
 @import "./layout.css";
-
+.pf--container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
 .pf--bg {
   max-height: 205px;
   background: var(--dark-grey);

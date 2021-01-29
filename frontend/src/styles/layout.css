@@ -11,6 +11,10 @@
   grid-column: 2 / 3;
   border-right: solid 0.5px var(--extra-light);
   border-left: solid 0.5px var(--extra-light);
+  height: auto;
+  overflow: hidden;
+  /* display: flex;
+  flex-direction: column; */
 }
 .sb-right {
   grid-column: 3 / 4;

@@ -16,7 +16,7 @@ function ProfileInfo() {
           <p className="p--light-color block ">20 tweet</p>
         </div>
       </header>
-      <div className="flex flex-col relative">
+      <div className="pf--container">
         <div className="pf--bg" >
           <img src={bg} alt="avatar"/>
         </div>

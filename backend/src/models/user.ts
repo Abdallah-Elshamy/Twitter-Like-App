@@ -29,6 +29,7 @@ class User extends Model {
     @Column(DataType.STRING)
     name!: string;
 
+    @Unique
     @AllowNull(false)
     @Column(DataType.STRING)
     userName!: string;
@@ -44,7 +45,7 @@ class User extends Model {
 
     @AllowNull(true)
     @Column(DataType.STRING)
-    image?: string;
+    imageURL?: string;
 
     @AllowNull(true)
     @Column(DataType.STRING)
@@ -52,15 +53,15 @@ class User extends Model {
 
     @AllowNull(true)
     @Column(DataType.STRING)
-    coverImage?: string;
+    coverImageURL?: string;
 
     // one-to-many relation between user and tweets
     @HasMany(() => Tweet, "userId")
-    tweets!: Tweet[];
+    tweets?: Tweet[];
 
     // many-to-many  relation between user and user
     @BelongsToMany(() => User, () => Follows, "follower", "following")
-    followings?: User[];
+    following?: User[];
 
     @BelongsToMany(() => User, () => Follows, "following", "follower")
     followers?: User[];

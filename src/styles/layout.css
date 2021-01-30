@@ -1,0 +1,15 @@
+.main-container {
+  display: grid;
+  grid-template-columns: 0.7fr 1.4fr 0.9fr;
+  padding-right: 150px;
+  padding-left: 150px;
+}
+.sb-left {
+  grid-column: 1 / 2;
+}
+.wall {
+  grid-column: 2 / 3;
+}
+.sb-right {
+  grid-column: 3 / 4;
+}

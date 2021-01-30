@@ -4,8 +4,8 @@ import './App.css';
 import './routes/Profile'
 import { ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
 import Profile from './routes/Profile';
-
-
+import { Register } from "./components/Register/Register"
+import { Logo } from "./components/logo/logo"
 
 
 const client = new ApolloClient ({
@@ -17,8 +17,8 @@ const client = new ApolloClient ({
 function App() {
   return (
     <ApolloProvider client={client}>
-
-      <Profile/>
+     <Register />
+      {/* <Profile/> */}
     </ApolloProvider>
   );
 }

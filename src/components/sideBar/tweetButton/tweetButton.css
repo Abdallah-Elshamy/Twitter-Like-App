@@ -1,13 +1,12 @@
 .sidebar_tw_btn {
-    background-color: var(--main-color)!important; 
+    background-color: var( --main-color)!important; 
     border: none !important;
-    color: white !important;
-    font-weight: 900 !important; 
+    color: white ;
+    /* font-weight: 900 !important;  */
     border-radius: 30px !important;
-    height: 50px !important;
-    width: 50px ;
-    padding-right: 150px ;
+    /* width:  350px ; */
+
+    /* padding-right: 150px ; */   
 
   }
   
-

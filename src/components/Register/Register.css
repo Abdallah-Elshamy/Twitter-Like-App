@@ -1,0 +1,14 @@
+.register-container {
+  display: grid;
+  /* grid-template-columns: 0.7fr 1.4fr 0.9fr; */
+  padding-right: 550px;
+  padding-left: 550px;
+}
+
+.login_form {
+  grid-column: 2/3;
+}
+
+.a_login_form{
+    color : var(--main-color) ;
+}

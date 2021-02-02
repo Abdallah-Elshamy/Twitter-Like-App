@@ -384,6 +384,11 @@ export default {
             const isFollowing = await loggedIn.$has("following", parent);
             return isFollowing;
         },
+        isFollower: async (parent: User, args: any, context: any) => {
+            const loggedIn = context.req.user;
+            const isFollower = await loggedIn.$has("follower", parent);
+            return isFollower;
+        },
         tweets: async (parent: any, args: any) => {
             return {
                 totalCount: async () => {

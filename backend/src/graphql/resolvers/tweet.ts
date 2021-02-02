@@ -2,8 +2,19 @@ import { Tweet, Likes, User } from "../../models";
 import { tweetValidator } from "../../validators";
 import db from "../../db";
 import { Transaction, Op } from "sequelize";
+import { Request } from "express";
 
 const PAGE_SIZE = 10;
+
+interface CustomeError extends Error {
+    statusCode?: number;
+    validators?: { message: string; value: string }[];
+}
+
+interface CustomeRequest extends Request {
+    user?: User;
+    authError?: CustomeError;
+}
 
 const addTweetInDataBase = async (
     text: string,
@@ -12,7 +23,8 @@ const addTweetInDataBase = async (
     userId: number,
     transaction: Transaction,
     repliedToTweet: number | undefined = undefined,
-    threadTweet: number | undefined = undefined
+    threadTweet: number | undefined = undefined,
+    originalTweetId: number | undefined = undefined
 ) => {
     const validators = tweetValidator({ text, mediaURLs });
     if (validators.length > 0) {
@@ -32,7 +44,7 @@ const addTweetInDataBase = async (
         },
         { transaction }
     );
-    tweet.originalTweetId = tweet.id;
+    tweet.originalTweetId = originalTweetId ? originalTweetId : tweet.id;
     await tweet.save({ transaction });
     return tweet;
 };
@@ -198,6 +210,35 @@ export default {
                 );
                 return tweet;
             });
+            return tweet;
+        },
+
+        createRetweet: async (
+            parent: any,
+            args: { originalTweetId: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const originalTweetId = args.originalTweetId;
+            const originalTweet = await Tweet.findByPk(originalTweetId);
+            if (!originalTweet) {
+                const error: CustomeError = new Error(
+                    "No tweet was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+            const tweet = await db.transaction(async (transaction) =>
+                addTweetInDataBase(
+                    "",
+                    "R",
+                    [],
+                    1,
+                    transaction,
+                    undefined,
+                    undefined,
+                    originalTweetId
+                )
+            );
             return tweet;
         },
 

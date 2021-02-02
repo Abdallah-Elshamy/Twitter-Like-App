@@ -20,6 +20,27 @@ export const createTweet = async (text: any) => {
         });
 };
 
+export const createRetweet = async (originalTweetId: number) => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+            mutation {
+                createRetweet(originalTweetId: "${originalTweetId}"){
+                    id
+                    text
+                    mediaURLs
+                    state
+                    originalTweet{
+                        id
+                    }
+
+                }
+            }
+        `,
+        });
+};
+
 export const createTweetWithMedia = async (text: any) => {
     return await request(app)
         .post("/graphql")

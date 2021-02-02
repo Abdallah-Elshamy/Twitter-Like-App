@@ -11,6 +11,7 @@ import {
     deleteTweet,
     getTweet,
     getTweets,
+    createRetweet,
 } from "./requests/tweet-resolvers";
 import { truncate } from "fs/promises";
 
@@ -264,6 +265,34 @@ describe("tweet-resolvers", (): void => {
 
         it("fail createReply to a non existing tweet", async () => {
             const response = await createReply("reply tweet2", 20);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No tweet was found with this id!",
+            });
+        });
+    });
+
+    describe("createRetweet Mutation", () => {
+        before(async () => {
+            await db.sync({ force: true });
+            await createUsers(1);
+            await createTweets(1, "O", 1);
+        });
+
+        it("succeed create retweet", async () => {
+            const response = await createRetweet(1);
+            expect(response.body.data.createRetweet).to.include({
+                id: "2",
+                text: "",
+                state: "R",
+            });
+            expect(response.body.data.createRetweet.mediaURLs).to.has.length(0);
+            expect(response.body.data.createRetweet.originalTweet.id).to.be.equal("1");
+        });
+
+        it("fail createRetweet to non existing tweet", async () => {
+            const response = await createRetweet(20);
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,

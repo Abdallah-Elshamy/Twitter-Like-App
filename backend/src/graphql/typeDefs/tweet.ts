@@ -8,6 +8,7 @@ export default gql`
     extend type Mutation {
         createTweet(tweet: TweetCreateInput!): Tweet!
         createReply(tweet: TweetCreateInput!, repliedToTweet: ID!): Tweet!
+        createRetweet(originalTweetId: ID!): Tweet!
         deleteTweet(id: ID!): Boolean!
     }
     type Tweet {

@@ -329,6 +329,15 @@ describe("tweet-resolvers", (): void => {
             });
         });
 
+        it("fail createRetweet of a retweeted tweet", async () => {
+            const response = await createRetweet(2, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Can't retweet a retweeted tweet!",
+            });
+        });
+
         it("fail createRetweet authorization", async () => {
             const response = await createRetweet(20);
             expect(response.body.errors).to.has.length(1);

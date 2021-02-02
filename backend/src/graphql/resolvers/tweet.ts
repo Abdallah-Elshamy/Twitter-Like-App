@@ -234,6 +234,13 @@ export default {
                 error.statusCode = 404;
                 throw error;
             }
+            if (originalTweet.state === "R") {
+                const error: CustomeError = new Error(
+                    "Can't retweet a retweeted tweet!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
             const tweet = await db.transaction(async (transaction) =>
                 addTweetInDataBase(
                     "",

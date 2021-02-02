@@ -17,7 +17,7 @@ const auth = async (req: CustomRequest, res: Response, next: NextFunction) => {
         const header = req.get("Authorization");
         if (!header) {
             const error: CustomError = new Error(
-                "No Authorization Header is Supplied!"
+                "No Authorization Header was supplied!"
             );
             error.statusCode = 401;
             throw error;
@@ -25,7 +25,7 @@ const auth = async (req: CustomRequest, res: Response, next: NextFunction) => {
         const [bearer, token] = header.split(" ");
         if (bearer !== "Bearer" && bearer !== "bearer") {
             const error: CustomError = new Error(
-                "Token must be a Bearer token"
+                "Token must be a Bearer token!"
             );
             error.statusCode = 401;
             throw error;

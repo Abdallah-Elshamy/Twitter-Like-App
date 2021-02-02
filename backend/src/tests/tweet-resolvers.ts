@@ -13,6 +13,7 @@ import {
     getTweets,
     createRetweet,
 } from "./requests/tweet-resolvers";
+import { createUser, login } from "./requests/user-resolvers";
 import { truncate } from "fs/promises";
 
 let server: any;
@@ -274,29 +275,42 @@ describe("tweet-resolvers", (): void => {
     });
 
     describe("createRetweet Mutation", () => {
+        let token: string = "";
         before(async () => {
             await db.sync({ force: true });
-            await createUsers(1);
+            await createUser("omarabdo997", "omar ali");
+            const response = await login("omarabdo997", "myPrecious");
+            token = response.body.data.login.token;
             await createTweets(1, "O", 1);
         });
 
         it("succeed create retweet", async () => {
-            const response = await createRetweet(1);
+            const response = await createRetweet(1, token);
             expect(response.body.data.createRetweet).to.include({
                 id: "2",
                 text: "",
                 state: "R",
             });
             expect(response.body.data.createRetweet.mediaURLs).to.has.length(0);
-            expect(response.body.data.createRetweet.originalTweet.id).to.be.equal("1");
+            expect(
+                response.body.data.createRetweet.originalTweet.id
+            ).to.be.equal("1");
         });
 
         it("fail createRetweet to non existing tweet", async () => {
-            const response = await createRetweet(20);
+            const response = await createRetweet(20, token);
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
                 message: "No tweet was found with this id!",
+            });
+        });
+
+        it("fail createRetweet authorization", async () => {
+            const response = await createRetweet(20);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
             });
         });
     });

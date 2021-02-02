@@ -20,9 +20,10 @@ export const createTweet = async (text: any) => {
         });
 };
 
-export const createRetweet = async (originalTweetId: number) => {
+export const createRetweet = async (originalTweetId: number, authToken: string | undefined = undefined) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {

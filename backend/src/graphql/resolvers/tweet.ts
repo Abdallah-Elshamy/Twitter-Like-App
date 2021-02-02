@@ -218,6 +218,10 @@ export default {
             args: { originalTweetId: number },
             context: { req: CustomeRequest }
         ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
             const originalTweetId = args.originalTweetId;
             const originalTweet = await Tweet.findByPk(originalTweetId);
             if (!originalTweet) {
@@ -232,7 +236,7 @@ export default {
                     "",
                     "R",
                     [],
-                    1,
+                    user!.id,
                     transaction,
                     undefined,
                     undefined,

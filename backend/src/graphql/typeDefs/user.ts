@@ -28,8 +28,10 @@ export default gql`
         imageURL: String
         bio: String
         coverImageURL: String
+        isFollowing: Boolean
         following(page: Int): PaginatedUsers!
         followingCount: Int!
+        isFollower: Boolean
         followers(page: Int): PaginatedUsers!
         followersCount: Int!
         tweets(page: Int): PaginatedTweets!

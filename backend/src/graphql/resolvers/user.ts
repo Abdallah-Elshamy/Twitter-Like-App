@@ -4,7 +4,7 @@ import { User, Tweet } from "../../models";
 import UserValidator from "../../validators/user";
 import db from "../../db";
 import { Op } from "sequelize";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
 const PAGE_SIZE = 10;
 
@@ -56,33 +56,43 @@ export default {
             const user = await User.findOne({
                 where: {
                     [Op.or]: [
-                        {userName: userNameOrEmail},
-                        {email: userNameOrEmail}
-                    ]
-                }
-            })
-            if(!user) {
-                const error: any = new Error("No user was found with this user name or email!")
-                error.statusCode = 404
-                throw(error)
+                        { userName: userNameOrEmail },
+                        { email: userNameOrEmail },
+                    ],
+                },
+            });
+            if (!user) {
+                const error: any = new Error(
+                    "No user was found with this user name or email!"
+                );
+                error.statusCode = 404;
+                throw error;
             }
-            const isCorrectPassword = await bcrypt.compare(password, user.hashedPassword)
-            if(!isCorrectPassword) {
-                const error: any = new Error("The password you entered is incorrect!")
-                error.statusCode = 401
-                throw(error)
+            const isCorrectPassword = await bcrypt.compare(
+                password,
+                user.hashedPassword
+            );
+            if (!isCorrectPassword) {
+                const error: any = new Error(
+                    "The password you entered is incorrect!"
+                );
+                error.statusCode = 401;
+                throw error;
             }
-            const token = jwt.sign({
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                userName: user.userName,
-                imageURL: user.imageURL,
-                coverImageURL: user.coverImageURL,            
-            }, process.env.TOKEN_SECRET!)
+            const token = jwt.sign(
+                {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    userName: user.userName,
+                    imageURL: user.imageURL,
+                    coverImageURL: user.coverImageURL,
+                },
+                process.env.TOKEN_SECRET!
+            );
             return {
-                token
-            }
+                token,
+            };
         },
     },
     Mutation: {
@@ -368,6 +378,16 @@ export default {
                     });
                 },
             };
+        },
+        isFollowing: async (parent: User, args: any, context: any) => {
+            const loggedIn = context.req.user;
+            const isFollowing = await loggedIn.$has("following", parent);
+            return isFollowing;
+        },
+        isFollower: async (parent: User, args: any, context: any) => {
+            const loggedIn = context.req.user;
+            const isFollower = await loggedIn.$has("follower", parent);
+            return isFollower;
         },
         tweets: async (parent: any, args: any) => {
             return {

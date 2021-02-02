@@ -28,6 +28,23 @@ export const updateUser = async (id: number, userInput: any) => {
         });
 };
 
+export const login = async(userNameOrEmail: string, password: string) => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+            query {
+                login(
+                    userNameOrEmail: "${userNameOrEmail}"
+                    password: "${password}"
+                ){
+                    token
+                }
+            }
+        `,
+        });
+}
+
 export const emptyUpdateUser = async (id: number) => {
     return await request(app)
         .post("/graphql")

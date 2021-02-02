@@ -1,10 +1,10 @@
 import bcrypt from "bcryptjs";
 import validator from "validator";
-
 import { User, Tweet } from "../../models";
 import UserValidator from "../../validators/user";
 import db from "../../db";
 import { Op } from "sequelize";
+import jwt from "jsonwebtoken"
 
 const PAGE_SIZE = 10;
 
@@ -48,6 +48,42 @@ export default {
                 totalCount: User.count(searchConditions),
             };
         },
+        login: async (
+            parent: any,
+            args: { userNameOrEmail: string; password: string }
+        ) => {
+            const { userNameOrEmail, password } = args;
+            const user = await User.findOne({
+                where: {
+                    [Op.or]: [
+                        {userName: userNameOrEmail},
+                        {email: userNameOrEmail}
+                    ]
+                }
+            })
+            if(!user) {
+                const error: any = new Error("No user was found with this user name or email!")
+                error.statusCode = 404
+                throw(error)
+            }
+            const isCorrectPassword = await bcrypt.compare(password, user.hashedPassword)
+            if(!isCorrectPassword) {
+                const error: any = new Error("The password you entered is incorrect!")
+                error.statusCode = 401
+                throw(error)
+            }
+            const token = jwt.sign({
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                userName: user.userName,
+                imageURL: user.imageURL,
+                coverImageURL: user.coverImageURL,            
+            }, process.env.TOKEN_SECRET!)
+            return {
+                token
+            }
+        },
     },
     Mutation: {
         createUser: async (parent: any, args: any, context: any, info: any) => {
@@ -75,7 +111,10 @@ export default {
                 error.validators = validators;
                 throw error;
             }
-            userInput.hashedPassword = await bcrypt.hash(userInput.password, 12);
+            userInput.hashedPassword = await bcrypt.hash(
+                userInput.password,
+                12
+            );
             delete userInput.password;
             const user = await db.transaction(async (transaction) => {
                 return await User.create(userInput, { transaction });

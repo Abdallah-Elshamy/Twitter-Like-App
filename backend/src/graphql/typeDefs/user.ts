@@ -4,6 +4,7 @@ export default gql`
     extend type Query {
         user(id: ID!): User!
         users(search: String!, page: Int): PaginatedUsers!
+        login(userNameOrEmail: String!, password: String!): Token!
     }
     
     extend type Mutation {
@@ -13,6 +14,10 @@ export default gql`
         unlike(tweetId: ID!): Boolean
         follow(userId: ID!): Boolean
         unfollow(userId: ID!): Boolean
+    }
+
+    type Token {
+        token: String!
     }
 
     type User {

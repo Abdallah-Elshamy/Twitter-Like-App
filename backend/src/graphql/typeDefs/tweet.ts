@@ -9,6 +9,7 @@ export default gql`
         createTweet(tweet: TweetCreateInput!): Tweet!
         createReply(tweet: TweetCreateInput!, repliedToTweet: ID!): Tweet!
         createRetweet(originalTweetId: ID!): Tweet!
+        createQuotedRetweet(originalTweetId: ID!, tweet: TweetCreateInput!): Tweet!
         deleteTweet(id: ID!): Boolean!
     }
     type Tweet {

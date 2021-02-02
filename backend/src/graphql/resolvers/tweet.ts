@@ -26,13 +26,16 @@ const addTweetInDataBase = async (
     threadTweet: number | undefined = undefined,
     originalTweetId: number | undefined = undefined
 ) => {
-    const validators = tweetValidator({ text, mediaURLs });
-    if (validators.length > 0) {
-        const error: any = new Error("Validation error!");
-        error.statusCode = 422;
-        error.validators = validators;
-        throw error;
+    if (state !== "R") {
+        const validators = tweetValidator({ text, mediaURLs });
+        if (validators.length > 0) {
+            const error: any = new Error("Validation error!");
+            error.statusCode = 422;
+            error.validators = validators;
+            throw error;
+        }
     }
+
     const tweet = await Tweet.create(
         {
             text,
@@ -244,6 +247,42 @@ export default {
                 )
             );
             return tweet;
+        },
+
+        createQuotedRetweet: async (
+            parent: any,
+            args: {
+                originalTweetId: number;
+                tweet: { text: string; mediaURLs: string[] };
+            },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const { originalTweetId, tweet} = args;
+            const originalTweet = await Tweet.findByPk(originalTweetId);
+            if (!originalTweet) {
+                const error: CustomeError = new Error(
+                    "No tweet was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+
+            return await db.transaction(async (transaction) =>
+                addTweetInDataBase(
+                    tweet.text,
+                    "Q",
+                    tweet.mediaURLs,
+                    user!.id,
+                    transaction,
+                    undefined,
+                    undefined,
+                    originalTweetId
+                )
+            );
         },
 
         deleteTweet: async (

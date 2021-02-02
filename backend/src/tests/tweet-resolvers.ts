@@ -12,6 +12,8 @@ import {
     getTweet,
     getTweets,
     createRetweet,
+    createQuotedRetweet,
+    createQuotedRetweetWithMedia,
 } from "./requests/tweet-resolvers";
 import { createUser, login } from "./requests/user-resolvers";
 import { truncate } from "fs/promises";
@@ -224,6 +226,27 @@ describe("tweet-resolvers", (): void => {
                 "all mediaURLs must be valid urls!"
             );
         });
+
+        it("fail createTweet with empty mediaURLs array and empty text", async () => {
+            const response = await request(app).post("/graphql").send({
+                query: `
+                mutation {
+                    createTweet(tweet: {
+                        text: ""
+                        mediaURLs: []
+                    }){
+                        id
+                    }
+                }
+            `,
+            });
+            expect(response.body).to.has.property("errors");
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0].validators).to.has.length(1);
+            expect(response.body.errors[0].validators[0].message).to.be.equal(
+                "text length must be between 1 to 280 chars!"
+            );
+        });
     });
 
     describe("createReply Mutation", () => {
@@ -308,6 +331,94 @@ describe("tweet-resolvers", (): void => {
 
         it("fail createRetweet authorization", async () => {
             const response = await createRetweet(20);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+            });
+        });
+    });
+
+    describe("createQuotedRetweet Mutation", () => {
+        let token: string = "";
+        before(async () => {
+            await db.sync({ force: true });
+            await createUser("omarabdo997", "omar ali");
+            const response = await login("omarabdo997", "myPrecious");
+            token = response.body.data.login.token;
+            await createTweets(1, "O", 1);
+        });
+
+        it("succeed create quoted retweet without media", async () => {
+            const response = await createQuotedRetweet(1, "test quoted", token);
+            expect(response.body.data.createQuotedRetweet).to.include({
+                id: "2",
+                text: "test quoted",
+                state: "Q",
+            });
+            expect(
+                response.body.data.createQuotedRetweet.mediaURLs
+            ).to.has.length(0);
+            expect(
+                response.body.data.createQuotedRetweet.originalTweet.id
+            ).to.be.equal("1");
+        });
+
+        it("succeed create quoted retweet with media", async () => {
+            const response = await createQuotedRetweetWithMedia(1, "test quoted", token);
+            expect(response.body.data.createQuotedRetweet).to.include({
+                id: "3",
+                text: "test quoted",
+                state: "Q",
+            });
+            expect(
+                response.body.data.createQuotedRetweet.mediaURLs
+            ).to.has.length(4);
+            expect(response.body.data.createQuotedRetweet.mediaURLs).to.include(
+                "https://www.vapulus.com/en/wp-content/uploads/2019/05/startup-books.jpg"
+            );
+            expect(response.body.data.createQuotedRetweet.mediaURLs).to.include(
+                "https://media.btech.com/media/catalog/product/cache/22b1bed05f04d71c4a848d770186c3c4/h/p/hp-notebook-15-da1885ne_ca36.jpg"
+            );
+            expect(response.body.data.createQuotedRetweet.mediaURLs).to.include(
+                "https://media.btech.com/media/catalog/product/cache/22b1bed05f04d71c4a848d770186c3c4/h/p/hp_da2001ne_1.png"
+            );
+            expect(response.body.data.createQuotedRetweet.mediaURLs).to.include(
+                "https://www.rayashop.com/media/product/fc3/hp-omen-15-en0013dx-laptop-amd-ryzen-7-4800h-15-6-inch-fhd-512gb-8gb-ram-nvidia-1660-ti-6gb-win-10-22d.jpg"
+            );
+            expect(
+                response.body.data.createQuotedRetweet.originalTweet.id
+            ).to.be.equal("1");
+        });
+
+        it("fail createQuotedRetweet with no text", async() => {
+            const response = await createQuotedRetweet(1, "", token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                message: "Validation error!",
+                statusCode: 422,
+            });
+            expect(response.body.errors[0].validators).to.has.length(1);
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "text length must be between 1 to 280 chars!",
+                value: "text",
+            });
+        })
+
+        it("fail createQuotedRetweet to non existing tweet", async () => {
+            const response = await createQuotedRetweet(
+                20,
+                "test quoted",
+                token
+            );
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No tweet was found with this id!",
+            });
+        });
+
+        it("fail createQuotedRetweet authorization", async () => {
+            const response = await createQuotedRetweet(20, "test Quoted");
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 401,

@@ -3,16 +3,19 @@ import { ApolloServer } from "apollo-server-express";
 import { resolvers, typeDefs } from "./graphql";
 import path from "path";
 import db from "./db";
+import { auth } from "./middlewares";
 
 const dir: string = path.resolve();
 
 const app: Application = express();
 
+app.use(auth);
+
 const apolloServer: ApolloServer = new ApolloServer({
     typeDefs,
     resolvers,
     playground: process.env.DEVELOPMENT_ENVIROMENT == "true",
-    context: (req) => ({
+    context: ({req}) => ({
         req,
     }),
     formatError: (err) => {

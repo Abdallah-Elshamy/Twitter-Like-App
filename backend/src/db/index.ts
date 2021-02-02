@@ -1,4 +1,4 @@
-import {Sequelize} from 'sequelize-typescript';
+import { Sequelize } from "sequelize-typescript";
 import {
     Tweet,
     User,
@@ -9,12 +9,17 @@ import {
     HasPermission,
     UserBelongsToGroup,
     Likes,
-    HasHashtag
-} from '../models'
+    HasHashtag,
+} from "../models";
 
-const db: Sequelize = new Sequelize(process.env.DATABASE_URI!, {
-    logging: false
-});
+const db: Sequelize = new Sequelize(
+    process.env.TEST_ENVIROMENT
+        ? process.env.TEST_DATABASE_URI!
+        : process.env.DATABASE_URI!,
+    {
+        logging: false,
+    }
+);
 
 db.addModels([
     Tweet,
@@ -26,7 +31,7 @@ db.addModels([
     HasPermission,
     UserBelongsToGroup,
     Likes,
-    HasHashtag
-])
+    HasHashtag,
+]);
 
 export default db;

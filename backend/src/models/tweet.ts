@@ -11,6 +11,7 @@ import {
     HasOne,
     BelongsToMany,
     DataType,
+    Default,
 } from "sequelize-typescript";
 import User from "./user";
 import Likes from "./likes";
@@ -37,28 +38,29 @@ class Tweet extends Model {
     user!: User;
 
     @AllowNull(false)
-    @Column(DataType.STRING)
+    @Column(DataType.TEXT)
     text!: string;
 
-    @AllowNull(true)
-    @Column(DataType.STRING)
-    media?: string;
+    @AllowNull(false)
+    @Default([])
+    @Column(DataType.ARRAY(DataType.STRING))
+    mediaURLs!: string[];
 
     @AllowNull(false)
-    @Column(DataType.STRING)
-    state?: string;
+    @Column(DataType.CHAR(1))
+    state!: string;
 
     // one-to-many relation between original tweet and sub tweets
     @ForeignKey(() => Tweet)
-    @AllowNull(false)
+    @AllowNull(true)
     @Column(DataType.INTEGER)
-    originalTweetId!: number;
+    originalTweetId?: number;
 
     @BelongsTo(() => Tweet, "originalTweetId")
-    originalTweet!: Tweet;
+    originalTweet?: Tweet;
 
     @HasMany(() => Tweet, "originalTweetId")
-    subTweets!: Tweet[];
+    subTweets?: Tweet[];
 
     // many-to-many relation between user and tweet through likes
     @BelongsToMany(() => User, () => Likes, "tweetId", "userId")

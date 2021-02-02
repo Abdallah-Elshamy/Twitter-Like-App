@@ -75,8 +75,7 @@ export default {
                 error.validators = validators;
                 throw error;
             }
-            // TODO: Hash the password
-            userInput.hashedPassword = userInput.password;
+            userInput.hashedPassword = await bcrypt.hash(userInput.password, 12);
             delete userInput.password;
             const user = await db.transaction(async (transaction) => {
                 return await User.create(userInput, { transaction });

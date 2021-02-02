@@ -8,6 +8,16 @@ import jwt from "jsonwebtoken";
 
 const PAGE_SIZE = 10;
 
+interface UserInput {
+    userName: string;
+    email: string;
+    password: string;
+    name: string;
+    imageURL: string;
+    coverImageURL: string;
+    bio: string;
+}
+
 export default {
     Query: {
         user: async (parent: any, args: any, context: any, info: any) => {
@@ -131,12 +141,12 @@ export default {
             });
             return user;
         },
-        updateUser: async (parent: any, args: any, context: any, info: any) => {
+        updateUser: async (parent: any, args: { userInput: UserInput}, context: any, info: any) => {
             const { user, authError } = context.req;
             if (authError) {
                 throw authError;
             }
-            const toBeUpdatedUser = user;
+            const toBeUpdatedUser = user as User;
             const { userInput } = args;
             const validators = UserValidator(userInput);
             if (validators.length > 0) {
@@ -170,7 +180,7 @@ export default {
                 toBeUpdatedUser.userName = userName;
             }
             if (email) {
-                const sanitized = validator.normalizeEmail(email);
+                const sanitized = validator.normalizeEmail(email) as string;
                 const user = await User.findOne({
                     where: { email: sanitized },
                 });

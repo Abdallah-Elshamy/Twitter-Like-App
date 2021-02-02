@@ -132,7 +132,12 @@ export default {
             return user;
         },
         updateUser: async (parent: any, args: any, context: any, info: any) => {
-            const { id, userInput } = args;
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const toBeUpdatedUser = user;
+            const { userInput } = args;
             const validators = UserValidator(userInput);
             if (validators.length > 0) {
                 const error: any = new Error("Validation error!");
@@ -140,20 +145,7 @@ export default {
                 error.validators = validators;
                 throw error;
             }
-            const toBeUpdatedUser: any = await User.findByPk(+id);
-            // check if user exist
-            if (!toBeUpdatedUser) {
-                const error: any = new Error("No user was found with this id!");
-                error.statusCode = 404;
-                throw error;
-            }
-            // assume logged in user is user with id 1
-            // const userId = 1;
-            // if (userId !== toBeUpdatedUser.id) {
-            //     const error: any = new Error("Not authorized");
-            //     error.statusCode = 403;
-            //     throw error;
-            // }
+
             const {
                 userName,
                 email,

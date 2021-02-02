@@ -1,13 +1,17 @@
 import request from "supertest";
 import app from "../../app";
 
-export const updateUser = async (id: number, userInput: any) => {
+export const updateUser = async (
+    userInput: any,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
-                updateUser(id: ${id}, userInput: {
+                updateUser(userInput: {
                     userName: "${userInput.userName}",
                     email: "${userInput.email}",
                     password: "${userInput.password}",
@@ -28,7 +32,7 @@ export const updateUser = async (id: number, userInput: any) => {
         });
 };
 
-export const login = async(userNameOrEmail: string, password: string) => {
+export const login = async (userNameOrEmail: string, password: string) => {
     return await request(app)
         .post("/graphql")
         .send({
@@ -43,15 +47,18 @@ export const login = async(userNameOrEmail: string, password: string) => {
             }
         `,
         });
-}
+};
 
-export const emptyUpdateUser = async (id: number) => {
+export const emptyUpdateUser = async (
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
-                updateUser(id: ${id}, userInput: {}) {
+                updateUser(userInput: {}) {
                     name
                     userName
                 }
@@ -60,13 +67,17 @@ export const emptyUpdateUser = async (id: number) => {
         });
 };
 
-export const updateUserName = async (id: number, userInput: any) => {
+export const updateUserName = async (
+    userInput: any,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
-                updateUser(id: ${id}, userInput: {name: "${userInput.name}"}) {
+                updateUser(userInput: {name: "${userInput.name}"}) {
                     name
                 }
         }
@@ -74,13 +85,17 @@ export const updateUserName = async (id: number, userInput: any) => {
         });
 };
 
-export const updateUserPassword = async (id: number, userInput: any) => {
+export const updateUserPassword = async (
+    userInput: any,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
-                updateUser(id: ${id}, userInput: {password: "${userInput.password}"}) {
+                updateUser(userInput: {password: "${userInput.password}"}) {
                     name
                 }
         }
@@ -88,13 +103,17 @@ export const updateUserPassword = async (id: number, userInput: any) => {
         });
 };
 
-export const updateUserEmail = async (id: number, userInput: any) => {
+export const updateUserEmail = async (
+    userInput: any,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
-                updateUser(id: ${id}, userInput: {email: "${userInput.email}"}) {
+                updateUser(userInput: {email: "${userInput.email}"}) {
                     email
                 }
         }
@@ -102,13 +121,17 @@ export const updateUserEmail = async (id: number, userInput: any) => {
         });
 };
 
-export const updateUserImageURL = async (id: number, userInput: any) => {
+export const updateUserImageURL = async (
+    userInput: any,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
-                updateUser(id: ${id}, userInput: {imageURL: "${userInput.imageURL}"}) {
+                updateUser(userInput: {imageURL: "${userInput.imageURL}"}) {
                     imageURL
                 }
         }
@@ -116,13 +139,17 @@ export const updateUserImageURL = async (id: number, userInput: any) => {
         });
 };
 
-export const updateUserCoverImageURL = async (id: number, userInput: any) => {
+export const updateUserCoverImageURL = async (
+    userInput: any,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
-                updateUser(id: ${id}, userInput: {coverImageURL: "${userInput.coverImageURL}"}) {
+                updateUser(userInput: {coverImageURL: "${userInput.coverImageURL}"}) {
                     coverImageURL
                 }
         }
@@ -130,13 +157,17 @@ export const updateUserCoverImageURL = async (id: number, userInput: any) => {
         });
 };
 
-export const updateUserUserName = async (id: number, userInput: any) => {
+export const updateUserUserName = async (
+    userInput: any,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
-                updateUser(id: ${id}, userInput: {userName: "${userInput.userName}"}) {
+                updateUser(userInput: {userName: "${userInput.userName}"}) {
                     coverImageURL
                 }
         }

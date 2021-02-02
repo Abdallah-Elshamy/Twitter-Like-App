@@ -9,7 +9,7 @@ export default gql`
     
     extend type Mutation {
         createUser(userInput: UserCreateInput!) : User! 
-        updateUser(id: ID!, userInput: UserUpdateInput!) : User! 
+        updateUser(userInput: UserUpdateInput!) : User! 
         like(tweetId: ID!): Boolean
         unlike(tweetId: ID!): Boolean
         follow(userId: ID!): Boolean

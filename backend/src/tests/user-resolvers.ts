@@ -30,6 +30,7 @@ import {
     like,
     unlike,
     createTweet,
+    login
 } from "./requests/user-resolvers";
 
 let server: any;
@@ -466,16 +467,12 @@ describe("user-resolvers", (): void => {
     });
 
     describe("updateUser resolver", (): void => {
-        let userId: number = 0;
+        let token: string = "";
         before(async () => {
-            const user = await User.create({
-                name: "Nicola Tesla",
-                userName: "Tesla_890",
-                hashedPassword: "123456789",
-                email: "Tesla@yahoo.com",
-            });
-            userId = user.id;
-            return user;
+            await db.sync({ force: true });
+            await createUser("Luffy11", "Monkey D. Luffy");
+            const response = await login("Luffy11", "myPrecious");
+            token = response.body.data.login.token;
         });
 
         it("succeeds in updating user info", async () => {
@@ -490,7 +487,7 @@ describe("user-resolvers", (): void => {
                 coverImageURL:
                     "https://preview.redd.it/t3ikdu9pp8h41.jpg?auto=webp&s=2106d1817d77e1b55438362d11b6452b7ab77bc6",
             };
-            const response = await updateUser(userId, userInput);
+            const response = await updateUser(userInput, token);
 
             expect(response.body.data.updateUser).to.include({
                 name: "Alfred Einstein",
@@ -504,8 +501,26 @@ describe("user-resolvers", (): void => {
             });
         });
 
+        it("fails to update user when not authenticated", async () => {
+            const userInput = {
+                name: "Alfred Einstein",
+                userName: "Alfred_12",
+                email: "Einstein@yahoo.com",
+                password: "12345678",
+                bio: "This is Alfred Einstein hustlin !",
+                imageURL:
+                    "https://preview.redd.it/t3ikdu9pp8h41.jpg?auto=webp&s=2106d1817d77e1b55438362d11b6452b7ab77bc6",
+                coverImageURL:
+                    "https://preview.redd.it/t3ikdu9pp8h41.jpg?auto=webp&s=2106d1817d77e1b55438362d11b6452b7ab77bc6",
+            };
+            const response = await updateUser(userInput);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+            });
+        });
         it("fails to update user info because of empty request", async () => {
-            const response: any = await emptyUpdateUser(userId);
+            const response: any = await emptyUpdateUser(token);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -521,7 +536,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 name: "",
             };
-            const response: any = await updateUserName(userId, userInput);
+            const response: any = await updateUserName(userInput, token);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -537,7 +552,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 name: ".......................................................",
             };
-            const response: any = await updateUserName(userId, userInput);
+            const response: any = await updateUserName(userInput, token);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -554,7 +569,7 @@ describe("user-resolvers", (): void => {
                 userName: "Alf",
             };
 
-            const response: any = await updateUserUserName(userId, userInput);
+            const response: any = await updateUserUserName(userInput, token);
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
                 message: "Validation error!",
@@ -571,7 +586,7 @@ describe("user-resolvers", (): void => {
                 userName: "My_nameisalfredeinstein_22",
             };
 
-            const response: any = await updateUserUserName(userId, userInput);
+            const response: any = await updateUserUserName(userInput, token);
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
                 message: "Validation error!",
@@ -587,7 +602,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 userName: "Alfred_@!",
             };
-            const response: any = await updateUserUserName(userId, userInput);
+            const response: any = await updateUserUserName(userInput, token);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -604,7 +619,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 email: "",
             };
-            const response: any = await updateUserEmail(userId, userInput);
+            const response: any = await updateUserEmail(userInput, token);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -620,7 +635,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 email: "thisisanemail",
             };
-            const response: any = await updateUserEmail(userId, userInput);
+            const response: any = await updateUserEmail(userInput, token);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -636,7 +651,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 password: "1234",
             };
-            const response: any = await updateUserPassword(userId, userInput);
+            const response: any = await updateUserPassword(userInput, token);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -653,7 +668,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 imageURL: "ThisisaURL",
             };
-            const response: any = await updateUserImageURL(userId, userInput);
+            const response: any = await updateUserImageURL(userInput, token);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -670,8 +685,8 @@ describe("user-resolvers", (): void => {
                 coverImageURL: "ThisisaURL",
             };
             const response: any = await updateUserCoverImageURL(
-                userId,
-                userInput
+                userInput,
+                token
             );
 
             expect(response.body.errors[0]).to.include({
@@ -681,14 +696,6 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors[0].validators[0]).to.include({
                 message: "Invalid cover image URL!",
                 value: "coverImageURL",
-            });
-        });
-
-        after(async () => {
-            return await User.destroy({
-                where: {
-                    id: userId,
-                },
             });
         });
     });

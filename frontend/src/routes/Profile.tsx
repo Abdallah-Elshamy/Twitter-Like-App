@@ -3,6 +3,9 @@ import '../App.css';
 import '../styles/profile.css';
 import ProfileInfo from "../components/ProfileInfo"; 
 import Tweet from "../components/Tweet"
+import TrendsBar from '../components/TrendsBar/TrendsBar';
+import '../styles/layout.css'
+
 function Profile() {
   return (
     <Fragment>
@@ -31,7 +34,7 @@ function Profile() {
             <Tweet/>
           </div>
           </article>
-          <aside className="sb-right">right</aside>
+          <aside className="sb-right"><TrendsBar /></aside>
           
         </main>
     </Fragment>

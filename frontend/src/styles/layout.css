@@ -1,20 +1,27 @@
+
 .main-container {
   display: grid;
   grid-template-columns: 0.7fr 1.4fr 0.9fr;
-  padding-right: 260px;
-  padding-left: 260px;
+  height: 100vh;
+  background-color: var(--super-light);
 }
 .sb-left {
   grid-column: 1 / 2;
+  background-color: var(--main-color);
 }
 .wall {
   grid-column: 2 / 3;
+<<<<<<< HEAD
   border-right: solid 0.5px var(--extra-light);
   border-left: solid 0.5px var(--extra-light);
   height: auto;
   overflow: hidden;
   /* display: flex;
   flex-direction: column; */
+||||||| 163d890
+=======
+   background-color: var(--main-black);
+>>>>>>> ffc922d0bd71d46d30d9538283a11cbab9d568f5
 }
 .sb-right {
   grid-column: 3 / 4;

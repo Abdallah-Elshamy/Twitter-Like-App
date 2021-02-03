@@ -374,7 +374,7 @@ export default {
         followersCount: async (parent: any) => {
             return await parent.$count("followers");
         },
-        following: async (parent: any, args: any) => {
+        following: async (parent: any, args: { page: number }) => {
             return {
                 totalCount: async () => {
                     return await parent.$count("following");
@@ -389,7 +389,7 @@ export default {
                 },
             };
         },
-        followers: async (parent: any, args: any) => {
+        followers: async (parent: any, args: { page: number }) => {
             return {
                 totalCount: async () => {
                     return await parent.$count("followers");
@@ -414,7 +414,7 @@ export default {
             const isFollower = await loggedIn.$has("follower", parent);
             return isFollower;
         },
-        tweets: async (parent: any, args: any) => {
+        tweets: async (parent: any, args: { page: number }) => {
             return {
                 totalCount: async () => {
                     return await parent.$count("tweets");
@@ -429,7 +429,7 @@ export default {
                 },
             };
         },
-        likes: async (parent: any, args: any) => {
+        likes: async (parent: any, args: { page: number }) => {
             return {
                 totalCount: async () => {
                     return await parent.$count("likes");

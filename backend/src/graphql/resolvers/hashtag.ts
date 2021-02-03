@@ -5,12 +5,15 @@ const PAGE_SIZE = 10;
 
 export default {
     Query: {
-        hashtag: async (parent: any, args: any, context: any, info: any) => {
+        hashtag: async (
+            parent: any,
+            args: { word: string },
+            context: any,
+            info: any
+        ) => {
             const word = args.word;
-            if(validator.isEmpty(word)) {
-                const error: any = new Error(
-                    "Empty query argument!"
-                );
+            if (validator.isEmpty(word)) {
+                const error: any = new Error("Empty query argument!");
                 error.statusCode = 422;
                 throw error;
             }
@@ -27,7 +30,7 @@ export default {
         },
     },
     Hashtag: {
-        tweets: async (parent: any, args: any) => {
+        tweets: async (parent: any, args: { page: number}) => {
             const { page } = args;
             return {
                 tweets: async () => {

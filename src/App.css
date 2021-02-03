@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --main-color: rgb(29, 161, 242);
+  --main-black: #14171a;
+  --dark-grey: #657786;
+  --light-grey: #353535;
+  --extra-light: #e1e8ed;
+  --super-light: #f5f8fa;
+  --disable-btn: #93cdf6;
+}
+/*  class pf--sb */
+/* app main and globle style */
+/* .App {
+   text-align: center; 
+} */

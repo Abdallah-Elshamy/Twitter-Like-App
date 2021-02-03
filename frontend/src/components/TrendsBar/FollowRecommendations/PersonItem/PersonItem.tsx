@@ -21,12 +21,12 @@ const TrendItem: React.FC<PersonEntity> = ({name,username,followed=false,imageUR
          
       </div>
       <div className="flex-grow">
-        <h1 className="person-item-name  text-sm font-bold">{name}</h1>
+        <h1 className="person-item-name  text-xm font-bold">{name}</h1>
         <p>@{username}</p>
       </div>
       <div>
         <button className="pf--follow-btn rounded-full px-2 py-1" >
-          Follow
+          {followed? "Following":"Follow"}
         </button>
       </div>
     </div></Link>

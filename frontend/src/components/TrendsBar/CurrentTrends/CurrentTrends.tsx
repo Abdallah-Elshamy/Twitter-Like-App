@@ -1,11 +1,24 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Trend } from '../../../common/TypesAndInterfaces';
 import SideList from '../../../UI/SideList/SideList';
 import TrendItem from './TrendItem/TrendItem';
-type Props = {
-  trends: Trend[]
-}
-const CurrentTrends: React.FC<Props> = ({trends}) => {
+
+
+const CurrentTrends: React.FC = () => {
+  const trends:Trend[]=[
+    {
+      trendName:'El Ahly',
+      numOfTweets:5500
+    },{
+      trendName:'Omar',
+      numOfTweets:550
+    },
+    {
+      trendName:'Aballah',
+      numOfTweets:55000
+    }
+  ]
+
 const trendsList = trends.map((trend)=>{
   return (<TrendItem 
     key = {trend.trendName} trendName = {trend.trendName} numOfTweets = {trend.numOfTweets}
@@ -13,9 +26,10 @@ const trendsList = trends.map((trend)=>{
 })
 
   return (
-    <SideList title="What's happening now " redirect="/trends" >
-        {trendsList}
-    </SideList>
+    <Fragment>   
+         {trendsList}
+    </Fragment>
+
   )
 }
 export default CurrentTrends;

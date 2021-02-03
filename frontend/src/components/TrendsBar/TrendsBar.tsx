@@ -5,24 +5,17 @@ import Footer from './Footer/Footer'
 
 import './TrendsBar.css'
 import { PersonEntity, Trend } from '../../common/TypesAndInterfaces';
+import SideList from '../../UI/SideList/SideList';
+import { BrowserRouter, Route, Router, Switch, useLocation, withRouter } from 'react-router-dom';    
+import React from 'react';
 
+
+  
 type Props = {
 
 }
 const TrendsBar: React.FC<Props> = (Props) => {
-  const trends:Trend[]=[
-    {
-      trendName:'Eslam',
-      numOfTweets:5500
-    },{
-      trendName:'Omar',
-      numOfTweets:550
-    },
-    {
-      trendName:'Aballah',
-      numOfTweets:55000
-    }
-  ]
+   const location = useLocation()
 
    const followRec:PersonEntity[]=[
     {
@@ -40,11 +33,18 @@ const TrendsBar: React.FC<Props> = (Props) => {
    
   ]
 
+  const searchbar =
+    location.pathname !== '/explore' ?<SearchBar/>: null
+  
+  console.log(searchbar)
   return (
-    <div className="trendsbar px-4 py-2">
-      <SearchBar />
+
+    <div className="trendsbar px-4 ">
+     <div className="mt-4 ">{searchbar}</div>
       <FollowRecommendations followRec = {followRec} />
-      <CurrentTrends trends={trends} />
+      <SideList title="What's happening now " redirect="/trends" >
+      <CurrentTrends  />
+      </SideList>
       <Footer/>
       
     </div>

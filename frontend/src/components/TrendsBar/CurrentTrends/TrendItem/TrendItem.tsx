@@ -8,7 +8,7 @@ const TrendItem: React.FC<Trend> = ({trendName,numOfTweets}) => {
   return (
     <div className="trend-item flex  justify-between items-center p-3">
       <div className="trend-info">
-      <h1 className="trend-name mb-1 text-sm font-bold">#{trendName}</h1>
+      <h1 className="trend-name mb-1 text-xm font-bold">#{trendName}</h1>
       {(numOfTweets>1000)? <p>{Number(numOfTweets)/1000}k Tweets</p>:null}
       </div>
 

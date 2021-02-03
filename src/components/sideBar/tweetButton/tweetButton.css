@@ -1,18 +1,4 @@
 .sidebar_tw_btn {
-<<<<<<< HEAD
-    background-color: var(--main-color)!important; 
-    border: none !important;
-    color: white !important;
-    font-weight: 900 !important; 
-    border-radius: 30px !important;
-    height: 50px !important;
-    width: 50px ;
-    padding-right: 150px ;
-
-  }
-  
-
-=======
     background-color: var( --main-color)!important; 
     border: none !important;
     color: white ;
@@ -23,5 +9,4 @@
     /* padding-right: 150px ; */   
 
   }
-  
->>>>>>> 7cd5b571fdc14599d5f43ce269388f77d66dbca7
+

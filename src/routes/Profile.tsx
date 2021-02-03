@@ -1,21 +1,16 @@
 import React, { Fragment } from 'react';
-<<<<<<< HEAD
+
 import '../App.css';
 import '../styles/profile.css';
 import ProfileInfo from "../components/ProfileInfo"; 
-import { SideBar } from "./../components/sideBar/sideBar" ;
 import Tweet from "../components/Tweet"
-=======
 import { SideBar } from "./../components/sideBar/sideBar" ;
-import '../App.css';
 import '../styles/layout.css'
->>>>>>> 7cd5b571fdc14599d5f43ce269388f77d66dbca7
 
 function Profile() {
   return (
     <Fragment>
         <main className="main-container">
-<<<<<<< HEAD
         <aside className="sb-left"><SideBar /></aside>  
         <article className="wall">
           <ProfileInfo/>
@@ -41,11 +36,7 @@ function Profile() {
           </div>
           </article>
           <aside className="sb-right">right</aside>
-=======
-          <aside className="sb-left"> <SideBar /> </aside>
-           <article className="wall"></article>
-          <aside className="sb-right"></aside>
->>>>>>> 7cd5b571fdc14599d5f43ce269388f77d66dbca7
+
           
         </main>
     </Fragment>

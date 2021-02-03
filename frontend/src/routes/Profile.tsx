@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import { SideBar } from "./../components/sideBar/sideBar" ;
 import '../App.css';
 import '../styles/layout.css'
 
@@ -6,9 +7,9 @@ function Profile() {
   return (
     <Fragment>
         <main className="main-container">
-        <aside className="sb-left">left</aside>
-          <article className="wall">mid</article>
-          <aside className="sb-right">right</aside>
+          <aside className="sb-left"> <SideBar /> </aside>
+           <article className="wall"></article>
+          <aside className="sb-right"></aside>
           
         </main>
     </Fragment>

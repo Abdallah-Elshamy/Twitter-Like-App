@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { PersonEntity } from '../../../../common/TypesAndInterfaces';
 
 import './PersonItem.css'
+import '../../../../styles/profile.css'
 
 const TrendItem: React.FC<PersonEntity> = ({name,username,followed=false,imageURI,numberOfFollowers}) => {
   console.log(imageURI)
@@ -24,7 +25,7 @@ const TrendItem: React.FC<PersonEntity> = ({name,username,followed=false,imageUR
         <p>@{username}</p>
       </div>
       <div>
-        <button>
+        <button className="pf--follow-btn rounded-full px-2 py-1" >
           Follow
         </button>
       </div>

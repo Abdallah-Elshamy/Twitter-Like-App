@@ -2,9 +2,9 @@
 .main-container {
   display: grid;
   grid-template-columns: 0.7fr 1.4fr 0.9fr;
-  height: 100vh;
 }
 .sb-left {
+  position: fixed;
   grid-column: 1 / 2;
 }
 .wall {
@@ -17,6 +17,7 @@
 }
 .sb-right {
   grid-column: 3 / 4;
+  position: sticky;
 }
 .p--light-color {
   color: var(--dark-grey);
@@ -31,4 +32,5 @@
   background-color: #fff;
   display: flex;
   flex-direction: row;
+  z-index: 1000;
 }

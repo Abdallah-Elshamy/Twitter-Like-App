@@ -12,7 +12,7 @@ const SearchBar: React.FC<Props> = (Props) => {
   
 
   return (
-    <div className={"search-bar  w-full  rounded-full px-4 py-3 mb-4 flex " + divFocus}>
+    <div className={"search-bar  w-full  rounded-full px-4 py-2.5 mb-4 flex " + divFocus}>
       <div className="icon">
         <svg className={"w-4 h-4  search-icon" + iconFocus} fill="none"
           stroke="currentColor" viewBox="0 0 20 20"

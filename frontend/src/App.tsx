@@ -9,6 +9,9 @@ import { BrowserRouter } from 'react-router-dom';
 
 
 
+import { Register } from "./components/Register/Register"
+import { Logo } from "./components/logo/logo"
+
 
 const client = new ApolloClient ({
   uri: 'http://localhost:8000',
@@ -27,7 +30,7 @@ function App() {
 }
 /* routes {
   Profile 
-  Logein
+  Login
   Signup 
   LandingPage
   Home 

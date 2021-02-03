@@ -15,7 +15,7 @@ export const SideBar: React.FC = () =>  (
     <SideBarItem  item_name ='Messages' icon_name ="fas fa-envelope"/>
     <SideBarItem  item_name ='Profile ' icon_name = "fas fa-user"/>
     <SideBarItem  item_name ='Setting' icon_name ="fas fa-cog"/>
-    <TweetButton name ="Tweet"/>
+    <TweetButton name ="Tweet" className = "w-56"/>
     < FlootProfile/> 
 </div>
 

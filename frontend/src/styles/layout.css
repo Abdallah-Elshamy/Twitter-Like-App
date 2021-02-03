@@ -2,7 +2,10 @@
 .main-container {
   display: grid;
   grid-template-columns: 0.7fr 1.4fr 0.9fr;
+  max-width: 1200px;
+  margin: auto;
 }
+
 .sb-left {
   position: fixed;
   grid-column: 1 / 2;

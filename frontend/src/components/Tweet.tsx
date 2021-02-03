@@ -21,17 +21,7 @@ function Tweet() {
           </div>
           <div className="tweet-content">
             <span>
-              pppppppppppppppppppppppppppppppppppp
-              pppppppppppppppppppppppppppppppppppp
-              pppppppppppppppppppppppppppppppppppp
-              pppppppppppppppppppppppppppppppppppp
-              pppppppppppppppppppppppppppppppppppp
-              pppppppppppppppppppppppppppppppppppp
-              pppppppppppppppppppppppppppppppppppp
-              pppppppppppppppppppppppppppppppppppp
-              pppppppppppppppppppppppppppppppppppp
-              pppppppppppppppppppppppppppppppppppp
-              pppppppppppppppppppppppppppppppppppp
+                Learning to work with intensity when necessary and to rest when you've done enough might be the most important thing you can do for your lifestyle. Few things damage a lifestyle more than a never-ending slog.
             </span>
           
           <div className="tweet-toolbar p--light-color ">

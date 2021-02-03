@@ -6,8 +6,22 @@ import ProfileInfo from "../components/ProfileInfo";
 import Tweet from "../components/Tweet"
 import TrendsBar from '../components/TrendsBar/TrendsBar';
 import '../styles/layout.css'
+import {  gql, useQuery } from '@apollo/client';
+
+const USER= gql`
+      query oyrfris {
+ user(id:1){
+  userName
+  id
+  name
+}
+}`
+
 
 function Profile() {
+
+  const {loading,error,data} = useQuery(USER)
+  console.log(data)
   return (
     <Fragment>
         <main className="main-container">

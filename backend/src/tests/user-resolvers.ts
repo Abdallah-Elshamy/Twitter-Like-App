@@ -857,39 +857,52 @@ describe("user-resolvers", (): void => {
     });
 
     describe("unfollow resolver", (): void => {
+        let token: string = "";
         before(async () => {
-            let loggedUser: any;
+            await db.sync({ force: true });
             let toBeFollowed: any;
             await db.sync({ force: true });
-            // create 3 users
-            for (let i = 0; i < 3; i++) {
+            let response = await createUser("Luffy11", "Monkey D. Luffy");
+            const userId = response.body.data.createUser.id;
+            const loggedUser = await User.findByPk(userId);
+
+            response = await login("Luffy11", "myPrecious");
+            token = response.body.data.login.token;
+
+            // create 2 users
+            for (let i = 0; i < 2; i++) {
                 let user = await User.create({
                     name: `testUser ${i + 1}`,
                     userName: `testU${i + 1}`,
                     email: `testU${i + 1}@yahoo.com`,
                     hashedPassword: "12345678910",
                 });
-                if (i === 0) loggedUser = user;
-                if (i === 1) toBeFollowed = user;
+                if (i === 0) toBeFollowed = user;
             }
             // make user with id 1 follow user with id 2
-            return await loggedUser.$add("following", toBeFollowed);
+            return await loggedUser!.$add("following", toBeFollowed);
         });
 
         it("succeeds in unfollowing a followed user", async () => {
-            // we know that user 1 follows user 2
-            // it is assumed in the resolver that the current loggedin user is user with id 1
-            const response = await unfollow(2);
+            //  user 1 follows user 2
+            const response = await unfollow(2, token);
             expect(response.body.data).to.include({
                 unfollow: true,
             });
         });
 
+        it("fails to unfollow a user when not authenticated", async () => {
+            const response = await unfollow(2);
+
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+            });
+        });
         it("fails to unfollow a non existent user", async () => {
-            // the resolver assumes that the loggedin user is the user with id 1
             // users in database are created starting from id 1
             // no user has the id of 0
-            const response = await unfollow(0);
+            const response = await unfollow(0, token);
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
@@ -899,9 +912,8 @@ describe("user-resolvers", (): void => {
         });
 
         it("fails to unfollow a user that isn't followed by the  current user", async () => {
-            // the resolver assumes that the loggedin user is the user with id 1
             // user with id 3 is not followed by user with id 1
-            const response = await unfollow(3);
+            const response = await unfollow(3, token);
 
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
@@ -909,10 +921,6 @@ describe("user-resolvers", (): void => {
                 statusCode: 422,
                 message: "The current user is not following this user",
             });
-        });
-
-        after(async () => {
-            return await User.destroy({ where: { id: [1, 2, 3] } });
         });
     });
 

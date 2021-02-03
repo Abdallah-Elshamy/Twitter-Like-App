@@ -326,18 +326,29 @@ export default {
 
             return true;
         },
-        unfollow: async (parent: any, args: any, context: any, info: any) => {
-            // assume logged in user id is 1
-            const currentUser: any = await User.findByPk(1);
+        unfollow: async (
+            parent: any,
+            args: { userId: number },
+            context: any,
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const currentUser = user as User;
 
             // check if the entered user is found in the database
-            const toBeUnfollowed: any = await User.findByPk(args.userId);
+            const toBeUnfollowed = await User.findByPk(args.userId);
             if (!toBeUnfollowed) {
                 const error: any = new Error("No user was found with this id!");
                 error.statusCode = 404;
                 throw error;
             }
-            const isFollowing = await currentUser.hasFollowing(toBeUnfollowed);
+            const isFollowing = await currentUser.$has(
+                "following",
+                toBeUnfollowed
+            );
             // check if the current user is following the entered user
             if (!isFollowing) {
                 const error: any = new Error(

@@ -191,9 +191,13 @@ export const unlike = async (
         });
 };
 
-export const unfollow = async (userId: number) => {
+export const unfollow = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {

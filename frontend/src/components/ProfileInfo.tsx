@@ -5,7 +5,7 @@ import avatar from "../routes/mjv-d5z8_400x400.jpg";
 function ProfileInfo() {
   return (
     <Fragment>
-      <header className="top-bar">
+      <header className="top-bar px-3 py-2">
         <span className=" m-3">
           <a href="http://">
             <i className="fa fa-arrow-left  p--main-color" aria-hidden="true"></i>

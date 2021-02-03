@@ -175,9 +175,13 @@ export const updateUserUserName = async (
         });
 };
 
-export const unlike = async (tweetId: number) => {
+export const unlike = async (
+    tweetId: number,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {

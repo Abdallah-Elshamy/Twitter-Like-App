@@ -141,7 +141,12 @@ export default {
             });
             return user;
         },
-        updateUser: async (parent: any, args: { userInput: UserInput}, context: any, info: any) => {
+        updateUser: async (
+            parent: any,
+            args: { userInput: UserInput },
+            context: any,
+            info: any
+        ) => {
             const { user, authError } = context.req;
             if (authError) {
                 throw authError;
@@ -248,11 +253,18 @@ export default {
 
             return true;
         },
-        unlike: async (parent: any, args: any, context: any, info: any) => {
-            // assume that the loggedin user has an id of 1
-            const currentUser: any = await User.findByPk(1);
-
-            const tweet: any = await Tweet.findByPk(args.tweetId);
+        unlike: async (
+            parent: any,
+            args: { tweetId: number },
+            context: any,
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const currentUser = user as User;
+            const tweet = await Tweet.findByPk(args.tweetId);
             if (!tweet) {
                 const error: any = new Error(
                     "No tweet was found with this id!"
@@ -260,7 +272,7 @@ export default {
                 error.statusCode = 404;
                 throw error;
             }
-            const isLiked = await currentUser.hasLikes(tweet);
+            const isLiked = await currentUser.$has("likes", tweet);
 
             // check if the entered tweet is liked by the current user
             if (!isLiked) {

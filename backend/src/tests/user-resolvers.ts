@@ -30,7 +30,7 @@ import {
     like,
     unlike,
     createTweet,
-    login
+    login,
 } from "./requests/user-resolvers";
 
 let server: any;
@@ -739,38 +739,47 @@ describe("user-resolvers", (): void => {
     });
 
     describe("unlike resolver", () => {
+        let token: string = "";
         before(async () => {
             await db.sync({ force: true });
             let likedTweet: any;
-            const user = await User.create({
-                name: "Zog The Defiler",
-                userName: "Zog_Is_a_cool_ORC99",
-                email: "Mordor@yahoo.com",
-                hashedPassword: "THISISApassword!11",
-            });
+            let response = await createUser("Luffy11", "Monkey D. Luffy");
+            const userId = response.body.data.createUser.id;
+            const user = await User.findByPk(userId);
+
+            response = await login("Luffy11", "myPrecious");
+            token = response.body.data.login.token;
+
             for (let i = 0; i < 2; i++) {
                 let newTweet = await Tweet.create({
                     text: "This is a test tweet written by Gollum *_* ",
-                    userId: 1,
+                    userId: userId,
                     mediaURLs: [],
                     state: "O",
                 });
                 if (i === 0) likedTweet = newTweet;
             }
-            return await user.$add("likes", likedTweet);
+            await user!.$add("likes", likedTweet);
         });
 
         it("succeeds in unliking a liked tweet", async () => {
-            // the resolver assumes that the loggedin user is the user with id 1
-            const user: any = await User.findByPk(1);
-            const response = await unlike(1);
+            const response = await unlike(1, token);
             expect(response.body.data).to.include({
                 unlike: true,
             });
         });
-        it("fails to unlikes a non existent tweet", async () => {
+
+        it("fails to unlike a tweet when not authenticated", async () => {
+            const response = await unlike(1);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+            });
+        });
+
+        it("fails to unlike a non existent tweet", async () => {
             // no tweet has an id of 0
-            const response = await unlike(0);
+            const response = await unlike(0, token);
 
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
@@ -781,8 +790,7 @@ describe("user-resolvers", (): void => {
         });
 
         it("fails to unlike a tweet that isn't liked by the user", async () => {
-            const user: any = await User.findByPk(1);
-            const response = await unlike(2);
+            const response = await unlike(2, token);
 
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);

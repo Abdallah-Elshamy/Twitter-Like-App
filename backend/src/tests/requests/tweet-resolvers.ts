@@ -20,7 +20,10 @@ export const createTweet = async (text: any) => {
         });
 };
 
-export const createRetweet = async (originalTweetId: number, authToken: string | undefined = undefined) => {
+export const createRetweet = async (
+    originalTweetId: number,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
         .set("Authorization", `Bearer ${authToken}`)
@@ -42,7 +45,11 @@ export const createRetweet = async (originalTweetId: number, authToken: string |
         });
 };
 
-export const createQuotedRetweetWithMedia = async (originalTweetId: number, text: string,authToken: string | undefined = undefined) => {
+export const createQuotedRetweetWithMedia = async (
+    originalTweetId: number,
+    text: string,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
         .set("Authorization", `Bearer ${authToken}`)
@@ -75,7 +82,11 @@ export const createQuotedRetweetWithMedia = async (originalTweetId: number, text
         });
 };
 
-export const createQuotedRetweet= async (originalTweetId: number, text: string,authToken: string | undefined = undefined) => {
+export const createQuotedRetweet = async (
+    originalTweetId: number,
+    text: string,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
         .set("Authorization", `Bearer ${authToken}`)
@@ -241,5 +252,44 @@ export const getTweets = async (
                 }
             }    
          `,
+        });
+};
+
+export const getFeed = async (authToken: string | undefined = undefined) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            query {
+                getFeed {
+                    text
+                    user {
+                        id
+                    }
+                }
+            }
+        `,
+        });
+};
+
+export const getFeedWithPagination = async (
+    page: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            query {
+                getFeed(page: ${page}) {
+                    text
+                    user {
+                        id
+                    }
+                }
+            }
+        `,
         });
 };

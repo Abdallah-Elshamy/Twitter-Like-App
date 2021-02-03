@@ -151,6 +151,33 @@ export default {
                 },
             };
         },
+        getFeed: async (
+            parent: any,
+            args: { page: number },
+            context: any,
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const loggedIn = user as User;
+
+            const { page } = args;
+
+            const followingUsers = await loggedIn.$get("following", {
+                attributes: ["id"],
+            });
+            const followingUsersIds = followingUsers.map((user) => user.id);
+            const tweets: Tweet[] = await Tweet.findAll({
+                where: { userId: { [Op.in]: followingUsersIds } },
+                offset: ((page || 1) - 1) * PAGE_SIZE,
+                limit: PAGE_SIZE,
+                order: [["createdAt", "DESC"]],
+            });
+
+            return tweets;
+        },
     },
     Mutation: {
         createTweet: async (
@@ -268,7 +295,7 @@ export default {
             if (authError) {
                 throw authError;
             }
-            const { originalTweetId, tweet} = args;
+            const { originalTweetId, tweet } = args;
             const originalTweet = await Tweet.findByPk(originalTweetId);
             if (!originalTweet) {
                 const error: CustomeError = new Error(

@@ -14,6 +14,8 @@ import {
     createRetweet,
     createQuotedRetweet,
     createQuotedRetweetWithMedia,
+    getFeed,
+    getFeedWithPagination,
 } from "./requests/tweet-resolvers";
 import { createUser, login } from "./requests/user-resolvers";
 import { truncate } from "fs/promises";
@@ -373,7 +375,11 @@ describe("tweet-resolvers", (): void => {
         });
 
         it("succeed create quoted retweet with media", async () => {
-            const response = await createQuotedRetweetWithMedia(1, "test quoted", token);
+            const response = await createQuotedRetweetWithMedia(
+                1,
+                "test quoted",
+                token
+            );
             expect(response.body.data.createQuotedRetweet).to.include({
                 id: "3",
                 text: "test quoted",
@@ -399,7 +405,7 @@ describe("tweet-resolvers", (): void => {
             ).to.be.equal("1");
         });
 
-        it("fail createQuotedRetweet with no text", async() => {
+        it("fail createQuotedRetweet with no text", async () => {
             const response = await createQuotedRetweet(1, "", token);
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
@@ -411,7 +417,7 @@ describe("tweet-resolvers", (): void => {
                 message: "text length must be between 1 to 280 chars!",
                 value: "text",
             });
-        })
+        });
 
         it("fail createQuotedRetweet to non existing tweet", async () => {
             const response = await createQuotedRetweet(
@@ -761,6 +767,84 @@ describe("tweet-resolvers", (): void => {
                 statusCode: 422,
                 message:
                     "Filter must be null or media or replies&tweets or likes only!",
+            });
+        });
+    });
+
+    describe("getFeed Query", (): void => {
+        let token: string = "";
+        before(async () => {
+            await db.sync({ force: true });
+            let response = await createUser("Luffy11", "Monkey D. Luffy");
+            const userId: number = response.body.data.createUser.id;
+            const loggedUser = await User.findByPk(userId);
+
+            response = await login("Luffy11", "myPrecious");
+            token = response.body.data.login.token;
+
+            const toBeFollowed: User[] = [];
+            for (let i = 0; i < 2; i++) {
+                let user = await User.create({
+                    name: `testUser ${i + 1}`,
+                    userName: `testU${i + 1}`,
+                    email: `testU${i + 1}@yahoo.com`,
+                    hashedPassword: "12345678910",
+                });
+                toBeFollowed.push(user);
+            }
+
+            await Tweet.create({
+                text: "This is the first tweet",
+                userId: 2,
+                mediaURLs: [],
+                state: "O",
+            });
+            for (let i = 0; i < 12; i++) {
+                await Tweet.create({
+                    text: `Today is a good day ${i + 1}`,
+                    userId: 2,
+                    mediaURLs: [],
+                    state: "O",
+                });
+            }
+            await Tweet.create({
+                text: "This is the last tweet",
+                userId: 3,
+                mediaURLs: [],
+                state: "O",
+            });
+            await loggedUser!.$add("following", toBeFollowed[0]);
+            await loggedUser!.$add("following", toBeFollowed[1]);
+        });
+
+        it("succeeds in fetching tweets of followed users", async () => {
+            const response = await getFeed(token);
+
+            expect(response.body.data.getFeed).to.has.length(10);
+            expect(response.body.data.getFeed[0]).to.include({
+                text: "This is the last tweet",
+            });
+            expect(response.body.data.getFeed[0].user).to.have.property(
+                "id",
+                "3"
+            );
+        });
+        it("succeeds in fetching paginated tweets of followed users", async () => {
+            const response = await getFeedWithPagination(2, token);
+            expect(response.body.data.getFeed).to.has.length(4);
+            expect(response.body.data.getFeed[3]).to.include({
+                text: "This is the first tweet",
+            });
+            expect(response.body.data.getFeed[3].user).to.have.property(
+                "id",
+                "2"
+            );
+        });
+        it("fails to get Feed when not authenticated", async () => {
+            const response = await getFeed();
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
             });
         });
     });

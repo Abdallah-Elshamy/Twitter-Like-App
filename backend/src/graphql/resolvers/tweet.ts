@@ -206,10 +206,13 @@ export default {
         createReply: async (
             parent: any,
             args: any,
-            context: any,
+            context: { req: CustomeRequest },
             info: any
         ) => {
-            //check authentication here first
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
             const { text, mediaURLs } = args.tweet;
             const repliedToTweetId = args.repliedToTweet;
             const repliedToTweet = await Tweet.findByPk(repliedToTweetId);
@@ -232,7 +235,7 @@ export default {
                     text,
                     "C",
                     mediaURLs,
-                    1,
+                    user!.id,
                     transaction,
                     repliedToTweet.id,
                     repliedToTweet.threadTweet ||

@@ -139,9 +139,10 @@ export const createTweetWithMedia = async (text: any, token: string | undefined 
         });
 };
 
-export const createReply = async (text: any, repliedToTweet: any) => {
+export const createReply = async (text: any, repliedToTweet: any, token: string | undefined = undefined) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${token}`)
         .send({
             query: `
             mutation {

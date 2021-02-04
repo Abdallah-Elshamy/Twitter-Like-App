@@ -46,12 +46,13 @@ const succeedCreateReply = async (
     threadTweet: number,
     text: string,
     state: string,
-    id: number
+    id: number,
+    token: string
 ) => {
     const repliedToTweet: any = await Tweet.findByPk(repliedToTweetId);
     let replies = await repliedToTweet.getReplies();
     expect(replies).to.has.length(0);
-    const response = await createReply(text, repliedToTweetId);
+    const response = await createReply(text, repliedToTweetId, token);
     expect(response.body.data.createReply).to.include({
         id: "" + id,
         text,
@@ -271,23 +272,26 @@ describe("tweet-resolvers", (): void => {
     });
 
     describe("createReply Mutation", () => {
+        let token = ""
         before(async () => {
             await db.sync({ force: true });
-            await createUsers(1);
+            await createUser("omarabdo997", "omar ali");
+            const response = await login("omarabdo997", "myPrecious");
+            token = response.body.data.login.token;
             await createTweets(1, "O", 1);
         });
 
         it("createReply to originalTweet", async () => {
-            await succeedCreateReply(1, 1, "hello world", "C", 2);
+            await succeedCreateReply(1, 1, "hello world", "C", 2, token);
         });
 
         it("createReply to replyTweet", async () => {
-            await succeedCreateReply(2, 1, "hello world2", "C", 3);
+            await succeedCreateReply(2, 1, "hello world2", "C", 3, token);
         });
 
         it("createReply to replyTweet with deleted thread tweet", async () => {
             await Tweet.destroy({ where: { id: 1 } });
-            const response = await createReply("reply tweet3", 2);
+            const response = await createReply("reply tweet3", 2, token);
             const tweet = await Tweet.findByPk(4);
             expect(tweet?.id).to.be.equal(4);
             expect(tweet?.repliedToTweet).to.be.equal(2);
@@ -300,7 +304,7 @@ describe("tweet-resolvers", (): void => {
                 userId: 1,
                 state: "R",
             });
-            const response = await createReply("reply tweet4", rTweet.id);
+            const response = await createReply("reply tweet4", rTweet.id, token);
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -309,11 +313,19 @@ describe("tweet-resolvers", (): void => {
         });
 
         it("fail createReply to a non existing tweet", async () => {
-            const response = await createReply("reply tweet2", 20);
+            const response = await createReply("reply tweet2", 20, token);
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
                 message: "No tweet was found with this id!",
+            });
+        });
+
+        it("fail createReply authorization", async () => {
+            const response = await createReply("reply tweet2", 1);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
             });
         });
     });
@@ -601,13 +613,14 @@ describe("tweet-resolvers", (): void => {
 
         it("tweet query get threadTweet", async () => {
             const resOriginalTweet = await createTweet("test", token);
-            const id1 = resOriginalTweet.body.data.createTweet.id; //id1 = 27
-            const resReplyTweet = await createReply("reply1", id1); // id = 28
+            const id1 = resOriginalTweet.body.data.createTweet.id; 
+            const resReplyTweet = await createReply("reply1", id1, token); 
             const reply2 = await createReply(
                 "reply2",
-                resReplyTweet.body.data.createReply.id
+                resReplyTweet.body.data.createReply.id,
+                token
             );
-            const id2 = reply2.body.data.createReply.id; //id2 = 29
+            const id2 = reply2.body.data.createReply.id; 
             const response = await getTweet(id2);
             expect(response.body.data.tweet.threadTweet.id).to.be.equal(id1);
         });

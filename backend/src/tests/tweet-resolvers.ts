@@ -79,6 +79,7 @@ const createUsers = async (it: number = 30) => {
                 userName: `test${i}`,
                 email: `test${i}@gmail.com`,
                 hashedPassword: `123456789`,
+                birthDate: "1970-01-01",
             })
         );
     }
@@ -855,6 +856,7 @@ describe("tweet-resolvers", (): void => {
                     userName: `testU${i + 1}`,
                     email: `testU${i + 1}@yahoo.com`,
                     hashedPassword: "12345678910",
+                    birthDate: "1970-01-01"
                 });
                 toBeFollowed.push(user);
             }

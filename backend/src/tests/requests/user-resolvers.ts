@@ -19,6 +19,7 @@ export const updateUser = async (
                     imageURL: "${userInput.imageURL}",
                     bio: "${userInput.bio}"
                     coverImageURL: "${userInput.coverImageURL}"
+                    birthDate: "${userInput.birthDate}"
                 }) {
                     name
                     userName
@@ -26,6 +27,7 @@ export const updateUser = async (
                     imageURL
                     coverImageURL
                     bio
+                    birthDate
                     }
                 }
         `,
@@ -175,6 +177,25 @@ export const updateUserUserName = async (
         });
 };
 
+export const updateUserWithBirthDate = async (
+    birthDate: string,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                updateUser(userInput: {birthDate: "${birthDate}"}) {
+                    birthDate
+                }
+        }
+        `,
+        });
+};
+
+
 export const unlike = async (
     tweetId: number,
     authToken: string | undefined = undefined
@@ -238,11 +259,13 @@ export const createUser = async (userName: string, name: string) => {
                     userName: "${userName}",
                     name: "${name}",
                     email: "bilbo_baggins@shire.com",
-                    password: "myPrecious"
+                    password: "myPrecious",
+                    birthDate: "1970-01-01"
                 }){
                     id,
                     userName,
-                    name
+                    name,
+                    birthDate
                 }
             }
         `,
@@ -260,12 +283,14 @@ export const createUserWithImage = async (userName: string, name: string) => {
                     name: "${name}",
                     email: "frodo_baggins@shire.com",
                     password: "myPrecious",
-                    imageURL: "https://picsum.photos/200/300"
+                    imageURL: "https://picsum.photos/200/300",
+                    birthDate: "1970-01-01"
                 }){
                     id,
                     userName,
                     name,
-                    imageURL
+                    imageURL,
+                    birthDate
                 }
             }
         `,
@@ -283,12 +308,14 @@ export const createUserWithBio = async (userName: string, name: string) => {
                     name: "${name}",
                     email: "gandalf@shire.com",
                     password: "myPrecious",
-                    bio: "RUN YOU FOOLS!"
+                    bio: "RUN YOU FOOLS!",
+                    birthDate: "1970-01-01"
                 }){
                     id,
                     userName,
                     name,
-                    bio
+                    bio,
+                    birthDate
                 }
             }
         `,
@@ -309,12 +336,14 @@ export const createUserWithCoverImage = async (
                     name: "${name}",
                     email: "roronoa_zoro@grandline.com",
                     password: "strawhat",
-                    coverImageURL: "https://picsum.photos/200/300"
+                    coverImageURL: "https://picsum.photos/200/300",
+                    birthDate: "1970-01-01"
                 }){
                     id,
                     userName,
                     name,
-                    coverImageURL
+                    coverImageURL,
+                    birthDate
                 }
             }
         `,
@@ -334,15 +363,16 @@ export const createUserComplete = async (userName: string, name: string) => {
                     password: "strawhat",
                     bio: "But a hero is a guy who gives out the meat to everyone else. I want to eat the damn meat!",
                     imageURL: "https://picsum.photos/200/300",
-                    coverImageURL: "https://picsum.photos/200/300"
-                    
+                    coverImageURL: "https://picsum.photos/200/300",
+                    birthDate: "1970-01-01"                    
                 }){
                     id,
                     userName,
                     name,
                     bio,
                     imageURL,
-                    coverImageURL
+                    coverImageURL,
+                    birthDate
                 }
             }
         `,
@@ -365,15 +395,16 @@ export const createUserWithEmailPassword = async (
                     password: "${password}",
                     bio: "That is MY Ninja Way!",
                     imageURL: "https://picsum.photos/200/300",
-                    coverImageURL: "https://picsum.photos/200/300"
-                    
+                    coverImageURL: "https://picsum.photos/200/300",
+                    birthDate: "1970-01-01"                    
                 }){
                     id,
                     userName,
                     name,
                     bio,
                     imageURL,
-                    coverImageURL
+                    coverImageURL,
+                    birthDate
                 }
             }
         `,
@@ -396,15 +427,36 @@ export const createUserWithImages = async (
                     password: "hidden_leaf",
                     bio: "That is MY Ninja Way!",
                     imageURL: "${imageURL}",
-                    coverImageURL: "${coverImageURL}"
-                    
+                    coverImageURL: "${coverImageURL}",
+                    birthDate: "1970-01-01"                    
                 }){
                     id,
                     userName,
                     name,
                     bio,
                     imageURL,
-                    coverImageURL
+                    coverImageURL,
+                    birthDate
+                }
+            }
+        `,
+        });
+};
+
+export const createUserWithBirthDate = async (birthDate: string) => {
+    return await request(app)
+        .post("/graphql")
+        .send({
+            query: `
+            mutation {
+                createUser(userInput: {
+                    userName: "shikamaru",
+                    name: "Shikamaru Nara",
+                    email: "shikamaru@konoha.com",
+                    password: "hidden_leaf",
+                    birthDate: "${birthDate}"                    
+                }){
+                    id,
                 }
             }
         `,
@@ -436,8 +488,11 @@ export const like = async (tweetId: number) => {
 };
 
 export const createTweet = async (token: string | undefined = undefined) => {
-    return await request(app).post("/graphql").set("Authorization", `Bearer ${token}`).send({
-        query: `
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+            query: `
             mutation {
                 createTweet(tweet: {
                     text: "One ring to rule them all",
@@ -447,7 +502,7 @@ export const createTweet = async (token: string | undefined = undefined) => {
                 }
             }
         `,
-    });
+        });
 };
 
 export const createTwentyUser = async () => {
@@ -464,7 +519,8 @@ export const createTwentyUser = async () => {
                     password: "hidden_leaf",
                     bio: "That is MY Ninja Way!",
                     imageURL: "https://picsum.photos/200/300",
-                    coverImageURL: "https://picsum.photos/200/300"
+                    coverImageURL: "https://picsum.photos/200/300",
+                    birthDate: "1970-01-01"
                 }){
                     id,
                 }
@@ -503,6 +559,7 @@ export const getUser = async (id: number) => {
                     name,
                     imageURL,
                     bio,
+                    birthDate,
                     coverImageURL,
                     following(page: 1) {
                         totalCount,

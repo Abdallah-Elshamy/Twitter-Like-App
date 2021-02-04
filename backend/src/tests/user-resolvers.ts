@@ -14,6 +14,7 @@ import {
     createUserComplete,
     createUserWithEmailPassword,
     createUserWithImages,
+    createUserWithBirthDate,
     createTwentyUser,
     updateUser,
     emptyUpdateUser,
@@ -23,6 +24,7 @@ import {
     updateUserPassword,
     updateUserImageURL,
     updateUserCoverImageURL,
+    updateUserWithBirthDate,
     follow,
     followFifteenUser,
     unfollow,
@@ -57,7 +59,7 @@ describe("user-resolvers", (): void => {
                     });
                 }
             }
-            const response = await login("kage1", "hidden_leaf")
+            const response = await login("kage1", "hidden_leaf");
             const token = response.body.data.login.token;
             // Create a tweet and like it
             await createTweet(token);
@@ -77,6 +79,7 @@ describe("user-resolvers", (): void => {
                 coverImageURL: "https://picsum.photos/200/300",
                 followingCount: 15,
                 followersCount: 15,
+                birthDate: "1970-01-01",
             });
             // check that the followers of the followers of the user
             // are retrieved correctly
@@ -234,6 +237,7 @@ describe("user-resolvers", (): void => {
                 id: "1",
                 userName: "bilbo",
                 name: "Bilbo Baggins",
+                birthDate: "1970-01-01",
             });
         });
 
@@ -247,6 +251,7 @@ describe("user-resolvers", (): void => {
                 userName: "gandalf",
                 name: "Gandalf The Grey",
                 bio: "RUN YOU FOOLS!",
+                birthDate: "1970-01-01",
             });
         });
 
@@ -260,6 +265,7 @@ describe("user-resolvers", (): void => {
                 userName: "frodo",
                 name: "Frodo Baggins",
                 imageURL: "https://picsum.photos/200/300",
+                birthDate: "1970-01-01",
             });
         });
 
@@ -273,6 +279,7 @@ describe("user-resolvers", (): void => {
                 userName: "zoro",
                 name: "Roronoa Zoro",
                 coverImageURL: "https://picsum.photos/200/300",
+                birthDate: "1970-01-01",
             });
         });
 
@@ -301,6 +308,7 @@ describe("user-resolvers", (): void => {
                     "But a hero is a guy who gives out the meat to everyone else. I want to eat the damn meat!",
                 imageURL: "https://picsum.photos/200/300",
                 coverImageURL: "https://picsum.photos/200/300",
+                birthDate: "1970-01-01",
             });
         });
 
@@ -452,18 +460,27 @@ describe("user-resolvers", (): void => {
             });
         });
 
-        it("fails to update user with an invalid cover image URL format", async () => {
-            const response = await createUserWithImages(
-                "https://picsum.photos/200/300",
-                "badURL"
-            );
+        it("createUser with an invalid birth date", async () => {
+            const response = await createUserWithBirthDate("Hello");
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
                 message: "Validation error!",
             });
             expect(response.body.errors[0].validators[0]).to.include({
-                message: "Invalid cover image URL!",
-                value: "coverImageURL",
+                message: "Invalid birth date!",
+                value: "birthDate",
+            });
+        });
+
+        it("createUser with a valid birth date but in the future", async () => {
+            const response = await createUserWithBirthDate("2100-01-01");
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "Invalid birth date!",
+                value: "birthDate",
             });
         });
     });
@@ -483,6 +500,7 @@ describe("user-resolvers", (): void => {
                 userName: "Alfred_12",
                 email: "Einstein@yahoo.com",
                 password: "12345678",
+                birthDate: "1879-03-14",
                 bio: "This is Alfred Einstein hustlin !",
                 imageURL:
                     "https://preview.redd.it/t3ikdu9pp8h41.jpg?auto=webp&s=2106d1817d77e1b55438362d11b6452b7ab77bc6",
@@ -496,6 +514,7 @@ describe("user-resolvers", (): void => {
                 userName: "Alfred_12",
                 email: "einstein@yahoo.com",
                 bio: "This is Alfred Einstein hustlin !",
+                birthDate: "1879-03-14",
                 imageURL:
                     "https://preview.redd.it/t3ikdu9pp8h41.jpg?auto=webp&s=2106d1817d77e1b55438362d11b6452b7ab77bc6",
                 coverImageURL:
@@ -700,14 +719,53 @@ describe("user-resolvers", (): void => {
                 value: "coverImageURL",
             });
         });
+
+        it("fails to update user with an invalid cover image URL format", async () => {
+            const response = await createUserWithImages(
+                "https://picsum.photos/200/300",
+                "badURL"
+            );
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "Invalid cover image URL!",
+                value: "coverImageURL",
+            });
+        });
+
+        it("fails to update user with an invalid birth date", async () => {
+            const response = await updateUserWithBirthDate("hello", token);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "Invalid birth date!",
+                value: "birthDate",
+            });
+        });
+
+        it("fails to update user with a valid birth date but in the future", async () => {
+            const response = await updateUserWithBirthDate("2100-01-01", token);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "Invalid birth date!",
+                value: "birthDate",
+            });
+        });
     });
 
     describe("like resolver", () => {
-        let token = ""
+        let token = "";
         before(async () => {
             await db.sync({ force: true });
             await createUser("bilbo", "Bilbo Baggins");
-            const response = await login("bilbo", "myPrecious")
+            const response = await login("bilbo", "myPrecious");
             token = response.body.data.login.token;
             await createTweet(token);
         });
@@ -881,6 +939,7 @@ describe("user-resolvers", (): void => {
                     userName: `testU${i + 1}`,
                     email: `testU${i + 1}@yahoo.com`,
                     hashedPassword: "12345678910",
+                    birthDate: "1970-01-01",
                 });
                 if (i === 0) toBeFollowed = user;
             }

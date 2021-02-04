@@ -1,5 +1,6 @@
 import { Hashtag } from "../../models";
 import validator from "validator";
+import sequelize from "sequelize";
 
 const PAGE_SIZE = 10;
 
@@ -28,15 +29,32 @@ export default {
 
             return hashtag;
         },
+        hashtags: async (parent: any, args: { page: number }) => {
+            const { page } = args;
+            return {
+                totalCount: async () => {
+                    return await Hashtag.count();
+                },
+                hashtags: async () => {
+                    let hashtags = await Hashtag.findAll({
+                        offset: ((page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                        order: [["word", "ASC"]],
+                    });
+                    return hashtags;
+                },
+            };
+        },
     },
     Hashtag: {
-        tweets: async (parent: any, args: { page: number}) => {
+        tweets: async (parent: any, args: { page: number }) => {
             const { page } = args;
             return {
                 tweets: async () => {
                     const tweets = await parent.$get("tweets", {
-                        offset: (page - 1) * PAGE_SIZE || 0,
-                        limit: page ? PAGE_SIZE : undefined,
+                        offset: ((page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                        order: [["createdAt", "DESC"]],
                     });
                     return tweets;
                 },

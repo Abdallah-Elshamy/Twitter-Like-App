@@ -343,10 +343,12 @@ export default {
                 error.statusCode = 404;
                 throw error;
             }
-            const userHasTweet = tweet.userId === user!.id
-            if(!userHasTweet) {
-                const error: CustomeError = new Error("You don't own this tweet!")
-                error.statusCode = 403
+            const userHasTweet = tweet.userId === user!.id;
+            if (!userHasTweet) {
+                const error: CustomeError = new Error(
+                    "You don't own this tweet!"
+                );
+                error.statusCode = 403;
                 throw error;
             }
             await tweet.destroy();
@@ -413,11 +415,18 @@ export default {
         repliedToTweet: async (parent: Tweet) => {
             return await parent.$get("repliedTo");
         },
-        isLiked: async (parent: Tweet, args: any, context: any) => {
-            //add logged in condition here and return null if no logged in user
+        isLiked: async (
+            parent: Tweet,
+            args: any,
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                return false;
+            }
             const like = await Likes.findOne({
                 where: {
-                    userId: 1, //this will be replaced with real logged in user
+                    userId: user!.id,
                     tweetId: parent.id,
                 },
             });

@@ -179,10 +179,12 @@ export const getTweet = async (
     id: number,
     likesPage: number = 1,
     repliesPage: number = 1,
-    hashtagePage: number = 1
+    hashtagePage: number = 1,
+    token: string | undefined = undefined
 ) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${token}`)
         .send({
             query: `
                 query {

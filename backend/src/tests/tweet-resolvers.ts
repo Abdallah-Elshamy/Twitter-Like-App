@@ -527,11 +527,13 @@ describe("tweet-resolvers", (): void => {
             const users = await createUsers(30);
             await createUser("omarabdo997", "omar ali");
             const response = await login("omarabdo997", "myPrecious");
+            const loggedInUser = await User.findByPk(31)
             token = response.body.data.login.token;
             await createTweet("hello world", token);
             const oTweet = await Tweet.findByPk(1);
             //add likes to the created tweet
             await oTweet!.$add("likes", users);
+            await oTweet!.$add("likes", loggedInUser!);
             //add replies to the created tweet
             const rTweets = await createTweets(1, "C", 24);
             await oTweet!.$add("replies", rTweets);
@@ -570,34 +572,35 @@ describe("tweet-resolvers", (): void => {
         it("tweet query get likes with paging", async () => {
             let response = await getTweet(1, 1);
             let likes = response.body.data.tweet.likes;
-            expect(likes.totalCount).to.be.equal(30);
+            expect(likes.totalCount).to.be.equal(31);
             expect(likes.users).to.has.length(10);
-            expect(likes.users[0].id).to.be.equal("30");
-            expect(likes.users[9].id).to.be.equal("21");
+            expect(likes.users[0].id).to.be.equal("31");
+            expect(likes.users[9].id).to.be.equal("22");
 
             response = await getTweet(1, 2);
             likes = response.body.data.tweet.likes;
-            expect(likes.totalCount).to.be.equal(30);
+            expect(likes.totalCount).to.be.equal(31);
             expect(likes.users).to.has.length(10);
-            expect(likes.users[0].id).to.be.equal("20");
-            expect(likes.users[9].id).to.be.equal("11");
+            expect(likes.users[0].id).to.be.equal("21");
+            expect(likes.users[9].id).to.be.equal("12");
 
             response = await getTweet(1, 3);
             likes = response.body.data.tweet.likes;
-            expect(likes.totalCount).to.be.equal(30);
+            expect(likes.totalCount).to.be.equal(31);
             expect(likes.users).to.has.length(10);
-            expect(likes.users[0].id).to.be.equal("10");
-            expect(likes.users[9].id).to.be.equal("1");
+            expect(likes.users[0].id).to.be.equal("11");
+            expect(likes.users[9].id).to.be.equal("2");
 
             response = await getTweet(1, 4);
             likes = response.body.data.tweet.likes;
-            expect(likes.totalCount).to.be.equal(30);
-            expect(likes.users).to.has.length(0);
+            expect(likes.totalCount).to.be.equal(31);
+            expect(likes.users).to.has.length(1);
+            expect(likes.users[0].id).to.be.equal("1");
         });
 
         it("tweet query get likesCount", async () => {
             const response = await getTweet(1);
-            expect(response.body.data.tweet.likesCount).to.be.equal(30);
+            expect(response.body.data.tweet.likesCount).to.be.equal(31);
         });
 
         it("tweet query get replies with paging", async () => {
@@ -655,11 +658,12 @@ describe("tweet-resolvers", (): void => {
         });
 
         it("tweet query get isLiked", async () => {
-            const response = await getTweet(1);
-            //assuming logged in user is user (1)
+            const response = await getTweet(1, 1, 1, 1, token); //user logged in and likes the tweet
             expect(response.body.data.tweet.isLiked).to.be.true;
-            const response2 = await getTweet(28);
+            const response2 = await getTweet(1); // user not logged in
             expect(response2.body.data.tweet.isLiked).to.be.false;
+            const response3 = await getTweet(28,1 ,1 ,1, token); // user logged in but doesn't like the tweet
+            expect(response3.body.data.tweet.isLiked).to.be.false;
         });
 
         it("tweet query get hashtags", async () => {

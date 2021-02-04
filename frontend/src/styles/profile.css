@@ -5,8 +5,9 @@
   position: relative;
 }
 .pf--bg {
-  max-height: 205px;
-  background: var(--dark-grey);
+  display: block;
+  max-height: 205px; /*max-hight*/
+  background: #192b38;
   position: relative;
   z-index: 0;
 }
@@ -15,7 +16,6 @@
   width: 100%;
   object-fit: contain;
 }
-
 .pf--avatar {
   position: absolute;
   top: 32%;
@@ -24,7 +24,7 @@
   max-height: 23%;
   max-width: 23%;
 }
-.pf--avatar img {
+.pf--avatar-img {
   width: 100%;
   height: 100%;
   border-radius: 50%;

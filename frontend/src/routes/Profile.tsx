@@ -6,28 +6,19 @@ import ProfileInfo from "../components/ProfileInfo";
 import Tweet from "../components/Tweet"
 import TrendsBar from '../components/TrendsBar/TrendsBar';
 import '../styles/layout.css'
-import {  gql, useQuery } from '@apollo/client';
-
-const USER= gql`
-      query oyrfris {
- user(id:1){
-  userName
-  id
-  name
-}
-}`
-
+import {  useQuery } from '@apollo/client';
+import {LoggedUser} from '../Userqery'; 
 
 function Profile() {
-
-  const {loading,error,data} = useQuery(USER)
-  console.log(data)
+  const {loading,error,data} = useQuery(LoggedUser); 
+  if (loading) return <p>'Loading .. '</p> 
+  if (error) return <p>`Error! ${error.message}`</p> 
   return (
     <Fragment>
         <main className="main-container">
         <aside className="sb-left"><SideBar/></aside>  
         <article className="wall">
-          <ProfileInfo/>
+          <ProfileInfo />
           <nav >
             <ul className="pf--nav-ul active">
               <li>

@@ -13,6 +13,7 @@ interface UserInput {
     email: string;
     password: string;
     name: string;
+    birthDate: string;
     imageURL: string;
     coverImageURL: string;
     bio: string;
@@ -166,6 +167,7 @@ export default {
                 email,
                 password,
                 name,
+                birthDate,
                 imageURL,
                 bio,
                 coverImageURL,
@@ -199,6 +201,9 @@ export default {
             if (password) {
                 const hashedPw = await bcrypt.hash(password, 12);
                 toBeUpdatedUser.hashedPassword = hashedPw;
+            }
+            if (birthDate) {
+                toBeUpdatedUser.birthDate = new Date(birthDate);
             }
             if (name) {
                 toBeUpdatedUser.name = name;

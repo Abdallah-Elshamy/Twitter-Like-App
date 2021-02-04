@@ -25,6 +25,7 @@ export default gql`
         userName: String!
         email: String!
         name: String!
+        birthDate: String!
         imageURL: String
         bio: String
         coverImageURL: String
@@ -52,6 +53,7 @@ export default gql`
         email: String!
         password: String!
         name: String!
+        birthDate: String!
         imageURL: String
         bio: String
         coverImageURL: String
@@ -62,6 +64,7 @@ export default gql`
         email: String
         password: String
         name: String
+        birthDate: String
         imageURL: String
         bio: String
         coverImageURL: String

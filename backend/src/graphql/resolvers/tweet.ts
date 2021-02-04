@@ -29,7 +29,7 @@ const addTweetInDataBase = async (
     if (state !== "R") {
         const validators = tweetValidator({ text, mediaURLs });
         if (validators.length > 0) {
-            const error: any = new Error("Validation error!");
+            const error: CustomeError = new Error("Validation error!");
             error.statusCode = 422;
             error.validators = validators;
             throw error;
@@ -54,11 +54,11 @@ const addTweetInDataBase = async (
 
 export default {
     Query: {
-        tweet: async (parent: any, args: any, context: any, info: any) => {
+        tweet: async (parent: any, args: { id: number }) => {
             const id = args.id;
             const tweet = await Tweet.findByPk(id);
             if (!tweet) {
-                const error: any = new Error(
+                const error: CustomeError = new Error(
                     "No tweet was found with this id!"
                 );
                 error.statusCode = 404;
@@ -66,7 +66,10 @@ export default {
             }
             return tweet;
         },
-        tweets: async (parent: any, args: any, context: any, info: any) => {
+        tweets: async (
+            parent: any,
+            args: { userId: number; page: number; filter: string },
+        ) => {
             const { userId, page, filter } = args;
             if (
                 !(
@@ -76,7 +79,7 @@ export default {
                     filter === "likes"
                 )
             ) {
-                const error: any = new Error(
+                const error: CustomeError = new Error(
                     "Filter must be null or media or replies&tweets or likes only!"
                 );
                 error.statusCode = 422;
@@ -84,7 +87,7 @@ export default {
             }
             const user = await User.findByPk(userId);
             if (!user) {
-                const error: any = new Error("No user was found with this id!");
+                const error: CustomeError = new Error("No user was found with this id!");
                 error.statusCode = 404;
                 throw error;
             }
@@ -154,8 +157,7 @@ export default {
         getFeed: async (
             parent: any,
             args: { page: number },
-            context: any,
-            info: any
+            context: {req: CustomeRequest},
         ) => {
             const { user, authError } = context.req;
             if (authError) {
@@ -182,9 +184,8 @@ export default {
     Mutation: {
         createTweet: async (
             parent: any,
-            args: any,
+            args: {tweet: {text: string, mediaURLs: string[]}},
             context: { req: CustomeRequest },
-            info: any
         ) => {
             const { user, authError } = context.req;
             if (authError) {
@@ -205,9 +206,8 @@ export default {
 
         createReply: async (
             parent: any,
-            args: any,
+            args: {tweet: {text: string, mediaURLs: string[]}, repliedToTweet: number},
             context: { req: CustomeRequest },
-            info: any
         ) => {
             const { user, authError } = context.req;
             if (authError) {
@@ -217,14 +217,14 @@ export default {
             const repliedToTweetId = args.repliedToTweet;
             const repliedToTweet = await Tweet.findByPk(repliedToTweetId);
             if (!repliedToTweet) {
-                const error: any = new Error(
+                const error: CustomeError = new Error(
                     "No tweet was found with this id!"
                 );
                 error.statusCode = 404;
                 throw error;
             }
             if (repliedToTweet.state === "R") {
-                const error: any = new Error(
+                const error: CustomeError = new Error(
                     "Can't reply to or like a retweeted tweet!"
                 );
                 error.statusCode = 422;
@@ -326,9 +326,8 @@ export default {
 
         deleteTweet: async (
             parent: any,
-            args: any,
+            args: {id: number},
             context: { req: CustomeRequest },
-            info: any
         ) => {
             const { user, authError } = context.req;
             if (authError) {
@@ -337,7 +336,7 @@ export default {
             const id = args.id;
             const tweet = await Tweet.findByPk(id);
             if (!tweet) {
-                const error: any = new Error(
+                const error: CustomeError = new Error(
                     "No tweet was found with this id!"
                 );
                 error.statusCode = 404;
@@ -362,7 +361,7 @@ export default {
         originalTweet: async (parent: Tweet) => {
             return await parent.$get("originalTweet");
         },
-        likes: async (parent: Tweet, args: any) => {
+        likes: async (parent: Tweet, args: {page: number}) => {
             return {
                 users: async () => {
                     return await parent.$get("likes", {
@@ -379,7 +378,7 @@ export default {
         likesCount: async (parent: Tweet) => {
             return await parent.$count("likes");
         },
-        replies: async (parent: Tweet, args: any) => {
+        replies: async (parent: Tweet, args: {page: number}) => {
             return {
                 tweets: async () => {
                     return await parent.$get("replies", {
@@ -399,7 +398,7 @@ export default {
         threadTweet: async (parent: Tweet) => {
             return await parent.$get("thread");
         },
-        hashtags: async (parent: Tweet, args: any) => {
+        hashtags: async (parent: Tweet, args: {page: number}) => {
             return {
                 hashtags: async () => {
                     return await parent.$get("hashtags", {

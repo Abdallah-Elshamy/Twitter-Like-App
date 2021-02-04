@@ -43,6 +43,10 @@ class User extends Model {
     @Column(DataType.STRING)
     hashedPassword!: string;
 
+    @AllowNull(false)
+    @Column(DataType.DATEONLY)
+    birthDate!: Date;
+    
     @AllowNull(true)
     @Column(DataType.STRING)
     imageURL?: string;

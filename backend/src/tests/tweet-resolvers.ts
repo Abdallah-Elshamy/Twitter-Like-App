@@ -473,27 +473,49 @@ describe("tweet-resolvers", (): void => {
     });
 
     describe("deleteTweet Mutation", () => {
+        let token = ""
         before(async () => {
             await db.sync({ force: true });
+            await createUser("omarabdo997", "omar ali");
             await createUsers(1);
+            let response = await login("omarabdo997", "myPrecious");
+            token = response.body.data.login.token;
             await createTweets(1, "O", 1);
+            await createTweets(2, "O", 1);
         });
 
         it("delete tweet", async () => {
             const tweet = await Tweet.findByPk(1);
             expect(tweet).to.be.not.null;
-            const response = await deleteTweet(1);
+            const response = await deleteTweet(1, token);
             expect(response.body.data.deleteTweet).to.be.true;
             const tweet2 = await Tweet.findByPk(1);
             expect(tweet2).to.be.null;
         });
 
         it("fail delete tweet to non existing tweet", async () => {
-            const response = await deleteTweet(20);
+            const response = await deleteTweet(20, token);
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
                 message: "No tweet was found with this id!",
+            });
+        });
+
+        it("fail deleteTweet authorization", async () => {
+            const response = await deleteTweet(2);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+            });
+        });
+
+        it("fail deleteTweet if user doesn't own the tweet", async () => {
+            const response = await deleteTweet(2, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 403,
+                message: "You don't own this tweet!"
             });
         });
     });

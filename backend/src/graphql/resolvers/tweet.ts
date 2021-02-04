@@ -327,10 +327,13 @@ export default {
         deleteTweet: async (
             parent: any,
             args: any,
-            context: any,
+            context: { req: CustomeRequest },
             info: any
         ) => {
-            //check authentication and if user owns the tweet
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
             const id = args.id;
             const tweet = await Tweet.findByPk(id);
             if (!tweet) {
@@ -338,6 +341,12 @@ export default {
                     "No tweet was found with this id!"
                 );
                 error.statusCode = 404;
+                throw error;
+            }
+            const userHasTweet = tweet.userId === user!.id
+            if(!userHasTweet) {
+                const error: CustomeError = new Error("You don't own this tweet!")
+                error.statusCode = 403
                 throw error;
             }
             await tweet.destroy();

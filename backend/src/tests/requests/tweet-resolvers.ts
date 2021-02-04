@@ -162,9 +162,10 @@ export const createReply = async (text: any, repliedToTweet: any, token: string 
         });
 };
 
-export const deleteTweet = async (id: number) => {
+export const deleteTweet = async (id: number, token: string | undefined = undefined) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${token}`)
         .send({
             query: `
                 mutation {

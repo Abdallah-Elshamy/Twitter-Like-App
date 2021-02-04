@@ -1,9 +1,10 @@
 import request from "supertest";
 import app from "../../app";
 
-export const createTweet = async (text: any) => {
+export const createTweet = async (text: any, token: string | undefined = undefined) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${token}`)
         .send({
             query: `
             mutation {
@@ -113,9 +114,10 @@ export const createQuotedRetweet = async (
         });
 };
 
-export const createTweetWithMedia = async (text: any) => {
+export const createTweetWithMedia = async (text: any, token: string | undefined = undefined) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${token}`)
         .send({
             query: `
             mutation {

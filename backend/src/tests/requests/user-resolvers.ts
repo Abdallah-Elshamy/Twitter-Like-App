@@ -435,8 +435,8 @@ export const like = async (tweetId: number) => {
         });
 };
 
-export const createTweet = async () => {
-    return await request(app).post("/graphql").send({
+export const createTweet = async (token: string | undefined = undefined) => {
+    return await request(app).post("/graphql").set("Authorization", `Bearer ${token}`).send({
         query: `
             mutation {
                 createTweet(tweet: {

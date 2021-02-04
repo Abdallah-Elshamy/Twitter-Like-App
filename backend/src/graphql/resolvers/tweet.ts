@@ -183,18 +183,20 @@ export default {
         createTweet: async (
             parent: any,
             args: any,
-            context: any,
+            context: { req: CustomeRequest },
             info: any
         ) => {
-            //check authentication here first
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
             const { text, mediaURLs } = args.tweet;
-            const userId = 1; //assume the logged in user is with id 1
             const tweet = await db.transaction(async (transaction) => {
                 return await addTweetInDataBase(
                     text,
                     "O",
                     mediaURLs,
-                    1,
+                    user!.id,
                     transaction
                 );
             });

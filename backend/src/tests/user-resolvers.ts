@@ -57,8 +57,10 @@ describe("user-resolvers", (): void => {
                     });
                 }
             }
+            const response = await login("kage1", "hidden_leaf")
+            const token = response.body.data.login.token;
             // Create a tweet and like it
-            await createTweet();
+            await createTweet(token);
             await like(1);
         });
 
@@ -701,10 +703,13 @@ describe("user-resolvers", (): void => {
     });
 
     describe("like resolver", () => {
+        let token = ""
         before(async () => {
             await db.sync({ force: true });
             await createUser("bilbo", "Bilbo Baggins");
-            await createTweet();
+            const response = await login("bilbo", "myPrecious")
+            token = response.body.data.login.token;
+            await createTweet(token);
         });
 
         it("like an unliked tweet", async () => {

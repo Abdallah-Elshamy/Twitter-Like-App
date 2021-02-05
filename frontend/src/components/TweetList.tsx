@@ -3,34 +3,47 @@ import {  gql, useQuery} from '@apollo/client';
 // import Tweet from '../Tweet';
 import {LoggedUser} from '../Userqery'
 import Tweet from "./Tweet";
+import {Tweets} from "./TweetQuery";
+import { Interface } from "readline";
+import {TweetData} from './Tweet'
+// interface TweetData {
+//   user :{
+//     imageURL:string
+//     name:string
+//     userName:string
+//   }
+//   id:number
+//   text :string
+//   likesCount :boolean
+//   repliesCount:number
+//   createdAt:number
+//   isLiked:boolean
+// }
+// interface Tweets  {
+//     totalCount:number
+//     tweets :[]
+//   }
 
-const Tweets = gql `
-query tweets  {
-    tweets (userId:1) { 
-      totalCount
-      tweets{
-        id
-        text 
-        likesCount
-        repliesCount
-        createdAt
-        isLiked
-      }
-    }}
-`
-interface tweetList {
-    
-}
+
 function TweetList (){
-    const {loading, error, data} = useQuery(Tweets);  
+    const {loading, error, data} = useQuery(Tweets); 
+    console.log(data) 
     if (loading) return <p>'Loading .. '</p> 
     if (error) return <p>`Error! ${error.message}`</p> 
-    const tweetList = data.tweets.tweets.map((tweet:any) => {
-        return <Tweet tweet={tweet} key={tweet.id} />
-    });
+    
     return (
         <Fragment>
-                {tweetList}
+                
+                { data.tweets.tweets.map((tweet:TweetData) => {
+                  console.log (tweet)
+                return <Tweet text={tweet.text}
+                repliesCount={tweet.repliesCount}
+                createdAt={tweet.createdAt}
+                isLiked={tweet.isLiked}
+                user = {tweet.user}
+                likesCount = {tweet.likesCount}
+                key={tweet.id} />
+    })}
         </Fragment>
     )
 }

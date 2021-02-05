@@ -9,6 +9,9 @@ export const LoggedUser= gql`
             imageURL
             bio
             coverImageURL
-            createdAt        
+            createdAt   
+            tweets {
+              totalCount
+            }     
         }
 }`

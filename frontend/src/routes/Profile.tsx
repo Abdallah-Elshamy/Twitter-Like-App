@@ -1,33 +1,22 @@
 import React, { Fragment } from 'react';
-import { SideBar } from "./../components/sideBar/sideBar" ;
+import { SideBar } from "./../components/sideBar/sideBar";
 import '../App.css';
 import '../styles/profile.css';
-import ProfileInfo from "../components/ProfileInfo"; 
+import ProfileInfo from "../components/ProfileInfo";
 import Tweet from "../components/Tweet"
 import TrendsBar from '../components/TrendsBar/TrendsBar';
 import '../styles/layout.css'
-import {  gql, useQuery } from '@apollo/client';
-
-const USER= gql`
-      query oyrfris {
- user(id:1){
-  userName
-  id
-  name
-}
-}`
 
 
 function Profile() {
 
-  const {loading,error,data} = useQuery(USER)
-  console.log(data)
+
   return (
     <Fragment>
-        <main className="main-container">
-        <aside className="sb-left"><SideBar/></aside>  
+      <main className="main-container">
+        <aside className="sb-left"><SideBar /></aside>
         <article className="wall">
-          <ProfileInfo/>
+          <ProfileInfo />
           <nav >
             <ul className="pf--nav-ul active">
               <li>
@@ -45,13 +34,13 @@ function Profile() {
             </ul>
           </nav>
           <div className="tweets">
-            <Tweet/>
-            <Tweet/>
+            <Tweet />
+            <Tweet />
           </div>
-          </article>
-          <aside className="sb-right"><TrendsBar /></aside>
-          
-        </main>
+        </article>
+        <aside className="sb-right"><TrendsBar /></aside>
+
+      </main>
     </Fragment>
   );
 }

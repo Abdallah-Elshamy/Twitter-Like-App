@@ -1,15 +1,37 @@
+import { useQuery } from '@apollo/client';
 import React, { useState } from 'react';
+import { useHistory } from 'react-router';
+import { searchBarVar } from '../../../common/cache';
+import { Get_SearchBar_Value } from '../../../common/queries/Get_SearchBar_Value';
 
 import './SearchBar.css'
 type Props = {
   //No props intially
+
 }
-const SearchBar: React.FC<Props> = (Props) => {
+const SearchBar: React.FC<Props> = () => {
   // focus and un focus handling for ui 
   const [focus, setFocus] = useState<boolean>(false)
   const divFocus = (focus ? "focus" : "")
   const iconFocus = (focus ? "icon-focus" : "")
-  
+  const { data } = useQuery(Get_SearchBar_Value)
+  const searchBarValue = data.searchBarValue.value
+  const history = useHistory();
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      if (searchBarValue !== null) { }
+      history.push({
+        pathname: '/explore/results',
+      })
+    }
+  }
+
+
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    searchBarVar({ value: e.target.value })
+  }
 
   return (
     <div className={"search-bar  w-full  rounded-full px-4 py-2.5  flex " + divFocus}>
@@ -28,14 +50,18 @@ const SearchBar: React.FC<Props> = (Props) => {
 
         <input type="text" placeholder="Search somthing..."
           className="w-full search-input ml-2"
-           aria-autocomplete="list" aria-label="Search query" 
-           aria-owns="typeaheadDropdown-3" 
-           autoCapitalize="sentences" autoComplete="off" 
-           autoCorrect="off" 
-           spellCheck="false" 
+          aria-autocomplete="list" aria-label="Search query"
+          aria-owns="typeaheadDropdown-3"
+          autoCapitalize="sentences" autoComplete="off"
+          autoCorrect="off"
+          spellCheck="false"
+          onKeyPress={handleKeyPress}
+          value={searchBarValue}
+          onChange={handleChange}
+
         />
       </div>
-    
+
     </div>
   )
 }

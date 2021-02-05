@@ -230,6 +230,7 @@ export const getTweet = async (
                             totalCount
                         }
                         retweetsCount
+                        quotedRetweetsCount
                     }
                 }
             `,

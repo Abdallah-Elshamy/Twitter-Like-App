@@ -732,6 +732,11 @@ describe("tweet-resolvers", (): void => {
             expect(response.body.data.tweet.retweetsCount).to.be.equal(30)
         })
 
+        it("tweet query get quoted retweets count", async () => {
+            let response = await getTweet(1)
+            expect(response.body.data.tweet.quotedRetweetsCount).to.be.equal(55)
+        })
+
         it("fail tweet query for a non existant tweet", async () => {
             const response = await getTweet(150);
             expect(response.body.errors).to.has.length(1);

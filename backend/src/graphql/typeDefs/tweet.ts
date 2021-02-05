@@ -29,6 +29,7 @@ export default gql`
         repliedToTweet: Tweet
         isLiked: Boolean
         retweetsCount: Int!
+        quotedRetweetsCount: Int!
         createdAt: String!
         updatedAt: String!
     }

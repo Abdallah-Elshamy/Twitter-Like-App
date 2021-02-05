@@ -68,44 +68,19 @@ export function SignUpForm () {
   });
 
 return(
+  <div>
+    <Logo />
+
 <div className = "register-container">
   
-<strong className ="text-4xl font-serif mt-4"> Create your account </strong>
+<strong className ="text-4xl font-serif mt-4 -ml-8"> Create your account </strong>
       {error ? <p>Oh no! {error.message}</p> : null}
       {data && data.createUser ? <p>Saved!</p> : null}
       
 
      <form>
 
-     <div className="flex -mx-3 mt-2">
-            <div className="w-full px-3">
-                <label className="text-xs font-semibold px-1"></label>
-                <div className="flex">
-                <input
-                  type = "name"
-                  name="name"
-                  onChange={e => setName(e.target.value)}
-                  className="h-16 max-w-3xl  rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300 mt-6 pl-8 mr-20" 
-                  placeholder = "name"
-                />
-                </div>
-            </div>
-        </div>
 
-        <div className="flex -mx-3 mt-2">
-            <div className="w-full px-3">
-                <label className="text-xs font-semibold px-1"></label>
-                <div className="flex">
-                <input
-            type="name"
-            name="userName"
-            onChange={e => setUserName(e.target.value)}
-            className="h-16 max-w-3xl  rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300 mt-6 pl-8 mr-20" 
-            placeholder = "userName"
-          />
-                </div>
-            </div>
-        </div>
 
         <div className="flex -mx-3 mt-2">
             <div className="w-full px-3">
@@ -115,7 +90,8 @@ return(
             type="email"
             name="email"
             onChange={e => setEmail(e.target.value)}
-            className="h-16 max-w-3xl  rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300 mt-6 pl-8 mr-20" 
+            className="w-full h-16 -ml-20 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300"  
+            placeholder = "Email"
           />
                 </div>
             </div>
@@ -129,50 +105,58 @@ return(
             type="password"
             name="password"
             onChange={e => setPassword(e.target.value)}
-            className="h-16 max-w-3xl  rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300 mt-6 pl-8 mr-20" 
+            className="w-full h-16 -ml-20 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300" 
+            placeholder = "Password"
           />
                 </div>
             </div>
         </div>
 
+        <div className = "flex">
+     <div className="flex -mx-3 mt-2">
+            <div className="w-full px-3">
+                <div className="flex">
+                <input
+                  type = "name"
+                  name="name"
+                  onChange={e => setName(e.target.value)}
+                  className="h-16 max-w-3xl -ml-20  rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300 mt-6 pl-8 mr-10" 
+                  placeholder = "Name"
+                />
+                </div>
+            </div>
+        </div>
 
-        <button onClick={() => name && userName && email && password && createUser()}>
-          Add
-        </button>
-      </form>
-    </div>
-  );
-}
-
-{/* <div>
-<Logo />
-<div className = "register-container">
-<strong className ="text-4xl font-serif mt-4"> Create your account </strong>
-
-
-    <FormInput label_name = "Email" />
-    <FormInput label_name = "password" />
-
-    <div className = "flex">
-         <input  type="Email" className="h-16 max-w-3xl rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300 mt-6 pl-8 mr-20" 
-                    placeholder="   Email"/>  
                     
-        <input type=" password" className="h-16 max-w-3xl  rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300 mt-6 pl-8 mr-20" 
-                   placeholder="   Password"/>  
 
+        <div className="flex -mx-3 mt-2">
+            <div className="w-full px-3">
+                <div className="flex">
+                <input
+            type="name"
+            name="userName"
+            onChange={e => setUserName(e.target.value)}
+            className="h-16 max-w-3xl  rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300 mt-6 pl-8 mr-20" 
+            placeholder = "User name"
+          />
+                </div>
+            </div>
+        </div>
                   </div>
-    <div className = " mt-8 text-left" >
+    <div className = " mt-8 text-left -ml-8" >
         <strong className = "text-2xl font-serif mr-16"> Date of birth </strong>
         <p      className = "text-1xl font-serif pr-4 text-gray-500"> This will not be shown publicly. Confirm your own age. </p>
     </div>
 
-        <TweetButton name = "Next" className = "w-80"/>
-    <div className ="pl-24" >
-        <b><a href="#" target="_blank" className="a_login_form mt-12"> Aready have account ? </a></b>
+
+
+       <TweetButton name = "Next" className ="w-80" onClick={() => name && userName && email && password && createUser()} />
+      <div className ="pl-24" >
+          <b><a href="#" target="_blank" className="a_login_form mt-12"> Aready have account ? </a></b>
+      </div>
+      </form>
     </div>
 
-   </div>
-</div>
-)
-
-} */}
+    </div>
+  );
+}

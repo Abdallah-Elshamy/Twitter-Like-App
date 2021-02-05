@@ -17,8 +17,8 @@ export const Login : React.FC <Props> = () =>  (
 <div className = "register-container mt-4">
 <strong className ="text-4xl font-serif"> Log in to Twitter </strong>
 
-    <FormInput label_name = "Email" />
-    <FormInput label_name = "password" />
+    <FormInput placeholder  = "Email" />
+    <FormInput placeholder  = "password" />
     <TweetButton name = "Login" className = "w-80"/>
 
 

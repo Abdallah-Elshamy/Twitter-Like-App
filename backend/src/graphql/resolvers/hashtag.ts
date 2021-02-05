@@ -1,6 +1,7 @@
 import { Hashtag, HasHashtag } from "../../models";
 import validator from "validator";
 import { fn, col } from "sequelize";
+import hashtag from "../typeDefs/hashtag";
 
 const PAGE_SIZE = 10;
 
@@ -45,14 +46,24 @@ export default {
                         limit: PAGE_SIZE,
                     });
 
-                    const hashtags: Hashtag[] = [];
-                    for (let trending of trendingHashtags) {
-                        let hashtag = await Hashtag.findOne({
-                            where: { word: trending.hashtag },
-                        });
-                        hashtags.push(hashtag!);
+                    const sortedWords = trendingHashtags.map(
+                        (trendingHashtag) => trendingHashtag.hashtag
+                    );
+                    
+                    // this will get the trending hashtags but not sorted
+                    const unsortedHashtags: Hashtag[] = await Hashtag.findAll({
+                        where: { word: sortedWords },
+                    });
+
+                    const sortedHashtags: Hashtag[] = [];
+                    // sort the hashtags based on the order of the sortedWords array
+                    for (let hashtagWord of sortedWords) {
+                        let hashtag = unsortedHashtags.find(
+                            (hashtag) => hashtag.word == hashtagWord
+                        );
+                        sortedHashtags.push(hashtag!);
                     }
-                    return hashtags;
+                    return sortedHashtags;
                 },
             };
         },

@@ -3,11 +3,11 @@ import { SideBar } from "./../components/sideBar/sideBar" ;
 import '../App.css';
 import '../styles/profile.css';
 import ProfileInfo from "../components/ProfileInfo"; 
-import Tweet from "../components/Tweet"
 import TrendsBar from '../components/TrendsBar/TrendsBar';
 import '../styles/layout.css'
 import {  useQuery } from '@apollo/client';
 import {LoggedUser} from '../Userqery'; 
+import TweetList from '../components/TweetList'
 
 function Profile() {
   const {loading,error,data} = useQuery(LoggedUser); 
@@ -36,8 +36,8 @@ function Profile() {
             </ul>
           </nav>
           <div className="tweets">
-            <Tweet/>
-            <Tweet/>
+              <TweetList/>
+            
           </div>
           </article>
           <aside className="sb-right"><TrendsBar /></aside>

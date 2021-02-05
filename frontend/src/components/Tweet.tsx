@@ -2,26 +2,14 @@ import {  gql, useQuery} from '@apollo/client';
 import '../styles/tweet.css';
 import avatar from "../routes/mjv-d5z8_400x400.jpg"; 
 
-const Tweet_Data = gql`
-query tweetData {
-  tweet (id:1) {
-    user {
-      userName
-      imageURL
-      name
-    } 
-    text 
-    likesCount
-    repliesCount
-    createdAt
-    isLiked }}`
-function Tweet() {
-  const {loading, error, data} = useQuery (Tweet_Data)
-  if (loading) return <p>'Loading .. '</p> 
-  if (error) return <p>`Error! ${error.message}`</p> 
+
+function Tweet(tweet : any) {
+  // const {loading, error, data} = useQuery (Tweet_Data)
+  // if (loading) return <p>'Loading .. '</p> 
+  // if (error) return <p>`Error! ${error.message}`</p> 
   return (
       <div className="tweet-box">
-        <div className="tweet-icon">
+        {/* <div className="tweet-icon">
           {data.tweet.user.imageURL ?(
                       <img src={data.tweet.user.imageURL}  
                       alt="avatar"/>
@@ -56,7 +44,7 @@ function Tweet() {
             </a>
           </div>
           </div>
-        </div>
+        </div>   */}
       </div>
   );
 }

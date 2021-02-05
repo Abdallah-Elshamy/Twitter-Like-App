@@ -57,7 +57,7 @@ state = {
           <ul  className= "px-4">
           <a href="#" className=" mt-1 w-52 text-center block px-4 py-2 text-sm text-gray-700  hover:bg-gray-100 hover:text-gray-900  hover:rounded-full rounded-full" role="menuitem">My Account</a>
         <form method="" action="#">
-         <button type="submit"  className=" block  w-52 text-center text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none  hover:rounded-full rounded-full" role="menuitem">
+         <button type="submit"  className=" block  w-52 text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none  hover:rounded-full rounded-full" role="menuitem">
          Sign out
        </button>
       </form>
@@ -65,7 +65,7 @@ state = {
         )}
 
           <div>
-          <button onClick={this.onClickHandler}  type="button" className=" absolute bottom-0 mb-2 rounded-full w-64 rounded-md px-4 py-2
+          <button onClick={this.onClickHandler}  type="button" className=" absolute bottom-0 mb-2 rounded-full w-64  px-4 py-2
           bg-white hover:bg-blue-100 hover:rounded-full focus:bg-blue-200 focus:outline-none focus:shadow-outline hover:text-gray-900 focus:ring-2 
           focus:ring-offset-gray-100" id="options-menu">
     

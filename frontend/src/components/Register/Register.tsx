@@ -13,10 +13,9 @@ interface Props {
 export const Register: React.FC <Props> = () =>  (
 
 <div>
-<LandingPage/>
-{/* <SignUpForm/> */}
+{/* <LandingPage/> */}
+<SignUpForm/>
 {/* <Login /> */}
-
 
 
 </div>

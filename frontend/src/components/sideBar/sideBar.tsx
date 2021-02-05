@@ -6,8 +6,11 @@ import { TweetButton } from './tweetButton/tweetButton'
 import { FlootProfile } from './flootProfile/flootProfile'
 
 
+
 export const SideBar: React.FC = () =>  (
+
   <div >
+    
     <SideBarItem  item_name ='     '  icon_name = "fab fa-twitter"/>
     <SideBarItem item_name ='Home' icon_name ="	fas fa-home" />
     <SideBarItem item_name ='Explore'  icon_name = "fas fa-hashtag"/>
@@ -17,6 +20,7 @@ export const SideBar: React.FC = () =>  (
     <SideBarItem  item_name ='Setting' icon_name ="fas fa-cog"/>
     <TweetButton name ="Tweet" className = "w-56"/>
     < FlootProfile/> 
+
 </div>
 
 )

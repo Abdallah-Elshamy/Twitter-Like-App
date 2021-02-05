@@ -431,5 +431,12 @@ export default {
             });
             return like !== null;
         },
+        retweetsCount: async(parent: Tweet) => {
+            return await parent.$count("subTweets", {
+                where: {
+                    state: "R"
+                }
+            })
+        }
     },
 };

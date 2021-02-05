@@ -28,6 +28,7 @@ export default gql`
         hashtags(page: Int): PaginatedHashtags!
         repliedToTweet: Tweet
         isLiked: Boolean
+        retweetsCount: Int!
         createdAt: String!
         updatedAt: String!
     }

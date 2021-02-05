@@ -104,6 +104,36 @@ const createTweets = async (
     return tweets;
 };
 
+const createRetweets = async(userId: number = 1, originalTweetId: number = 1, it: number = 30) => {
+    const tweets = [];
+    for (let i = 0; i < it; i++) {
+        tweets.push(
+            await Tweet.create({
+                text: "",
+                state: "R",
+                userId,
+                originalTweetId
+            })
+        );
+    }
+    return tweets;
+}
+
+const createQuotedRetweets = async(userId: number = 1, originalTweetId: number = 1, it: number = 30) => {
+    const tweets = [];
+    for (let i = 0; i < it; i++) {
+        tweets.push(
+            await Tweet.create({
+                text: `tweet${it}`,
+                state: "Q",
+                userId,
+                originalTweetId
+            })
+        );
+    }
+    return tweets;
+}
+
 const createDifferentTypesOfTweets = async (userId: number = 1) => {
     const tweets = [];
     tweets.push(...(await createTweets(userId, "O", 10)));
@@ -541,6 +571,8 @@ describe("tweet-resolvers", (): void => {
             //add hashtags to the created tweet
             const hashtags = await createHashtags();
             await oTweet!.$add("hashtags", hashtags);
+            await createRetweets()
+            await createQuotedRetweets(1, 1, 55)
         });
 
         it("tweet query", async () => {
@@ -638,9 +670,9 @@ describe("tweet-resolvers", (): void => {
         });
 
         it("tweet query get threadTweet", async () => {
-            const resOriginalTweet = await createTweet("test", token);
+            const resOriginalTweet = await createTweet("test", token); //id = 111
             const id1 = resOriginalTweet.body.data.createTweet.id; 
-            const resReplyTweet = await createReply("reply1", id1, token); 
+            const resReplyTweet = await createReply("reply1", id1, token);  // id = 112
             const reply2 = await createReply(
                 "reply2",
                 resReplyTweet.body.data.createReply.id,
@@ -652,9 +684,9 @@ describe("tweet-resolvers", (): void => {
         });
 
         it("tweet query get repliedToTweet", async () => {
-            const response = await getTweet(28);
+            const response = await getTweet(112);
             expect(response.body.data.tweet.repliedToTweet.id).to.be.equal(
-                "27"
+                "111"
             );
         });
 
@@ -695,8 +727,13 @@ describe("tweet-resolvers", (): void => {
             expect(hashtags.hashtags).to.has.length(0);
         });
 
+        it("tweet query get retweets count", async () => {
+            let response = await getTweet(1)
+            expect(response.body.data.tweet.retweetsCount).to.be.equal(30)
+        })
+
         it("fail tweet query for a non existant tweet", async () => {
-            const response = await getTweet(100);
+            const response = await getTweet(150);
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,

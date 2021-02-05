@@ -441,9 +441,13 @@ export const createUserWithBirthDate = async (birthDate: string) => {
         });
 };
 
-export const follow = async (userId: number) => {
+export const follow = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
@@ -453,9 +457,13 @@ export const follow = async (userId: number) => {
         });
 };
 
-export const like = async (tweetId: number) => {
+export const like = async (
+    tweetId: number,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
@@ -509,10 +517,13 @@ export const createTwentyUser = async () => {
     return true;
 };
 
-export const followFifteenUser = async () => {
+export const followFifteenUser = async (
+    authToken: string | undefined = undefined
+) => {
     for (let i: number = 2; i <= 16; i++) {
         await request(app)
             .post("/graphql")
+            .set("Authorization", `Bearer ${authToken}`)
             .send({
                 query: `
             mutation {

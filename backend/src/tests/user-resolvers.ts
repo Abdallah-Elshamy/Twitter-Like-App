@@ -47,22 +47,23 @@ describe("user-resolvers", (): void => {
         before(async () => {
             await db.sync({ force: true });
             await createTwentyUser();
-            await followFifteenUser();
+            const response = await login("kage1", "hidden_leaf");
+            const token = response.body.data.login.token;
+            await followFifteenUser(token);
+
             // get followed by fifteen users
-            const toBeFollowed: any = await User.findByPk(1);
+            const toBeFollowed = await User.findByPk(1);
             for (let i: number = 2; i <= 16; i++) {
-                let currentUser: any = await User.findByPk(i);
+                let currentUser = await User.findByPk(i);
                 if (currentUser) {
                     await db.transaction(async (transaction) => {
-                        await currentUser.$add("following", toBeFollowed);
+                        await currentUser!.$add("following", toBeFollowed!);
                     });
                 }
             }
-            const response = await login("kage1", "hidden_leaf");
-            const token = response.body.data.login.token;
             // Create a tweet and like it
             await createTweet(token);
-            await like(1);
+            await like(1, token);
         });
 
         it("get a user", async () => {
@@ -771,15 +772,23 @@ describe("user-resolvers", (): void => {
 
         it("like an unliked tweet", async () => {
             // since the table is emptied, the added tweet will have id = 1
-            const response = await like(1);
+            const response = await like(1, token);
             expect(response.body.data).to.include({
                 like: true,
             });
         });
 
+        it("fails to like a tweet when not authenticated", async () => {
+            const response = await like(1);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+            });
+        });
+
         it("like a liked tweet", async () => {
             // This tweet is already liked from the previous test
-            const response = await like(1);
+            const response = await like(1, token);
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
@@ -790,7 +799,7 @@ describe("user-resolvers", (): void => {
 
         it("like a non existent tweet", async () => {
             // no tweet has id = 0
-            const response = await like(0);
+            const response = await like(0, token);
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
@@ -869,23 +878,36 @@ describe("user-resolvers", (): void => {
     });
 
     describe("follow resolver", (): void => {
+        let token: string = "";
         before(async () => {
             await db.sync({ force: true });
-            await createUser("bilbo", "Bilbo Baggins");
+            await createUser("Luffy11", "Monkey D. Luffy");
+
+            const response = await login("Luffy11", "myPrecious");
+            token = response.body.data.login.token;
             await createUserWithBio("gandalf", "Gandalf The Grey");
         });
 
         it("follow an un-followed user", async () => {
-            const response = await follow(2);
+            const response = await follow(2, token);
             expect(response.body.data).to.include({
                 follow: true,
+            });
+        });
+
+        it("fails to follow a user when not authenticated", async () => {
+            const response = await follow(2);
+
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
             });
         });
 
         it("follow a non existent user", async () => {
             // users in database are created starting from id 1
             // no user has the id of 0
-            const response = await follow(0);
+            const response = await follow(0, token);
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
@@ -895,9 +917,8 @@ describe("user-resolvers", (): void => {
         });
 
         it("follow a followed user", async () => {
-            // the resolver assumes that the logged in user is the user with id 1
             // it is assumed that a user can't follow/unfollow himself
-            const response = await follow(2);
+            const response = await follow(2, token);
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
@@ -907,7 +928,7 @@ describe("user-resolvers", (): void => {
         });
 
         it("follow your account", async () => {
-            const response = await follow(1);
+            const response = await follow(1, token);
 
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
@@ -921,7 +942,6 @@ describe("user-resolvers", (): void => {
     describe("unfollow resolver", (): void => {
         let token: string = "";
         before(async () => {
-            await db.sync({ force: true });
             let toBeFollowed: any;
             await db.sync({ force: true });
             let response = await createUser("Luffy11", "Monkey D. Luffy");

@@ -21,9 +21,14 @@ interface UserInput {
 
 export default {
     Query: {
-        user: async (parent: any, args: any, context: any, info: any) => {
+        user: async (
+            parent: any,
+            args: { id: number },
+            context: any,
+            info: any
+        ) => {
             const { id } = args;
-            const user: any = await User.findByPk(+id);
+            const user = await User.findByPk(id);
             if (user) {
                 return user;
             } else {
@@ -32,7 +37,12 @@ export default {
                 throw error;
             }
         },
-        users: async (parent: any, args: any, context: any, info: any) => {
+        users: async (
+            parent: any,
+            args: { search: string; page: number },
+            context: any,
+            info: any
+        ) => {
             const { search, page } = args;
             const searchConditions = {
                 where: {
@@ -228,10 +238,17 @@ export default {
 
             return updatedUser;
         },
-        like: async (parent: any, args: any, context: any, info: any) => {
-            // assume that the logged in user has an id of 1
-            const currentUser: any = await User.findByPk(1);
-
+        like: async (
+            parent: any,
+            args: { tweetId: number },
+            context: any,
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const currentUser = user as User;
             const tweet: any = await Tweet.findByPk(args.tweetId);
             if (!tweet) {
                 const error: any = new Error(
@@ -249,7 +266,7 @@ export default {
                 throw error;
             }
 
-            const isLiked = await currentUser.hasLikes(tweet);
+            const isLiked = await currentUser.$has("likes", tweet);
 
             // check if the entered tweet is liked by the current user
             if (isLiked) {
@@ -300,19 +317,26 @@ export default {
 
             return true;
         },
-        follow: async (parent: any, args: any, context: any, info: any) => {
-            // assume logged in user id is 1
-            const currentUserId: number = 1;
+        follow: async (
+            parent: any,
+            args: { userId: number },
+            context: any,
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const currentUser = user as User;
+
             // check if the user is trying to follow himself
-            if (currentUserId === +args.userId) {
+            if (currentUser.id === +args.userId) {
                 const error: any = new Error(
                     "The userId and the currentUserId are the same!"
                 );
                 error.statusCode = 422;
                 throw error;
             }
-
-            const currentUser: any = await User.findByPk(currentUserId);
 
             // check if the entered user is found in the database
             const toBeFollowed: any = await User.findByPk(args.userId);
@@ -321,7 +345,10 @@ export default {
                 error.statusCode = 404;
                 throw error;
             }
-            const isFollowing = await currentUser.hasFollowing(toBeFollowed);
+            const isFollowing = await currentUser.$has(
+                "following",
+                toBeFollowed
+            );
             // check if the current user is following the entered user
             if (isFollowing) {
                 const error: any = new Error("This user is already followed!");
@@ -419,7 +446,7 @@ export default {
             if (authError) {
                 return false;
             }
-            const loggedIn = user;
+            const loggedIn = user as User;
             const isFollowing = await loggedIn.$has("following", parent);
             return isFollowing;
         },
@@ -428,7 +455,7 @@ export default {
             if (authError) {
                 return false;
             }
-            const loggedIn = user;
+            const loggedIn = user as User;
             const isFollower = await loggedIn.$has("follower", parent);
             return isFollower;
         },

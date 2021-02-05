@@ -49,6 +49,11 @@ describe("authentication", (): void => {
             expect(user.id).to.be.equal(1);
             expect(user.imageURL).to.be.null;
             expect(user.coverImageURL).to.be.null;
+            expect(user.birthDate).to.be.equal("1970-01-01")
+            expect(user).to.include.keys([
+                "createdAt",
+                "updatedAt"
+            ])
         });
 
         it("succeed login with userName", async () => {
@@ -61,6 +66,11 @@ describe("authentication", (): void => {
             expect(user.id).to.be.equal(1);
             expect(user.imageURL).to.be.null;
             expect(user.coverImageURL).to.be.null;
+            expect(user.birthDate).to.be.equal("1970-01-01")
+            expect(user).to.include.keys([
+                "createdAt",
+                "updatedAt"
+            ])
         });
 
         it("fail login with wrong password", async () => {

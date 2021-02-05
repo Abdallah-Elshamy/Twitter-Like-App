@@ -103,6 +103,9 @@ export default {
                     userName: user.userName,
                     imageURL: user.imageURL,
                     coverImageURL: user.coverImageURL,
+                    birthDate: user.birthDate,
+                    createdAt: user.createdAt,
+                    updatedAt: user.updatedAt,
                 },
                 process.env.TOKEN_SECRET!
             );

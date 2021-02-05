@@ -64,8 +64,10 @@ export default {
             args: { userNameOrEmail: string; password: string }
         ) => {
             let { userNameOrEmail, password } = args;
-            if(validator.isEmail(userNameOrEmail)) {
-                userNameOrEmail = validator.normalizeEmail(userNameOrEmail) || userNameOrEmail;
+            if (validator.isEmail(userNameOrEmail)) {
+                userNameOrEmail =
+                    validator.normalizeEmail(userNameOrEmail) ||
+                    userNameOrEmail;
             }
             const user = await User.findOne({
                 where: {
@@ -413,12 +415,20 @@ export default {
             };
         },
         isFollowing: async (parent: User, args: any, context: any) => {
-            const loggedIn = context.req.user;
+            const { user, authError } = context.req;
+            if (authError) {
+                return false;
+            }
+            const loggedIn = user;
             const isFollowing = await loggedIn.$has("following", parent);
             return isFollowing;
         },
         isFollower: async (parent: User, args: any, context: any) => {
-            const loggedIn = context.req.user;
+            const { user, authError } = context.req;
+            if (authError) {
+                return false;
+            }
+            const loggedIn = user;
             const isFollower = await loggedIn.$has("follower", parent);
             return isFollower;
         },

@@ -14,6 +14,7 @@ export default gql`
     }
 
     type PaginatedHashtags {
+        "Total number of hashtags currently there"
         totalCount: Int!
         hashtags: [Hashtag]!
     }

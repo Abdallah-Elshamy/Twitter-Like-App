@@ -195,7 +195,6 @@ export const updateUserWithBirthDate = async (
         });
 };
 
-
 export const unlike = async (
     tweetId: number,
     authToken: string | undefined = undefined
@@ -223,27 +222,6 @@ export const unfollow = async (
             query: `
             mutation {
                 unfollow(userId: ${userId})
-            }
-        `,
-        });
-};
-
-export const hashtag = async (word: string) => {
-    return await request(app)
-        .post("/graphql")
-        .send({
-            query: `
-            query {
-                hashtag(word: "${word}") {
-                    word
-                    tweets {
-                        totalCount
-                        tweets {
-                            id
-                            text
-                        }
-                    }
-                }
             }
         `,
         });

@@ -1,6 +1,6 @@
-import { Hashtag } from "../../models";
+import { Hashtag, HasHashtag } from "../../models";
 import validator from "validator";
-import sequelize from "sequelize";
+import { fn, col } from "sequelize";
 
 const PAGE_SIZE = 10;
 
@@ -30,17 +30,28 @@ export default {
             return hashtag;
         },
         hashtags: async (parent: any, args: { page: number }) => {
-            const { page } = args;
+            let { page } = args;
+
             return {
                 totalCount: async () => {
                     return await Hashtag.count();
                 },
                 hashtags: async () => {
-                    let hashtags = await Hashtag.findAll({
+                    const trendingHashtags = await HasHashtag.findAll({
+                        attributes: ["hashtag"],
+                        order: [[fn("count", col("hashtag")), "DESC"]],
+                        group: "hashtag",
                         offset: ((page || 1) - 1) * PAGE_SIZE,
                         limit: PAGE_SIZE,
-                        order: [["word", "ASC"]],
                     });
+
+                    const hashtags: Hashtag[] = [];
+                    for (let trending of trendingHashtags) {
+                        let hashtag = await Hashtag.findOne({
+                            where: { word: trending.hashtag },
+                        });
+                        hashtags.push(hashtag!);
+                    }
                     return hashtags;
                 },
             };

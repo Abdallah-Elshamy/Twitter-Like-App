@@ -63,7 +63,10 @@ export default {
             parent: any,
             args: { userNameOrEmail: string; password: string }
         ) => {
-            const { userNameOrEmail, password } = args;
+            let { userNameOrEmail, password } = args;
+            if(validator.isEmail(userNameOrEmail)) {
+                userNameOrEmail = validator.normalizeEmail(userNameOrEmail) || userNameOrEmail;
+            }
             const user = await User.findOne({
                 where: {
                     [Op.or]: [

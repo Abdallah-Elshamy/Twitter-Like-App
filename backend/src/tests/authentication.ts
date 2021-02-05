@@ -36,6 +36,21 @@ describe("authentication", (): void => {
             expect(user.coverImageURL).to.be.null;
         });
 
+        it("succeed login with email normalized", async () => {
+            const response = await login(
+                "Bilbo_baggins@shire.com",
+                "myPrecious"
+            );
+            expect(response.body.data.login.token).to.not.be.null;
+            const token = response.body.data.login.token;
+            const user = jwt.verify(token, process.env.TOKEN_SECRET!) as User;
+            expect(user.userName).to.be.equal("omarabdo997");
+            expect(user.email).to.be.equal("bilbo_baggins@shire.com");
+            expect(user.id).to.be.equal(1);
+            expect(user.imageURL).to.be.null;
+            expect(user.coverImageURL).to.be.null;
+        });
+
         it("succeed login with userName", async () => {
             const response = await login("omarabdo997", "myPrecious");
             expect(response.body.data.login.token).to.not.be.null;

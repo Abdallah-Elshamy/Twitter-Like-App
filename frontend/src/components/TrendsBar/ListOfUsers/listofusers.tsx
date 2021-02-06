@@ -6,7 +6,7 @@ type Props = {
 }
 const ListOfUsers: React.FC<Props> = ({ list }) => {
   let followList
-  if (list.length === 0) { followList = <h1 className="text-lg text-center">No Results</h1> }
+  if (list.length === 0) { followList = <h1 className="text-lg text-center pt-4">No Results</h1> }
   else followList = list.map(person => {
     return (
       <PersonItem key={person.username}

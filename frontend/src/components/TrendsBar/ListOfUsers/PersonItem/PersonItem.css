@@ -1,5 +1,5 @@
 .person-item {
-  border-top: 1px solid var(--light-grey)
+  border-bottom: 1px solid var(--light-grey)
 }
 
 .person-item-name{
@@ -21,4 +21,8 @@
 }
 .pf--follow-btn{
   padding: 6px 16px;
+}
+
+.person-item-username {
+ color : var(--dark-grey)
 }

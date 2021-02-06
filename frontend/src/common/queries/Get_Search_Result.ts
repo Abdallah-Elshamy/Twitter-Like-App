@@ -8,8 +8,8 @@ query search (
   users(search:$name,page:$page) {
     users{
       name 
-      userName
-      imageURL
+       username:userName 
+       imageURI: imageURL 
       
     }
   }

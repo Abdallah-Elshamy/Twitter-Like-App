@@ -4,7 +4,7 @@ import TrendsBar from '../components/TrendsBar/TrendsBar';
 import '../styles/layout.css'
 import SearchBar from '../components/TrendsBar/SearchBar/SearchBar';
 import CurrentTrends from '../components/TrendsBar/CurrentTrends/CurrentTrends';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import SearchResult from '../components/SerachResult';
 
 
@@ -18,27 +18,26 @@ const Explore: React.FC = () => {
           <div className="top-bar p-4" >
             <SearchBar />
           </div>
-          <BrowserRouter>
 
 
+          <Switch>
             <Route path="/explore/trend/:trendname" >
-
             </Route>
 
-            <Route path="/explore/results" >
+            <Route path={"/explore/results/"} exact  >
               <SearchResult />
             </Route>
 
             <Route path="/explore" exact>
               <CurrentTrends />
             </Route>
+          </Switch>
 
-          </BrowserRouter>
         </article>
         <aside className="sb-right"><TrendsBar /></aside>
 
       </main>
-    </Fragment>
+    </Fragment >
   );
 }
 

@@ -21,7 +21,8 @@ const TrendItem: React.FC<PersonEntity> = ({ name, username, followed = false, i
         </div>
         <div className="flex-grow">
           <h1 className="person-item-name  text-xm font-bold">{name}</h1>
-          <p>@{username}</p>
+          <p className="person-item-username">@{username}</p>
+
         </div>
         <div>
           <button className="pf--follow-btn rounded-full px-2 py-1" >

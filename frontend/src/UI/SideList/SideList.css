@@ -1,12 +1,13 @@
 .sidelist {
   background-color: var(--optimum-light);
+
 }
 .sidelist-title{
-
+border-bottom: 1px solid var(--light-grey);
   color: var(--main-black);
 }
 
 .sidelist-redirect{
   color: var(--main-color);
-  border-top: 1px solid var(--light-grey);
+  
 }

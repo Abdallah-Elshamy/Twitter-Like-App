@@ -14,16 +14,21 @@ const SearchBar: React.FC<Props> = () => {
   const [focus, setFocus] = useState<boolean>(false)
   const divFocus = (focus ? "focus" : "")
   const iconFocus = (focus ? "icon-focus" : "")
+
   const { data } = useQuery(Get_SearchBar_Value)
+
   const searchBarValue = data.searchBarValue.value
   const history = useHistory();
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      if (searchBarValue !== null) { }
-      history.push({
-        pathname: '/explore/results',
-      })
+      if (searchBarValue !== "") {
+        history.push({
+          pathname: '/explore/results/',
+          search: 'name=' + searchBarValue
+        })
+      }
+
     }
   }
 

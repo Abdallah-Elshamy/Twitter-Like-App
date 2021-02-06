@@ -18,5 +18,5 @@ export const cache: InMemoryCache = new InMemoryCache({
 });
 
 export const searchBarVar: ReactiveVar<searchBarValue> = makeVar<searchBarValue>(
-  { value: null }
+  { value: '' }
 );

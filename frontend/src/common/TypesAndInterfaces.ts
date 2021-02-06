@@ -13,5 +13,5 @@ export interface PersonEntity {
 }
 
 export type searchBarValue = {
-  value: string | null
+  value: string
 }

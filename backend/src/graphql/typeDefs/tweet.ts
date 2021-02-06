@@ -4,10 +4,13 @@ export default gql`
     extend type Query {
         tweet(id: ID!): Tweet!
         tweets(userId: ID!, page: Int, filter:String) : PaginatedTweets!
+        getFeed(page: Int): [Tweet]!
     }
     extend type Mutation {
         createTweet(tweet: TweetCreateInput!): Tweet!
         createReply(tweet: TweetCreateInput!, repliedToTweet: ID!): Tweet!
+        createRetweet(originalTweetId: ID!): Tweet!
+        createQuotedRetweet(originalTweetId: ID!, tweet: TweetCreateInput!): Tweet!
         deleteTweet(id: ID!): Boolean!
     }
     type Tweet {
@@ -25,6 +28,8 @@ export default gql`
         hashtags(page: Int): PaginatedHashtags!
         repliedToTweet: Tweet
         isLiked: Boolean
+        retweetsCount: Int!
+        quotedRetweetsCount: Int!
         createdAt: String!
         updatedAt: String!
     }

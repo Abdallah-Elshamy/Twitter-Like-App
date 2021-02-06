@@ -11,7 +11,13 @@ import {
     deleteTweet,
     getTweet,
     getTweets,
+    createRetweet,
+    createQuotedRetweet,
+    createQuotedRetweetWithMedia,
+    getFeed,
+    getFeedWithPagination,
 } from "./requests/tweet-resolvers";
+import { createUser, login } from "./requests/user-resolvers";
 import { truncate } from "fs/promises";
 
 let server: any;
@@ -19,9 +25,10 @@ let server: any;
 const failCreateTweetValidation = async (
     text: string,
     message: string,
-    value: string
+    value: string,
+    token: string
 ) => {
-    const response = await createTweet(text);
+    const response = await createTweet(text, token);
     expect(response.body.errors).to.has.length(1);
     expect(response.body.errors[0]).to.include({
         message: "Validation error!",
@@ -39,12 +46,13 @@ const succeedCreateReply = async (
     threadTweet: number,
     text: string,
     state: string,
-    id: number
+    id: number,
+    token: string
 ) => {
     const repliedToTweet: any = await Tweet.findByPk(repliedToTweetId);
     let replies = await repliedToTweet.getReplies();
     expect(replies).to.has.length(0);
-    const response = await createReply(text, repliedToTweetId);
+    const response = await createReply(text, repliedToTweetId, token);
     expect(response.body.data.createReply).to.include({
         id: "" + id,
         text,
@@ -71,6 +79,7 @@ const createUsers = async (it: number = 30) => {
                 userName: `test${i}`,
                 email: `test${i}@gmail.com`,
                 hashedPassword: `123456789`,
+                birthDate: "1970-01-01",
             })
         );
     }
@@ -95,12 +104,42 @@ const createTweets = async (
     return tweets;
 };
 
-const createDifferentTypesOfTweets = async () => {
+const createRetweets = async(userId: number = 1, originalTweetId: number = 1, it: number = 30) => {
     const tweets = [];
-    tweets.push(...(await createTweets(1, "O", 10)));
-    tweets.push(...(await createTweets(1, "R", 10)));
-    tweets.push(...(await createTweets(1, "Q", 4)));
-    tweets.push(...(await createTweets(1, "C", 6)));
+    for (let i = 0; i < it; i++) {
+        tweets.push(
+            await Tweet.create({
+                text: "",
+                state: "R",
+                userId,
+                originalTweetId
+            })
+        );
+    }
+    return tweets;
+}
+
+const createQuotedRetweets = async(userId: number = 1, originalTweetId: number = 1, it: number = 30) => {
+    const tweets = [];
+    for (let i = 0; i < it; i++) {
+        tweets.push(
+            await Tweet.create({
+                text: `tweet${it}`,
+                state: "Q",
+                userId,
+                originalTweetId
+            })
+        );
+    }
+    return tweets;
+}
+
+const createDifferentTypesOfTweets = async (userId: number = 1) => {
+    const tweets = [];
+    tweets.push(...(await createTweets(userId, "O", 10)));
+    tweets.push(...(await createTweets(userId, "R", 10)));
+    tweets.push(...(await createTweets(userId, "Q", 4)));
+    tweets.push(...(await createTweets(userId, "C", 6)));
     return tweets;
 };
 
@@ -124,12 +163,15 @@ describe("tweet-resolvers", (): void => {
     });
 
     describe("createTweet Mutation", () => {
+        let token = "";
         before(async () => {
             await db.sync({ force: true });
-            await createUsers(1);
+            await createUser("omarabdo997", "omar ali");
+            const response = await login("omarabdo997", "myPrecious");
+            token = response.body.data.login.token;
         });
         it("createTweet with no media", async () => {
-            const response = await createTweet("hello world");
+            const response = await createTweet("hello world", token);
             expect(response.body.data.createTweet).to.include({
                 id: "1",
                 text: "hello world",
@@ -139,8 +181,7 @@ describe("tweet-resolvers", (): void => {
         });
 
         it("createTweet with media", async () => {
-            const response = await createTweetWithMedia("hello world");
-            // console.log(response.text);
+            const response = await createTweetWithMedia("hello world", token);
             expect(response.body.data.createTweet).to.include({
                 id: "2",
                 text: "hello world",
@@ -162,7 +203,7 @@ describe("tweet-resolvers", (): void => {
         });
 
         it("createTweet with media and no text", async () => {
-            const response = await createTweetWithMedia("");
+            const response = await createTweetWithMedia("", token);
             expect(response.body.data.createTweet).to.include({
                 id: "3",
                 text: "",
@@ -187,7 +228,8 @@ describe("tweet-resolvers", (): void => {
             await failCreateTweetValidation(
                 "",
                 "text length must be between 1 to 280 chars!",
-                "text"
+                "text",
+                token
             );
         });
 
@@ -195,13 +237,17 @@ describe("tweet-resolvers", (): void => {
             await failCreateTweetValidation(
                 ".........................................................................................................................................................................................................................................................................................",
                 "text length must be between 1 to 280 chars!",
-                "text"
+                "text",
+                token
             );
         });
 
         it("fail createTweet with mediaURLs array of more than 4 urls and invalid urls!", async () => {
-            const response = await request(app).post("/graphql").send({
-                query: `
+            const response = await request(app)
+                .post("/graphql")
+                .set("Authorization", `Bearer ${token}`)
+                .send({
+                    query: `
                 mutation {
                     createTweet(tweet: {
                         text: "hello world"
@@ -211,7 +257,7 @@ describe("tweet-resolvers", (): void => {
                     }
                 }
             `,
-            });
+                });
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0].validators).to.has.length(2);
@@ -222,26 +268,61 @@ describe("tweet-resolvers", (): void => {
                 "all mediaURLs must be valid urls!"
             );
         });
+
+        it("fail createTweet with empty mediaURLs array and empty text", async () => {
+            const response = await request(app)
+                .post("/graphql")
+                .set("Authorization", `Bearer ${token}`)
+                .send({
+                    query: `
+                mutation {
+                    createTweet(tweet: {
+                        text: ""
+                        mediaURLs: []
+                    }){
+                        id
+                    }
+                }
+            `,
+                });
+            expect(response.body).to.has.property("errors");
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0].validators).to.has.length(1);
+            expect(response.body.errors[0].validators[0].message).to.be.equal(
+                "text length must be between 1 to 280 chars!"
+            );
+        });
+
+        it("fail createTweet authorization", async () => {
+            const response = await createTweet(20);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+            });
+        });
     });
 
     describe("createReply Mutation", () => {
+        let token = ""
         before(async () => {
             await db.sync({ force: true });
-            await createUsers(1);
+            await createUser("omarabdo997", "omar ali");
+            const response = await login("omarabdo997", "myPrecious");
+            token = response.body.data.login.token;
             await createTweets(1, "O", 1);
         });
 
         it("createReply to originalTweet", async () => {
-            await succeedCreateReply(1, 1, "hello world", "C", 2);
+            await succeedCreateReply(1, 1, "hello world", "C", 2, token);
         });
 
         it("createReply to replyTweet", async () => {
-            await succeedCreateReply(2, 1, "hello world2", "C", 3);
+            await succeedCreateReply(2, 1, "hello world2", "C", 3, token);
         });
 
         it("createReply to replyTweet with deleted thread tweet", async () => {
             await Tweet.destroy({ where: { id: 1 } });
-            const response = await createReply("reply tweet3", 2);
+            const response = await createReply("reply tweet3", 2, token);
             const tweet = await Tweet.findByPk(4);
             expect(tweet?.id).to.be.equal(4);
             expect(tweet?.repliedToTweet).to.be.equal(2);
@@ -254,7 +335,7 @@ describe("tweet-resolvers", (): void => {
                 userId: 1,
                 state: "R",
             });
-            const response = await createReply("reply tweet4", rTweet.id);
+            const response = await createReply("reply tweet4", rTweet.id, token);
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -263,55 +344,235 @@ describe("tweet-resolvers", (): void => {
         });
 
         it("fail createReply to a non existing tweet", async () => {
-            const response = await createReply("reply tweet2", 20);
+            const response = await createReply("reply tweet2", 20, token);
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
                 message: "No tweet was found with this id!",
             });
         });
+
+        it("fail createReply authorization", async () => {
+            const response = await createReply("reply tweet2", 1);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+            });
+        });
+    });
+
+    describe("createRetweet Mutation", () => {
+        let token: string = "";
+        before(async () => {
+            await db.sync({ force: true });
+            await createUser("omarabdo997", "omar ali");
+            const response = await login("omarabdo997", "myPrecious");
+            token = response.body.data.login.token;
+            await createTweets(1, "O", 1);
+        });
+
+        it("succeed create retweet", async () => {
+            const response = await createRetweet(1, token);
+            expect(response.body.data.createRetweet).to.include({
+                id: "2",
+                text: "",
+                state: "R",
+            });
+            expect(response.body.data.createRetweet.mediaURLs).to.has.length(0);
+            expect(
+                response.body.data.createRetweet.originalTweet.id
+            ).to.be.equal("1");
+        });
+
+        it("fail createRetweet to non existing tweet", async () => {
+            const response = await createRetweet(20, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No tweet was found with this id!",
+            });
+        });
+
+        it("fail createRetweet of a retweeted tweet", async () => {
+            const response = await createRetweet(2, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Can't retweet a retweeted tweet!",
+            });
+        });
+
+        it("fail createRetweet authorization", async () => {
+            const response = await createRetweet(20);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+            });
+        });
+    });
+
+    describe("createQuotedRetweet Mutation", () => {
+        let token: string = "";
+        before(async () => {
+            await db.sync({ force: true });
+            await createUser("omarabdo997", "omar ali");
+            const response = await login("omarabdo997", "myPrecious");
+            token = response.body.data.login.token;
+            await createTweets(1, "O", 1);
+        });
+
+        it("succeed create quoted retweet without media", async () => {
+            const response = await createQuotedRetweet(1, "test quoted", token);
+            expect(response.body.data.createQuotedRetweet).to.include({
+                id: "2",
+                text: "test quoted",
+                state: "Q",
+            });
+            expect(
+                response.body.data.createQuotedRetweet.mediaURLs
+            ).to.has.length(0);
+            expect(
+                response.body.data.createQuotedRetweet.originalTweet.id
+            ).to.be.equal("1");
+        });
+
+        it("succeed create quoted retweet with media", async () => {
+            const response = await createQuotedRetweetWithMedia(
+                1,
+                "test quoted",
+                token
+            );
+            expect(response.body.data.createQuotedRetweet).to.include({
+                id: "3",
+                text: "test quoted",
+                state: "Q",
+            });
+            expect(
+                response.body.data.createQuotedRetweet.mediaURLs
+            ).to.has.length(4);
+            expect(response.body.data.createQuotedRetweet.mediaURLs).to.include(
+                "https://www.vapulus.com/en/wp-content/uploads/2019/05/startup-books.jpg"
+            );
+            expect(response.body.data.createQuotedRetweet.mediaURLs).to.include(
+                "https://media.btech.com/media/catalog/product/cache/22b1bed05f04d71c4a848d770186c3c4/h/p/hp-notebook-15-da1885ne_ca36.jpg"
+            );
+            expect(response.body.data.createQuotedRetweet.mediaURLs).to.include(
+                "https://media.btech.com/media/catalog/product/cache/22b1bed05f04d71c4a848d770186c3c4/h/p/hp_da2001ne_1.png"
+            );
+            expect(response.body.data.createQuotedRetweet.mediaURLs).to.include(
+                "https://www.rayashop.com/media/product/fc3/hp-omen-15-en0013dx-laptop-amd-ryzen-7-4800h-15-6-inch-fhd-512gb-8gb-ram-nvidia-1660-ti-6gb-win-10-22d.jpg"
+            );
+            expect(
+                response.body.data.createQuotedRetweet.originalTweet.id
+            ).to.be.equal("1");
+        });
+
+        it("fail createQuotedRetweet with no text", async () => {
+            const response = await createQuotedRetweet(1, "", token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                message: "Validation error!",
+                statusCode: 422,
+            });
+            expect(response.body.errors[0].validators).to.has.length(1);
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "text length must be between 1 to 280 chars!",
+                value: "text",
+            });
+        });
+
+        it("fail createQuotedRetweet to non existing tweet", async () => {
+            const response = await createQuotedRetweet(
+                20,
+                "test quoted",
+                token
+            );
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No tweet was found with this id!",
+            });
+        });
+
+        it("fail createQuotedRetweet authorization", async () => {
+            const response = await createQuotedRetweet(20, "test Quoted");
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+            });
+        });
     });
 
     describe("deleteTweet Mutation", () => {
+        let token = ""
         before(async () => {
             await db.sync({ force: true });
+            await createUser("omarabdo997", "omar ali");
             await createUsers(1);
+            let response = await login("omarabdo997", "myPrecious");
+            token = response.body.data.login.token;
             await createTweets(1, "O", 1);
+            await createTweets(2, "O", 1);
         });
 
         it("delete tweet", async () => {
             const tweet = await Tweet.findByPk(1);
             expect(tweet).to.be.not.null;
-            const response = await deleteTweet(1);
+            const response = await deleteTweet(1, token);
             expect(response.body.data.deleteTweet).to.be.true;
             const tweet2 = await Tweet.findByPk(1);
             expect(tweet2).to.be.null;
         });
 
         it("fail delete tweet to non existing tweet", async () => {
-            const response = await deleteTweet(20);
+            const response = await deleteTweet(20, token);
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
                 message: "No tweet was found with this id!",
             });
         });
+
+        it("fail deleteTweet authorization", async () => {
+            const response = await deleteTweet(2);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+            });
+        });
+
+        it("fail deleteTweet if user doesn't own the tweet", async () => {
+            const response = await deleteTweet(2, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 403,
+                message: "You don't own this tweet!"
+            });
+        });
     });
 
     describe("tweet Query", () => {
+        let token = ""
         before(async () => {
             await db.sync({ force: true });
             const users = await createUsers(30);
-            await createTweet("hello world");
+            await createUser("omarabdo997", "omar ali");
+            const response = await login("omarabdo997", "myPrecious");
+            const loggedInUser = await User.findByPk(31)
+            token = response.body.data.login.token;
+            await createTweet("hello world", token);
             const oTweet = await Tweet.findByPk(1);
             //add likes to the created tweet
             await oTweet!.$add("likes", users);
+            await oTweet!.$add("likes", loggedInUser!);
             //add replies to the created tweet
             const rTweets = await createTweets(1, "C", 24);
             await oTweet!.$add("replies", rTweets);
             //add hashtags to the created tweet
             const hashtags = await createHashtags();
             await oTweet!.$add("hashtags", hashtags);
+            await createRetweets()
+            await createQuotedRetweets(1, 1, 55)
         });
 
         it("tweet query", async () => {
@@ -327,10 +588,10 @@ describe("tweet-resolvers", (): void => {
         it("tweet query get user", async () => {
             const response = await getTweet(1);
             expect(response.body.data.tweet.user).to.include({
-                id: "1",
-                name: "Test0",
-                userName: "test0",
-                email: "test0@gmail.com",
+                id: "31",
+                name: "omar ali",
+                userName: "omarabdo997",
+                email: "bilbo_baggins@shire.com",
             });
         });
 
@@ -344,34 +605,35 @@ describe("tweet-resolvers", (): void => {
         it("tweet query get likes with paging", async () => {
             let response = await getTweet(1, 1);
             let likes = response.body.data.tweet.likes;
-            expect(likes.totalCount).to.be.equal(30);
+            expect(likes.totalCount).to.be.equal(31);
             expect(likes.users).to.has.length(10);
-            expect(likes.users[0].id).to.be.equal("30");
-            expect(likes.users[9].id).to.be.equal("21");
+            expect(likes.users[0].id).to.be.equal("31");
+            expect(likes.users[9].id).to.be.equal("22");
 
             response = await getTweet(1, 2);
             likes = response.body.data.tweet.likes;
-            expect(likes.totalCount).to.be.equal(30);
+            expect(likes.totalCount).to.be.equal(31);
             expect(likes.users).to.has.length(10);
-            expect(likes.users[0].id).to.be.equal("20");
-            expect(likes.users[9].id).to.be.equal("11");
+            expect(likes.users[0].id).to.be.equal("21");
+            expect(likes.users[9].id).to.be.equal("12");
 
             response = await getTweet(1, 3);
             likes = response.body.data.tweet.likes;
-            expect(likes.totalCount).to.be.equal(30);
+            expect(likes.totalCount).to.be.equal(31);
             expect(likes.users).to.has.length(10);
-            expect(likes.users[0].id).to.be.equal("10");
-            expect(likes.users[9].id).to.be.equal("1");
+            expect(likes.users[0].id).to.be.equal("11");
+            expect(likes.users[9].id).to.be.equal("2");
 
             response = await getTweet(1, 4);
             likes = response.body.data.tweet.likes;
-            expect(likes.totalCount).to.be.equal(30);
-            expect(likes.users).to.has.length(0);
+            expect(likes.totalCount).to.be.equal(31);
+            expect(likes.users).to.has.length(1);
+            expect(likes.users[0].id).to.be.equal("1");
         });
 
         it("tweet query get likesCount", async () => {
             const response = await getTweet(1);
-            expect(response.body.data.tweet.likesCount).to.be.equal(30);
+            expect(response.body.data.tweet.likesCount).to.be.equal(31);
         });
 
         it("tweet query get replies with paging", async () => {
@@ -408,31 +670,33 @@ describe("tweet-resolvers", (): void => {
         });
 
         it("tweet query get threadTweet", async () => {
-            const resOriginalTweet = await createTweet("test");
-            const id1 = resOriginalTweet.body.data.createTweet.id; //id1 = 26
-            const resReplyTweet = await createReply("reply1", id1); // id = 27
+            const resOriginalTweet = await createTweet("test", token); //id = 111
+            const id1 = resOriginalTweet.body.data.createTweet.id; 
+            const resReplyTweet = await createReply("reply1", id1, token);  // id = 112
             const reply2 = await createReply(
                 "reply2",
-                resReplyTweet.body.data.createReply.id
+                resReplyTweet.body.data.createReply.id,
+                token
             );
-            const id2 = reply2.body.data.createReply.id; //id2 = 28
+            const id2 = reply2.body.data.createReply.id; 
             const response = await getTweet(id2);
             expect(response.body.data.tweet.threadTweet.id).to.be.equal(id1);
         });
 
         it("tweet query get repliedToTweet", async () => {
-            const response = await getTweet(28);
+            const response = await getTweet(112);
             expect(response.body.data.tweet.repliedToTweet.id).to.be.equal(
-                "27"
+                "111"
             );
         });
 
         it("tweet query get isLiked", async () => {
-            const response = await getTweet(1);
-            //assuming logged in user is user (1)
+            const response = await getTweet(1, 1, 1, 1, token); //user logged in and likes the tweet
             expect(response.body.data.tweet.isLiked).to.be.true;
-            const response2 = await getTweet(28);
+            const response2 = await getTweet(1); // user not logged in
             expect(response2.body.data.tweet.isLiked).to.be.false;
+            const response3 = await getTweet(28,1 ,1 ,1, token); // user logged in but doesn't like the tweet
+            expect(response3.body.data.tweet.isLiked).to.be.false;
         });
 
         it("tweet query get hashtags", async () => {
@@ -463,8 +727,18 @@ describe("tweet-resolvers", (): void => {
             expect(hashtags.hashtags).to.has.length(0);
         });
 
+        it("tweet query get retweets count", async () => {
+            let response = await getTweet(1)
+            expect(response.body.data.tweet.retweetsCount).to.be.equal(30)
+        })
+
+        it("tweet query get quoted retweets count", async () => {
+            let response = await getTweet(1)
+            expect(response.body.data.tweet.quotedRetweetsCount).to.be.equal(55)
+        })
+
         it("fail tweet query for a non existant tweet", async () => {
-            const response = await getTweet(100);
+            const response = await getTweet(150);
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,
@@ -474,18 +748,22 @@ describe("tweet-resolvers", (): void => {
     });
 
     describe("tweets query", () => {
+        let token = ""
         before(async () => {
             await db.sync({ force: true });
             const users = await createUsers(30);
-            await createTweet("hello world");
-            await createTweetWithMedia("hello world");
+            await createUser("omarabdo997", "omar ali");
+            const response = await login("omarabdo997", "myPrecious");
+            token = response.body.data.login.token;
+            await createTweet("hello world", token);
+            await createTweetWithMedia("hello world", token);
             const oTweet = await Tweet.findByPk(1);
             await oTweet!.$add("likes", users);
-            await createDifferentTypesOfTweets();
+            await createDifferentTypesOfTweets(31);
         });
 
         it("tweets query with default filter", async () => {
-            let response = await getTweets(1);
+            let response = await getTweets(31);
             let tweets = response.body.data.tweets;
             expect(tweets.totalCount).to.be.equal(26);
             expect(tweets.tweets).to.has.length(10);
@@ -494,7 +772,7 @@ describe("tweet-resolvers", (): void => {
             expect(tweets.tweets[9].id).to.be.equal("17");
             expect(tweets.tweets[9].state).to.be.equal("R");
 
-            response = await getTweets(1, 2);
+            response = await getTweets(31, 2);
             tweets = response.body.data.tweets;
             expect(tweets.totalCount).to.be.equal(26);
             expect(tweets.tweets).to.has.length(10);
@@ -503,7 +781,7 @@ describe("tweet-resolvers", (): void => {
             expect(tweets.tweets[9].id).to.be.equal("7");
             expect(tweets.tweets[9].state).to.be.equal("O");
 
-            response = await getTweets(1, 3);
+            response = await getTweets(31, 3);
             tweets = response.body.data.tweets;
             expect(tweets.totalCount).to.be.equal(26);
             expect(tweets.tweets).to.has.length(6);
@@ -512,14 +790,14 @@ describe("tweet-resolvers", (): void => {
             expect(tweets.tweets[5].id).to.be.equal("1");
             expect(tweets.tweets[5].state).to.be.equal("O");
 
-            response = await getTweets(1, 4);
+            response = await getTweets(31, 4);
             tweets = response.body.data.tweets;
             expect(tweets.totalCount).to.be.equal(26);
             expect(tweets.tweets).to.has.length(0);
         });
 
         it("tweets query with replies&tweets filter", async () => {
-            let response = await getTweets(1, 1, "replies&tweets");
+            let response = await getTweets(31, 1, "replies&tweets");
             let tweets = response.body.data.tweets;
             expect(tweets.totalCount).to.be.equal(32);
             expect(tweets.tweets).to.has.length(10);
@@ -528,7 +806,7 @@ describe("tweet-resolvers", (): void => {
             expect(tweets.tweets[9].id).to.be.equal("23");
             expect(tweets.tweets[9].state).to.be.equal("Q");
 
-            response = await getTweets(1, 2, "replies&tweets");
+            response = await getTweets(31, 2, "replies&tweets");
             tweets = response.body.data.tweets;
             expect(tweets.totalCount).to.be.equal(32);
             expect(tweets.tweets).to.has.length(10);
@@ -537,7 +815,7 @@ describe("tweet-resolvers", (): void => {
             expect(tweets.tweets[9].id).to.be.equal("13");
             expect(tweets.tweets[9].state).to.be.equal("R");
 
-            response = await getTweets(1, 3, "replies&tweets");
+            response = await getTweets(31, 3, "replies&tweets");
             tweets = response.body.data.tweets;
             expect(tweets.totalCount).to.be.equal(32);
             expect(tweets.tweets).to.has.length(10);
@@ -546,7 +824,7 @@ describe("tweet-resolvers", (): void => {
             expect(tweets.tweets[9].id).to.be.equal("3");
             expect(tweets.tweets[9].state).to.be.equal("O");
 
-            response = await getTweets(1, 4, "replies&tweets");
+            response = await getTweets(31, 4, "replies&tweets");
             tweets = response.body.data.tweets;
             expect(tweets.totalCount).to.be.equal(32);
             expect(tweets.tweets).to.has.length(2);
@@ -570,13 +848,13 @@ describe("tweet-resolvers", (): void => {
         });
 
         it("tweets query with media filter", async () => {
-            let response = await getTweets(1, 1, "media");
+            let response = await getTweets(31, 1, "media");
             let tweets = response.body.data.tweets;
             expect(tweets.totalCount).to.be.equal(1);
             expect(tweets.tweets).to.has.length(1);
             expect(tweets.tweets[0].id).to.be.equal("2");
 
-            response = await getTweets(1, 2, "media");
+            response = await getTweets(31, 2, "media");
             tweets = response.body.data.tweets;
             expect(tweets.totalCount).to.be.equal(1);
             expect(tweets.tweets).to.has.length(0);
@@ -598,6 +876,85 @@ describe("tweet-resolvers", (): void => {
                 statusCode: 422,
                 message:
                     "Filter must be null or media or replies&tweets or likes only!",
+            });
+        });
+    });
+
+    describe("getFeed Query", (): void => {
+        let token: string = "";
+        before(async () => {
+            await db.sync({ force: true });
+            let response = await createUser("Luffy11", "Monkey D. Luffy");
+            const userId: number = response.body.data.createUser.id;
+            const loggedUser = await User.findByPk(userId);
+
+            response = await login("Luffy11", "myPrecious");
+            token = response.body.data.login.token;
+
+            const toBeFollowed: User[] = [];
+            for (let i = 0; i < 2; i++) {
+                let user = await User.create({
+                    name: `testUser ${i + 1}`,
+                    userName: `testU${i + 1}`,
+                    email: `testU${i + 1}@yahoo.com`,
+                    hashedPassword: "12345678910",
+                    birthDate: "1970-01-01"
+                });
+                toBeFollowed.push(user);
+            }
+
+            await Tweet.create({
+                text: "This is the first tweet",
+                userId: 2,
+                mediaURLs: [],
+                state: "O",
+            });
+            for (let i = 0; i < 12; i++) {
+                await Tweet.create({
+                    text: `Today is a good day ${i + 1}`,
+                    userId: 2,
+                    mediaURLs: [],
+                    state: "O",
+                });
+            }
+            await Tweet.create({
+                text: "This is the last tweet",
+                userId: 3,
+                mediaURLs: [],
+                state: "O",
+            });
+            await loggedUser!.$add("following", toBeFollowed[0]);
+            await loggedUser!.$add("following", toBeFollowed[1]);
+        });
+
+        it("succeeds in fetching tweets of followed users", async () => {
+            const response = await getFeed(token);
+
+            expect(response.body.data.getFeed).to.has.length(10);
+            expect(response.body.data.getFeed[0]).to.include({
+                text: "This is the last tweet",
+            });
+            expect(response.body.data.getFeed[0].user).to.have.property(
+                "id",
+                "3"
+            );
+        });
+        it("succeeds in fetching paginated tweets of followed users", async () => {
+            const response = await getFeedWithPagination(2, token);
+            expect(response.body.data.getFeed).to.has.length(4);
+            expect(response.body.data.getFeed[3]).to.include({
+                text: "This is the first tweet",
+            });
+            expect(response.body.data.getFeed[3].user).to.have.property(
+                "id",
+                "2"
+            );
+        });
+        it("fails to get Feed when not authenticated", async () => {
+            const response = await getFeed();
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
             });
         });
     });

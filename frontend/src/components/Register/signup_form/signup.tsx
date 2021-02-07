@@ -3,6 +3,7 @@ import "./../Register.css";
 import { TweetButton } from "./../../sideBar/tweetButton/tweetButton";
 import {Logo} from "./../../logo/logo";
 import { FormInput } from "./../formInput/formInput";
+import {Link} from "react-router-dom";
 import { useMutation, gql} from '@apollo/client';
 
 
@@ -41,6 +42,8 @@ mutation createUser ($userInput: UserCreateInput!) {
 }
 `;
 
+//output from Mutation that added to db
+
 interface User {
   id : string ,
   name: String,
@@ -49,6 +52,7 @@ interface User {
   userName: String
 }
 
+// input to Mutation as input data
 interface New_User {
   name: String,
   email: String ,
@@ -58,14 +62,20 @@ interface New_User {
 
 
 export function SignUpForm () {
+
+//set state to catch changes in form 
   const [name, setName] = useState('');
   const [userName, setUserName] = useState(' ');
   const [email, setEmail] = useState(' ');
   const [password, setPassword] = useState(' ');
 
+
+
+
   const [createUser ,  { error, data }] = useMutation<{createUser :User } ,{ userInput  : New_User} >(ADD_USER,{
     variables: { userInput : { userName , email , password , name } }
   });
+
 
 return(
   <div>
@@ -75,12 +85,10 @@ return(
   
 <strong className ="text-4xl font-serif mt-4 -ml-8"> Create your account </strong>
       {error ? <p>Oh no! {error.message}</p> : null}
-      {data && data.createUser ? <p>Saved!</p> : null}
+      {data && data.createUser ? <p></p> : null}
       
 
      <form>
-
-
 
         <div className="flex -mx-3 mt-2">
             <div className="w-full px-3">
@@ -148,11 +156,16 @@ return(
         <p      className = "text-1xl font-serif pr-4 text-gray-500"> This will not be shown publicly. Confirm your own age. </p>
     </div>
 
-
-
+      <Link to ="/login">
        <TweetButton name = "Next" className ="w-80" onClick={() => name && userName && email && password && createUser()} />
+       </Link>
+    
       <div className ="pl-24" >
-          <b><a href="#" target="_blank" className="a_login_form mt-12"> Aready have account ? </a></b>
+          <b>
+          <Link to ="/login">
+            <a className="a_login_form mt-12"> Aready have account ? </a>
+            </Link >
+            </b>
       </div>
       </form>
     </div>

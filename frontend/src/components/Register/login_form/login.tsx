@@ -5,6 +5,7 @@ import "./../Register.css";
 import { TweetButton } from "./../../sideBar/tweetButton/tweetButton";
 import {Logo} from "./../../logo/logo";
 import { FormInput } from "./../formInput/formInput"
+import {Link} from "react-router-dom"
 
 
 interface Props {
@@ -24,8 +25,16 @@ export const Login : React.FC <Props> = () =>  (
 
     <div className =" mt-3" >
 
-        <b><a href="#" target="_blank" className="a_login_form m-4"> Forget password?  </a></b>
-        <b><a href="#" target="_blank" className="a_login_form m-4 ">   Sign up for Twitter</a></b>
+        <b>
+            <Link to ="/forget_password">
+            <a className="a_login_form m-4"> Forget password?  </a>
+            </Link>
+            </b>
+        <b>
+            <Link to ="/signUp">
+            <a className="a_login_form m-4 ">   Sign up for Twitter</a>
+            </Link>
+            </b>
     </div>
 
    </div>

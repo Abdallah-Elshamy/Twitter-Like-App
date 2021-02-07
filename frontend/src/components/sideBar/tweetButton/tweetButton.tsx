@@ -16,7 +16,7 @@ render() {
   return ( 
   
   <div> 
-    <button className= {`mt-8 focus:outline-none h-12
+    <button  className= {`mt-8 focus:outline-none h-12
           transform transition hover:scale-110 duration-300 
           hover:shadow-md sidebar_tw_btn ${this.props.className}`}   onClick = {this.props.onClick}  >
           <strong className="text-center">{this.props.name}</strong>

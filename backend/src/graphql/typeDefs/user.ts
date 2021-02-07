@@ -9,7 +9,7 @@ export default gql`
     
     extend type Mutation {
         createUser(userInput: UserCreateInput!) : User! 
-        updateUser(id: ID!, userInput: UserUpdateInput!) : User! 
+        updateUser(userInput: UserUpdateInput!) : User! 
         like(tweetId: ID!): Boolean
         unlike(tweetId: ID!): Boolean
         follow(userId: ID!): Boolean
@@ -25,11 +25,14 @@ export default gql`
         userName: String!
         email: String!
         name: String!
+        birthDate: String!
         imageURL: String
         bio: String
         coverImageURL: String
+        isFollowing: Boolean
         following(page: Int): PaginatedUsers!
         followingCount: Int!
+        isFollower: Boolean
         followers(page: Int): PaginatedUsers!
         followersCount: Int!
         tweets(page: Int): PaginatedTweets!
@@ -50,6 +53,7 @@ export default gql`
         email: String!
         password: String!
         name: String!
+        birthDate: String!
         imageURL: String
         bio: String
         coverImageURL: String
@@ -60,6 +64,7 @@ export default gql`
         email: String
         password: String
         name: String
+        birthDate: String
         imageURL: String
         bio: String
         coverImageURL: String

@@ -1,13 +1,17 @@
 import request from "supertest";
 import app from "../../app";
 
-export const updateUser = async (id: number, userInput: any) => {
+export const updateUser = async (
+    userInput: any,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
-                updateUser(id: ${id}, userInput: {
+                updateUser(userInput: {
                     userName: "${userInput.userName}",
                     email: "${userInput.email}",
                     password: "${userInput.password}",
@@ -15,6 +19,7 @@ export const updateUser = async (id: number, userInput: any) => {
                     imageURL: "${userInput.imageURL}",
                     bio: "${userInput.bio}"
                     coverImageURL: "${userInput.coverImageURL}"
+                    birthDate: "${userInput.birthDate}"
                 }) {
                     name
                     userName
@@ -22,13 +27,14 @@ export const updateUser = async (id: number, userInput: any) => {
                     imageURL
                     coverImageURL
                     bio
+                    birthDate
                     }
                 }
         `,
         });
 };
 
-export const login = async(userNameOrEmail: string, password: string) => {
+export const login = async (userNameOrEmail: string, password: string) => {
     return await request(app)
         .post("/graphql")
         .send({
@@ -43,15 +49,18 @@ export const login = async(userNameOrEmail: string, password: string) => {
             }
         `,
         });
-}
+};
 
-export const emptyUpdateUser = async (id: number) => {
+export const emptyUpdateUser = async (
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
-                updateUser(id: ${id}, userInput: {}) {
+                updateUser(userInput: {}) {
                     name
                     userName
                 }
@@ -60,13 +69,17 @@ export const emptyUpdateUser = async (id: number) => {
         });
 };
 
-export const updateUserName = async (id: number, userInput: any) => {
+export const updateUserName = async (
+    userInput: any,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
-                updateUser(id: ${id}, userInput: {name: "${userInput.name}"}) {
+                updateUser(userInput: {name: "${userInput.name}"}) {
                     name
                 }
         }
@@ -74,13 +87,17 @@ export const updateUserName = async (id: number, userInput: any) => {
         });
 };
 
-export const updateUserPassword = async (id: number, userInput: any) => {
+export const updateUserPassword = async (
+    userInput: any,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
-                updateUser(id: ${id}, userInput: {password: "${userInput.password}"}) {
+                updateUser(userInput: {password: "${userInput.password}"}) {
                     name
                 }
         }
@@ -88,13 +105,17 @@ export const updateUserPassword = async (id: number, userInput: any) => {
         });
 };
 
-export const updateUserEmail = async (id: number, userInput: any) => {
+export const updateUserEmail = async (
+    userInput: any,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
-                updateUser(id: ${id}, userInput: {email: "${userInput.email}"}) {
+                updateUser(userInput: {email: "${userInput.email}"}) {
                     email
                 }
         }
@@ -102,13 +123,17 @@ export const updateUserEmail = async (id: number, userInput: any) => {
         });
 };
 
-export const updateUserImageURL = async (id: number, userInput: any) => {
+export const updateUserImageURL = async (
+    userInput: any,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
-                updateUser(id: ${id}, userInput: {imageURL: "${userInput.imageURL}"}) {
+                updateUser(userInput: {imageURL: "${userInput.imageURL}"}) {
                     imageURL
                 }
         }
@@ -116,13 +141,17 @@ export const updateUserImageURL = async (id: number, userInput: any) => {
         });
 };
 
-export const updateUserCoverImageURL = async (id: number, userInput: any) => {
+export const updateUserCoverImageURL = async (
+    userInput: any,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
-                updateUser(id: ${id}, userInput: {coverImageURL: "${userInput.coverImageURL}"}) {
+                updateUser(userInput: {coverImageURL: "${userInput.coverImageURL}"}) {
                     coverImageURL
                 }
         }
@@ -130,13 +159,17 @@ export const updateUserCoverImageURL = async (id: number, userInput: any) => {
         });
 };
 
-export const updateUserUserName = async (id: number, userInput: any) => {
+export const updateUserUserName = async (
+    userInput: any,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
-                updateUser(id: ${id}, userInput: {userName: "${userInput.userName}"}) {
+                updateUser(userInput: {userName: "${userInput.userName}"}) {
                     coverImageURL
                 }
         }
@@ -144,9 +177,31 @@ export const updateUserUserName = async (id: number, userInput: any) => {
         });
 };
 
-export const unlike = async (tweetId: number) => {
+export const updateUserWithBirthDate = async (
+    birthDate: string,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                updateUser(userInput: {birthDate: "${birthDate}"}) {
+                    birthDate
+                }
+        }
+        `,
+        });
+};
+
+export const unlike = async (
+    tweetId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
@@ -156,34 +211,17 @@ export const unlike = async (tweetId: number) => {
         });
 };
 
-export const unfollow = async (userId: number) => {
+export const unfollow = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
                 unfollow(userId: ${userId})
-            }
-        `,
-        });
-};
-
-export const hashtag = async (word: string) => {
-    return await request(app)
-        .post("/graphql")
-        .send({
-            query: `
-            query {
-                hashtag(word: "${word}") {
-                    word
-                    tweets {
-                        totalCount
-                        tweets {
-                            id
-                            text
-                        }
-                    }
-                }
             }
         `,
         });
@@ -199,11 +237,13 @@ export const createUser = async (userName: string, name: string) => {
                     userName: "${userName}",
                     name: "${name}",
                     email: "bilbo_baggins@shire.com",
-                    password: "myPrecious"
+                    password: "myPrecious",
+                    birthDate: "1970-01-01"
                 }){
                     id,
                     userName,
-                    name
+                    name,
+                    birthDate
                 }
             }
         `,
@@ -221,12 +261,14 @@ export const createUserWithImage = async (userName: string, name: string) => {
                     name: "${name}",
                     email: "frodo_baggins@shire.com",
                     password: "myPrecious",
-                    imageURL: "https://picsum.photos/200/300"
+                    imageURL: "https://picsum.photos/200/300",
+                    birthDate: "1970-01-01"
                 }){
                     id,
                     userName,
                     name,
-                    imageURL
+                    imageURL,
+                    birthDate
                 }
             }
         `,
@@ -244,12 +286,14 @@ export const createUserWithBio = async (userName: string, name: string) => {
                     name: "${name}",
                     email: "gandalf@shire.com",
                     password: "myPrecious",
-                    bio: "RUN YOU FOOLS!"
+                    bio: "RUN YOU FOOLS!",
+                    birthDate: "1970-01-01"
                 }){
                     id,
                     userName,
                     name,
-                    bio
+                    bio,
+                    birthDate
                 }
             }
         `,
@@ -270,12 +314,14 @@ export const createUserWithCoverImage = async (
                     name: "${name}",
                     email: "roronoa_zoro@grandline.com",
                     password: "strawhat",
-                    coverImageURL: "https://picsum.photos/200/300"
+                    coverImageURL: "https://picsum.photos/200/300",
+                    birthDate: "1970-01-01"
                 }){
                     id,
                     userName,
                     name,
-                    coverImageURL
+                    coverImageURL,
+                    birthDate
                 }
             }
         `,
@@ -295,15 +341,16 @@ export const createUserComplete = async (userName: string, name: string) => {
                     password: "strawhat",
                     bio: "But a hero is a guy who gives out the meat to everyone else. I want to eat the damn meat!",
                     imageURL: "https://picsum.photos/200/300",
-                    coverImageURL: "https://picsum.photos/200/300"
-                    
+                    coverImageURL: "https://picsum.photos/200/300",
+                    birthDate: "1970-01-01"                    
                 }){
                     id,
                     userName,
                     name,
                     bio,
                     imageURL,
-                    coverImageURL
+                    coverImageURL,
+                    birthDate
                 }
             }
         `,
@@ -326,15 +373,16 @@ export const createUserWithEmailPassword = async (
                     password: "${password}",
                     bio: "That is MY Ninja Way!",
                     imageURL: "https://picsum.photos/200/300",
-                    coverImageURL: "https://picsum.photos/200/300"
-                    
+                    coverImageURL: "https://picsum.photos/200/300",
+                    birthDate: "1970-01-01"                    
                 }){
                     id,
                     userName,
                     name,
                     bio,
                     imageURL,
-                    coverImageURL
+                    coverImageURL,
+                    birthDate
                 }
             }
         `,
@@ -357,24 +405,49 @@ export const createUserWithImages = async (
                     password: "hidden_leaf",
                     bio: "That is MY Ninja Way!",
                     imageURL: "${imageURL}",
-                    coverImageURL: "${coverImageURL}"
-                    
+                    coverImageURL: "${coverImageURL}",
+                    birthDate: "1970-01-01"                    
                 }){
                     id,
                     userName,
                     name,
                     bio,
                     imageURL,
-                    coverImageURL
+                    coverImageURL,
+                    birthDate
                 }
             }
         `,
         });
 };
 
-export const follow = async (userId: number) => {
+export const createUserWithBirthDate = async (birthDate: string) => {
     return await request(app)
         .post("/graphql")
+        .send({
+            query: `
+            mutation {
+                createUser(userInput: {
+                    userName: "shikamaru",
+                    name: "Shikamaru Nara",
+                    email: "shikamaru@konoha.com",
+                    password: "hidden_leaf",
+                    birthDate: "${birthDate}"                    
+                }){
+                    id,
+                }
+            }
+        `,
+        });
+};
+
+export const follow = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
@@ -384,9 +457,13 @@ export const follow = async (userId: number) => {
         });
 };
 
-export const like = async (tweetId: number) => {
+export const like = async (
+    tweetId: number,
+    authToken: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
             query: `
             mutation {
@@ -396,9 +473,12 @@ export const like = async (tweetId: number) => {
         });
 };
 
-export const createTweet = async () => {
-    return await request(app).post("/graphql").send({
-        query: `
+export const createTweet = async (token: string | undefined = undefined) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+            query: `
             mutation {
                 createTweet(tweet: {
                     text: "One ring to rule them all",
@@ -408,7 +488,7 @@ export const createTweet = async () => {
                 }
             }
         `,
-    });
+        });
 };
 
 export const createTwentyUser = async () => {
@@ -425,7 +505,8 @@ export const createTwentyUser = async () => {
                     password: "hidden_leaf",
                     bio: "That is MY Ninja Way!",
                     imageURL: "https://picsum.photos/200/300",
-                    coverImageURL: "https://picsum.photos/200/300"
+                    coverImageURL: "https://picsum.photos/200/300",
+                    birthDate: "1970-01-01"
                 }){
                     id,
                 }
@@ -436,10 +517,13 @@ export const createTwentyUser = async () => {
     return true;
 };
 
-export const followFifteenUser = async () => {
+export const followFifteenUser = async (
+    authToken: string | undefined = undefined
+) => {
     for (let i: number = 2; i <= 16; i++) {
         await request(app)
             .post("/graphql")
+            .set("Authorization", `Bearer ${authToken}`)
             .send({
                 query: `
             mutation {
@@ -464,6 +548,7 @@ export const getUser = async (id: number) => {
                     name,
                     imageURL,
                     bio,
+                    birthDate,
                     coverImageURL,
                     following(page: 1) {
                         totalCount,

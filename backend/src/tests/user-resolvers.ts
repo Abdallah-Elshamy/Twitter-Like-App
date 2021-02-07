@@ -2,7 +2,7 @@ import { expect } from "chai";
 
 import { serverPromise } from "../app";
 import db from "../db";
-import { Hashtag, User, Tweet } from "../models";
+import { User, Tweet } from "../models";
 import {
     getUser,
     createUser,
@@ -14,6 +14,7 @@ import {
     createUserComplete,
     createUserWithEmailPassword,
     createUserWithImages,
+    createUserWithBirthDate,
     createTwentyUser,
     updateUser,
     emptyUpdateUser,
@@ -23,13 +24,14 @@ import {
     updateUserPassword,
     updateUserImageURL,
     updateUserCoverImageURL,
+    updateUserWithBirthDate,
     follow,
     followFifteenUser,
     unfollow,
-    hashtag,
     like,
     unlike,
     createTweet,
+    login,
 } from "./requests/user-resolvers";
 
 let server: any;
@@ -45,20 +47,23 @@ describe("user-resolvers", (): void => {
         before(async () => {
             await db.sync({ force: true });
             await createTwentyUser();
-            await followFifteenUser();
+            const response = await login("kage1", "hidden_leaf");
+            const token = response.body.data.login.token;
+            await followFifteenUser(token);
+
             // get followed by fifteen users
-            const toBeFollowed: any = await User.findByPk(1);
+            const toBeFollowed = await User.findByPk(1);
             for (let i: number = 2; i <= 16; i++) {
-                let currentUser: any = await User.findByPk(i);
+                let currentUser = await User.findByPk(i);
                 if (currentUser) {
                     await db.transaction(async (transaction) => {
-                        await currentUser.$add("following", toBeFollowed);
+                        await currentUser!.$add("following", toBeFollowed!);
                     });
                 }
             }
             // Create a tweet and like it
-            await createTweet();
-            await like(1);
+            await createTweet(token);
+            await like(1, token);
         });
 
         it("get a user", async () => {
@@ -74,6 +79,7 @@ describe("user-resolvers", (): void => {
                 coverImageURL: "https://picsum.photos/200/300",
                 followingCount: 15,
                 followersCount: 15,
+                birthDate: "1970-01-01",
             });
             // check that the followers of the followers of the user
             // are retrieved correctly
@@ -231,6 +237,7 @@ describe("user-resolvers", (): void => {
                 id: "1",
                 userName: "bilbo",
                 name: "Bilbo Baggins",
+                birthDate: "1970-01-01",
             });
         });
 
@@ -244,6 +251,7 @@ describe("user-resolvers", (): void => {
                 userName: "gandalf",
                 name: "Gandalf The Grey",
                 bio: "RUN YOU FOOLS!",
+                birthDate: "1970-01-01",
             });
         });
 
@@ -257,6 +265,7 @@ describe("user-resolvers", (): void => {
                 userName: "frodo",
                 name: "Frodo Baggins",
                 imageURL: "https://picsum.photos/200/300",
+                birthDate: "1970-01-01",
             });
         });
 
@@ -270,6 +279,7 @@ describe("user-resolvers", (): void => {
                 userName: "zoro",
                 name: "Roronoa Zoro",
                 coverImageURL: "https://picsum.photos/200/300",
+                birthDate: "1970-01-01",
             });
         });
 
@@ -298,6 +308,7 @@ describe("user-resolvers", (): void => {
                     "But a hero is a guy who gives out the meat to everyone else. I want to eat the damn meat!",
                 imageURL: "https://picsum.photos/200/300",
                 coverImageURL: "https://picsum.photos/200/300",
+                birthDate: "1970-01-01",
             });
         });
 
@@ -449,36 +460,69 @@ describe("user-resolvers", (): void => {
             });
         });
 
-        it("fails to update user with an invalid cover image URL format", async () => {
-            const response = await createUserWithImages(
-                "https://picsum.photos/200/300",
-                "badURL"
-            );
+        it("createUser with an invalid birth date", async () => {
+            const response = await createUserWithBirthDate("Hello");
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
                 message: "Validation error!",
             });
             expect(response.body.errors[0].validators[0]).to.include({
-                message: "Invalid cover image URL!",
-                value: "coverImageURL",
+                message: "Invalid birth date!",
+                value: "birthDate",
+            });
+        });
+
+        it("createUser with a valid birth date but in the future", async () => {
+            const response = await createUserWithBirthDate("2100-01-01");
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "Invalid birth date!",
+                value: "birthDate",
             });
         });
     });
 
     describe("updateUser resolver", (): void => {
-        let userId: number = 0;
+        let token: string = "";
         before(async () => {
-            const user = await User.create({
-                name: "Nicola Tesla",
-                userName: "Tesla_890",
-                hashedPassword: "123456789",
-                email: "Tesla@yahoo.com",
-            });
-            userId = user.id;
-            return user;
+            await db.sync({ force: true });
+            await createUser("Luffy11", "Monkey D. Luffy");
+            const response = await login("Luffy11", "myPrecious");
+            token = response.body.data.login.token;
         });
 
         it("succeeds in updating user info", async () => {
+            const userInput = {
+                name: "Alfred Einstein",
+                userName: "Alfred_12",
+                email: "Einstein@yahoo.com",
+                password: "12345678",
+                birthDate: "1879-03-14",
+                bio: "This is Alfred Einstein hustlin !",
+                imageURL:
+                    "https://preview.redd.it/t3ikdu9pp8h41.jpg?auto=webp&s=2106d1817d77e1b55438362d11b6452b7ab77bc6",
+                coverImageURL:
+                    "https://preview.redd.it/t3ikdu9pp8h41.jpg?auto=webp&s=2106d1817d77e1b55438362d11b6452b7ab77bc6",
+            };
+            const response = await updateUser(userInput, token);
+
+            expect(response.body.data.updateUser).to.include({
+                name: "Alfred Einstein",
+                userName: "Alfred_12",
+                email: "einstein@yahoo.com",
+                bio: "This is Alfred Einstein hustlin !",
+                birthDate: "1879-03-14",
+                imageURL:
+                    "https://preview.redd.it/t3ikdu9pp8h41.jpg?auto=webp&s=2106d1817d77e1b55438362d11b6452b7ab77bc6",
+                coverImageURL:
+                    "https://preview.redd.it/t3ikdu9pp8h41.jpg?auto=webp&s=2106d1817d77e1b55438362d11b6452b7ab77bc6",
+            });
+        });
+
+        it("fails to update user when not authenticated", async () => {
             const userInput = {
                 name: "Alfred Einstein",
                 userName: "Alfred_12",
@@ -490,22 +534,14 @@ describe("user-resolvers", (): void => {
                 coverImageURL:
                     "https://preview.redd.it/t3ikdu9pp8h41.jpg?auto=webp&s=2106d1817d77e1b55438362d11b6452b7ab77bc6",
             };
-            const response = await updateUser(userId, userInput);
-
-            expect(response.body.data.updateUser).to.include({
-                name: "Alfred Einstein",
-                userName: "Alfred_12",
-                email: "einstein@yahoo.com",
-                bio: "This is Alfred Einstein hustlin !",
-                imageURL:
-                    "https://preview.redd.it/t3ikdu9pp8h41.jpg?auto=webp&s=2106d1817d77e1b55438362d11b6452b7ab77bc6",
-                coverImageURL:
-                    "https://preview.redd.it/t3ikdu9pp8h41.jpg?auto=webp&s=2106d1817d77e1b55438362d11b6452b7ab77bc6",
+            const response = await updateUser(userInput);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
             });
         });
-
         it("fails to update user info because of empty request", async () => {
-            const response: any = await emptyUpdateUser(userId);
+            const response: any = await emptyUpdateUser(token);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -521,7 +557,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 name: "",
             };
-            const response: any = await updateUserName(userId, userInput);
+            const response: any = await updateUserName(userInput, token);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -537,7 +573,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 name: ".......................................................",
             };
-            const response: any = await updateUserName(userId, userInput);
+            const response: any = await updateUserName(userInput, token);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -554,7 +590,7 @@ describe("user-resolvers", (): void => {
                 userName: "Alf",
             };
 
-            const response: any = await updateUserUserName(userId, userInput);
+            const response: any = await updateUserUserName(userInput, token);
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
                 message: "Validation error!",
@@ -571,7 +607,7 @@ describe("user-resolvers", (): void => {
                 userName: "My_nameisalfredeinstein_22",
             };
 
-            const response: any = await updateUserUserName(userId, userInput);
+            const response: any = await updateUserUserName(userInput, token);
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
                 message: "Validation error!",
@@ -587,7 +623,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 userName: "Alfred_@!",
             };
-            const response: any = await updateUserUserName(userId, userInput);
+            const response: any = await updateUserUserName(userInput, token);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -604,7 +640,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 email: "",
             };
-            const response: any = await updateUserEmail(userId, userInput);
+            const response: any = await updateUserEmail(userInput, token);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -620,7 +656,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 email: "thisisanemail",
             };
-            const response: any = await updateUserEmail(userId, userInput);
+            const response: any = await updateUserEmail(userInput, token);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -636,7 +672,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 password: "1234",
             };
-            const response: any = await updateUserPassword(userId, userInput);
+            const response: any = await updateUserPassword(userInput, token);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -653,7 +689,7 @@ describe("user-resolvers", (): void => {
             const userInput = {
                 imageURL: "ThisisaURL",
             };
-            const response: any = await updateUserImageURL(userId, userInput);
+            const response: any = await updateUserImageURL(userInput, token);
 
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -670,8 +706,8 @@ describe("user-resolvers", (): void => {
                 coverImageURL: "ThisisaURL",
             };
             const response: any = await updateUserCoverImageURL(
-                userId,
-                userInput
+                userInput,
+                token
             );
 
             expect(response.body.errors[0]).to.include({
@@ -684,33 +720,75 @@ describe("user-resolvers", (): void => {
             });
         });
 
-        after(async () => {
-            return await User.destroy({
-                where: {
-                    id: userId,
-                },
+        it("fails to update user with an invalid cover image URL format", async () => {
+            const response = await createUserWithImages(
+                "https://picsum.photos/200/300",
+                "badURL"
+            );
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "Invalid cover image URL!",
+                value: "coverImageURL",
+            });
+        });
+
+        it("fails to update user with an invalid birth date", async () => {
+            const response = await updateUserWithBirthDate("hello", token);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "Invalid birth date!",
+                value: "birthDate",
+            });
+        });
+
+        it("fails to update user with a valid birth date but in the future", async () => {
+            const response = await updateUserWithBirthDate("2100-01-01", token);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "Validation error!",
+            });
+            expect(response.body.errors[0].validators[0]).to.include({
+                message: "Invalid birth date!",
+                value: "birthDate",
             });
         });
     });
 
     describe("like resolver", () => {
+        let token = "";
         before(async () => {
             await db.sync({ force: true });
             await createUser("bilbo", "Bilbo Baggins");
-            await createTweet();
+            const response = await login("bilbo", "myPrecious");
+            token = response.body.data.login.token;
+            await createTweet(token);
         });
 
         it("like an unliked tweet", async () => {
             // since the table is emptied, the added tweet will have id = 1
-            const response = await like(1);
+            const response = await like(1, token);
             expect(response.body.data).to.include({
                 like: true,
             });
         });
 
+        it("fails to like a tweet when not authenticated", async () => {
+            const response = await like(1);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+            });
+        });
+
         it("like a liked tweet", async () => {
             // This tweet is already liked from the previous test
-            const response = await like(1);
+            const response = await like(1, token);
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
@@ -721,7 +799,7 @@ describe("user-resolvers", (): void => {
 
         it("like a non existent tweet", async () => {
             // no tweet has id = 0
-            const response = await like(0);
+            const response = await like(0, token);
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
@@ -732,38 +810,47 @@ describe("user-resolvers", (): void => {
     });
 
     describe("unlike resolver", () => {
+        let token: string = "";
         before(async () => {
             await db.sync({ force: true });
             let likedTweet: any;
-            const user = await User.create({
-                name: "Zog The Defiler",
-                userName: "Zog_Is_a_cool_ORC99",
-                email: "Mordor@yahoo.com",
-                hashedPassword: "THISISApassword!11",
-            });
+            let response = await createUser("Luffy11", "Monkey D. Luffy");
+            const userId = response.body.data.createUser.id;
+            const user = await User.findByPk(userId);
+
+            response = await login("Luffy11", "myPrecious");
+            token = response.body.data.login.token;
+
             for (let i = 0; i < 2; i++) {
                 let newTweet = await Tweet.create({
                     text: "This is a test tweet written by Gollum *_* ",
-                    userId: 1,
+                    userId: userId,
                     mediaURLs: [],
                     state: "O",
                 });
                 if (i === 0) likedTweet = newTweet;
             }
-            return await user.$add("likes", likedTweet);
+            await user!.$add("likes", likedTweet);
         });
 
         it("succeeds in unliking a liked tweet", async () => {
-            // the resolver assumes that the loggedin user is the user with id 1
-            const user: any = await User.findByPk(1);
-            const response = await unlike(1);
+            const response = await unlike(1, token);
             expect(response.body.data).to.include({
                 unlike: true,
             });
         });
-        it("fails to unlikes a non existent tweet", async () => {
+
+        it("fails to unlike a tweet when not authenticated", async () => {
+            const response = await unlike(1);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+            });
+        });
+
+        it("fails to unlike a non existent tweet", async () => {
             // no tweet has an id of 0
-            const response = await unlike(0);
+            const response = await unlike(0, token);
 
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
@@ -774,8 +861,7 @@ describe("user-resolvers", (): void => {
         });
 
         it("fails to unlike a tweet that isn't liked by the user", async () => {
-            const user: any = await User.findByPk(1);
-            const response = await unlike(2);
+            const response = await unlike(2, token);
 
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
@@ -792,23 +878,36 @@ describe("user-resolvers", (): void => {
     });
 
     describe("follow resolver", (): void => {
+        let token: string = "";
         before(async () => {
             await db.sync({ force: true });
-            await createUser("bilbo", "Bilbo Baggins");
+            await createUser("Luffy11", "Monkey D. Luffy");
+
+            const response = await login("Luffy11", "myPrecious");
+            token = response.body.data.login.token;
             await createUserWithBio("gandalf", "Gandalf The Grey");
         });
 
         it("follow an un-followed user", async () => {
-            const response = await follow(2);
+            const response = await follow(2, token);
             expect(response.body.data).to.include({
                 follow: true,
+            });
+        });
+
+        it("fails to follow a user when not authenticated", async () => {
+            const response = await follow(2);
+
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
             });
         });
 
         it("follow a non existent user", async () => {
             // users in database are created starting from id 1
             // no user has the id of 0
-            const response = await follow(0);
+            const response = await follow(0, token);
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
@@ -818,9 +917,8 @@ describe("user-resolvers", (): void => {
         });
 
         it("follow a followed user", async () => {
-            // the resolver assumes that the logged in user is the user with id 1
             // it is assumed that a user can't follow/unfollow himself
-            const response = await follow(2);
+            const response = await follow(2, token);
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
@@ -830,7 +928,7 @@ describe("user-resolvers", (): void => {
         });
 
         it("follow your account", async () => {
-            const response = await follow(1);
+            const response = await follow(1, token);
 
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
@@ -842,39 +940,52 @@ describe("user-resolvers", (): void => {
     });
 
     describe("unfollow resolver", (): void => {
+        let token: string = "";
         before(async () => {
-            let loggedUser: any;
             let toBeFollowed: any;
             await db.sync({ force: true });
-            // create 3 users
-            for (let i = 0; i < 3; i++) {
+            let response = await createUser("Luffy11", "Monkey D. Luffy");
+            const userId = response.body.data.createUser.id;
+            const loggedUser = await User.findByPk(userId);
+
+            response = await login("Luffy11", "myPrecious");
+            token = response.body.data.login.token;
+
+            // create 2 users
+            for (let i = 0; i < 2; i++) {
                 let user = await User.create({
                     name: `testUser ${i + 1}`,
                     userName: `testU${i + 1}`,
                     email: `testU${i + 1}@yahoo.com`,
                     hashedPassword: "12345678910",
+                    birthDate: "1970-01-01",
                 });
-                if (i === 0) loggedUser = user;
-                if (i === 1) toBeFollowed = user;
+                if (i === 0) toBeFollowed = user;
             }
             // make user with id 1 follow user with id 2
-            return await loggedUser.$add("following", toBeFollowed);
+            return await loggedUser!.$add("following", toBeFollowed);
         });
 
         it("succeeds in unfollowing a followed user", async () => {
-            // we know that user 1 follows user 2
-            // it is assumed in the resolver that the current loggedin user is user with id 1
-            const response = await unfollow(2);
+            //  user 1 follows user 2
+            const response = await unfollow(2, token);
             expect(response.body.data).to.include({
                 unfollow: true,
             });
         });
 
+        it("fails to unfollow a user when not authenticated", async () => {
+            const response = await unfollow(2);
+
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+            });
+        });
         it("fails to unfollow a non existent user", async () => {
-            // the resolver assumes that the loggedin user is the user with id 1
             // users in database are created starting from id 1
             // no user has the id of 0
-            const response = await unfollow(0);
+            const response = await unfollow(0, token);
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
@@ -884,9 +995,8 @@ describe("user-resolvers", (): void => {
         });
 
         it("fails to unfollow a user that isn't followed by the  current user", async () => {
-            // the resolver assumes that the loggedin user is the user with id 1
             // user with id 3 is not followed by user with id 1
-            const response = await unfollow(3);
+            const response = await unfollow(3, token);
 
             expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
@@ -895,46 +1005,8 @@ describe("user-resolvers", (): void => {
                 message: "The current user is not following this user",
             });
         });
-
         after(async () => {
-            return await User.destroy({ where: { id: [1, 2, 3] } });
-        });
-    });
-
-    describe("hashtag resolver", () => {
-        it("succeeds in finding hashtag data", async () => {
-            const newHashtag = await Hashtag.create({ word: "$TEST_HASHTAG$" });
-            const response = await hashtag("$TEST_HASHTAG$");
-
-            expect(response.body.data.hashtag).to.include({
-                word: "$TEST_HASHTAG$",
-            });
-            expect(response.body.data.hashtag.tweets).to.include({
-                totalCount: 0,
-            });
-            await newHashtag.destroy();
-        });
-
-        it("fails to get hashtag for empty arguments", async () => {
-            const response = await hashtag("");
-
-            expect(response.body.errors).has.length(1);
-            expect(response.body.errors[0]).to.include({
-                statusCode: 422,
-                message: "Empty query argument!",
-            });
-        });
-
-        it("fails to get a non existent hashtag", async () => {
-            const response = await hashtag(
-                "4$^*^THIS_IS_A_NON_EXISTENT_HASHTAG@_@"
-            );
-
-            expect(response.body.errors).has.length(1);
-            expect(response.body.errors[0]).to.include({
-                statusCode: 404,
-                message: "No hashtag found with this word!",
-            });
+            await db.sync({ force: true });
         });
     });
 

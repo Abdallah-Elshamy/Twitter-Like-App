@@ -4,15 +4,31 @@ import { User, Tweet } from "../../models";
 import UserValidator from "../../validators/user";
 import db from "../../db";
 import { Op } from "sequelize";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
 const PAGE_SIZE = 10;
 
+interface UserInput {
+    userName: string;
+    email: string;
+    password: string;
+    name: string;
+    birthDate: string;
+    imageURL: string;
+    coverImageURL: string;
+    bio: string;
+}
+
 export default {
     Query: {
-        user: async (parent: any, args: any, context: any, info: any) => {
+        user: async (
+            parent: any,
+            args: { id: number },
+            context: any,
+            info: any
+        ) => {
             const { id } = args;
-            const user: any = await User.findByPk(+id);
+            const user = await User.findByPk(id);
             if (user) {
                 return user;
             } else {
@@ -21,7 +37,12 @@ export default {
                 throw error;
             }
         },
-        users: async (parent: any, args: any, context: any, info: any) => {
+        users: async (
+            parent: any,
+            args: { search: string; page: number },
+            context: any,
+            info: any
+        ) => {
             const { search, page } = args;
             const searchConditions = {
                 where: {
@@ -52,37 +73,55 @@ export default {
             parent: any,
             args: { userNameOrEmail: string; password: string }
         ) => {
-            const { userNameOrEmail, password } = args;
+            let { userNameOrEmail, password } = args;
+            if (validator.isEmail(userNameOrEmail)) {
+                userNameOrEmail =
+                    validator.normalizeEmail(userNameOrEmail) ||
+                    userNameOrEmail;
+            }
             const user = await User.findOne({
                 where: {
                     [Op.or]: [
-                        {userName: userNameOrEmail},
-                        {email: userNameOrEmail}
-                    ]
-                }
-            })
-            if(!user) {
-                const error: any = new Error("No user was found with this user name or email!")
-                error.statusCode = 404
-                throw(error)
+                        { userName: userNameOrEmail },
+                        { email: userNameOrEmail },
+                    ],
+                },
+            });
+            if (!user) {
+                const error: any = new Error(
+                    "No user was found with this user name or email!"
+                );
+                error.statusCode = 404;
+                throw error;
             }
-            const isCorrectPassword = await bcrypt.compare(password, user.hashedPassword)
-            if(!isCorrectPassword) {
-                const error: any = new Error("The password you entered is incorrect!")
-                error.statusCode = 401
-                throw(error)
+            const isCorrectPassword = await bcrypt.compare(
+                password,
+                user.hashedPassword
+            );
+            if (!isCorrectPassword) {
+                const error: any = new Error(
+                    "The password you entered is incorrect!"
+                );
+                error.statusCode = 401;
+                throw error;
             }
-            const token = jwt.sign({
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                userName: user.userName,
-                imageURL: user.imageURL,
-                coverImageURL: user.coverImageURL,            
-            }, process.env.TOKEN_SECRET!)
+            const token = jwt.sign(
+                {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    userName: user.userName,
+                    imageURL: user.imageURL,
+                    coverImageURL: user.coverImageURL,
+                    birthDate: user.birthDate,
+                    createdAt: user.createdAt,
+                    updatedAt: user.updatedAt,
+                },
+                process.env.TOKEN_SECRET!
+            );
             return {
-                token
-            }
+                token,
+            };
         },
     },
     Mutation: {
@@ -121,8 +160,18 @@ export default {
             });
             return user;
         },
-        updateUser: async (parent: any, args: any, context: any, info: any) => {
-            const { id, userInput } = args;
+        updateUser: async (
+            parent: any,
+            args: { userInput: UserInput },
+            context: any,
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const toBeUpdatedUser = user as User;
+            const { userInput } = args;
             const validators = UserValidator(userInput);
             if (validators.length > 0) {
                 const error: any = new Error("Validation error!");
@@ -130,25 +179,13 @@ export default {
                 error.validators = validators;
                 throw error;
             }
-            const toBeUpdatedUser: any = await User.findByPk(+id);
-            // check if user exist
-            if (!toBeUpdatedUser) {
-                const error: any = new Error("No user was found with this id!");
-                error.statusCode = 404;
-                throw error;
-            }
-            // assume logged in user is user with id 1
-            // const userId = 1;
-            // if (userId !== toBeUpdatedUser.id) {
-            //     const error: any = new Error("Not authorized");
-            //     error.statusCode = 403;
-            //     throw error;
-            // }
+
             const {
                 userName,
                 email,
                 password,
                 name,
+                birthDate,
                 imageURL,
                 bio,
                 coverImageURL,
@@ -168,7 +205,7 @@ export default {
                 toBeUpdatedUser.userName = userName;
             }
             if (email) {
-                const sanitized = validator.normalizeEmail(email);
+                const sanitized = validator.normalizeEmail(email) as string;
                 const user = await User.findOne({
                     where: { email: sanitized },
                 });
@@ -182,6 +219,9 @@ export default {
             if (password) {
                 const hashedPw = await bcrypt.hash(password, 12);
                 toBeUpdatedUser.hashedPassword = hashedPw;
+            }
+            if (birthDate) {
+                toBeUpdatedUser.birthDate = new Date(birthDate);
             }
             if (name) {
                 toBeUpdatedUser.name = name;
@@ -201,10 +241,17 @@ export default {
 
             return updatedUser;
         },
-        like: async (parent: any, args: any, context: any, info: any) => {
-            // assume that the logged in user has an id of 1
-            const currentUser: any = await User.findByPk(1);
-
+        like: async (
+            parent: any,
+            args: { tweetId: number },
+            context: any,
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const currentUser = user as User;
             const tweet: any = await Tweet.findByPk(args.tweetId);
             if (!tweet) {
                 const error: any = new Error(
@@ -222,7 +269,7 @@ export default {
                 throw error;
             }
 
-            const isLiked = await currentUser.hasLikes(tweet);
+            const isLiked = await currentUser.$has("likes", tweet);
 
             // check if the entered tweet is liked by the current user
             if (isLiked) {
@@ -236,11 +283,18 @@ export default {
 
             return true;
         },
-        unlike: async (parent: any, args: any, context: any, info: any) => {
-            // assume that the loggedin user has an id of 1
-            const currentUser: any = await User.findByPk(1);
-
-            const tweet: any = await Tweet.findByPk(args.tweetId);
+        unlike: async (
+            parent: any,
+            args: { tweetId: number },
+            context: any,
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const currentUser = user as User;
+            const tweet = await Tweet.findByPk(args.tweetId);
             if (!tweet) {
                 const error: any = new Error(
                     "No tweet was found with this id!"
@@ -248,7 +302,7 @@ export default {
                 error.statusCode = 404;
                 throw error;
             }
-            const isLiked = await currentUser.hasLikes(tweet);
+            const isLiked = await currentUser.$has("likes", tweet);
 
             // check if the entered tweet is liked by the current user
             if (!isLiked) {
@@ -266,19 +320,26 @@ export default {
 
             return true;
         },
-        follow: async (parent: any, args: any, context: any, info: any) => {
-            // assume logged in user id is 1
-            const currentUserId: number = 1;
+        follow: async (
+            parent: any,
+            args: { userId: number },
+            context: any,
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const currentUser = user as User;
+
             // check if the user is trying to follow himself
-            if (currentUserId === +args.userId) {
+            if (currentUser.id === +args.userId) {
                 const error: any = new Error(
                     "The userId and the currentUserId are the same!"
                 );
                 error.statusCode = 422;
                 throw error;
             }
-
-            const currentUser: any = await User.findByPk(currentUserId);
 
             // check if the entered user is found in the database
             const toBeFollowed: any = await User.findByPk(args.userId);
@@ -287,7 +348,10 @@ export default {
                 error.statusCode = 404;
                 throw error;
             }
-            const isFollowing = await currentUser.hasFollowing(toBeFollowed);
+            const isFollowing = await currentUser.$has(
+                "following",
+                toBeFollowed
+            );
             // check if the current user is following the entered user
             if (isFollowing) {
                 const error: any = new Error("This user is already followed!");
@@ -302,18 +366,29 @@ export default {
 
             return true;
         },
-        unfollow: async (parent: any, args: any, context: any, info: any) => {
-            // assume logged in user id is 1
-            const currentUser: any = await User.findByPk(1);
+        unfollow: async (
+            parent: any,
+            args: { userId: number },
+            context: any,
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const currentUser = user as User;
 
             // check if the entered user is found in the database
-            const toBeUnfollowed: any = await User.findByPk(args.userId);
+            const toBeUnfollowed = await User.findByPk(args.userId);
             if (!toBeUnfollowed) {
                 const error: any = new Error("No user was found with this id!");
                 error.statusCode = 404;
                 throw error;
             }
-            const isFollowing = await currentUser.hasFollowing(toBeUnfollowed);
+            const isFollowing = await currentUser.$has(
+                "following",
+                toBeUnfollowed
+            );
             // check if the current user is following the entered user
             if (!isFollowing) {
                 const error: any = new Error(
@@ -339,7 +414,7 @@ export default {
         followersCount: async (parent: any) => {
             return await parent.$count("followers");
         },
-        following: async (parent: any, args: any) => {
+        following: async (parent: any, args: { page: number }) => {
             return {
                 totalCount: async () => {
                     return await parent.$count("following");
@@ -354,7 +429,7 @@ export default {
                 },
             };
         },
-        followers: async (parent: any, args: any) => {
+        followers: async (parent: any, args: { page: number }) => {
             return {
                 totalCount: async () => {
                     return await parent.$count("followers");
@@ -369,7 +444,25 @@ export default {
                 },
             };
         },
-        tweets: async (parent: any, args: any) => {
+        isFollowing: async (parent: User, args: any, context: any) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                return false;
+            }
+            const loggedIn = user as User;
+            const isFollowing = await loggedIn.$has("following", parent);
+            return isFollowing;
+        },
+        isFollower: async (parent: User, args: any, context: any) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                return false;
+            }
+            const loggedIn = user as User;
+            const isFollower = await loggedIn.$has("follower", parent);
+            return isFollower;
+        },
+        tweets: async (parent: any, args: { page: number }) => {
             return {
                 totalCount: async () => {
                     return await parent.$count("tweets");
@@ -384,7 +477,7 @@ export default {
                 },
             };
         },
-        likes: async (parent: any, args: any) => {
+        likes: async (parent: any, args: { page: number }) => {
             return {
                 totalCount: async () => {
                     return await parent.$count("likes");

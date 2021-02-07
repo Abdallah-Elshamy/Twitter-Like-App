@@ -5,6 +5,7 @@ interface UserInput {
     email: string;
     password: string;
     name: string;
+    birthDate: string;
     imageURL: string;
     coverImageURL: string;
 }
@@ -16,6 +17,7 @@ const UserValidator = (userInput: UserInput) => {
         password,
         name,
         imageURL,
+        birthDate,
         coverImageURL,
     } = userInput;
     const validators: { message: string; value: string }[] = [];
@@ -26,7 +28,8 @@ const UserValidator = (userInput: UserInput) => {
         password === undefined &&
         name === undefined &&
         imageURL === undefined &&
-        coverImageURL === undefined
+        coverImageURL === undefined &&
+        birthDate === undefined
     ) {
         validators.push({
             message: "Empty update request!",
@@ -95,6 +98,18 @@ const UserValidator = (userInput: UserInput) => {
             value: "password",
         });
     }
+
+    // validate the birth date
+    if (
+        birthDate !== undefined &&
+        (!validator.isDate(birthDate) || !validator.isBefore(birthDate))
+    ) {
+        validators.push({
+            message: "Invalid birth date!",
+            value: "birthDate",
+        });
+    }
+
     // validate imageURL
     if (imageURL !== undefined && !validator.isURL(imageURL)) {
         validators.push({

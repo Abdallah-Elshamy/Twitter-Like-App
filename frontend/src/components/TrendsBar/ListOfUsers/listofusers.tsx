@@ -10,6 +10,7 @@ const ListOfUsers: React.FC<Props> = ({ list }) => {
   else followList = list.map(person => {
     return (
       <PersonItem key={person.username}
+        id={person.id}
         name={person.name}
         username={person.username}
         followed={person.followed}

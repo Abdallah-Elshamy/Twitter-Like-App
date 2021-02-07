@@ -19,10 +19,6 @@
 .person-item-image:hover{
   filter:  contrast(0.9) ;
 }
-.pf--follow-btn{
-  padding: 6px 16px;
-}
-
 .person-item-username {
  color : var(--dark-grey)
 }

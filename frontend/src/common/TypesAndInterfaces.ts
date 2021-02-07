@@ -4,6 +4,7 @@ export interface Trend {
 }
 
 export interface PersonEntity {
+  id: string
   name: string,
   username: string,
   followed: boolean,

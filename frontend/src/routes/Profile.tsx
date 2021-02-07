@@ -6,11 +6,7 @@ import ProfileInfo from "../components/ProfileInfo";
 import Tweet from "../components/Tweet"
 import TrendsBar from '../components/TrendsBar/TrendsBar';
 import '../styles/layout.css'
-
-
 function Profile() {
-
-
   return (
     <Fragment>
       <main className="main-container">

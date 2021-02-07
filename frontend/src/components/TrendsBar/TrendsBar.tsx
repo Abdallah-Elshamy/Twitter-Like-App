@@ -19,11 +19,13 @@ const TrendsBar: React.FC<Props> = () => {
 
   const followRec: PersonEntity[] = [
     {
+      id: "100",
       name: 'Amr',
       username: 'amrhafez',
       followed: false
 
     }, {
+      id: "55",
       name: 'Eslam',
       username: 'eslam_ahmed',
       followed: false,

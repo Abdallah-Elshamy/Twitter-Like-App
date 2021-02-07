@@ -1,0 +1,38 @@
+.pf--follow-btn {
+  color: var(--main-color);
+  border: 1px solid var(--main-color);
+  display: inline-block;
+  
+}
+.pf--follow-btn:hover {
+  background-color: #55abee3b;
+  border: 1px solid var(--main-color);
+}
+.pf--follow-btn:focus {
+  outline: none;
+}
+
+.unfollow{
+  color: var(--super-light);
+  border: 1px solid var(--main-color);
+  background-color: var(--main-color);
+}
+
+.unfollow:hover {
+  background-color: #da4040;
+  border: 1px solid #da4040;
+}
+.unfollow:focus {
+  outline: none;
+}
+
+.unfollowing{
+  display: none;
+}
+.unfollow:hover .unfollowing{
+  display: inline;
+}
+
+.unfollow:hover .following{
+  display: none;
+}

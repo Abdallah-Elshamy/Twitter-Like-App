@@ -2,8 +2,19 @@ import { Tweet, Likes, User } from "../../models";
 import { tweetValidator } from "../../validators";
 import db from "../../db";
 import { Transaction, Op } from "sequelize";
+import { Request } from "express";
 
 const PAGE_SIZE = 10;
+
+interface CustomeError extends Error {
+    statusCode?: number;
+    validators?: { message: string; value: string }[];
+}
+
+interface CustomeRequest extends Request {
+    user?: User;
+    authError?: CustomeError;
+}
 
 const addTweetInDataBase = async (
     text: string,
@@ -12,15 +23,19 @@ const addTweetInDataBase = async (
     userId: number,
     transaction: Transaction,
     repliedToTweet: number | undefined = undefined,
-    threadTweet: number | undefined = undefined
+    threadTweet: number | undefined = undefined,
+    originalTweetId: number | undefined = undefined
 ) => {
-    const validators = tweetValidator({ text, mediaURLs });
-    if (validators.length > 0) {
-        const error: any = new Error("Validation error!");
-        error.statusCode = 422;
-        error.validators = validators;
-        throw error;
+    if (state !== "R") {
+        const validators = tweetValidator({ text, mediaURLs });
+        if (validators.length > 0) {
+            const error: CustomeError = new Error("Validation error!");
+            error.statusCode = 422;
+            error.validators = validators;
+            throw error;
+        }
     }
+
     const tweet = await Tweet.create(
         {
             text,
@@ -32,18 +47,18 @@ const addTweetInDataBase = async (
         },
         { transaction }
     );
-    tweet.originalTweetId = tweet.id;
+    tweet.originalTweetId = originalTweetId ? originalTweetId : tweet.id;
     await tweet.save({ transaction });
     return tweet;
 };
 
 export default {
     Query: {
-        tweet: async (parent: any, args: any, context: any, info: any) => {
+        tweet: async (parent: any, args: { id: number }) => {
             const id = args.id;
             const tweet = await Tweet.findByPk(id);
             if (!tweet) {
-                const error: any = new Error(
+                const error: CustomeError = new Error(
                     "No tweet was found with this id!"
                 );
                 error.statusCode = 404;
@@ -51,7 +66,10 @@ export default {
             }
             return tweet;
         },
-        tweets: async (parent: any, args: any, context: any, info: any) => {
+        tweets: async (
+            parent: any,
+            args: { userId: number; page: number; filter: string }
+        ) => {
             const { userId, page, filter } = args;
             if (
                 !(
@@ -61,7 +79,7 @@ export default {
                     filter === "likes"
                 )
             ) {
-                const error: any = new Error(
+                const error: CustomeError = new Error(
                     "Filter must be null or media or replies&tweets or likes only!"
                 );
                 error.statusCode = 422;
@@ -69,7 +87,9 @@ export default {
             }
             const user = await User.findByPk(userId);
             if (!user) {
-                const error: any = new Error("No user was found with this id!");
+                const error: CustomeError = new Error(
+                    "No user was found with this id!"
+                );
                 error.statusCode = 404;
                 throw error;
             }
@@ -136,23 +156,50 @@ export default {
                 },
             };
         },
+        getFeed: async (
+            parent: any,
+            args: { page: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const loggedIn = user as User;
+
+            const { page } = args;
+
+            const followingUsers = await loggedIn.$get("following", {
+                attributes: ["id"],
+            });
+            const followingUsersIds = followingUsers.map((user) => user.id);
+            const tweets: Tweet[] = await Tweet.findAll({
+                where: { userId: { [Op.in]: followingUsersIds } },
+                offset: ((page || 1) - 1) * PAGE_SIZE,
+                limit: PAGE_SIZE,
+                order: [["createdAt", "DESC"]],
+            });
+
+            return tweets;
+        },
     },
     Mutation: {
         createTweet: async (
             parent: any,
-            args: any,
-            context: any,
-            info: any
+            args: { tweet: { text: string; mediaURLs: string[] } },
+            context: { req: CustomeRequest }
         ) => {
-            //check authentication here first
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
             const { text, mediaURLs } = args.tweet;
-            const userId = 1; //assume the logged in user is with id 1
             const tweet = await db.transaction(async (transaction) => {
                 return await addTweetInDataBase(
                     text,
                     "O",
                     mediaURLs,
-                    1,
+                    user!.id,
                     transaction
                 );
             });
@@ -161,23 +208,28 @@ export default {
 
         createReply: async (
             parent: any,
-            args: any,
-            context: any,
-            info: any
+            args: {
+                tweet: { text: string; mediaURLs: string[] };
+                repliedToTweet: number;
+            },
+            context: { req: CustomeRequest }
         ) => {
-            //check authentication here first
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
             const { text, mediaURLs } = args.tweet;
             const repliedToTweetId = args.repliedToTweet;
             const repliedToTweet = await Tweet.findByPk(repliedToTweetId);
             if (!repliedToTweet) {
-                const error: any = new Error(
+                const error: CustomeError = new Error(
                     "No tweet was found with this id!"
                 );
                 error.statusCode = 404;
                 throw error;
             }
             if (repliedToTweet.state === "R") {
-                const error: any = new Error(
+                const error: CustomeError = new Error(
                     "Can't reply to or like a retweeted tweet!"
                 );
                 error.statusCode = 422;
@@ -188,7 +240,7 @@ export default {
                     text,
                     "C",
                     mediaURLs,
-                    1,
+                    user!.id,
                     transaction,
                     repliedToTweet.id,
                     repliedToTweet.threadTweet ||
@@ -201,20 +253,106 @@ export default {
             return tweet;
         },
 
-        deleteTweet: async (
+        createRetweet: async (
             parent: any,
-            args: any,
-            context: any,
-            info: any
+            args: { originalTweetId: number },
+            context: { req: CustomeRequest }
         ) => {
-            //check authentication and if user owns the tweet
-            const id = args.id;
-            const tweet = await Tweet.findByPk(id);
-            if (!tweet) {
-                const error: any = new Error(
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const originalTweetId = args.originalTweetId;
+            const originalTweet = await Tweet.findByPk(originalTweetId);
+            if (!originalTweet) {
+                const error: CustomeError = new Error(
                     "No tweet was found with this id!"
                 );
                 error.statusCode = 404;
+                throw error;
+            }
+            if (originalTweet.state === "R") {
+                const error: CustomeError = new Error(
+                    "Can't retweet a retweeted tweet!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+            const tweet = await db.transaction(async (transaction) =>
+                addTweetInDataBase(
+                    "",
+                    "R",
+                    [],
+                    user!.id,
+                    transaction,
+                    undefined,
+                    undefined,
+                    originalTweetId
+                )
+            );
+            return tweet;
+        },
+
+        createQuotedRetweet: async (
+            parent: any,
+            args: {
+                originalTweetId: number;
+                tweet: { text: string; mediaURLs: string[] };
+            },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const { originalTweetId, tweet } = args;
+            const originalTweet = await Tweet.findByPk(originalTweetId);
+            if (!originalTweet) {
+                const error: CustomeError = new Error(
+                    "No tweet was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+
+            return await db.transaction(async (transaction) =>
+                addTweetInDataBase(
+                    tweet.text,
+                    "Q",
+                    tweet.mediaURLs,
+                    user!.id,
+                    transaction,
+                    undefined,
+                    undefined,
+                    originalTweetId
+                )
+            );
+        },
+
+        deleteTweet: async (
+            parent: any,
+            args: { id: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const id = args.id;
+            const tweet = await Tweet.findByPk(id);
+            if (!tweet) {
+                const error: CustomeError = new Error(
+                    "No tweet was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+            const userHasTweet = tweet.userId === user!.id;
+            if (!userHasTweet) {
+                const error: CustomeError = new Error(
+                    "You don't own this tweet!"
+                );
+                error.statusCode = 403;
                 throw error;
             }
             await tweet.destroy();
@@ -228,7 +366,7 @@ export default {
         originalTweet: async (parent: Tweet) => {
             return await parent.$get("originalTweet");
         },
-        likes: async (parent: Tweet, args: any) => {
+        likes: async (parent: Tweet, args: { page: number }) => {
             return {
                 users: async () => {
                     return await parent.$get("likes", {
@@ -245,7 +383,7 @@ export default {
         likesCount: async (parent: Tweet) => {
             return await parent.$count("likes");
         },
-        replies: async (parent: Tweet, args: any) => {
+        replies: async (parent: Tweet, args: { page: number }) => {
             return {
                 tweets: async () => {
                     return await parent.$get("replies", {
@@ -265,7 +403,7 @@ export default {
         threadTweet: async (parent: Tweet) => {
             return await parent.$get("thread");
         },
-        hashtags: async (parent: Tweet, args: any) => {
+        hashtags: async (parent: Tweet, args: { page: number }) => {
             return {
                 hashtags: async () => {
                     return await parent.$get("hashtags", {
@@ -281,15 +419,36 @@ export default {
         repliedToTweet: async (parent: Tweet) => {
             return await parent.$get("repliedTo");
         },
-        isLiked: async (parent: Tweet, args: any, context: any) => {
-            //add logged in condition here and return null if no logged in user
+        isLiked: async (
+            parent: Tweet,
+            args: any,
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                return false;
+            }
             const like = await Likes.findOne({
                 where: {
-                    userId: 1, //this will be replaced with real logged in user
+                    userId: user!.id,
                     tweetId: parent.id,
                 },
             });
             return like !== null;
+        },
+        retweetsCount: async (parent: Tweet) => {
+            return await parent.$count("subTweets", {
+                where: {
+                    state: "R",
+                },
+            });
+        },
+        quotedRetweetsCount: async (parent: Tweet) => {
+            return await parent.$count("subTweets", {
+                where: {
+                    state: "Q",
+                },
+            });
         },
     },
 };

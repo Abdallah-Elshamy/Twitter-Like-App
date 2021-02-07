@@ -15,7 +15,7 @@ const tweetValidator = (tweetInput: TweetInput) => {
         })
     ) {
         //when no text in the tweet but it contains media it will pass
-        if(!(text.length < 1 && mediaURLs !== undefined)) {
+        if(!(text.length < 1 && (mediaURLs !== undefined && mediaURLs.length != 0))) {
             validators.push({
                 message: "text length must be between 1 to 280 chars!",
                 value: "text",

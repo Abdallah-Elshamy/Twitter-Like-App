@@ -1,13 +1,10 @@
 import React from 'react';
 import { TweetButton } from '../../sideBar/tweetButton/tweetButton';
 import logo from "./../../../routes/Twitter-Logo.png" ; 
-import {
-    Link,
-  } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export const LandingPage : React.FC  = () =>  (
-
-         <div className = " grid grid-cols-2">
+        <div className = " grid grid-cols-2">
 
      <div>
           <img src = "https://abs.twimg.com/sticky/illustrations/lohp_en_1302x955.png" className =" max-w-3xl min-h-screen" alt ="landing page"/>
@@ -25,7 +22,7 @@ export const LandingPage : React.FC  = () =>  (
                         <p className = "ml-16 mt-2 text-sm text-blue-400">
                     
             <Link to ="/forget_password">
-            <a href="#" target="_blank" className="a_login_form m-4"> Forget password?  </a>
+            <a className="a_login_form m-4"> Forget password?  </a>
             </Link>
                            </p>  
                      </div>

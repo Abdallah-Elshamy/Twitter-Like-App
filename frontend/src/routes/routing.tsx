@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-    BrowserRouter as Router,
     Switch,
     Route
   } from "react-router-dom";
@@ -55,7 +54,7 @@ export const Routing: React.FC <Props> = () =>  (
         <Login />
       </Route>
 
-      <Route path="/">
+      <Route path="/" exact >
         <Profile />
       </Route>
 

@@ -5,54 +5,62 @@ import React, { Component } from 'react';
 export class FlootProfile extends React.Component {
 
 toggleContainer =  React.createRef<HTMLDivElement>();
+
 state = {
-        isOpen: false,
+        isOpen: true,
     };
 
   constructor(props :any) {
     super(props);
     this.state = { isOpen: false };
-    // this.toggleContainer =  React.createRef();
+    this.toggleContainer =  React.createRef();
 
-    // this.onClickHandler = this.onClickHandler.bind(this);
-    // this.onClickOutsideHandler = this.onClickOutsideHandler.bind(this);
+    this.onClickHandler = this.onClickHandler.bind(this);
+    this.onClickOutsideHandler = this.onClickOutsideHandler.bind(this);
   }
   
-  onClickHandler  = () => {
+  onClickHandler  = (e:any) => {
       this.setState(state => {
-        return {
-          isOpen: !this.state.isOpen,
-        };
+        if (this.state.isOpen){
+          return {
+            isOpen: false
+          };
+        }
+        else {
+          return {
+            isOpen: true
+          };
+        }
+
       });
     };
 
-    // componentDidMount() {
-    //     document.addEventListener("mousedown", this.onClickOutsideHandler);
-    // }
-    // componentWillUnmount() {
-    //   document.removeEventListener("mousedown", this.onClickOutsideHandler);
-    // }
+    componentDidMount() {
+        document.addEventListener("mousedown", this.onClickOutsideHandler);
+    }
+    componentWillUnmount() {
+      document.removeEventListener("mousedown", this.onClickOutsideHandler);
+    }
 
 
-    // onClickOutsideHandler(event:any) {
-    //   if (this.toggleContainer.current ) {
-    //     this.setState({
-    //       isOpen: false,
-    //     });
-    //   }
-    // };
-  
     // onClickOutsideHandler(event : any ) {
     //   if (this.state.isOpen && !this.toggleContainer.current.contains(event.target)) {
     //     this.setState({ isOpen: false });
     //   }
     // }
   
+    onClickOutsideHandler(event : any ) {
+      if (this.state.isOpen && !this.toggleContainer.current) {
+        this.setState({ isOpen: false });
+      }
+    }
+
+
     render() {
       return (
 
-        // <div className="px-40 mt-24 flex-initial "  ref={this.toggleContainer}>
-        <div className=" mt-32 flex-initial " >
+        <div className="mt-32 flex-initial"  ref={this.toggleContainer}>
+        {/* <div className=" mt-32 flex-initial " > */}
          {this.state.isOpen && (
           <ul  className= "px-4">
           <a href="#" className=" mt-1 w-52 text-center block px-4 py-2 text-sm text-gray-700  hover:bg-gray-100 hover:text-gray-900  hover:rounded-full rounded-full" role="menuitem">My Account</a>

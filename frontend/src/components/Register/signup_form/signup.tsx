@@ -73,12 +73,9 @@ export function SignUpForm () {
   const [birthDate , setBirthDate ] = useState (' ')
 
 
-
-
   const [createUser ,  { error, data }] = useMutation<{createUser :User } ,{ userInput  : New_User} >(ADD_USER,{
     variables: { userInput : { userName , email , password , name , birthDate  } }
   });
-
 
 return(
   <div>
@@ -188,7 +185,7 @@ return(
       <div className ="pl-24" >
           <b>
           <Link to ="/login">
-            <a className="a_login_form mt-12"> Aready have account ? </a>
+            <a className="a_login_form mt-12"> Aready have account? </a>
             </Link >
             </b>
       </div>

@@ -6,6 +6,8 @@ import Tweet from "./Tweet";
 import {Tweets} from "./TweetQuery";
 import { Interface } from "readline";
 import {TweetData} from './Tweet'
+
+
 // interface TweetData {
 //   user :{
 //     imageURL:string
@@ -19,22 +21,31 @@ import {TweetData} from './Tweet'
 //   createdAt:number
 //   isLiked:boolean
 // }
-// interface Tweets  {
-//     totalCount:number
-//     tweets :[]
-//   }
+export interface Tweets  {
+    filter: string
+  }
 
+// filter (replies&tweets / likes /media )
+// 
 
-function TweetList (){
-    const {loading, error, data} = useQuery(Tweets); 
-    console.log(data) 
+const TweetList : React.FC <Tweets> = (props) =>{
+    console.log (props.filter)
+    const {loading, error, data} = useQuery(Tweets, 
+         {variables:{
+            userId:5, 
+            filter:props.filter} 
+         } ); 
+    
     if (loading) return <p>'Loading .. '</p> 
     if (error) return <p>`Error! ${error.message}`</p> 
     
     return (
+        
         <Fragment>
+                {console.log(data.tweets.tweets) }
+                {
                 
-                { data.tweets.tweets.map((tweet:TweetData) => {
+                data.tweets.tweets.map((tweet:TweetData) => {
                   console.log (tweet)
                 return <Tweet text={tweet.text}
                 repliesCount={tweet.repliesCount}

@@ -8,6 +8,9 @@ import '../styles/layout.css'
 import {  useQuery } from '@apollo/client';
 import {LoggedUser} from '../Userqery'; 
 import TweetList from '../components/TweetList'
+// import Tweets from "../components/TweetList"
+
+
 
 function Profile() {
   const {loading,error,data} = useQuery(LoggedUser); 
@@ -36,7 +39,8 @@ function Profile() {
             </ul>
           </nav>
           <div className="tweets">
-              <TweetList/>
+            
+              <TweetList filter=""/>
             
           </div>
           </article>

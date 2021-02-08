@@ -3,8 +3,9 @@ import {  gql} from '@apollo/client';
 
 
 export const Tweets = gql `
-query tweets  {
-    tweets (userId:1) { 
+
+query tweets ($userId:ID! $filter:String){
+  tweets(userId: $userId  filter: $filter) { 
       totalCount
       tweets{
         user {

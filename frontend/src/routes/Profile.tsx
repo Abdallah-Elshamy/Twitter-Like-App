@@ -9,7 +9,7 @@ import {  useQuery } from '@apollo/client';
 import {LoggedUser} from '../Userqery'; 
 import TweetList from '../components/TweetList'
 // import Tweets from "../components/TweetList"
-
+import {Switch, Link, Route} from "react-router-dom"
 
 
 function Profile() {
@@ -25,22 +25,52 @@ function Profile() {
           <nav >
             <ul className="pf--nav-ul active">
               <li>
-                <a href="/">Tweets</a>
+                <Link to="/">Tweets</Link>
               </li>
               <li>
-                <a href="/">Tweets & replies</a>
+                <Link to="/replies">Tweets & replies</Link>
               </li>
               <li>
-                <a href="/">Media</a>
+                <Link to="/media">Media</Link>
               </li>
               <li>
-                <a href="/">Likes</a>
+                <Link to="/likes">Likes</Link>
               </li>
             </ul>
           </nav>
           <div className="tweets">
-            
-              <TweetList filter=""/>
+            <Switch>
+            <Route
+              exact
+              path='/'
+              render={ ()=> (
+                <TweetList filter={``}/>
+              )}
+            />
+            <Route
+              exact
+              path='/replies'
+              render={() => (
+                <TweetList  filter={`replies&tweets`} />
+              )}
+            />
+            <Route
+              exact
+              path='/media'
+              render={() => (
+                <TweetList  filter={`media`} />
+              )}
+            />
+            <Route
+              exact
+              path='/likes'
+              render={() => (
+                <TweetList filter={`likes`} />
+              )}
+            />
+            </Switch>
+
+  
             
           </div>
           </article>

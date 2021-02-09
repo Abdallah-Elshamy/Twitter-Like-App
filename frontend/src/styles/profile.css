@@ -61,16 +61,30 @@
   outline: none;
 }
 .pf--nav-ul {
+  list-style: none;
   display: flex;
   justify-content: center;
   height: 55px;
   color: var(--dark-grey);
   border-bottom: solid 0.5px var(--extra-light);
 }
-.pf--nav-ul li {
+.pf--nav-link {
   flex-grow: 1;
-  margin: auto;
+  margin-left: auto;
+  margin-right: auto;
   text-align: center;
   cursor: pointer;
   transition: all 0.2 ease-in-out;
+}
+.pf--nav-link li {
+  margin-top: 0.8rem;
+}
+.pf--nav-link:hover {
+  /* transform: 0.2; */
+  background-color: #55abee3b;
+  border-bottom: 2px var(--main-color);
+}
+.active {
+  background-color: #55abee3b;
+  border-bottom: 2px solid var(--main-color);
 }

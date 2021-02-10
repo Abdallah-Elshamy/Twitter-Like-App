@@ -12,23 +12,28 @@ import {Logo} from "./../../logo/logo";
 import { parseJwt } from '../../../common/decode';
 import { FormInput } from '../formInput/formInput';
 import { LOGIN } from '../../../common/queries/login_query';
+import { Logout } from '../logout/logout';
 
-const token = "LOGOUT"
 
 export function Login()  {
     const [email, setEmail] = useState(' ');
     const [password, setPassword] = useState(' ');
     const routeHistory = useHistory();
 
-    const { data ,loading ,error } = useQuery (LOGIN , {
+    const { data ,loading ,error } = useQuery(LOGIN , {
         variables: { userNameOrEmail: email , password :password },
       });
- 
-      function submit(){
-        if (!loading && !error && data ){
+
+    const navigate = (route: string) => routeHistory.push(route)
+
+    function submit(){
+
+     if (!loading && !error && data ){
             localStorage.setItem('token', data.login.token );
-          }
-         
+            navigate('/')
+            console.log (parseJwt(localStorage.getItem('token')));
+          
+  
     const httpLink = createHttpLink({
         uri: 'http://localhost:8000/qraphql',
       });
@@ -39,29 +44,23 @@ export function Login()  {
             ...headers,
             authorization: token ? `Bearer ${token}` : " ",
           } 
-    
         }
     
       });
       
-      const client = new ApolloClient({
+       new ApolloClient({
         link: authLink.concat(httpLink),
         cache: new InMemoryCache()
       });
-    const navigate = (route: string) => routeHistory.push(route)
-    if ( data && !loading && !error  && token !== "LOGOUT"){
-        console.log (parseJwt(token));
-        navigate('/')
     }
-    if (error ){
+     if (error ){
         alert ("you have an error" + error ) 
+    } 
+
+    if (localStorage.getItem('token') === "LOGOUT"){
+      console.log ( "LOGOUT")
     }
       }
-
-  if (token === "LOGOUT"){
-    console.log ( "LOGOUT")
-  }
-
 
 return(
 <div>
@@ -88,7 +87,7 @@ return(
     <TweetButton name = "Login" className = "w-80 ml-4" onClick={() =>  email && password &&  submit()}/>
 
 
-    <div className =" mt-3" >
+    <div className ="mt-3" >
             <Link to ="/forget_password" className="a_login_form m-8">
              Forget password?
             </Link>
@@ -96,14 +95,13 @@ return(
             <Link to ="/signUp" className="a_login_form">
              Sign up for Twitter
             </Link>
-
-            <TweetButton name = "Logout" className ="w-80"
-            onClick={() => localStorage.setItem('token',"LOGOUT")}/>
-       
     </div>
+
+<Logout />
 
    </div>
 </div>
   )
 }
 
+// && document.cookie = 'signedin=false'

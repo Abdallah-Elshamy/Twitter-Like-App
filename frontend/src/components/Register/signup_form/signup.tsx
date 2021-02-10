@@ -20,8 +20,8 @@ export function SignUpForm () {
   const [birthDate , setBirthDate ] = useState (' ')
 
 
-  const [createUser ,  { error, data }] = useMutation<{createUser :User } ,{ userInput  : New_User} >(ADD_USER,{
-    variables: { userInput : { userName , email , password , name , birthDate  } }
+  const [createUser , { error, data }] = useMutation<{createUser :User} ,{ userInput  : New_User} >(ADD_USER,{
+    variables: { userInput : { userName , email , password , name , birthDate } }
   });
 
 return(
@@ -31,13 +31,12 @@ return(
 <div className = "register-container">
   
 <strong className ="text-4xl font-serif mt-4 -ml-8"> Create your account </strong>
-      {error ? <p>Oh no! {error.message}</p> : null}
+      {error ? <p> Oh no! {error.message}</p> : null}
       {data && data.createUser ? <p></p> : null}
       
 
      <form>
         <FormInput 
-                   
                    type="email"
                    name="email"
                    onChange={($e: FormEvent<HTMLInputElement>) => setEmail($e.currentTarget.value)}

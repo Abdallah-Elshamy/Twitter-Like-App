@@ -1,4 +1,5 @@
 import React from 'react';
+import { Logout } from '../../Register/logout/logout';
 
 
 
@@ -63,12 +64,10 @@ state = {
         {/* <div className=" mt-32 flex-initial " > */}
          {this.state.isOpen && (
           <ul  className= "px-4">
-          <a href="#" className=" mt-1 w-52 text-center block px-4 py-2 text-sm text-gray-700  hover:bg-gray-100 hover:text-gray-900  hover:rounded-full rounded-full" role="menuitem">My Account</a>
-        <form method="" action="#">
-         <button type="submit"  className=" block  w-52 text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none  hover:rounded-full rounded-full" role="menuitem">
-         Sign out
-       </button>
-      </form>
+          <a href="/" className=" mt-1 w-52 text-center block px-4 py-2 text-sm text-gray-700  hover:bg-gray-100 hover:text-gray-900  hover:rounded-full rounded-full" role="menuitem">My Account</a>
+
+<Logout />
+
           </ul>
         )}
 

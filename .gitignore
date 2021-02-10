@@ -1,0 +1,5 @@
+debug.log
+frontend/src/components/Register/debug.log
+frontend/src/components/Register/logout/debug.log
+frontend/src/components/Register/signup_form/debug.log
+frontend/src/components/sideBar/tweetButton/debug.log

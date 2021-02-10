@@ -1,6 +1,6 @@
-import { useState} from 'react';
+import { FormEvent, useState} from 'react';
 import { useQuery} from '@apollo/client'
-import { ApolloClient, createHttpLink, InMemoryCache , gql } from '@apollo/client';
+import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import {Link ,useHistory} from "react-router-dom"
 
@@ -10,17 +10,11 @@ import "./../Register.css";
 import { TweetButton } from "./../../sideBar/tweetButton/tweetButton";
 import {Logo} from "./../../logo/logo";
 import { parseJwt } from '../../../common/decode';
-
-
-const LOGIN = gql`
-query login($userNameOrEmail: String!, $password: String!) {
-    login(userNameOrEmail: $userNameOrEmail, password: $password)  {
-      token
-    }
-  }
-`
+import { FormInput } from '../formInput/formInput';
+import { LOGIN } from '../../../common/queries/login_query';
 
 const token = "LOGOUT"
+
 export function Login()  {
     const [email, setEmail] = useState(' ');
     const [password, setPassword] = useState(' ');
@@ -55,7 +49,7 @@ export function Login()  {
         cache: new InMemoryCache()
       });
     const navigate = (route: string) => routeHistory.push(route)
-    if ( data && !loading && !error  && token != "LOGOUT"){
+    if ( data && !loading && !error  && token !== "LOGOUT"){
         console.log (parseJwt(token));
         navigate('/')
     }
@@ -64,7 +58,7 @@ export function Login()  {
     }
       }
 
-  if (token == "LOGOUT"){
+  if (token === "LOGOUT"){
     console.log ( "LOGOUT")
   }
 
@@ -75,35 +69,21 @@ return(
 <div className = "register-container mt-4">
 <strong className ="text-4xl font-serif"> Log in to Twitter </strong>
 
- <div className="flex -mx-3 mt-2">
-<div className="w-full px-3">
-    <label className="text-xs font-semibold px-1"></label>
-    <div className="flex">
-        <input  
+<FormInput 
         type="name"
         name = "email"
         className="w-full h-16 -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300" 
         placeholder="Email or userName"
-        onChange={e => setEmail(e.target.value)}
+        onChange={($e: FormEvent<HTMLInputElement>) => setEmail($e.currentTarget.value)}
         />
-    </div>
-</div>
-</div>
 
-<div className="flex -mx-3 mt-2">
-<div className="w-full px-3">
-    <label className="text-xs font-semibold px-1"></label>
-    <div className="flex">
-        <input  
+<FormInput 
         type="password"
         name = "password"
-        className="w-full h-16 -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300" 
         placeholder="Password"
-         onChange={e => setPassword(e.target.value)}
-        />
-    </div>
-</div>
-</div> 
+        className="w-full h-16 -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300" 
+         onChange={($e: FormEvent<HTMLInputElement>) => setPassword($e.currentTarget.value)}
+         />
 
     <TweetButton name = "Login" className = "w-80 ml-4" onClick={() =>  email && password &&  submit()}/>
 
@@ -118,7 +98,7 @@ return(
             </Link>
 
             <TweetButton name = "Logout" className ="w-80"
-            onClick={() => localStorage.setItem('token',"LOGOUT" )}/>
+            onClick={() => localStorage.setItem('token',"LOGOUT")}/>
        
     </div>
 

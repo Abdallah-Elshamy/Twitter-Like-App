@@ -27,7 +27,7 @@ export const Routing: React.FC <Props> = () =>  (
 
 
       <Route path="/forget_password">
-        <Forget_password/>
+        <ForgetPassword/>
       </Route>
 
 
@@ -90,7 +90,7 @@ function Setting() {
     return <h2>Notifications</h2>;
   }
   
-  function Forget_password() {
+  function ForgetPassword() {
     return <h2>forget_password</h2>;
   }
   

@@ -1,7 +1,4 @@
 import React from 'react';
-
-import './App.css';
-import './routes/Profile'
 import { ApolloClient, InMemoryCache, ApolloProvider , createHttpLink } from '@apollo/client';
 import { BrowserRouter as Router} from "react-router-dom";
 
@@ -19,16 +16,11 @@ const client = new ApolloClient ({
   link,
 });
 
-
-
-
-
 function App() {
   return (
     <ApolloProvider client={client}>
-     <Router >
+     <Router>
         <Routing />
-        
      </Router>
    </ApolloProvider>
   );

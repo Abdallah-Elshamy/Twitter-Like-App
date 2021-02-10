@@ -1,7 +1,9 @@
 import React from 'react';
-import { TweetButton } from '../../sideBar/tweetButton/tweetButton';
-import logo from "./../../../routes/Twitter-Logo.png" ; 
 import { Link } from "react-router-dom";
+
+import { TweetButton } from '../../sideBar/tweetButton/tweetButton';
+
+import logo from "./../../../routes/Twitter-Logo.png" ; 
 
 export const LandingPage : React.FC  = () =>  (
         <div className = " grid grid-cols-2">
@@ -13,7 +15,7 @@ export const LandingPage : React.FC  = () =>  (
      <div>
          <div className = "flex">
              <input  type="Email" className="h-16 max-w-3xl pr-3 py-2 pl-2 rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300 mt-6 ml-12" 
-                    placeholder="   Email"/>  
+                    placeholder="Email"/>  
                     
                      <div>
                         <input type=" password" className="h-16 max-w-3xl pr-3 py-2 pl-2 rounded-lg border-2 border-gray-200 outline-none
@@ -21,8 +23,8 @@ export const LandingPage : React.FC  = () =>  (
                         placeholder="   Password"/>  
                         <p className = "ml-16 mt-2 text-sm text-blue-400">
                     
-            <Link to ="/forget_password">
-            <a className="a_login_form m-4"> Forget password?  </a>
+            <Link to ="/forget_password" className="a_login_form m-4">
+             Forget password?
             </Link>
                            </p>  
                      </div>

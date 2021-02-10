@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { iterateObserversSafely } from "@apollo/client/utilities"
+
 import './sideBarItem'
 
 interface SideBar_Item {

@@ -11,15 +11,16 @@ import { parseJwt } from './common/utils/jwtDecoder';
 import { BrowserRouter as Router } from "react-router-dom";
 import { Routing } from './routes/routing';
 
-
-/* const authLink = setContext((_, { headers }) => {
+const token = localStorage.getItem('token')
+ const authLink = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
       authorization: token ? `Bearer ${token}` : ''
     }
   };
-}); */
+}); 
+
 const link = createHttpLink({
   uri: 'http://localhost:8000/graphql',
   credentials: 'same-origin'
@@ -32,7 +33,7 @@ const client = new ApolloClient({
   link,
 });
 
-//export const decodedToken = parseJwt(token)
+export const decodedToken = parseJwt(token)
 
 function App() {
   return (

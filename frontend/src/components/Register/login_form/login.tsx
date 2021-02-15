@@ -11,6 +11,7 @@ import { TweetButton } from "./../../sideBar/tweetButton/tweetButton";
 import {Logo} from "./../../logo/logo";
 import { FormInput } from '../formInput/formInput';
 import { LOGIN } from '../../../common/queries/login_query';
+import { cache } from '../../../common/cache';
 
 
 export function Login()  {
@@ -47,9 +48,9 @@ export function Login()  {
     
       });
       
-       new ApolloClient({
+      const client = new ApolloClient({
         link: authLink.concat(httpLink),
-        cache: new InMemoryCache()
+        cache: cache
       });
     }
      if (error ){

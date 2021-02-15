@@ -6,13 +6,11 @@ import SearchBar from '../components/TrendsBar/SearchBar/SearchBar';
 import CurrentTrends from '../components/TrendsBar/CurrentTrends/CurrentTrends';
 import { Route, Switch } from 'react-router-dom';
 import SearchResult from '../components/SerachResult';
-
-
 const Explore: React.FC = () => {
 
   return (
     <Fragment>
-      <main className="main-container">
+      <main className="main-container ">
         <aside className="sb-left"><SideBar /></aside>
         <article className="wall">
           <div className="top-bar p-4" >
@@ -29,6 +27,7 @@ const Explore: React.FC = () => {
             </Route>
 
             <Route path="/explore" exact>
+
               <CurrentTrends />
             </Route>
           </Switch>
@@ -37,6 +36,8 @@ const Explore: React.FC = () => {
         <aside className="sb-right"><TrendsBar /></aside>
 
       </main>
+
+
     </Fragment >
   );
 }

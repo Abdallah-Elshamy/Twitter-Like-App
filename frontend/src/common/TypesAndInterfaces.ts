@@ -11,6 +11,7 @@ export interface PersonEntity {
   numberOfFollowers?: Number,
   imageURI?: string,
   bio?: string
+  isFollowing?: Boolean
 }
 
 export type searchBarValue = {

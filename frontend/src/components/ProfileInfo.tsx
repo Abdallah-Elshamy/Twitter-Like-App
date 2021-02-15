@@ -27,7 +27,7 @@ function ProfileInfo() {
 
         <div className="pf--info">
           <div className="pf--flw-btn-div p-4 ">
-            <FollowButton id="1" py="py-1.5" /></div>
+            <FollowButton id="1" py="py-1.5" following={false} /></div>
           <div className="mx-2 ">
             <p className="font-extrabold text-lg">Toka Abdulhamied</p>
             <p className="p--light-color block">@tokaabdulhamied</p>

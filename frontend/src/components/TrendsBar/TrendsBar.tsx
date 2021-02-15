@@ -31,6 +31,14 @@ const TrendsBar: React.FC<Props> = () => {
       followed: false,
       imageURI: "https://pbs.twimg.com/profile_images/1290039411317575682/M-Wa8fmE_400x400.jpg"
 
+    }
+    , {
+      id: "55",
+      name: 'John Doe',
+      username: 'jo_doe',
+      followed: false,
+      imageURI: "https://pbs.twimg.com/profile_images/1333063820311293952/wb0ciEAn_400x400.jpg"
+
     },
 
   ]
@@ -40,7 +48,7 @@ const TrendsBar: React.FC<Props> = () => {
 
   return (
 
-    <div className="trendsbar px-4 ">
+    <div className="trendsbar px-4 hidden lg:block ">
       <div className="mt-4 ">{searchbar}</div>
       <SideList title="Who to follow " redirect="/" >
         <ListOfUsers list={followRec} />

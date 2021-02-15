@@ -14,10 +14,9 @@ const SearchResult: React.FC = () => {
 
   //static behaviour
   /*
-  const location = useLocation()
-  const searchQ = location.search.substr(6)
-*/
-
+    const location = useLocation()
+    const searchQ = location.search.substr(6)
+  */
 
   //dynamic behaviour
   const search = useQuery(Get_SearchBar_Value)

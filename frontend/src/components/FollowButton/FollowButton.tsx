@@ -1,29 +1,49 @@
+import { useMutation, useQuery } from '@apollo/client';
 import React, { useState } from 'react';
+import { FOLLOW, UNFOLLOW } from '../../common/queries/Follow';
+import { isFollowing } from '../../common/queries/isFollowing';
 import './FollowButton.css'
 
 type Props = {
   id: string
   py?: string
+  following?: Boolean
 }
-const FollowButton: React.FC<Props> = ({ id, py = "py-0.5" }) => {
-  const [followed, setFollowed] = useState<boolean>(false)
-  let btn
+const FollowButton: React.FC<Props> = ({ id, py = "py-0.5", following = false }) => {
+  const [followingState, setFollowing] = useState(following)
+  const [follow, resFlw] = useMutation(FOLLOW)
+  const [unfollow, resUnflw] = useMutation(UNFOLLOW)
+
+
+
+
   const handleFollow = () => {
-    setFollowed((f) => !f)
+    if (!resFlw.loading && !resUnflw.loading) {
+
+      follow({ variables: { id: id } }).then(() => setFollowing(() => (true)))
+    }
+
   }
   const handleUnFollow = () => {
-    setFollowed((f) => !f)
+    if (!resFlw.loading && !resUnflw.loading) {
+      unfollow({ variables: { id: id } }).then(() => setFollowing(() => (false)))
+    }
+
   }
-
-
-
 
 
   return (
-    followed ?
-      < button className={"pf--follow-btn unfollow rounded-full px-2 font-semibold  text-xm w-min  " + py} onClick={handleUnFollow} >
+    followingState ?
+      < button
+        className={"pf--follow-btn unfollow rounded-full px-2 font-semibold  text-xm w-min  " + py}
+        onClick={handleUnFollow}
+
+      >
         <span className="following">Following</span>  <span className="unfollowing">Unfollow</span>
-      </button > : < button className={"pf--follow-btn   rounded-full px-2 font-semibold  text-xm w-min  " + py} onClick={handleFollow} >
+      </button > :
+      < button className={"pf--follow-btn   rounded-full px-2 font-semibold  text-xm w-min  " + py}
+        onClick={handleFollow}
+      >
         Follow
   </button >
 

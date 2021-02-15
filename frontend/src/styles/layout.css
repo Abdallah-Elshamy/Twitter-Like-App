@@ -5,6 +5,11 @@
   max-width: 1376px;
   margin: auto;
 }
+@media (max-width: 1024px) {
+  .main-container {
+    grid-template-columns: 0.7fr 1.4fr 
+    } 
+}
 
 .sb-left {
   position: fixed;
@@ -15,6 +20,7 @@
   border-right: solid 0.5px var(--extra-light);
   border-left: solid 0.5px var(--extra-light);
   height: auto;
+  min-width: 400px;
   /* display: flex;
   flex-direction: column; */
 }
@@ -35,7 +41,7 @@
   background-color: #fff;
   display: flex;
   flex-direction: row;
-  z-index: 1000;
+  z-index: 5;
   border-bottom: 1px solid var(--light-grey)
 }
 

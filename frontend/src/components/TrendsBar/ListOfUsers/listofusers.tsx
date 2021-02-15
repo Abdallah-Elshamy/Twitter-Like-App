@@ -15,7 +15,8 @@ const ListOfUsers: React.FC<Props> = ({ list }) => {
         username={person.username}
         followed={person.followed}
         imageURI={person.imageURI}
-
+        isFollowing={person.isFollowing}
+        bio={person.bio}
       />
     )
   })

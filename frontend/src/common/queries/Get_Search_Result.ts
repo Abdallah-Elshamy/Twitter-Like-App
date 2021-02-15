@@ -7,10 +7,12 @@ query search (
 ) {
   users(search:$name,page:$page) {
     users{
+      id
+      isFollowing
       name 
        username:userName 
        imageURI: imageURL 
-      
+      bio
     }
   }
 }

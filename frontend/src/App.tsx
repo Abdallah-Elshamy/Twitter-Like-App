@@ -11,7 +11,7 @@ import { parseJwt } from './common/utils/jwtDecoder';
 import { BrowserRouter as Router } from "react-router-dom";
 import { Routing } from './routes/routing';
 
-const token = localStorage.getItem('token')
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6IkVzbGFtIDEiLCJlbWFpbCI6ImVzbGFtQGhvdG1haWwuY29tIiwidXNlck5hbWUiOiJlc2xhbSIsImltYWdlVVJMIjpudWxsLCJjb3ZlckltYWdlVVJMIjpudWxsLCJiaXJ0aERhdGUiOiIxOTkxLTAyLTIyIiwiY3JlYXRlZEF0IjoiMjAyMS0wMi0wN1QwMTozNjo1MS40MzhaIiwidXBkYXRlZEF0IjoiMjAyMS0wMi0wN1QwMTozNjo1MS40MzhaIiwiaWF0IjoxNjEyNjYzMzAxfQ.vmiFfYjZOSQbfJigAsnUMff_bFKLV_NBj3B0iyuZ_aw"
  const authLink = setContext((_, { headers }) => {
   return {
     headers: {

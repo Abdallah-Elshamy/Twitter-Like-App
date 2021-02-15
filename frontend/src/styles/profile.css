@@ -5,8 +5,9 @@
   position: relative;
 }
 .pf--bg {
-  max-height: 205px;
-  background: var(--dark-grey);
+  display: block;
+  max-height: 205px; /*max-hight*/
+  background: #192b38;
   position: relative;
   z-index: 0;
 }
@@ -15,16 +16,15 @@
   width: 100%;
   object-fit: contain;
 }
-
 .pf--avatar {
   position: absolute;
-  top: 32%;
+  top: 28%;
   left: 2%;
   z-index: 1;
   max-height: 23%;
   max-width: 23%;
 }
-.pf--avatar img {
+.pf--avatar-img {
   width: 100%;
   height: 100%;
   border-radius: 50%;
@@ -47,25 +47,37 @@
 }
 
 .pf--nav-ul {
+  list-style: none;
   display: flex;
   justify-content: center;
   height: 55px;
   color: var(--dark-grey);
   border-bottom: solid 0.5px var(--extra-light);
 }
-.pf--nav-ul li {
-  margin: auto;
-  padding: 20px;
+.pf--nav-link {
+  flex-grow: 1;
+  margin-left: auto;
+  margin-right: auto;
   text-align: center;
   cursor: pointer;
   transition: all 0.2 ease-in-out;
 }
 
-.pf--flw-btn-div{
+.pf--flw-btn-div {
   width: 100%;
   display: flex;
   flex-flow: row-reverse;
   align-items: center;
-
-
+}
+.pf--nav-link li {
+  margin-top: 0.8rem;
+}
+.pf--nav-link:hover {
+  /* transform: 0.2; */
+  background-color: #55abee3b;
+  border-bottom: 2px var(--main-color);
+}
+.active {
+  background-color: #55abee3b;
+  border-bottom: 2px solid var(--main-color);
 }

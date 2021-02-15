@@ -5,7 +5,7 @@ import logo from "./../../routes/Twitter-Logo.png" ;
 
 export const Logo: React.FC = () =>  (
 
-<div className=" register-container login-form">
+<div className=" register-container ">
   <img src={ logo } alt = " Twitter-Logo " className="h-8 w-16 mt-4"/>
 </div>
 

@@ -1,18 +1,29 @@
 import React from 'react'
-import {Link} from "react-router-dom";
-
+import {Link ,useHistory} from "react-router-dom";
 import '../../App.css';
 
 import { SideBarItem } from './sideBarItem/sideBarItem'
 import { TweetButton } from './tweetButton/tweetButton'
 import { FlootProfile } from './flootProfile/flootProfile'
+import { parseJwt } from '../../common/decode';
 
+export function SideBar () {
+  var profile ;
+  const routeHistory = useHistory();
+     const navigate = (route: string) => routeHistory.push(route)
 
+  if (localStorage.getItem('token') !== "LOGOUT"){
+    profile = parseJwt(localStorage.getItem('token'))
+  }
+  else {
+navigate('/error')
+  }
 
-export const SideBar: React.FC = () =>  (
-
+return (
   <div >
     
+
+
     <Link to="/">
     <SideBarItem  item_name ='     '  icon_name = "fab fa-twitter"/>
     </Link>
@@ -45,9 +56,18 @@ export const SideBar: React.FC = () =>  (
     <TweetButton name ="Tweet" className = "w-56"/>
     < FlootProfile/> 
 
+    <p>{profile.name}  </p>
+    <p>{profile.userName}  </p>
+    <p>{profile.email}  </p>
+
+
 </div>
 
 )
+}
+
+  
+
 
 
 

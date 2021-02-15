@@ -3,28 +3,29 @@ import {
     Switch,
     Route
   } from "react-router-dom";
+import { NotFoundPage } from '../components/notFound/notFound';
 import { LandingPage } from '../components/Register/landingPage/landingPage';
 import { Login } from '../components/Register/login_form/login';
 import { SignUpForm } from '../components/Register/signup_form/signup';
 import Profile from './Profile';
 
-interface Props {
 
-}
-
-export const Routing: React.FC <Props> = () =>  (
+export const Routing: React.FC = () =>  (
     <div>
 
     <Switch>
 
     <Route path="/SignUp">
         <SignUpForm />
-      </Route>
+     </Route>
 
       <Route path="/setting">
         <Setting />
       </Route>
 
+      <Route path="/error">
+        <NotFoundPage/>
+      </Route>
 
       <Route path="/forget_password">
         <ForgetPassword/>
@@ -35,7 +36,6 @@ export const Routing: React.FC <Props> = () =>  (
         <Explore />
       </Route>
 
-      
       <Route path="/messages">
         <Messages />
       </Route>

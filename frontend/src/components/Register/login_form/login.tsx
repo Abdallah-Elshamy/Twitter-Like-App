@@ -9,10 +9,8 @@ import "./../Register.css";
 
 import { TweetButton } from "./../../sideBar/tweetButton/tweetButton";
 import {Logo} from "./../../logo/logo";
-import { parseJwt } from '../../../common/decode';
 import { FormInput } from '../formInput/formInput';
 import { LOGIN } from '../../../common/queries/login_query';
-import { Logout } from '../logout/logout';
 
 
 export function Login()  {
@@ -29,10 +27,11 @@ export function Login()  {
     function submit(){
 
      if (!loading && !error && data ){
-            localStorage.setItem('token', data.login.token );
+            localStorage.setItem('token', data.login.token);
+            // localStorage.setItem('token', parseJwt(localStorage.getItem('token')));
             navigate('/')
-            console.log (parseJwt(localStorage.getItem('token')));
-          
+            // console.log (parseJwt(localStorage.getItem('token')));
+            console.log (localStorage.getItem('token'));
   
     const httpLink = createHttpLink({
         uri: 'http://localhost:8000/qraphql',
@@ -77,7 +76,7 @@ return(
         />
 
 <FormInput 
-        type="password"
+        type ="password"
         name = "password"
         placeholder="Password"
         className="w-full h-16 -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300" 
@@ -96,8 +95,6 @@ return(
              Sign up for Twitter
             </Link>
     </div>
-
-<Logout />
 
    </div>
 </div>

@@ -1,38 +1,20 @@
 import React from 'react';
 import './App.css';
 import './routes/Profile'
-import { ApolloClient, ApolloProvider, HttpLink, NormalizedCacheObject, ApolloLink, createHttpLink } from '@apollo/client';
-import Profile from './routes/Profile';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import Explore from './routes/Explore';
-import { cache } from './common/cache';
-import { setContext } from '@apollo/client/link/context';
+import {ApolloProvider } from '@apollo/client';
+import { BrowserRouter } from 'react-router-dom';
+
 import { parseJwt } from './common/utils/jwtDecoder';
-import { BrowserRouter as Router } from "react-router-dom";
+
 import { Routing } from './routes/routing';
+import { clientLog } from './components/Register/login_form/login';
 
-const token = localStorage.getItem('token')
- const authLink = setContext((_, { headers }) => {
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : ''
-    }
-  };
-}); 
-
-const link = createHttpLink({
-  uri: 'http://localhost:8000/graphql',
-  credentials: 'same-origin'
-});
-
-
-
-const client = new ApolloClient({
-  cache: cache,
-  link,
-});
-
+var token ;
+if (localStorage.getItem('token') !== '')
+{
+  token = localStorage.getItem('token')
+}
+const client = clientLog
 export const decodedToken = parseJwt(token)
 
 function App() {
@@ -40,20 +22,8 @@ function App() {
     <ApolloProvider client={client}>
       <BrowserRouter>
         <Routing />
-
       </BrowserRouter>
     </ApolloProvider>
   );
 }
-/* routes {
-  Profile 
-  Login
-  Signup 
-  LandingPage
-  Home 
-  User
-  Tweet
-  Explore
-  Hashtg
-} */
 export default App;

@@ -1,6 +1,6 @@
 import { FormEvent, useState} from 'react';
 import { useQuery} from '@apollo/client'
-import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
+import { ApolloClient, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import {Link ,useHistory} from "react-router-dom"
 
@@ -12,6 +12,25 @@ import {Logo} from "./../../logo/logo";
 import { FormInput } from '../formInput/formInput';
 import { LOGIN } from '../../../common/queries/login_query';
 import { cache } from '../../../common/cache';
+
+  
+const httpLink = createHttpLink({
+  uri: 'http://localhost:8000/graphql',
+});
+const token = localStorage.getItem('token');
+const authLink = setContext((_, { headers }) => {
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : " ",
+    } 
+  }
+});
+
+export const clientLog = new ApolloClient({
+    link: authLink.concat(httpLink),
+    cache: cache
+  });
 
 
 export function Login()  {
@@ -33,25 +52,7 @@ export function Login()  {
             navigate('/')
             // console.log (parseJwt(localStorage.getItem('token')));
             console.log (localStorage.getItem('token'));
-  
-    const httpLink = createHttpLink({
-        uri: 'http://localhost:8000/qraphql',
-      });
-      const token = localStorage.getItem('token');
-      const authLink = setContext((_, { headers }) => {
-        return {
-          headers: {
-            ...headers,
-            authorization: token ? `Bearer ${token}` : " ",
-          } 
-        }
-    
-      });
-      
-      const client = new ApolloClient({
-        link: authLink.concat(httpLink),
-        cache: cache
-      });
+
     }
      if (error ){
         alert ("you have an error" + error ) 

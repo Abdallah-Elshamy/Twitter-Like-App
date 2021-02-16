@@ -1,7 +1,6 @@
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import React, { useState } from 'react';
 import { FOLLOW, UNFOLLOW } from '../../common/queries/Follow';
-import { isFollowing } from '../../common/queries/isFollowing';
 import './FollowButton.css'
 
 type Props = {

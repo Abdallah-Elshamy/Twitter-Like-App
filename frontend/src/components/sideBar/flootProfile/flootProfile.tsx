@@ -61,22 +61,25 @@ state = {
       return (
 
         <div className="mt-32 flex-initial"  ref={this.toggleContainer}>
+          
         {/* <div className=" mt-32 flex-initial " > */}
          {this.state.isOpen && (
           <ul  className= "px-4">
-          <a href="/" className=" mt-1 w-52 text-center block px-4 py-2 text-sm text-gray-700  hover:bg-gray-100 hover:text-gray-900  hover:rounded-full rounded-full" role="menuitem">My Account</a>
+           
+          <a href="/" className=" mt-1 w-52 text-center block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 
+          hover:text-gray-900  hover:rounded-full rounded-full" role="menuitem">My Account</a>
 
-<Logout />
+          <Logout/>
 
           </ul>
         )}
 
           <div>
-          <button onClick={this.onClickHandler}  type="button" className=" absolute bottom-0 mb-2 rounded-full w-64  px-4 py-2
-          bg-white hover:bg-blue-100 hover:rounded-full focus:bg-blue-200 focus:outline-none focus:shadow-outline hover:text-gray-900 focus:ring-2 
-          focus:ring-offset-gray-100" id="options-menu">
+          <button onClick={this.onClickHandler}  type="button" className="fixed bottom-0 mb-2 mt-2 rounded-full w-56 px-4 py-2
+          bg-white hover:bg-blue-100 focus:bg-blue-200 focus:outline-none focus:shadow-outline hover:text-gray-900 focus:ring-2 
+          focus:ring-offset-gray-100" >
     
-    <i className=" fas fa-ellipsis-h"></i>
+          <i className=" fas fa-ellipsis-h"></i>
        </button>
 
     </div> 

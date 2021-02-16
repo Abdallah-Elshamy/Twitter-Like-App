@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
 import { PersonEntity } from '../../../../common/TypesAndInterfaces';
 
@@ -26,7 +25,7 @@ const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, usernam
         <p>{bio}</p>
       </div>
       <div>
-        {id == decodedToken.id ? null :
+        {id === decodedToken.id ? null :
           <FollowButton id={id} following={isFollowing} />}
       </div>
     </div>

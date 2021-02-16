@@ -5,10 +5,7 @@ import { Get_SearchBar_Value } from '../common/queries/Get_SearchBar_Value';
 import { Get_Search_Result } from '../common/queries/Get_Search_Result';
 import { PersonEntity } from '../common/TypesAndInterfaces';
 import ListOfUsers from './TrendsBar/ListOfUsers/listofusers';
-import { useLocation } from 'react-router';
 import Loading from '../UI/Loading';
-
-
 
 const SearchResult: React.FC = () => {
 

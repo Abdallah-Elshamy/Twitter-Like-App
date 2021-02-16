@@ -9,15 +9,16 @@ import { Routing } from './routes/routing';
 import { clientLog } from './components/Register/login_form/login';
 
 var token ;
-if (localStorage.getItem('token') !== '')
+var  decodedToken1 ;
+if (localStorage.getItem('token') !== ' ')
 {
   token = localStorage.getItem('token')
+  decodedToken1 = parseJwt(token)
 }
 const client = clientLog
-export const decodedToken = parseJwt(token)
+export const decodedToken = decodedToken1
 
 function App() {
-  
   return (
     <ApolloProvider client={client}>
       <BrowserRouter>

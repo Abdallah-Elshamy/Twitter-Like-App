@@ -1,24 +1,23 @@
 .person-item {
-  border-bottom: 1px solid var(--light-grey)
+  border-bottom: 1px solid var(--light-grey);
 }
 
-.person-item-name{
-  color: var(--main-black)
+.person-item-name {
+  color: var(--main-black);
 }
 .person-item-image {
   background-color: var(--dark-grey);
-  color:var(--extra-light);
+  color: var(--extra-light);
   overflow: hidden;
 }
 
-.person-item:hover{
+.person-item:hover {
   background-color: var(--light-grey);
-
 }
 
-.person-item-image:hover{
-  filter:  contrast(0.9) ;
+.person-item-image:hover {
+  filter: contrast(0.9);
 }
 .person-item-username {
- color : var(--dark-grey)
+  color: var(--dark-grey);
 }

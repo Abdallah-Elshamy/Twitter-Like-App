@@ -13,6 +13,7 @@ import {Switch, NavLink, Route} from "react-router-dom"
 
 
 function Profile() {
+  
   const {loading,error,data} = useQuery(LoggedUser); 
   if (loading) return <p>'Loading .. '</p> 
   if (error) return <p>`Error! ${error.message}`</p> 

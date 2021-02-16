@@ -22,7 +22,7 @@ export function SideBar() {
         <SideBarItem item_name='Home' icon_name="	fas fa-home" />
       </Link>
 
-      <Link to="/Explore">
+      <Link to="/explore">
         <SideBarItem item_name='Explore' icon_name="fas fa-hashtag" />
       </Link>
 

@@ -5,8 +5,8 @@ import bg from "../../routes/1500x500.jpeg";
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 import FollowButton from '../FollowButton/FollowButton';
 import { parseJwt } from '../../common/decode';
-import {User} from '../../common/TypesAndInterfaces'
-import {LoggedUser} from '../../Userqery'; 
+import { User } from '../../common/TypesAndInterfaces'
+import { LoggedUser } from '../../Userqery';
 
 
 
@@ -16,10 +16,10 @@ function ProfileInfo() {
     profile = parseJwt(localStorage.getItem('token'))
   }
 
-  const data = useQuery(LoggedUser, {variables:{id:profile.id}}).data; 
-       const user : User = data.user;
+  const data = useQuery(LoggedUser, { variables: { id: profile.id } }).data;
+  const user: User = data.user;
   return (
-    
+
     <Fragment>
       <header className="top-bar px-3 py-2">
         <span className=" m-3">
@@ -30,35 +30,35 @@ function ProfileInfo() {
         <div>
           <p className="font-extrabold text-lg ">{user.name}</p>
           {/* featch fron tweet */}
-          <p className="p--light-color block ">{user.tweets?.totalCount} tweet</p> 
+          <p className="p--light-color block ">{user.tweets?.totalCount} tweet</p>
         </div>
       </header>
       <div className="pf--container">
         <div className="pf--bg" >
-          {user.imageURL? (
-                      <img src={user.imageURL}  
-                      alt="avatar"/>
-          ): (<img src={bg} alt="avatar"/>)}
+          {user.imageURL ? (
+            <img src={user.imageURL}
+              alt="avatar" />
+          ) : (<img src={bg} alt="avatar" />)}
 
         </div>
         <div className="pf--avatar">
-        {user.coverImageURL? (
-                      <img className="pf--avatar-img" src={user.coverImageURL}  
-                      alt="avatar"/>
-          ): (<img className="pf--avatar-img" src={avatar} alt="avatar"/>)}
+          {user.coverImageURL ? (
+            <img className="pf--avatar-img" src={user.coverImageURL}
+              alt="avatar" />
+          ) : (<img className="pf--avatar-img" src={avatar} alt="avatar" />)}
         </div>
 
         <div className="pf--info">
-          <div className="pf--flw-btn-div p-3 ">
-            <FollowButton id="1" py="py-1.5" following={false} /></div>
+          <div className="pf--flw-btn-div p-3 h-12">
+            {/*<FollowButton id="1" py="py-1.5" following={false} />*/}</div>
           <div className="mx-2 ">
             <p className="font-extrabold text-lg pb-1">{user.name}</p>
             <p className="p--light-color block pb-1">@{user.userName}</p>
             <p>{user.bio}</p>
             <div className="p--light-color pb-1">
-            <span className="pr-2"><i className="fa fa-map-marker" aria-hidden="true"></i> Egypt ... cairo</span>
-            <span className="px-2" ><i className="fa fa-gift" aria-hidden="true"></i> Born {user.birthDate} </span>
-            <span className="px-2"><i className="fa fa-calendar" aria-hidden="true"></i> Joined {user.createdAt}</span>
+              <span className="pr-2"><i className="fa fa-map-marker" aria-hidden="true"></i> Egypt ... cairo</span>
+              <span className="px-2" ><i className="fa fa-gift" aria-hidden="true"></i> Born {user.birthDate} </span>
+              <span className="px-2"><i className="fa fa-calendar" aria-hidden="true"></i> Joined {user.createdAt}</span>
             </div>
             <div className="font-bold pb-1">
               {/* featch followers count  */}

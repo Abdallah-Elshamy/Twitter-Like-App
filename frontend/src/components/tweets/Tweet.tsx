@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-import { gql, useQuery } from '@apollo/client';
-||||||| c17c4b7
-import {  gql, useQuery} from '@apollo/client';
-=======
 
->>>>>>> be14e34bab9a4d1386c28cfa7ac50280b2d8c53f
 import './tweet.css';
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 
-<<<<<<< HEAD
-import react from "react"
 import { timeConverter } from '../../common/utils/timestamp';
-||||||| c17c4b7
-import react from "react"
-=======
->>>>>>> be14e34bab9a4d1386c28cfa7ac50280b2d8c53f
 
 export interface TweetData {
   user?: {
@@ -36,14 +24,14 @@ const Tweet: React.FC<TweetData> = (props) => (
 
   <div className="tweet-box">
 
-    <div className="tweet-icon">
+    <div className="tweet-icon mr-2">
       {props.user?.imageURL ? (
         <img src={props.user?.imageURL}
           alt="avatar" />
       ) : (<img src={avatar} alt="avatar" />)}
     </div>
     <div className="tweet-aside">
-      <div className="tweet-data">
+      <div className="tweet-data py-1">
         <p className="font-bold mr-1">{props.user?.name}</p>
         <p className="p--light-color"> @{props.user?.userName} . </p>
         <p className="p--light-color px-1"> {props.createdAt ? timeConverter(Number(props.createdAt)) : null}</p>

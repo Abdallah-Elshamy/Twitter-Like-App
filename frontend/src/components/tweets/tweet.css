@@ -1,13 +1,11 @@
 .p--light-color {
   color: var(--dark-grey);
-  font-size: 15px;
 }
 .p--main-color {
   color: var(--main-color);
 }
 
 .tweet-box {
-  font-size: 15px;
   padding: 0px 15px 0px 15px;
   display: grid;
   grid-template-columns: 0.1fr 0.9fr;

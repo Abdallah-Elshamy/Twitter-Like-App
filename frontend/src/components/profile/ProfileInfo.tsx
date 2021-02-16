@@ -2,11 +2,11 @@
 import { useQuery } from '@apollo/client';
 import userEvent from '@testing-library/user-event';
 import React, { Fragment } from 'react';
-import bg from "../routes/1500x500.jpeg";
-import avatar from "../routes/mjv-d5z8_400x400.jpg";
-import FollowButton from './FollowButton/FollowButton';
+import bg from "../../routes/1500x500.jpeg";
+import avatar from "../../routes/mjv-d5z8_400x400.jpg";
+import FollowButton from '../FollowButton/FollowButton';
 import {  useHistory } from "react-router-dom";
-import { parseJwt } from '../common/decode';
+import { parseJwt } from '../../common/decode';
 //  TWIT 63 
 
 function ProfileInfo() {

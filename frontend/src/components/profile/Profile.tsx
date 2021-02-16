@@ -1,13 +1,13 @@
 import React, { Fragment } from 'react';
-import { SideBar } from "./../components/sideBar/sideBar";
-import '../App.css';
-import '../styles/profile.css';
-import ProfileInfo from "../components/ProfileInfo"; 
-import TrendsBar from '../components/TrendsBar/TrendsBar';
-import '../styles/layout.css'
+import { SideBar } from "../sideBar/sideBar";
+import '../../App.css';
+import './profile.css';
+import ProfileInfo from "./ProfileInfo"; 
+import TrendsBar from '../TrendsBar/TrendsBar';
+import '../../styles/layout.css'
 import {  useQuery } from '@apollo/client';
-import {LoggedUser} from '../Userqery'; 
-import TweetList from '../components/TweetList'
+import {LoggedUser} from '../../Userqery'; 
+import TweetList from '../tweets/TweetList'
 // import Tweets from "../components/TweetList"
 import {Switch, NavLink, Route} from "react-router-dom"
 
@@ -25,17 +25,17 @@ function Profile() {
           <ProfileInfo />
           <nav >
             <ul className="pf--nav-ul ">
-              <NavLink exact activeClassName="active" className="pf--nav-link" to="/">
+              <NavLink exact activeClassName="active" className="pf--nav-link" to="/profile">
                 <li>Tweets</li>
               </NavLink>
-              <NavLink activeClassName="active" className="pf--nav-link"  to="/replies">
+              <NavLink activeClassName="active" className="pf--nav-link"  to="/profile/replies">
                 <li>Tweets & replies</li>
               </NavLink>
 
-              <NavLink activeClassName="active" className="pf--nav-link" to="/media">
+              <NavLink activeClassName="active" className="pf--nav-link" to="/profile/media">
                 <li>Media</li>
               </NavLink>
-              <NavLink activeClassName="active" className="pf--nav-link"  to="/likes">
+              <NavLink activeClassName="active" className="pf--nav-link"  to="/profile/likes">
                 <li>Likes</li>
               </NavLink>
             </ul>
@@ -44,28 +44,28 @@ function Profile() {
             <Switch>
             <Route
               exact
-              path='/'
+              path='/profile'
               render={ ()=> (
                 <TweetList filter={``}/>
               )}
             />
             <Route
               exact
-              path='/replies'
+              path='/profile/replies'
               render={() => (
                 <TweetList  filter={`replies&tweets`} />
               )}
             />
             <Route
               exact
-              path='/media'
+              path='/profile/media'
               render={() => (
                 <TweetList  filter={`media`} />
               )}
             />
             <Route
               exact
-              path='/likes'
+              path='/profile/likes'
               render={() => (
                 <TweetList filter={`likes`} />
               )}

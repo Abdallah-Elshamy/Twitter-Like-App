@@ -1,4 +1,4 @@
-@import "./layout.css";
+@import "../../styles/layout.css";
 .pf--container {
   display: flex;
   flex-direction: column;

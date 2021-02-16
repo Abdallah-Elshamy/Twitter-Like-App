@@ -1,12 +1,12 @@
 import React, { Fragment } from "react"
 import {  gql, useQuery} from '@apollo/client';
 // import Tweet from '../Tweet';
-import {LoggedUser} from '../Userqery'
+import {LoggedUser} from '../../Userqery'
 import Tweet from "./Tweet";
-import {Tweets} from "./TweetQuery";
+import {Tweets} from "../TweetQuery";
 import { Interface } from "readline";
 import {TweetData} from './Tweet'
-import { parseJwt } from '../common/decode';
+import { parseJwt } from '../../common/decode';
 
 // interface TweetData {
 //   user :{

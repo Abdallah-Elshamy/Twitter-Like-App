@@ -1,8 +1,8 @@
 import React from 'react';
 import './App.css';
-import './routes/Profile'
+import './components/profile/Profile'
 import { ApolloClient, ApolloProvider, HttpLink, NormalizedCacheObject, ApolloLink, createHttpLink } from '@apollo/client';
-import Profile from './routes/Profile';
+import Profile from './components/profile/Profile';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Explore from './routes/Explore';
 import { cache } from './common/cache';

@@ -5,7 +5,7 @@ import {Link} from "react-router-dom"
 
 
 function logoutSubmit (){
-    localStorage.setItem('token',"LOGOUT");
+    localStorage.setItem('token'," ");
 }
 
 export function Logout () {

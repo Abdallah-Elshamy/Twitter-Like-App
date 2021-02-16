@@ -20,7 +20,7 @@ export function SignUpForm () {
   const [birthDate , setBirthDate ] = useState (' ')
 
 
-  const [createUser , { error, data }] = useMutation<{createUser :User} ,{ userInput  : New_User} >(ADD_USER,{
+  const [createUser , { error, data }] = useMutation<{createUser :User} ,{ userInput : New_User} >(ADD_USER,{
     variables: { userInput : { userName , email , password , name , birthDate } }
   });
 

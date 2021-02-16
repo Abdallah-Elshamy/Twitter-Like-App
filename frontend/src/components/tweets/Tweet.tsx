@@ -1,6 +1,6 @@
 import {  gql, useQuery} from '@apollo/client';
-import '../styles/tweet.css';
-import avatar from "../routes/mjv-d5z8_400x400.jpg";
+import './tweet.css';
+import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 
 import react from "react"
 

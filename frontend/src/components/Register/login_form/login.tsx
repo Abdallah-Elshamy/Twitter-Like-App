@@ -12,7 +12,6 @@ import {Logo} from "./../../logo/logo";
 import { FormInput } from '../formInput/formInput';
 import { LOGIN } from '../../../common/queries/login_query';
 import { cache } from '../../../common/cache';
-
   
 const httpLink = createHttpLink({
   uri: 'http://localhost:8000/graphql',
@@ -48,19 +47,13 @@ export function Login()  {
 
      if (!loading && !error && data ){
             localStorage.setItem('token', data.login.token);
-            // localStorage.setItem('token', parseJwt(localStorage.getItem('token')));
             navigate('/')
-            // console.log (parseJwt(localStorage.getItem('token')));
-            console.log (localStorage.getItem('token'));
 
     }
      if (error ){
         alert ("you have an error" + error ) 
     } 
 
-    if (localStorage.getItem('token') === "LOGOUT"){
-      console.log ( "LOGOUT")
-    }
       }
 
 return(

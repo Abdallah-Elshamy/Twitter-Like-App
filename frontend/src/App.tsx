@@ -1,6 +1,5 @@
 import React from 'react';
 import './App.css';
-import './routes/Profile'
 import {ApolloProvider } from '@apollo/client';
 import { BrowserRouter } from 'react-router-dom';
 
@@ -18,6 +17,7 @@ const client = clientLog
 export const decodedToken = parseJwt(token)
 
 function App() {
+  
   return (
     <ApolloProvider client={client}>
       <BrowserRouter>

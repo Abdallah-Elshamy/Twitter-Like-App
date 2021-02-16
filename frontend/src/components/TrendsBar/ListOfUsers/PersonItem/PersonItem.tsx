@@ -3,7 +3,7 @@ import React from 'react';
 import { PersonEntity } from '../../../../common/TypesAndInterfaces';
 
 import './PersonItem.css'
-import '../../../../styles/profile.css'
+import '../../../profile/profile.css'
 import FollowButton from '../../../FollowButton/FollowButton';
 import { decodedToken } from '../../../../App';
 

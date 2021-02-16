@@ -1,4 +1,4 @@
-@import "./layout.css";
+@import "../../styles/layout.css";
 .pf--container {
   display: flex;
   flex-direction: column;
@@ -18,7 +18,7 @@
 }
 .pf--avatar {
   position: absolute;
-  top: 28%;
+  top: 35%;
   left: 2%;
   z-index: 1;
   max-height: 23%;

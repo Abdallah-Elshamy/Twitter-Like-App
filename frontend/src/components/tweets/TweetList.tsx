@@ -1,12 +1,12 @@
 import React, { Fragment } from "react"
 import {  gql, useQuery} from '@apollo/client';
 // import Tweet from '../Tweet';
-import {LoggedUser} from '../Userqery'
+import {LoggedUser} from '../../Userqery'
 import Tweet from "./Tweet";
-import {Tweets} from "./TweetQuery";
+import {Tweets} from "../TweetQuery";
 import { Interface } from "readline";
 import {TweetData} from './Tweet'
-
+import { parseJwt } from '../../common/decode';
 
 // interface TweetData {
 //   user :{
@@ -29,10 +29,14 @@ export interface Tweets  {
 // 
 
 const TweetList : React.FC <Tweets> = (props) =>{
+  var profile;
+  if (localStorage.getItem('token') !== "LOGOUT") {
+    profile = parseJwt(localStorage.getItem('token'))
+  }
     console.log (props.filter)
     const {loading, error, data} = useQuery(Tweets, 
          {variables:{
-            userId:5, 
+            userId: profile.id, 
             filter:props.filter} 
          } ); 
     

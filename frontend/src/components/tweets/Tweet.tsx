@@ -38,16 +38,10 @@ const Tweet : React.FC <TweetData> = (props) =>  (
             <i className="fas fa-ellipsis-h"></i>
           </span>
         </div>
-        <div className="tweet-content">
-          <span>
-            Learning to work with intensity when necessary and to rest when you've done enough might be the most important thing you can do for your lifestyle. Few things damage a lifestyle more than a never-ending slog.
-            </span>
-          </div>
           <div className="tweet-content">
             <span>
               {props.text}
-            </span>
-          
+            </span>    
           <div className="tweet-toolbar p--light-color  ">
             <a href="/">
             <i className="fas fa-reply text-base font-sm "></i>

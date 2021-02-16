@@ -5,6 +5,7 @@ import './profile/profile.css';
 import TrendsBar from './TrendsBar/TrendsBar';
 import './../styles/layout.css'
 import TweetList from './tweets/TweetList';
+import HomeTweets from './tweets/HomeTweets';
 
 
 function Home() {
@@ -19,7 +20,7 @@ function Home() {
         Home 
         </div>
       </header>
-      <TweetList filter="feed"/>
+      <HomeTweets/>
           </article>
         <aside className="sb-right"><TrendsBar /></aside>
 

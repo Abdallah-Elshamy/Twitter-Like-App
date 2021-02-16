@@ -2,16 +2,19 @@
 import {  gql} from '@apollo/client';
 
 export const LoggedUser= gql`
-      query logged_user {
-        user(id:1){  
+      query logged_user ($id:ID!){
+        user(id: $id){  
             userName
             name
             imageURL
             bio
             coverImageURL
-            createdAt   
+            createdAt 
+            followingCount
+            followersCount
+            birthDate
             tweets {
               totalCount
-            }     
+            }   
         }
 }`

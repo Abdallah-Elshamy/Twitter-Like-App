@@ -1,39 +1,20 @@
 import React, { Fragment } from "react"
-import {  gql, useQuery} from '@apollo/client';
+import {  useQuery} from '@apollo/client';
 // import Tweet from '../Tweet';
-import {LoggedUser} from '../../Userqery'
 import Tweet from "./Tweet";
 import {Tweets} from "../TweetQuery";
-import { Interface } from "readline";
 import {TweetData} from './Tweet'
 import { parseJwt } from '../../common/decode';
 
-// interface TweetData {
-//   user :{
-//     imageURL:string
-//     name:string
-//     userName:string
-//   }
-//   id:number
-//   text :string
-//   likesCount :boolean
-//   repliesCount:number
-//   createdAt:number
-//   isLiked:boolean
-// }
-export interface Tweets  {
+export interface TweetFilter  {
     filter: string
   }
 
-// filter (replies&tweets / likes /media )
-// 
-
-const TweetList : React.FC <Tweets> = (props) =>{
+const TweetList : React.FC <TweetFilter> = (props) =>{
   var profile;
   if (localStorage.getItem('token') !== "LOGOUT") {
     profile = parseJwt(localStorage.getItem('token'))
   }
-    console.log (props.filter)
     const {loading, error, data} = useQuery(Tweets, 
          {variables:{
             userId: profile.id, 

@@ -9,7 +9,7 @@ import { Login } from '../components/Register/login_form/login';
 import { SignUpForm } from '../components/Register/signup_form/signup';
 import Explore from './Explore';
 import Profile from '../components/profile/Profile';
-
+import  Home  from "../components/Home";
 
 export const Routing: React.FC = () => (
   <div>
@@ -56,7 +56,7 @@ export const Routing: React.FC = () => (
       </Route>
 
       <Route path="/" exact >
-      <SignUpForm />
+      <Home/>
       </Route>
 
       <Route path="/Messages">

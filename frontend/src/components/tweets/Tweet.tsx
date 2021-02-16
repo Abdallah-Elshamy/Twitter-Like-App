@@ -1,8 +1,7 @@
-import {  gql, useQuery} from '@apollo/client';
+
 import './tweet.css';
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 
-import react from "react"
 
 export interface TweetData {
   user? :{
@@ -28,7 +27,7 @@ const Tweet : React.FC <TweetData> = (props) =>  (
           {props.user?.imageURL ?(
                       <img src={props.user?.imageURL}  
                       alt="avatar"/>
-          ): (<img src={avatar}/>)}
+          ): (<img src={avatar} alt="avatar"/>)}
         </div>
         <div className="tweet-aside">
           <div className="tweet-data">

@@ -9,9 +9,13 @@ export const cache: InMemoryCache = new InMemoryCache({
           read() {
             return searchBarVar();
           }
-        },
-        //next
 
+        },
+        authenticated: {
+          read() {
+            return authenticatedVal();
+          }
+        }
       }
     }
   }
@@ -19,4 +23,8 @@ export const cache: InMemoryCache = new InMemoryCache({
 
 export const searchBarVar: ReactiveVar<searchBarValue> = makeVar<searchBarValue>(
   { value: '' }
+);
+
+export const authenticatedVal: ReactiveVar<boolean> = makeVar<boolean>(
+  (localStorage.getItem('token') === null) ? false : true
 );

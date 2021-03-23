@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { Children } from 'react';
 import {
   Switch,
-  Route
+  Route,
+  Redirect
 } from "react-router-dom";
 import { NotFoundPage } from '../components/notFound/notFound';
 import { LandingPage } from '../components/Register/landingPage/landingPage';
@@ -9,68 +10,118 @@ import { Login } from '../components/Register/login_form/login';
 import { SignUpForm } from '../components/Register/signup_form/signup';
 import Explore from './Explore';
 import Profile from '../components/profile/Profile';
-import  Home  from "../components/Home";
+import Home from "../components/Home";
+import { useQuery } from '@apollo/client';
+import { GET_ISAUTH } from '../common/queries/Get_isAuth';
 
-export const Routing: React.FC = () => (
-  <div>
-
-    <Switch>
-
-      <Route path="/SignUp">
-        <SignUpForm />
-      </Route>
-
-      <Route path="/setting">
-        <Setting />
-      </Route>
-
-      <Route path="/error">
-        <NotFoundPage />
-      </Route>
-
-      <Route path="/forget_password">
-        <ForgetPassword />
-      </Route>
+export const Routing = () => {
+  let auth = useQuery(GET_ISAUTH).data.authenticated
 
 
-      <Route path="/explore">
-        <Explore />
-      </Route>
+  return (
+    <div>
 
-      <Route path="/messages">
-        <Messages />
-      </Route>
+      <Switch>
+        <PublicRoute path="/signup">
 
+          <SignUpForm />
+        </PublicRoute>
+        <PublicRoute path="/login">
+          <Login />
+        </PublicRoute>
 
-      <Route path="/LandingPage">
-        <LandingPage />
-      </Route>
+        <PrivateRoute path="/setting">
+          <Setting />
+        </PrivateRoute>
 
+        <Route path="/error">
+          <NotFoundPage />
+        </Route>
 
-      <Route path="/Notifications">
-        <Notifications />
-      </Route>
-
-      <Route path="/login">
-        <Login />
-      </Route>
-
-      <Route path="/" exact >
-      <Home/>
-      </Route>
-
-      <Route path="/Messages">
-        <Messages />
-      </Route>
-
-      <Route path="/profile">
-        <Profile />
-      </Route>
+        <PublicRoute path="/forget_password">
+          <ForgetPassword />
+        </PublicRoute>
 
 
-    </Switch>
-  </div>
-);
+        <Route path="/explore">
+          <Explore />
+        </Route>
+
+        <PrivateRoute path="/messages">
+          <Messages />
+        </PrivateRoute>
+
+
+        <PublicRoute path="/LandingPage">
+          <LandingPage />
+        </PublicRoute>
+
+
+        <PrivateRoute path="/Notifications">
+          <Notifications />
+        </PrivateRoute>
+
+
+
+        <PrivateRoute path="/" exact >
+          <Home />
+        </PrivateRoute>
+
+
+
+        <PrivateRoute path="/profile">
+          <Profile />
+        </PrivateRoute>
+
+
+      </Switch>
+    </div>
+  )
+};
+
+
+const PrivateRoute = ({ children, ...rest }: any) => {
+  let auth = useQuery(GET_ISAUTH).data.authenticated
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        auth ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/login",
+              state: { from: location }
+            }}
+          />
+        )
+      }
+    />
+  );
+}
+
+const PublicRoute = ({ children, ...rest }: any) => {
+  let auth = !useQuery(GET_ISAUTH).data.authenticated
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        auth ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/",
+              state: { from: location }
+            }}
+          />
+        )
+      }
+    />
+  );
+}
+
 
 
 

@@ -12,7 +12,7 @@ import { LoggedUser } from '../../Userqery';
 
 function ProfileInfo() {
   var profile;
-  if (localStorage.getItem('token') !== "LOGOUT") {
+  if (localStorage.getItem('token') !== null) {
     profile = parseJwt(localStorage.getItem('token'))
   }
 
@@ -52,7 +52,7 @@ function ProfileInfo() {
           <div className="pf--flw-btn-div p-3 h-12">
             {/*<FollowButton id="1" py="py-1.5" following={false} />*/}</div>
           <div className="mx-2 ">
-            <p className="font-extrabold text-lg pb-1">{user.name}</p>
+            <p className="font-extrabold text-lg pb-1 mt-1.5">{user.name} </p>
             <p className="p--light-color block pb-1">@{user.userName}</p>
             <p>{user.bio}</p>
             <div className="p--light-color pb-1">

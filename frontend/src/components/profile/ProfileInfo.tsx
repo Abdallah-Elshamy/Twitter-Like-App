@@ -1,12 +1,14 @@
 
 import { useQuery } from '@apollo/client';
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import bg from "../../routes/1500x500.jpeg";
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 import FollowButton from '../FollowButton/FollowButton';
 import { parseJwt } from '../../common/decode';
 import { User } from '../../common/TypesAndInterfaces'
 import { LoggedUser } from '../../Userqery';
+import EditButton from '../EditButton';
+import Modal from '../../UI/Modal/Modal';
 
 
 
@@ -15,12 +17,18 @@ function ProfileInfo() {
   if (localStorage.getItem('token') !== null) {
     profile = parseJwt(localStorage.getItem('token'))
   }
+  const [edit, setEdit] = useState<boolean>(false)
+  const modalClosed = () => setEdit(false)
 
   const data = useQuery(LoggedUser, { variables: { id: profile.id } }).data;
   const user: User = data.user;
   return (
 
     <Fragment>
+      <Modal show={edit}
+        modalClosed={modalClosed}>
+
+      </Modal>
       <header className="top-bar px-3 py-2">
         <span className=" m-3">
           <a href="http://">
@@ -33,6 +41,7 @@ function ProfileInfo() {
           <p className="p--light-color block ">{user.tweets?.totalCount} tweet</p>
         </div>
       </header>
+
       <div className="pf--container">
         <div className="pf--bg" >
           {user.imageURL ? (
@@ -50,7 +59,13 @@ function ProfileInfo() {
 
         <div className="pf--info">
           <div className="pf--flw-btn-div p-3 h-12">
-            {/*<FollowButton id="1" py="py-1.5" following={false} />*/}</div>
+            {/*<FollowButton id="1" py="py-1.5" following={false} />*/}
+            < button onClick={() => setEdit(true)} className={"pf--follow-btn rounded-full px-3 font-semibold text-xm  py-2.5 mt-3 "}>
+              Edit Profile
+            </button >
+
+
+          </div>
           <div className="mx-2 ">
             <p className="font-extrabold text-lg pb-1 mt-1.5">{user.name} </p>
             <p className="p--light-color block pb-1">@{user.userName}</p>

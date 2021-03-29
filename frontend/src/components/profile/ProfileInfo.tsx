@@ -7,8 +7,9 @@ import FollowButton from '../FollowButton/FollowButton';
 import { parseJwt } from '../../common/decode';
 import { User } from '../../common/TypesAndInterfaces'
 import { LoggedUser } from '../../Userqery';
-import EditButton from '../EditButton';
 import Modal from '../../UI/Modal/Modal';
+import EditProfile from './EditUser/EditProfile';
+import { timeConverter } from '../../common/utils/timestamp';
 
 
 
@@ -27,7 +28,9 @@ function ProfileInfo() {
     <Fragment>
       <Modal show={edit}
         modalClosed={modalClosed}>
-
+        <EditProfile close={modalClosed}
+          user={user}
+          show={edit} />
       </Modal>
       <header className="top-bar px-3 py-2">
         <span className=" m-3">
@@ -44,10 +47,10 @@ function ProfileInfo() {
 
       <div className="pf--container">
         <div className="pf--bg" >
-          {user.imageURL ? (
+          {user.imageURL && (
             <img src={user.imageURL}
               alt="avatar" />
-          ) : (<img src={bg} alt="avatar" />)}
+          )}
 
         </div>
         <div className="pf--avatar">
@@ -73,7 +76,7 @@ function ProfileInfo() {
             <div className="p--light-color pb-1">
               <span className="pr-2"><i className="fa fa-map-marker" aria-hidden="true"></i> Egypt ... cairo</span>
               <span className="px-2" ><i className="fa fa-gift" aria-hidden="true"></i> Born {user.birthDate} </span>
-              <span className="px-2"><i className="fa fa-calendar" aria-hidden="true"></i> Joined {user.createdAt}</span>
+              <span className="px-2"><i className="fa fa-calendar" aria-hidden="true"></i> Joined {user.createdAt ? timeConverter(Number(user.createdAt), false) : null}</span>
             </div>
             <div className="font-bold pb-1">
               {/* featch followers count  */}

@@ -1,23 +1,23 @@
 .Modal {
-    position: fixed;
-    z-index: 2500;
+   left:50%;
+   top:50px;
+
+    position: absolute;
+    z-index: 500;
     background-color: white;
-    width: 70%;
+    width: 90%;
     box-shadow: 2px 2px 2px rgba(0,0,0,0.8);
-    padding: 16px;
-    
-    top: 25%;
+   transform: translate(-50%,-50%);   
     border-radius: 20px;
     transition: all 0.3s ease-out;
     display: flex;
     flex-flow: column;
     justify-content: center;
-    align-items: center;
 }
 
 @media (min-width: 600px) {
     .Modal {
-        width: 520px;
-        left: calc(50% - 305px);
+        width: 580px;
+        left: calc(50% - 335px);
     }
 }

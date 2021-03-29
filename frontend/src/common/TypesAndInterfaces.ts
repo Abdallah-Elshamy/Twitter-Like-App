@@ -1,8 +1,10 @@
+//used in trends
 export interface Trend {
   trendName: string,
   numOfTweets: Number,
 }
 
+//used in search and suggestion list 
 export interface PersonEntity {
   id: string
   name: string,
@@ -13,8 +15,9 @@ export interface PersonEntity {
   bio?: string,
   isFollowing?: Boolean
 }
+
 export interface User {
-  // id: string, 
+  id: string,
   userName: string,
   name: string,
   followed: boolean,
@@ -31,9 +34,13 @@ export interface User {
     totalCount?: Number
   }
 }
+
+//used in search bar locally
 export type searchBarValue = {
   value: string
 }
+
+//used in protected routes locally
 export type authinticatedValue = {
   value: boolean
 }

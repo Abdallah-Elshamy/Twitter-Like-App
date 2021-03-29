@@ -77,8 +77,8 @@ describe("user-resolvers", (): void => {
                 bio: "That is MY Ninja Way!",
                 imageURL: "https://picsum.photos/200/300",
                 coverImageURL: "https://picsum.photos/200/300",
-                followingCount: 15,
-                followersCount: 15,
+                followingCount: 16,
+                followersCount: 16,
                 birthDate: "1970-01-01",
             });
             // check that the followers of the followers of the user
@@ -87,7 +87,7 @@ describe("user-resolvers", (): void => {
                 "totalCount"
             );
             expect(response.body.data.user.followers.totalCount).to.be.equal(
-                15
+                16
             );
             expect(response.body.data.user.followers).to.have.property("users");
             expect(response.body.data.user.followers.users).to.have.length(10);
@@ -101,16 +101,16 @@ describe("user-resolvers", (): void => {
                 expect(
                     response.body.data.user.followers.users[i].followers
                         .totalCount
-                ).to.be.equal(1);
+                ).to.be.equal(2);
                 expect(
                     response.body.data.user.followers.users[i].followers
                 ).to.have.property("users");
                 expect(
                     response.body.data.user.followers.users[i].followers.users
-                ).to.have.length(1);
+                ).to.have.length(2);
                 expect(
                     response.body.data.user.followers.users[i].followers
-                        .users[0]
+                        .users[1]
                 ).to.include({ id: "1" });
             }
 
@@ -120,7 +120,7 @@ describe("user-resolvers", (): void => {
                 "totalCount"
             );
             expect(response.body.data.user.following.totalCount).to.be.equal(
-                15
+                16
             );
             expect(response.body.data.user.following).to.have.property("users");
             expect(response.body.data.user.following.users).to.have.length(10);
@@ -134,16 +134,16 @@ describe("user-resolvers", (): void => {
                 expect(
                     response.body.data.user.following.users[i].following
                         .totalCount
-                ).to.be.equal(1);
+                ).to.be.equal(2);
                 expect(
                     response.body.data.user.following.users[i].following
                 ).to.have.property("users");
                 expect(
                     response.body.data.user.following.users[i].following.users
-                ).to.have.length(1);
+                ).to.have.length(2);
                 expect(
                     response.body.data.user.following.users[i].following
-                        .users[0]
+                        .users[1]
                 ).to.include({ id: "1" });
             }
 
@@ -952,7 +952,7 @@ describe("user-resolvers", (): void => {
             token = response.body.data.login.token;
 
             // create 2 users
-            for (let i = 0; i < 2; i++) {
+            for (let i = 0; i < 3; i++) {
                 let user = await User.create({
                     name: `testUser ${i + 1}`,
                     userName: `testU${i + 1}`,
@@ -974,9 +974,21 @@ describe("user-resolvers", (): void => {
             });
         });
 
+        it("fails to unfollow the user himself", async () => {
+            const response = await unfollow(1, token);
+
+            expect(response.body).to.has.property("errors");
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "The user can't unfollow himself!",
+            });
+        });
+
         it("fails to unfollow a user when not authenticated", async () => {
             const response = await unfollow(2);
 
+            expect(response.body).to.has.property("errors");
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 401,

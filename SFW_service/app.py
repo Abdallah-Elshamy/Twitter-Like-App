@@ -2,8 +2,32 @@ import os
 import validators
 from flask import Flask, request, abort, jsonify
 from flask_cors import CORS
-from profanity_check import predict
+from better_profanity import profanity
+from nudenet import NudeClassifier
+from nudenet import NudeDetector
+import base64
+import requests
+import urllib.request
+import time
+import random
+import string
 
+def create_random_string():
+    letters = string. ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(10))
+
+# class HeadRequest(urllib.request):
+#         def get_method(self):
+#             return 'HEAD'
+
+# def get_contenttype(image_url):
+#     try:
+#         response= urllib.request.urlopen(HeadRequest(image_url))
+#         maintype= response.headers['Content-Type'].split(';')[0].lower()
+#         return maintype
+#     except urllib.request.HTTPError as e:
+#         print(e)
+#         return None
 
 def create_app():
     # create and configure the app
@@ -33,30 +57,42 @@ def create_app():
     @app.route('/safe-for-work', methods=['POST'])
     def is_SFW():
         error = 0
-        try:
-            body = request.get_json()
-            text = body.get('text', '')
-            media_urls = body.get('mediaURLs', [])
-            for url in media_urls:
-                valid = validators.url(url)
-                if not valid:
-                    error = 422
-                    description = 'Invalid url was supplied!'
-            if(text == '' and len(media_urls)==0):
+        # try:
+        classifier = NudeClassifier()
+        body = request.get_json()
+        text = body.get('text', '')
+        media_urls = body.get('mediaURLs', [])
+        for url in media_urls:
+            valid = validators.url(url)
+            if not valid:
                 error = 422
-                description = 'Please provide a text or mediaURLS in your tweet to be checked!'
-            elif error == 0:
-                return jsonify({
-                    'success': True,
-                    'text': text,
-                    'mediaURL': media_urls,
-                    })
-        except:
-            error = 500
-            description = 'Something went wrong!'
-        finally:
-            if(error):
-                abort(error, description=description)
+                description = 'Invalid url was supplied!'
+        if(text == '' and len(media_urls)==0):
+            error = 422
+            description = 'Please provide a text or mediaURLS in your tweet to be checked!'
+        elif(profanity.contains_profanity(text)):
+            return jsonify({
+                'success': True,
+                'SFW': False,
+                'message': 'This Tweet contains inappropriate word(s) and is marked as not safe for work!'
+            })
+        elif error == 0:
+            for url in media_urls:
+                response = urllib.request.urlopen(url)
+                extension = response.headers['Content-Type'].split("/")[1]
+                media_name = str(time.time()) + create_random_string() + "." + extension
+                urllib.request.urlretrieve(url, media_name)
+            return jsonify({
+                'success': True,
+                'text': text,
+                'mediaURL': media_urls,
+            })
+        # except:
+        #     error = 500
+        #     description = 'Something went wrong!'
+        # finally:
+        #     if(error):
+        #         abort(error, description=description)
 
 ###############################################################################
 # ERRORS#######################################################################

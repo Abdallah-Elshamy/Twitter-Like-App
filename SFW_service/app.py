@@ -21,12 +21,9 @@ def is_SFW_image(image_path):
 def is_SFW_video(video_path):
     result = classifier.classify_video(video_path)
     count = len(result['preds'])
-    print (f"count------------------{count}")
     score = 0
     for item in result['preds'].items():
-        print (f"item------------------{item}")
-        score+= item[1]['unsafe']
-    print(f"score/count---------{score/count}")    
+        score+= item[1]['unsafe']  
     if (score/count) > 0.8:
         return False    
     return True

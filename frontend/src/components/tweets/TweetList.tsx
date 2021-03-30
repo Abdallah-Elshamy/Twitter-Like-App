@@ -16,13 +16,13 @@ const TweetList: React.FC<TweetFilter> = (props) => {
   if (localStorage.getItem('token') !== null) {
     profile = parseJwt(localStorage.getItem('token'))
   }
-  const sfw = useQuery (Get_SFW).data
+  const sfw = useQuery(Get_SFW).data
   const { loading, error, data } = useQuery(Tweets,
     {
       variables: {
         userId: profile.id,
         filter: props.filter,
-        isSFW:sfw.SFW.value
+        isSFW: sfw.SFW.value
       }
     });
 

@@ -1,3 +1,4 @@
+
 import React, { Fragment } from 'react';
 import { SideBar } from "./sideBar/sideBar";
 import './../App.css';
@@ -8,10 +9,6 @@ import HomeTweets from './tweets/HomeTweets';
 import PostTweet from './tweets/PostTweet'
 
 function Home() {
-
-
-  
-
   return (
     <Fragment>
       <main className="main-container">
@@ -21,11 +18,11 @@ function Home() {
             <div className="font-bold text-lg">
               Home
         </div>
-      </header>
-      <PostTweet/> 
-      <HomeTweets/>
-          </article>
-        <aside className="sb-right"><TrendsBar/></aside>
+          </header>
+          <PostTweet />
+          <HomeTweets />
+        </article>
+        <aside className="sb-right"><TrendsBar /></aside>
 
       </main>
     </Fragment>

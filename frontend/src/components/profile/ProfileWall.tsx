@@ -22,7 +22,7 @@ function ProfileWall() {
   if (loading) return (<div className="mt-8" ><Loading /></div>)
   if (error) return <p>`Error! ${error.message}`</p>
   return (
-    <Fragment>
+    < Fragment >
       <ProfileInfo />
       <nav >
         <ul className="pf--nav-ul ">
@@ -80,7 +80,7 @@ function ProfileWall() {
       </div>
 
 
-    </Fragment>
+    </Fragment >
   );
 }
 

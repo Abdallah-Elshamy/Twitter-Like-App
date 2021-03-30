@@ -9,7 +9,6 @@ export const cache: InMemoryCache = new InMemoryCache({
           read() {
             return searchBarVar();
           }
-
         },
         authenticated: {
           read() {
@@ -31,21 +30,17 @@ export const cache: InMemoryCache = new InMemoryCache({
   }
 });
 
-
 export const searchBarVar: ReactiveVar<searchBarValue> = makeVar<searchBarValue>(
   { value: '' }
 );
-
 export const authenticatedVal: ReactiveVar<boolean> = makeVar<boolean>(
   (localStorage.getItem('token') === null) ? false : true
 );
-
 export const EditProfileImageVal: ReactiveVar<{ Image: object | false, ImageURL: string | false }> = makeVar<any>(
   {
     Image: false,
     ImageURL: false
   });
-
-  export const SFW: ReactiveVar< {value:boolean}> = makeVar<any>(
-    { value: true }
-  );
+export const SFW: ReactiveVar<{ value: boolean }> = makeVar<any>(
+  { value: true }
+);

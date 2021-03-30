@@ -39,12 +39,12 @@ export const LandingPage: React.FC = () => (
         <p className=" ml-12 mt-12 text-6xl font-extrabold"> Happenning now</p>
         <p className=" ml-12 mt-12 text-4xl font-bold ">Join twitter today. </p>
         <Link to="/SignUp">
-                    < TweetButton name = "Sign Up" className = "w-80 ml-12 mt-8 font-semibold h-12 mt-8" />
-                    </Link>
-                    
-                    <Link to="/login">
-                    < TweetButton name = "Log in"  className =  "w-80 ml-12 font-semibold h-12 mt-8"/>
-                    </Link>
+          < TweetButton name="Sign Up" className="w-80 ml-12 mt-8 font-semibold h-12 mt-8" />
+        </Link>
+
+        <Link to="/login">
+          < TweetButton name="Log in" className="w-80 ml-12 font-semibold h-12 mt-8" />
+        </Link>
       </div>
 
     </div>

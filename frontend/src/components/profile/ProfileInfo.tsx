@@ -11,6 +11,7 @@ import { EditProfileImageVal } from '../../common/cache';
 import { Link } from 'react-router-dom';
 
 
+
 function ProfileInfo() {
 
   const [edit, setEdit] = useState<boolean>(false)
@@ -29,7 +30,7 @@ function ProfileInfo() {
 
 
   const data = useQuery(LoggedUser, { variables: { id: profile.id } }).data;
-  
+
   const user: User = data.user;
   return (
 
@@ -44,10 +45,10 @@ function ProfileInfo() {
 
       <header className="top-bar px-3 py-2">
         <span className=" m-3">
-        <Link to="/">
+          <Link to="/">
 
             <i className="fa fa-arrow-left  p--main-color" aria-hidden="true"></i>
-        </Link>
+          </Link>
 
         </span>
         <div>

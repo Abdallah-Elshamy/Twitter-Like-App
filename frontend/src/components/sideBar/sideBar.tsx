@@ -1,4 +1,4 @@
-import React , { useState } from 'react'
+import React, { useState } from 'react'
 import { Link } from "react-router-dom";
 import '../../App.css';
 
@@ -14,20 +14,18 @@ export function SideBar() {
   const modalClosed = () => setEdit(false);
 
   return (
-    
+
     <div className="px-2" >
-      <Modal show={edit} modalClosed={modalClosed}  className="pb-4">
+      <Modal show={edit} modalClosed={modalClosed} className="pb-4">
+        <header className="flex justify-between items-center px-3 h-8 w-full border-b border-gray-200 pb-6 pt-2">
+          <div onClick={modalClosed} className=" p-1 rounded-full">
+            <svg className="h-8 w-5 pt-2 mt-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
 
-      <header className="flex justify-between items-center px-3 h-8 w-full border-b border-gray-200 pb-6 pt-2">
-
-<div onClick={modalClosed}  className=" p-1 rounded-full">
-  <svg className="h-8 w-5 pt-2 mt-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-  </svg>
-</div>
-
-</header>
-  <PostTweet />
+        </header>
+        <PostTweet />
       </Modal>
 
       <Link to="/">
@@ -61,7 +59,7 @@ export function SideBar() {
 
       <TweetButton name="Tweet" className="w-56 h-12 mt-8" onClick={() => setEdit(true)} />
 
-{/* <ToolBox>
+      {/* <ToolBox>
 <SideBarItem item_name='Setting' icon_name="fas fa-cog" />
 </ToolBox> */}
 

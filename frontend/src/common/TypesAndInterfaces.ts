@@ -25,7 +25,7 @@ export interface User {
   imageURL?: string,
   birthDate?: string,
   bio?: string,
-  isFollowing?: Boolean
+  isFollowing?: Boolean,
   coverImageURL?: string,
   createdAt?: string,
   followingCount?: Number,
@@ -42,7 +42,7 @@ export type searchBarValue = {
 
 // export interface logUser {
 //   user?: User }
-  
+
 //used in protected routes locally
 export type authinticatedValue = {
   value: boolean

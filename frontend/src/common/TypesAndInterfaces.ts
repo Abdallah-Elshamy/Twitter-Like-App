@@ -22,7 +22,7 @@ export interface User {
   imageURL?: string,
   birthDate?:string,
   bio?: string,
-  isFollowing?: Boolean
+  isFollowing?: Boolean,
   coverImageURL?: string, 
   createdAt ?:string, 
   followingCount?:Number,
@@ -33,4 +33,8 @@ export interface User {
 }
 export type searchBarValue = {
   value: string
+}
+
+export interface logUser {
+  user?: User
 }

@@ -78,7 +78,7 @@ return(
          onChange={($e: FormEvent<HTMLInputElement>) => setPassword($e.currentTarget.value)}
          />
 
-    <TweetButton name = "Login" className = "w-80 ml-4" onClick={() =>  email && password &&  submit()}/>
+    <TweetButton name = "Login" className = "w-80 ml-4 mt-8 h-12" onClick={() =>  email && password &&  submit()}/>
 
 
     <div className ="mt-3" >

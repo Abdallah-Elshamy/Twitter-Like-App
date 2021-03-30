@@ -2,24 +2,24 @@ import React, { Fragment } from "react"
 import {  useQuery} from '@apollo/client';
 import Tweet from "./Tweet";
 import {TweetData} from './Tweet'
-import {FeedTweets} from './Feedtweets'
+import {FeedTweets} from '../../common/queries/Feedtweets'
 import Loading from '../../UI/Loading'
 
 function HomeTweets() {
 
-    const {loading, error, data} = useQuery(FeedTweets ); 
+    const {loading, error, data} = useQuery(FeedTweets); 
     
     if (loading) return <Loading/>
-    if (error) return <p>`Error! ${error.message}`</p> 
+    if (error) return <p>`Error! this is the one ${error.message}`</p> 
     
     return (
         
         <Fragment>
-                {console.log(data.getFeed) }
+                {console.log(data) }
                 {
                 
                 data.getFeed.map((tweet:TweetData) => {
-                  console.log (tweet)
+                  console.log (`tweet is ${tweet}`)
                 return <Tweet text={tweet.text}
                 repliesCount={tweet.repliesCount}
                 createdAt={tweet.createdAt}

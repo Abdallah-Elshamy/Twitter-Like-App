@@ -17,4 +17,3 @@ export interface User {
     userName: String ,
     birthDate :String
   }
-  

@@ -7,7 +7,10 @@
 }
 
 .tweet-box {
-  font-size: 15px;
+  font-size: 17px;
+  font-weight: 400;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
   padding: 0px 15px 0px 15px;
   display: grid;
   grid-template-columns: 0.1fr 0.9fr;
@@ -17,8 +20,8 @@
   padding-top: 10px;
 }
 .tweet-icon img {
-  max-width: 50px;
-  max-height: 50px;
+  max-width: 53px;
+  max-height: 53px;
   border-radius: 50%;
 }
 .tweet-aside {
@@ -51,4 +54,11 @@
 .tweet-toolbar i {
   /* font-size: 18px; */
   padding: 5px 5px 5px 5px;
+}
+.tweet-text {
+  font-size: 22px;
+  font-weight: 400;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  color: #0f1419;
 }

@@ -6,10 +6,10 @@ import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 import FollowButton from '../FollowButton/FollowButton';
 import { parseJwt } from '../../common/decode';
 import {User} from '../../common/TypesAndInterfaces'
-import {LoggedUser} from '../../Userqery'; 
+import {LoggedUser} from '../../common/queries/Userqery'; 
+import {userVar} from "../../common/cache"
 
-
-
+                                                                                                                                                     
 function ProfileInfo() {
   var profile;
   if (localStorage.getItem('token') !== "LOGOUT") {
@@ -18,6 +18,8 @@ function ProfileInfo() {
 
   const data = useQuery(LoggedUser, {variables:{id:profile.id}}).data; 
        const user : User = data.user;
+       userVar ({user:user})
+
   return (
     
     <Fragment>
@@ -28,7 +30,7 @@ function ProfileInfo() {
           </a>
         </span>
         <div>
-          <p className="font-extrabold text-lg ">{user.name}</p>
+          <p className="font-extrabold text-lg ">Toka</p>
           {/* featch fron tweet */}
           <p className="p--light-color block ">{user.tweets?.totalCount} tweet</p> 
         </div>
@@ -52,7 +54,7 @@ function ProfileInfo() {
           <div className="pf--flw-btn-div p-3 ">
             <FollowButton id="1" py="py-1.5" following={false} /></div>
           <div className="mx-2 ">
-            <p className="font-extrabold text-lg pb-1">{user.name}</p>
+            <p className="font-extrabold text-lg pb-1">Toka Abdulhamied</p>
             <p className="p--light-color block pb-1">@{user.userName}</p>
             <p>{user.bio}</p>
             <div className="p--light-color pb-1">

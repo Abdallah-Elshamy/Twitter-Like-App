@@ -4,7 +4,7 @@ import './profile.css';
 import ProfileInfo from "./ProfileInfo"; 
 import '../../styles/layout.css'
 import {  useQuery } from '@apollo/client';
-import {LoggedUser} from '../../Userqery'; 
+import {LoggedUser} from '../../common/queries/Userqery'; 
 import TweetList from '../tweets/TweetList'
 import {Switch, NavLink, Route} from "react-router-dom"
 import { parseJwt } from '../../common/decode';
@@ -16,8 +16,10 @@ function ProfileWall() {
   if (localStorage.getItem('token') !== "LOGOUT") {
     profile = parseJwt(localStorage.getItem('token'))
   }
-
+  
   const { loading, error} = useQuery(LoggedUser, {variables:{id:profile.id}}); 
+
+
   if (loading) return ( <div  className="mt-8" ><Loading/></div>)
   if (error) return <p>`Error! ${error.message}`</p> 
   return (

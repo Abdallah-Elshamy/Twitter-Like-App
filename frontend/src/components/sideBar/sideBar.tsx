@@ -43,7 +43,7 @@ export function SideBar() {
       </Link>
 
 
-      <TweetButton name="Tweet" className="w-56" />
+      <TweetButton name="Tweet" className="w-56 h-12 mt-8" />
       < FlootProfile />
 
     </div>

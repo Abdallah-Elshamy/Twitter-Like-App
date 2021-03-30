@@ -86,7 +86,7 @@ return(
           />
 
       <Link to ="/login">
-       <TweetButton name = "Next" className ="w-80" onClick={() => name && userName && email && password && birthDate && createUser()} />
+       <TweetButton name = "Next" className ="w-80 mt-8 h-12" onClick={() => name && userName && email && password && birthDate && createUser()} />
        </Link>
     
       <div className ="pl-24" >

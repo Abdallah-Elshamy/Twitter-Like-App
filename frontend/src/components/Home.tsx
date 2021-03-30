@@ -4,10 +4,8 @@ import './../App.css';
 import './profile/profile.css';
 import TrendsBar from './TrendsBar/TrendsBar';
 import './../styles/layout.css'
-import TweetList from './tweets/TweetList';
 import HomeTweets from './tweets/HomeTweets';
-
-
+import PostTweet from './tweets/PostTweet';
 function Home() {
 
   return (
@@ -20,9 +18,10 @@ function Home() {
         Home 
         </div>
       </header>
+      <PostTweet/> 
       <HomeTweets/>
           </article>
-        <aside className="sb-right"><TrendsBar /></aside>
+        <aside className="sb-right"><TrendsBar/></aside>
 
       </main>
     </Fragment>

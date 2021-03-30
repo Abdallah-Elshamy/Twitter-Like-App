@@ -2,10 +2,10 @@ import React, { Fragment } from "react"
 import {  useQuery} from '@apollo/client';
 // import Tweet from '../Tweet';
 import Tweet from "./Tweet";
-import {Tweets} from "../TweetQuery";
+import {Tweets} from "../../common/queries/TweetQuery";
 import {TweetData} from './Tweet'
 import { parseJwt } from '../../common/decode';
-
+import Loading from '../../UI/Loading'
 export interface TweetFilter  {
     filter: string
   }
@@ -21,7 +21,7 @@ const TweetList : React.FC <TweetFilter> = (props) =>{
             filter:props.filter} 
          } ); 
     
-    if (loading) return <p>'Loading .. '</p> 
+    if (loading) return <Loading/>
     if (error) return <p>`Error! ${error.message}`</p> 
     
     return (

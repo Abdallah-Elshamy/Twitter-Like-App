@@ -29,7 +29,7 @@ export const LandingPage : React.FC  = () =>  (
                            </p>  
                      </div>
 
-                   <TweetButton name ="login" className = "w-28 ml-12 h-8"/> 
+                   <TweetButton name ="login" className = "w-28 ml-12 h-8 mt-8"/> 
           </div>  
  
                     <img src={ logo } alt = " Twitter-Logo " className="h-8 w-16 mt-12 ml-12 flex"/>
@@ -37,11 +37,11 @@ export const LandingPage : React.FC  = () =>  (
                     <p className=" ml-12 mt-12 text-4xl font-bold ">Join twitter today. </p>   
 
                     <Link to="/SignUp">
-                    < TweetButton name = "Sign Up" className = "w-80 ml-12 mt-8 font-semibold" />
+                    < TweetButton name = "Sign Up" className = "w-80 ml-12 mt-8 font-semibold h-12 mt-8" />
                     </Link>
                     
                     <Link to="/login">
-                    < TweetButton name = "Log in"  className =  "w-80 ml-12 font-semibold"/>
+                    < TweetButton name = "Log in"  className =  "w-80 ml-12 font-semibold h-12 mt-8"/>
                     </Link>
         </div>
 </div>

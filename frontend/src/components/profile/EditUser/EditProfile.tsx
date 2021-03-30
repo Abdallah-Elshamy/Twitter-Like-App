@@ -1,22 +1,14 @@
 import { Field, Formik } from 'formik';
-import React, { MouseEventHandler, useRef } from 'react';
-import { object } from 'yup';
+import React, { createRef, MouseEventHandler, useRef } from 'react';
+import { object, string, date } from 'yup';
 import { User } from '../../../common/TypesAndInterfaces';
 import '../profile.css';
 import InputSet from './InputSet';
-import * as Yup from 'yup'
-import { string } from 'yup';
-import { date } from 'yup';
-import moment from 'moment';
 import { isDate, parse } from 'date-fns';
+import { useMutation } from '@apollo/client';
+import { EditUser } from '../../../common/queries/EditUser';
+import { LoggedUser } from '../../../Userqery';
 
-function parseDateString(value: any, originalValue: any) {
-  const parsedDate = isDate(originalValue)
-    ? originalValue
-    : parse(originalValue, "yyyy-MM-dd", new Date());
-
-  return parsedDate;
-}
 
 type Props = {
   user: User,
@@ -31,40 +23,80 @@ interface initials {
 }
 const EditProfile: React.FC<Props> = ({ user, close, show }) => {
 
+  const [editUser, { data, error, loading }] = useMutation(EditUser)
 
   const initialValues: initials = {
     name: user.name,
     bio: user.bio || "",
     birthdate: user.birthDate || "06/11/1998"
   }
-  const now = new Date()
-  const dateToday = new Date(`${now.getFullYear() - 18}/${now.getMonth()}/${now.getDay()}`)
-  console.log(date)
 
   const validationSchema = object({
     name: string()
       .required('Required')
       .max(50, 'Too long'),
     bio: string().max(250, "Too long"),
-    birthdate: date().transform(parseDateString).max(dateToday, "wrong")
-
-
   })
 
   const formRef: any = useRef();
+  const closeButton: any = createRef();
 
   const save = () => {
-    console.log(formRef.current.values)
+    const dataValues = formRef.current.values
+    console.log(dataValues)
+    //convert date to string
+    let ageError
+    let yourDate = dataValues.birthdate
+    if (typeof yourDate == 'string') ageError = false
+    else {
+      yourDate = new Date(dataValues.birthdate.getTime() - (yourDate.getTimezoneOffset() * 60 * 1000))
+      yourDate = yourDate.toISOString().split('T')[0]
+
+
+
+      //check age is older than 12
+      ageError = !((new Date().getFullYear() - Number(yourDate.substring(0, 4))) >= 12)
+      if (!ageError) dataValues.birthdate = yourDate
+    }
+
+
+    //overall error
+    var error = ((Object.keys(formRef.current.errors).length !== 0) || ageError)
+    if (!error) {
+      editUser({
+        variables:
+        {
+          userInput:
+          {
+            name: dataValues.name,
+            bio: dataValues.bio,
+            birthDate: dataValues.birthdate
+          }
+        }
+      })
+    }
+    if (!loading) closeButton.current.click()
+
   }
   return (
     show && <div className="py-4">
       <header className="flex justify-between  items-center px-3 h-6 w-full border-b border-gray-200 pb-6 pt-2">
-        <div onClick={close} className="hover:bg-red-100 p-1 rounded-full"><svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-        </svg></div>
+        <div onClick={close} ref={closeButton} className="hover:bg-red-100 p-1 rounded-full">
+
+          <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </div>
+
         <div><h1 className="font-bold font-lg">Edit Profile</h1></div>
-        <div><button onClick={save}
-          className="inline-block rounded-full px-4 py-1.5 font-semibold  text-gray-800 border border-blue-400">Save</button></div>
+
+        <div>
+          <button onClick={save}
+            className="inline-block rounded-full px-4 
+           py-1.5 font-semibold  text-gray-800 border border-blue-400">
+            Save
+          </button>
+        </div>
       </header>
 
       <main className="p-4">

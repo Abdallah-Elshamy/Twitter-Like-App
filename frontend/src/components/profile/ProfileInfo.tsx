@@ -4,22 +4,14 @@ import React, { Fragment } from 'react';
 import bg from "../../routes/1500x500.jpeg";
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 import FollowButton from '../FollowButton/FollowButton';
-import { parseJwt } from '../../common/decode';
 import {User} from '../../common/TypesAndInterfaces'
-import {LoggedUser} from '../../common/queries/Userqery'; 
-import {userVar} from "../../common/cache"
-
+import {Get_Logged_user} from "../../common/queries/localUser"
                                                                                                                                                      
 function ProfileInfo() {
-  var profile;
-  if (localStorage.getItem('token') !== "LOGOUT") {
-    profile = parseJwt(localStorage.getItem('token'))
-  }
 
-  const data = useQuery(LoggedUser, {variables:{id:profile.id}}).data; 
-       const user : User = data.user;
-       userVar ({user:user})
-
+  const userData = useQuery (Get_Logged_user)
+  const user:User = userData.data.logUser.user
+  
   return (
     
     <Fragment>

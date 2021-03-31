@@ -6,7 +6,11 @@ import TrendsBar from './TrendsBar/TrendsBar';
 import './../styles/layout.css'
 import HomeTweets from './tweets/HomeTweets';
 import PostTweet from './tweets/PostTweet';
+
 function Home() {
+
+
+  
 
   return (
     <Fragment>

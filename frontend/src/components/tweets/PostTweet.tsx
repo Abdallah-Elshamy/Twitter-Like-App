@@ -3,22 +3,27 @@ import React, { useState, useRef } from "react"
 import * as Yup from "yup"
 import { TweetButton } from '../sideBar/tweetButton/tweetButton'
 import {Tweets} from '../../common/queries/TweetQuery'
-import {FeedTweets} from '../../common/queries/Feedtweets'
+// import {FeedTweets} from '../../common/queries/Feedtweets'
 import   {Post_Tweet}  from '../../common/queries/createTweet'
 import { useMutation, useQuery } from "@apollo/client"
-import {Get_Logged_user} from "../../common/queries/localUser"
+// import {Get_Logged_user} from "../../common/queries/localUser"
 import './tweet.css';
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
-
+// import {User} from '../../common/TypesAndInterfaces'
+import { parseJwt } from '../../common/decode';
 interface Post {
   text:string
 }
 const  PostTweet =()=> {
-  const userData = useQuery (Get_Logged_user)
+  var profile:any;
+  if (localStorage.getItem('token') !== "LOGOUT") {
+    profile = parseJwt(localStorage.getItem('token'))
+  }
+  // const userData = useQuery (Get_Logged_user)
+  // const user:User = userData.data.logUser.user
+
   const inputRef:any = useRef ()
-
-  // console.log(userData.data.logUser.user)
-
+  // mutation
   const [createTweet , {data}]  = useMutation (Post_Tweet);
   console.log (`this ${inputRef.current}`)
 
@@ -27,16 +32,12 @@ const  PostTweet =()=> {
   }
   /********   dynamic hight control funtion   ***********/
   function setInputHight (element:React.ChangeEvent<HTMLElement>){
-    
-    // console.log(inputRef.current.style.height)
-   
-    element.target.style.height = "2rem"
+    element.target.style.height = "60px"
     element.target.style.height = (element.target.scrollHeight)+"px"
     inputRef.current.style.height = (element.target.scrollHeight)+"px"
-    // console.log (`in ${element.target.style.height}`)
-    // console.log (`out ${inputRef.current.style.height}`)
-    // console.log (`scroll ${element.target.scrollHeight}`)
-
+    console.log (`in ${element.target.style.height}`)
+    console.log (`out ${inputRef.current.style.height}`)
+    console.log (`scroll ${element.target.scrollHeight}`)
   }
   return (
     <div className="mb-3 p-3 w-full shadow bg-white flex">
@@ -49,8 +50,13 @@ const  PostTweet =()=> {
           setSubmitting(true);
           console.log (text);
           createTweet ({
-            variables :{tweetInput: {text}  } ,
-            refetchQueries :[{query:FeedTweets}]
+            variables :{tweetInput: {text}  }, 
+            refetchQueries :[ {query:Tweets , 
+              variables:{
+                 userId: profile.id, 
+                 filter:''} 
+              }]
+            
           });
           console.log (`this ${data}`)
           setSubmitting(false);

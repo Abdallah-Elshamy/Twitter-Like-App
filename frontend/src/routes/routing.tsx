@@ -10,10 +10,18 @@ import { SignUpForm } from '../components/Register/signup_form/signup';
 import Explore from './Explore';
 import Profile from '../components/profile/Profile';
 import  Home  from "../components/Home";
+// import {  useQuery } from '@apollo/client';
+// import {LoggedUser} from '../common/queries/Userqery'; 
+// import { parseJwt } from '../common/decode';
+// import {User} from '../common/TypesAndInterfaces'
+// import {userVar} from "../common/cache"
+// import Loading from '../UI/Loading'
 
-export const Routing: React.FC = () => (
+export const Routing: React.FC = () => {
+  // asigning the user local var 
+  return (
   <div>
-
+    
     <Switch>
 
       <Route path="/SignUp">
@@ -70,20 +78,15 @@ export const Routing: React.FC = () => (
 
     </Switch>
   </div>
-);
-
-
+  )}
 
 function Setting() {
   return <h2>setting</h2>;
 }
 
-
-
 function Messages() {
   return <h2>Messages</h2>;
 }
-
 function Notifications() {
   return <h2>Notifications</h2>;
 }

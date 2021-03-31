@@ -1,18 +1,17 @@
-import { FormEvent, useState} from 'react';
+import { FormEvent, useEffect, useState} from 'react';
 import { useQuery} from '@apollo/client'
 import { ApolloClient, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import {Link ,useHistory} from "react-router-dom"
-
 import "./../../../styles/layout.css";
 import "./../Register.css";
-
 import { TweetButton } from "./../../sideBar/tweetButton/tweetButton";
 import {Logo} from "./../../logo/logo";
 import { FormInput } from '../formInput/formInput';
 import { LOGIN } from '../../../common/queries/login_query';
 import { cache } from '../../../common/cache';
-  
+
+
 const httpLink = createHttpLink({
   uri: 'http://localhost:8000/graphql',
 });
@@ -33,6 +32,7 @@ export const clientLog = new ApolloClient({
 
 
 export function Login()  {
+
     const [email, setEmail] = useState(' ');
     const [password, setPassword] = useState(' ');
     const routeHistory = useHistory();
@@ -44,17 +44,15 @@ export function Login()  {
     const navigate = (route: string) => routeHistory.push(route)
 
     function submit(){
-
      if (!loading && !error && data ){
             localStorage.setItem('token', data.login.token);
             navigate('/')
-
     }
      if (error ){
         alert ("you have an error" + error ) 
     } 
-
       }
+  
 
 return(
 <div>

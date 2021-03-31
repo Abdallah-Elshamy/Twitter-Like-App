@@ -1,7 +1,6 @@
 import { InMemoryCache, makeVar, ReactiveVar } from "@apollo/client";
-import { isUndefined } from "util";
 import { searchBarValue } from "./TypesAndInterfaces";
-import  { User, logUser } from "./TypesAndInterfaces";
+import  {  logUser } from "./TypesAndInterfaces";
 
 export const cache: InMemoryCache = new InMemoryCache({
   typePolicies: {

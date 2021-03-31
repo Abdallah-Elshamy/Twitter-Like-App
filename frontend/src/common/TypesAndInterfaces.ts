@@ -14,7 +14,7 @@ export interface PersonEntity {
   isFollowing?: Boolean
 }
 export interface User {
-  // id: string, 
+  id: string, 
   userName: string,
   name: string,
   followed: boolean,

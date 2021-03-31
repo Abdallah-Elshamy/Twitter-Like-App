@@ -952,7 +952,7 @@ describe("user-resolvers", (): void => {
             token = response.body.data.login.token;
 
             // create 2 users
-            for (let i = 0; i < 3; i++) {
+            for (let i = 0; i < 2; i++) {
                 let user = await User.create({
                     name: `testUser ${i + 1}`,
                     userName: `testU${i + 1}`,

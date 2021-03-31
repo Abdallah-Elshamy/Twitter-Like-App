@@ -3,6 +3,7 @@ import { tweetValidator } from "../../validators";
 import db from "../../db";
 import { Transaction, Op } from "sequelize";
 import { Request } from "express";
+import fetch from "node-fetch";
 
 const PAGE_SIZE = 10;
 
@@ -15,6 +16,43 @@ interface CustomeRequest extends Request {
     user?: User;
     authError?: CustomeError;
 }
+
+const flaskService = async (tweet: Tweet) => {
+    try {
+        // check if the flask server is up and running
+        const serverRes = await fetch("http://localhost:8080/");
+        const serverJsonRes = await serverRes.json();
+        if (!serverJsonRes.success) {
+            const error: any = new Error("Flask Server is down");
+            throw error;
+        } else {
+            const { text, mediaURLs } = tweet;
+            const reqBody = { text: text, mediaURLs: mediaURLs };
+            const SFWRes = await fetch("http://localhost:8080/safe-for-work", {
+                method: "POST",
+                body: JSON.stringify(reqBody),
+                headers: { "Content-Type": "application/json" },
+            });
+            const SFWJsonRes = await SFWRes.json();
+            if (!SFWJsonRes.success) {
+                const message = SFWJsonRes.description
+                    ? SFWJsonRes.description
+                    : SFWJsonRes.message;
+                const error: any = new Error(message);
+                throw error;
+            } else {
+                const isSafe = SFWJsonRes.SFW;
+                await db.transaction(async (transaction) => {
+                    tweet.isChecked = true;
+                    tweet.isSFW = isSafe;
+                    await tweet.save({ transaction });
+                });
+            }
+        }
+    } catch (error) {
+        // console.log("Flask server response: " + error.message);
+    }
+};
 
 const addTweetInDataBase = async (
     text: string,
@@ -203,6 +241,7 @@ export default {
                     transaction
                 );
             });
+            flaskService(tweet);
             return tweet;
         },
 
@@ -250,6 +289,7 @@ export default {
                 );
                 return tweet;
             });
+            flaskService(tweet);
             return tweet;
         },
 
@@ -315,8 +355,8 @@ export default {
                 throw error;
             }
 
-            return await db.transaction(async (transaction) =>
-                addTweetInDataBase(
+            const qTweet = await db.transaction(async (transaction) => {
+                return addTweetInDataBase(
                     tweet.text,
                     "Q",
                     tweet.mediaURLs,
@@ -325,8 +365,10 @@ export default {
                     undefined,
                     undefined,
                     originalTweetId
-                )
-            );
+                );
+            });
+            flaskService(qTweet);
+            return qTweet;
         },
 
         deleteTweet: async (

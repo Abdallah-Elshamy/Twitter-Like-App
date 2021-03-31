@@ -1,12 +1,11 @@
 import { ErrorMessage, Field, Form, Formik } from "formik"
-import React, { useState } from "react"
+import React, { useState, useRef } from "react"
 import * as Yup from "yup"
 import { TweetButton } from '../sideBar/tweetButton/tweetButton'
 import {Tweets} from '../../common/queries/TweetQuery'
 import {FeedTweets} from '../../common/queries/Feedtweets'
 import   {Post_Tweet}  from '../../common/queries/createTweet'
 import { useMutation, useQuery } from "@apollo/client"
-
 import {Get_Logged_user} from "../../common/queries/localUser"
 import './tweet.css';
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
@@ -16,14 +15,29 @@ interface Post {
 }
 const  PostTweet =()=> {
   const userData = useQuery (Get_Logged_user)
+  const inputRef:any = useRef ()
 
   // console.log(userData.data.logUser.user)
 
   const [createTweet , {data}]  = useMutation (Post_Tweet);
+  console.log (`this ${inputRef.current}`)
 
   const initialValues: Post = {
     text: ""
-	}
+  }
+  /********   dynamic hight control funtion   ***********/
+  function setInputHight (element:React.ChangeEvent<HTMLElement>){
+    
+    // console.log(inputRef.current.style.height)
+   
+    element.target.style.height = "2rem"
+    element.target.style.height = (element.target.scrollHeight)+"px"
+    inputRef.current.style.height = (element.target.scrollHeight)+"px"
+    // console.log (`in ${element.target.style.height}`)
+    // console.log (`out ${inputRef.current.style.height}`)
+    // console.log (`scroll ${element.target.scrollHeight}`)
+
+  }
   return (
     <div className="mb-3 p-3 w-full shadow bg-white flex">
       <div className="tweet-icon">
@@ -43,13 +57,18 @@ const  PostTweet =()=> {
           resetForm();
         }}
       >
-        <div className="w-full mx-4">
-          <Form>
-            <div className="w-full mb-2 h-16 tweet-text">
+        <div className="w-full mx-4 flex flex-col">
+          <Form >
+            <div ref={inputRef} className="w-full mb-2 tweet-text flex h-16">
               <Field
+              
               name="text"
               type="text"
-              className="w-full placeholder-gray4 p-3 ml-2 focus:outline-none "
+              as="textarea"
+              // onChange={setInputHight}
+              onKeyPress={setInputHight}
+              className="w-full placeholder-gray4 p-3 ml-2 
+              focus:outline-none resize-none overflow-hidden min-h-12"
               placeholder="What's happening..."/>
               <ErrorMessage name="content" component={"div"} />
             </div>
@@ -69,6 +88,7 @@ const  PostTweet =()=> {
                 </button>
               <TweetButton name="Tweet" type="submit" className=" rounded-full py-3 px-6"/>
             </div>
+            
           </Form>
         </div>
       </Formik>

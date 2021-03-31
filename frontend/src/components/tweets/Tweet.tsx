@@ -36,12 +36,13 @@ const Tweet : React.FC <TweetData> = (props) =>  (
             <p className="p--light-color px-1"> {props.createdAt}</p>
             <span className="tweet-ellipsis p--light-color">
             <i className="fas fa-ellipsis-h"></i>
-          </span>
-        </div>
+            </span>
+          </div>
           <div className="tweet-content">
-            <span>
+            <p >
               {props.text}
-            </span>    
+            </p>  
+          </div> 
           <div className="tweet-toolbar p--light-color  ">
             <a href="/">
             <i className="fas fa-reply text-base font-sm "></i>
@@ -55,7 +56,6 @@ const Tweet : React.FC <TweetData> = (props) =>  (
             <i className="far fa-heart text-base font-sm"></i>
             <span>{props.likesCount}</span>
             </a>
-          </div>
           </div>
         </div>   
 

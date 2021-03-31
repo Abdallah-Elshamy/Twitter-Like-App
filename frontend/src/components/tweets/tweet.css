@@ -31,10 +31,14 @@
 } */
 
 .tweet-content {
-  /* height: 60%; */
+  padding: 4px;
   font-weight: 400;
-  /* background: #aaa; */
 }
+/* slove word without space pb */
+.tweet-content > p {
+  word-break: break-word;
+}
+
 .tweet-data {
   display: flex;
   flex-direction: row;

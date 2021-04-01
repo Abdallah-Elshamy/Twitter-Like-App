@@ -28,16 +28,17 @@ function ProfileInfo() {
         </div>
       </header>
       <div className="pf--container">
+
         <div className="pf--bg" >
-          {user.imageURL? (
-                      <img src={user.imageURL}  
+          {user.coverImageURL? (
+                      <img src={user.coverImageURL}  
                       alt="avatar"/>
           ): (<img src={bg} alt="avatar"/>)}
 
         </div>
         <div className="pf--avatar">
-        {user.coverImageURL? (
-                      <img className="pf--avatar-img" src={user.coverImageURL}  
+        {user.imageURL? (
+                      <img className="pf--avatar-img" src={user.imageURL}  
                       alt="avatar"/>
           ): (<img className="pf--avatar-img" src={avatar} alt="avatar"/>)}
         </div>
@@ -46,7 +47,7 @@ function ProfileInfo() {
           <div className="pf--flw-btn-div p-3 ">
             <FollowButton id="1" py="py-1.5" following={false} /></div>
           <div className="mx-2 ">
-            <p className="font-extrabold text-lg pb-1">Toka Abdulhamied</p>
+            <p className="font-extrabold text-lg pb-1">{user.name}</p>
             <p className="p--light-color block pb-1">@{user.userName}</p>
             <p>{user.bio}</p>
             <div className="p--light-color pb-1">

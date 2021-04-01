@@ -9,17 +9,21 @@ import TweetList from '../tweets/TweetList'
 import { Switch, NavLink, Route } from "react-router-dom"
 import { parseJwt } from '../../common/decode';
 import Loading from "../../UI/Loading"
+import Profilewallpage from './profileWallPage';
 
 
 function ProfileWall() {
   var profile;
   if (localStorage.getItem('token') !== "LOGOUT" || localStorage.getItem('token') == null) {
-    profile = parseJwt(localStorage.getItem('token'))
+    profile = parseJwt (localStorage.getItem('token'))
   }
 
   const { loading, error } = useQuery(LoggedUser, { variables: { id: profile.id } });
+
   if (loading) return (<div className="mt-8" ><Loading /></div>)
+
   if (error) return <p>`Error! ${error.message}`</p>
+  
   return (
     <Fragment>
       <ProfileInfo />
@@ -46,7 +50,8 @@ function ProfileWall() {
             exact
             path='/profile'
             render={() => (
-              <TweetList filter={``} />
+              // <TweetList filter={``} />
+              <Profilewallpage  filter={``}/>
             )}
           />
           <Route

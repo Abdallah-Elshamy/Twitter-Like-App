@@ -1,4 +1,3 @@
-
 import { useQuery } from '@apollo/client';
 import React, { Fragment, useState } from 'react';
 import bg from "../../routes/1500x500.jpeg";
@@ -13,6 +12,7 @@ import Modal from '../../UI/Modal/Modal';
 
 
 function ProfileInfo() {
+
   var profile;
   if (localStorage.getItem('token') !== null) {
     profile = parseJwt(localStorage.getItem('token'))

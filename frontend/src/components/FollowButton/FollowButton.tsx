@@ -40,7 +40,7 @@ const FollowButton: React.FC<Props> = ({ id, py = "py-0.5", following = false })
       >
         <span className="following">Following</span>  <span className="unfollowing">Unfollow</span>
       </button > :
-      < button className={"pf--follow-btn   rounded-full px-2 font-semibold  text-xm w-min  " + py}
+      < button className={"pf--follow-btn rounded-full px-2 font-semibold  text-xm w-min  " + py}
         onClick={handleFollow}
       >
         Follow

@@ -21,40 +21,12 @@ const  Profilewallpage: React.FC<TweetFilter> = (props) => {
     profile = parseJwt(localStorage.getItem('token'))
   }
 
-  // const cache = new InMemoryCache({
-  //   typePolicies: {
-  //     Query: {
-  //       fields: {
-  //         feed: {
-  //           read(existing, {
-  //             args: {
-  //               // Default to returning the entire cached list,
-  //               // if offset and limit are not provided.
-  //               offset = 0,
-  //               limit = existing?.length,
-  //             } = {},
-  //           }) {
-  //             return existing && existing.slice(offset, offset + limit);
-  //           },
-  //           keyArgs: false,
-  //           merge(existing = [], incoming) {
-  //             return [...existing, ...incoming];
-  //         },
-  //       },
-  //     },
-  //   },
-  // });
-
   const cache = new InMemoryCache({
     typePolicies: {
       Query: {
         fields: {
           feed: {
             read(existing) {
-              // A read function should always return undefined if existing is
-              // undefined. Returning undefined signals that the field is
-              // missing from the cache, which instructs Apollo Client to
-              // fetch its value from your GraphQL server.
               return existing && existing ;
             },
             merge(existing = [], incoming) {

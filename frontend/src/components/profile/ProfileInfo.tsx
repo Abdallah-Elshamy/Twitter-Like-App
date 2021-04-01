@@ -2,14 +2,10 @@ import { useQuery } from '@apollo/client';
 import React, { Fragment, useState } from 'react';
 import bg from "../../routes/1500x500.jpeg";
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
-import FollowButton from '../FollowButton/FollowButton';
 import { parseJwt } from '../../common/decode';
 import { User } from '../../common/TypesAndInterfaces'
 import { LoggedUser } from '../../Userqery';
-import EditButton from '../EditButton';
 import Modal from '../../UI/Modal/Modal';
-
-
 
 function ProfileInfo() {
 
@@ -59,7 +55,6 @@ function ProfileInfo() {
 
         <div className="pf--info">
           <div className="pf--flw-btn-div p-3 h-12">
-            {/*<FollowButton id="1" py="py-1.5" following={false} />*/}
             < button onClick={() => setEdit(true)} className={"pf--follow-btn rounded-full px-3 font-semibold text-xm  py-2.5 mt-3 "}>
               Edit Profile
             </button >

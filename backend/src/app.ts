@@ -15,7 +15,7 @@ const apolloServer: ApolloServer = new ApolloServer({
     typeDefs,
     resolvers,
     playground: process.env.DEVELOPMENT_ENVIROMENT == "true",
-    context: ({req}) => ({
+    context: ({ req }) => ({
         req,
     }),
     formatError: (err) => {

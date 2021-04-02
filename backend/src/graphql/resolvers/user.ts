@@ -156,8 +156,11 @@ export default {
             );
             delete userInput.password;
             const user = await db.transaction(async (transaction) => {
-                return await User.create(userInput, { transaction });
+                const newUser = await User.create(userInput, { transaction });
+                await newUser.$add("following", newUser, { transaction });
+                return newUser;
             });
+
             return user;
         },
         updateUser: async (
@@ -377,6 +380,15 @@ export default {
                 throw authError;
             }
             const currentUser = user as User;
+
+            // check if the user is trying to follow himself
+            if (currentUser.id === +args.userId) {
+                const error: any = new Error(
+                    "The user can't unfollow himself!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
 
             // check if the entered user is found in the database
             const toBeUnfollowed = await User.findByPk(args.userId);

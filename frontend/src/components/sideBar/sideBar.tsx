@@ -5,6 +5,7 @@ import '../../App.css';
 import { SideBarItem } from './sideBarItem/sideBarItem'
 import { TweetButton } from './tweetButton/tweetButton'
 import { FlootProfile } from './flootProfile/flootProfile'
+import { Modal } from '@material-ui/core';
 
 
 

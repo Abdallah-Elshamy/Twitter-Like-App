@@ -23,8 +23,8 @@ function ProfileInfo() {
     <Fragment>
       <Modal show={edit}
         modalClosed={modalClosed}>
-
       </Modal>
+
       <header className="top-bar px-3 py-2">
         <span className=" m-3">
           <a href="http://">
@@ -46,6 +46,7 @@ function ProfileInfo() {
           ) : (<img src={bg} alt="avatar" />)}
 
         </div>
+        
         <div className="pf--avatar">
           {user.coverImageURL ? (
             <img className="pf--avatar-img" src={user.coverImageURL}

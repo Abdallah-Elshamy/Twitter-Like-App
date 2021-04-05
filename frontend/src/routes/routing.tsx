@@ -23,7 +23,6 @@ export const Routing = () => {
 
       <Switch>
         <PublicRoute path="/signup">
-
           <SignUpForm />
         </PublicRoute>
         

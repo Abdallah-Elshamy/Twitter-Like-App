@@ -4,6 +4,7 @@ import db from "../../db";
 import { Transaction, Op } from "sequelize";
 import { Request } from "express";
 import fetch from "node-fetch";
+import { backOff } from "exponential-backoff";
 
 const PAGE_SIZE = 10;
 
@@ -17,10 +18,18 @@ interface CustomeRequest extends Request {
     authError?: CustomeError;
 }
 
-const flaskService = async (tweet: Tweet) => {
+const SFWService = async (tweet: Tweet) => {
+    const serviceUrl: string = process.env.SFW_SERVICE!;
     try {
+        const serverRes = await backOff(() => fetch(serviceUrl), {
+            retry: (e: any, attemptNumber: number) => {
+                console.log(
+                    `Trial num. ${attemptNumber} to access SFW service : ${e}`
+                );
+                return true;
+            },
+        });
         // check if the flask server is up and running
-        const serverRes = await fetch("http://localhost:8080/");
         const serverJsonRes = await serverRes.json();
         if (!serverJsonRes.success) {
             const error: any = new Error("Flask Server is down");
@@ -28,7 +37,7 @@ const flaskService = async (tweet: Tweet) => {
         } else {
             const { text, mediaURLs } = tweet;
             const reqBody = { text: text, mediaURLs: mediaURLs };
-            const SFWRes = await fetch("http://localhost:8080/safe-for-work", {
+            const SFWRes = await fetch(serviceUrl + "safe-for-work", {
                 method: "POST",
                 body: JSON.stringify(reqBody),
                 headers: { "Content-Type": "application/json" },
@@ -50,7 +59,7 @@ const flaskService = async (tweet: Tweet) => {
             }
         }
     } catch (error) {
-        // console.log("Flask server response: " + error.message);
+        console.log("Flask server response: " + error.message);
     }
 };
 
@@ -87,6 +96,7 @@ const addTweetInDataBase = async (
     );
     tweet.originalTweetId = originalTweetId ? originalTweetId : tweet.id;
     await tweet.save({ transaction });
+    SFWService(tweet);
     return tweet;
 };
 
@@ -241,7 +251,6 @@ export default {
                     transaction
                 );
             });
-            flaskService(tweet);
             return tweet;
         },
 
@@ -289,7 +298,6 @@ export default {
                 );
                 return tweet;
             });
-            flaskService(tweet);
             return tweet;
         },
 
@@ -367,7 +375,6 @@ export default {
                     originalTweetId
                 );
             });
-            flaskService(qTweet);
             return qTweet;
         },
 

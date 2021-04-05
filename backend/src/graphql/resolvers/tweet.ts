@@ -18,6 +18,17 @@ interface CustomeRequest extends Request {
     authError?: CustomeError;
 }
 
+export const SFWRegularCheck = async () => {
+    const uncheckedTweets: Tweet[] = await Tweet.findAll({
+        where: {
+            isChecked: false,
+        },
+    });
+    uncheckedTweets.forEach((tweet) => {
+        SFWService(tweet);
+    });
+};
+
 const SFWService = async (tweet: Tweet) => {
     const serviceUrl: string = process.env.SFW_SERVICE!;
     try {

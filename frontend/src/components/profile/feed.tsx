@@ -8,6 +8,7 @@ const handleScrolling = ( onLoadMore:any , e:any ) => {
     console.log("scrooooll")
   }
 }
+
 function Feed  ({ tweet , onLoadMore }:any) {
 return (
 <ul>

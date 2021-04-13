@@ -5,9 +5,6 @@ import './profile/profile.css';
 import TrendsBar from './TrendsBar/TrendsBar';
 import './../styles/layout.css'
 import HomeTweets from './tweets/HomeTweets';
-import { useQuery } from '@apollo/client';
-import { GET_ISAUTH } from '../common/queries/Get_isAuth';
-
 
 function Home() {
 

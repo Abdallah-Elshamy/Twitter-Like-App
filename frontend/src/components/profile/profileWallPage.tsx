@@ -1,16 +1,15 @@
-import React, { Fragment } from "react"
+import React from "react"
 import { useQuery } from '@apollo/client';
 import { Tweets } from "../TweetQuery";
 import { parseJwt } from '../../common/decode';
 import { InMemoryCache } from "@apollo/client";
-import { offsetLimitPagination } from "@apollo/client/utilities";
 import Feed from "./feed";
 
 
 export interface TweetFilter {
   filter: string
 }
-var limit = 0 ;
+// var limit = 0 ;
 
 const  Profilewallpage: React.FC<TweetFilter> = (props) => {
   var profile;
@@ -58,42 +57,22 @@ const  Profilewallpage: React.FC<TweetFilter> = (props) => {
             page : page + 1
     
           } , 
-          updateQuery: (prev = [], { fetchMoreResult }) =>
-           fetchMoreResult
-          // updateQuery: (prev, { fetchMoreResult }) => {
-          //   if (!fetchMoreResult) return prev;
-          //   return Object.assign({}, prev, {
-          //     tweet: [...prev , ...fetchMoreResult ]
-          //   });
-          // }
+          // updateQuery: (prev = [], { fetchMoreResult }) => fetchMoreResult
+ 
+          updateQuery: (prev, { fetchMoreResult }) => {
+            if (!fetchMoreResult) return prev;
+            return Object.assign({}, prev, {
+              tweet: [...prev , ...fetchMoreResult ]
+            });
+          }
 
         })
+        
       }  
     />
       
   );
 }
-
-
-
-//   return (
-
-//     <Fragment>
-//       {console.log(data.tweets.tweets)}
-//       {
-
-//         data.tweets.tweets.map((tweet: TweetData) => {
-//           return <Tweet text={tweet.text}
-//             repliesCount={tweet.repliesCount}
-//             createdAt={tweet.createdAt}
-//             isLiked={tweet.isLiked}
-//             user={tweet.user}
-//             likesCount={tweet.likesCount}
-//             key={tweet.id} />
-//         })}
-//     </Fragment>
-//   )
-// }
 
 
 export default Profilewallpage;

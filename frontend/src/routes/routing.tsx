@@ -1,4 +1,4 @@
-import React, { Children } from 'react';
+import React from 'react';
 import {
   Switch,
   Route,
@@ -15,8 +15,6 @@ import { useQuery } from '@apollo/client';
 import { GET_ISAUTH } from '../common/queries/Get_isAuth';
 
 export const Routing = () => {
-  let auth = useQuery(GET_ISAUTH).data.authenticated
-
 
   return (
     <div>

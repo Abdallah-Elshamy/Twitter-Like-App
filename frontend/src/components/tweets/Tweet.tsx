@@ -63,6 +63,4 @@ const Tweet: React.FC<TweetData> = (props) => (
   </div>
 );
 
-
-
 export default Tweet

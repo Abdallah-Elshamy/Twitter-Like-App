@@ -13,6 +13,8 @@ function ProfileInfo() {
   if (localStorage.getItem('token') !== null) {
     profile = parseJwt(localStorage.getItem('token'))
   }
+
+  
   const [edit, setEdit] = useState<boolean>(false)
   const modalClosed = () => setEdit(false)
 

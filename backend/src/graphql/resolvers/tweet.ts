@@ -140,9 +140,14 @@ export default {
         },
         tweets: async (
             parent: any,
-            args: { userId: number; page: number; filter: string }
+            args: {
+                userId: number;
+                page: number;
+                filter: string;
+                isSFW: boolean;
+            }
         ) => {
-            const { userId, page, filter } = args;
+            const { userId, page, filter, isSFW } = args;
             if (
                 !(
                     !filter ||
@@ -167,63 +172,139 @@ export default {
             }
             return {
                 tweets: async () => {
-                    if (!filter) {
-                        return await user.$get("tweets", {
-                            where: {
-                                state: {
-                                    [Op.ne]: "C",
+                    if (isSFW) {
+                        if (!filter) {
+                            return await user.$get("tweets", {
+                                where: {
+                                    state: {
+                                        [Op.ne]: "C",
+                                    },
+                                    isSFW: true,
                                 },
-                            },
-                            order: [["createdAt", "DESC"]],
-                            offset: ((page || 1) - 1) * PAGE_SIZE,
-                            limit: PAGE_SIZE,
-                        });
-                    } else if (filter === "replies&tweets") {
-                        return await user.$get("tweets", {
-                            order: [["createdAt", "DESC"]],
-                            offset: ((page || 1) - 1) * PAGE_SIZE,
-                            limit: PAGE_SIZE,
-                        });
-                    } else if (filter === "likes") {
-                        return await user.$get("likes", {
-                            order: [["createdAt", "DESC"]],
-                            offset: ((page || 1) - 1) * PAGE_SIZE,
-                            limit: PAGE_SIZE,
-                        });
-                    } else if (filter === "media") {
-                        return await user.$get("tweets", {
-                            where: {
-                                mediaURLs: {
-                                    [Op.ne]: [],
+                                order: [["createdAt", "DESC"]],
+                                offset: ((page || 1) - 1) * PAGE_SIZE,
+                                limit: PAGE_SIZE,
+                            });
+                        } else if (filter === "replies&tweets") {
+                            return await user.$get("tweets", {
+                                where: { isSFW: true },
+                                order: [["createdAt", "DESC"]],
+                                offset: ((page || 1) - 1) * PAGE_SIZE,
+                                limit: PAGE_SIZE,
+                            });
+                        } else if (filter === "likes") {
+                            return await user.$get("likes", {
+                                where: { isSFW: true },
+                                order: [["createdAt", "DESC"]],
+                                offset: ((page || 1) - 1) * PAGE_SIZE,
+                                limit: PAGE_SIZE,
+                            });
+                        } else if (filter === "media") {
+                            return await user.$get("tweets", {
+                                where: {
+                                    mediaURLs: {
+                                        [Op.ne]: [],
+                                    },
+                                    isSFW: true,
                                 },
-                            },
-                            order: [["createdAt", "DESC"]],
-                            offset: ((page || 1) - 1) * PAGE_SIZE,
-                            limit: PAGE_SIZE,
-                        });
+                                order: [["createdAt", "DESC"]],
+                                offset: ((page || 1) - 1) * PAGE_SIZE,
+                                limit: PAGE_SIZE,
+                            });
+                        }
+                    } else {
+                        if (!filter) {
+                            return await user.$get("tweets", {
+                                where: {
+                                    state: {
+                                        [Op.ne]: "C",
+                                    },
+                                },
+                                order: [["createdAt", "DESC"]],
+                                offset: ((page || 1) - 1) * PAGE_SIZE,
+                                limit: PAGE_SIZE,
+                            });
+                        } else if (filter === "replies&tweets") {
+                            return await user.$get("tweets", {
+                                order: [["createdAt", "DESC"]],
+                                offset: ((page || 1) - 1) * PAGE_SIZE,
+                                limit: PAGE_SIZE,
+                            });
+                        } else if (filter === "likes") {
+                            return await user.$get("likes", {
+                                order: [["createdAt", "DESC"]],
+                                offset: ((page || 1) - 1) * PAGE_SIZE,
+                                limit: PAGE_SIZE,
+                            });
+                        } else if (filter === "media") {
+                            return await user.$get("tweets", {
+                                where: {
+                                    mediaURLs: {
+                                        [Op.ne]: [],
+                                    },
+                                },
+                                order: [["createdAt", "DESC"]],
+                                offset: ((page || 1) - 1) * PAGE_SIZE,
+                                limit: PAGE_SIZE,
+                            });
+                        }
                     }
                 },
                 totalCount: async () => {
-                    if (!filter) {
-                        return await user.$count("tweets", {
-                            where: {
-                                state: {
-                                    [Op.ne]: "C",
+                    if (isSFW) {
+                        if (!filter) {
+                            return await user.$count("tweets", {
+                                where: {
+                                    state: {
+                                        [Op.ne]: "C",
+                                    },
+                                    isSFW: true,
                                 },
-                            },
-                        });
-                    } else if (filter === "replies&tweets") {
-                        return await user.$count("tweets");
-                    } else if (filter === "likes") {
-                        return await user.$count("likes");
-                    } else if (filter === "media") {
-                        return await user.$count("tweets", {
-                            where: {
-                                mediaURLs: {
-                                    [Op.ne]: [],
+                            });
+                        } else if (filter === "replies&tweets") {
+                            return await user.$count("tweets", {
+                                where: {
+                                    isSFW: true,
                                 },
-                            },
-                        });
+                            });
+                        } else if (filter === "likes") {
+                            return await user.$count("likes", {
+                                where: {
+                                    isSFW: true,
+                                },
+                            });
+                        } else if (filter === "media") {
+                            return await user.$count("tweets", {
+                                where: {
+                                    mediaURLs: {
+                                        [Op.ne]: [],
+                                    },
+                                    isSFW: true,
+                                },
+                            });
+                        }
+                    } else {
+                        if (!filter) {
+                            return await user.$count("tweets", {
+                                where: {
+                                    state: {
+                                        [Op.ne]: "C",
+                                    },
+                                },
+                            });
+                        } else if (filter === "replies&tweets") {
+                            return await user.$count("tweets");
+                        } else if (filter === "likes") {
+                            return await user.$count("likes");
+                        } else if (filter === "media") {
+                            return await user.$count("tweets", {
+                                where: {
+                                    mediaURLs: {
+                                        [Op.ne]: [],
+                                    },
+                                },
+                            });
+                        }
                     }
                 },
             };

@@ -2,8 +2,8 @@ import { gql } from "apollo-server-express";
 
 export default gql`
     extend type Query {
-        tweet(id: ID!,isSFW: Boolean): Tweet!
-        tweets(userId: ID!, page: Int, filter:String) : PaginatedTweets!
+        tweet(id: ID!, isSFW: Boolean): Tweet!
+        tweets(userId: ID!, page: Int, filter:String, isSFW: Boolean) : PaginatedTweets!
         getFeed(page: Int): [Tweet]!
     }
     extend type Mutation {

@@ -2,7 +2,7 @@ import { gql } from "apollo-server-express";
 
 export default gql`
     extend type Query {
-        tweet(id: ID!): Tweet!
+        tweet(id: ID!,isSFW: Boolean): Tweet!
         tweets(userId: ID!, page: Int, filter:String) : PaginatedTweets!
         getFeed(page: Int): [Tweet]!
     }

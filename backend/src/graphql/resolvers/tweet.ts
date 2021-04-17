@@ -113,9 +113,22 @@ const addTweetInDataBase = async (
 
 export default {
     Query: {
-        tweet: async (parent: any, args: { id: number }) => {
+        tweet: async (parent: any, args: { id: number; isSFW: boolean }) => {
             const id = args.id;
-            const tweet = await Tweet.findByPk(id);
+            let isSafe = args.isSFW;
+            let tweet = null;
+
+            if (isSafe === undefined || isSafe === false) {
+                tweet = await Tweet.findByPk(id);
+            } else if (isSafe) {
+                tweet = await Tweet.findOne({
+                    where: {
+                        id: id,
+                        isSFW: true,
+                    },
+                });
+            }
+
             if (!tweet) {
                 const error: CustomeError = new Error(
                     "No tweet was found with this id!"

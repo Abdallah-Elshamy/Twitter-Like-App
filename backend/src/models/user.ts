@@ -9,6 +9,7 @@ import {
     DataType,
     BelongsToMany,
     Unique,
+    Default,
 } from "sequelize-typescript";
 import Follows from "./follows";
 import Tweet from "./tweet";
@@ -60,6 +61,11 @@ class User extends Model {
     @AllowNull(true)
     @Column(DataType.STRING)
     coverImageURL?: string;
+
+    @AllowNull(false)
+    @Default(false)
+    @Column(DataType.BOOLEAN)
+    isBanned!: boolean;
 
     // one-to-many relation between user and tweets
     @HasMany(() => Tweet, "userId")

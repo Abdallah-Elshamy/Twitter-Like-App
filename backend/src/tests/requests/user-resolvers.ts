@@ -548,6 +548,7 @@ export const getUser = async (id: number) => {
                     name,
                     imageURL,
                     bio,
+                    isBanned,
                     birthDate,
                     coverImageURL,
                     following(page: 1) {

@@ -29,6 +29,7 @@ export default gql`
         imageURL: String
         bio: String
         coverImageURL: String
+        isBanned: Boolean!
         isFollowing: Boolean
         following(page: Int): PaginatedUsers!
         followingCount: Int!

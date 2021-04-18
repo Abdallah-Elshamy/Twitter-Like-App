@@ -80,6 +80,7 @@ describe("user-resolvers", (): void => {
                 followingCount: 16,
                 followersCount: 16,
                 birthDate: "1970-01-01",
+                isBanned: false
             });
             // check that the followers of the followers of the user
             // are retrieved correctly

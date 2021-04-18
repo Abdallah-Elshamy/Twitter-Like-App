@@ -90,6 +90,18 @@ describe("authentication", (): void => {
                 "No user was found with this user name or email!"
             );
         });
+
+        // it("fail login if user is banned", async () => {
+        //     let user = await User.findByPk(1)
+        //     user!.isBanned = true;
+        //     await user!.save()
+        //     const response = await login("omarabdo997777", "myPrecious");
+        //     expect(response.body.errors).to.has.length(1);
+        //     expect(response.body.errors[0].statusCode).to.be.equal(404);
+        //     expect(response.body.errors[0].message).to.be.equal(
+        //         "No user was found with this user name or email!"
+        //     );
+        // });
     });
 
     describe("auth middleware", () => {
@@ -180,6 +192,21 @@ describe("authentication", (): void => {
             expect(req.authError).to.include({
                 message: "Invalid Token!",
                 statusCode: 401,
+            });
+            expect(req.user).to.be.undefined;
+        });
+
+        it("fail auth if user is banned", async () => {
+            let user = await User.findByPk(1)
+            user!.isBanned = true;
+            await user!.save()
+            req = {
+                get: () => `Bearer ${token}`
+            }
+            await auth(req, res, next);
+            expect(req.authError).to.include({
+                message: "You are banned and can no longer access the website!",
+                statusCode: 403,
             });
             expect(req.user).to.be.undefined;
         });

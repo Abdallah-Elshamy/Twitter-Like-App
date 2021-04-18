@@ -51,6 +51,13 @@ const auth = async (req: CustomRequest, res: Response, next: NextFunction) => {
             error.statusCode = 405;
             throw error;
         }
+        if (user.isBanned) {
+            const error: CustomError = new Error(
+                "You are banned and can no longer access the website!"
+            );
+            error.statusCode = 403;
+            throw error;
+        }
         req.user = user as CustomUser;
         const isAdmin = await UserBelongsToGroup.findOne({
             where: {

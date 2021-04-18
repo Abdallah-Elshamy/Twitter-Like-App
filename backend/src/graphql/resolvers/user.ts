@@ -94,6 +94,13 @@ export default {
                 error.statusCode = 404;
                 throw error;
             }
+            if (user.isBanned) {
+                const error: any = new Error(
+                    "User is banned and can no longer access the website!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
             const isCorrectPassword = await bcrypt.compare(
                 password,
                 user.hashedPassword

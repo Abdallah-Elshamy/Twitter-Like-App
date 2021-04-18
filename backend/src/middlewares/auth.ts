@@ -53,7 +53,7 @@ const auth = async (req: CustomRequest, res: Response, next: NextFunction) => {
         }
         if (user.isBanned) {
             const error: CustomError = new Error(
-                "You are banned and can no longer access the website!"
+                "User is banned and can no longer access the website!"
             );
             error.statusCode = 403;
             throw error;

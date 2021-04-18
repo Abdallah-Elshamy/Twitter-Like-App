@@ -235,6 +235,7 @@ export default {
                             });
                             return tweets.map((tweet: any) => {
                                 tweet.mode = mode;
+                                return tweet;
                             });
                         } else if (filter === "replies&tweets") {
                             const tweets: any = await user.$get("tweets", {
@@ -245,6 +246,7 @@ export default {
                             });
                             return tweets.map((tweet: any) => {
                                 tweet.mode = mode;
+                                return tweet;
                             });
                         } else if (filter === "likes") {
                             const tweets: any = await user.$get("likes", {
@@ -255,6 +257,7 @@ export default {
                             });
                             return tweets.map((tweet: any) => {
                                 tweet.mode = mode;
+                                return tweet;
                             });
                         } else if (filter === "media") {
                             const tweets: any = await user.$get("tweets", {
@@ -270,6 +273,7 @@ export default {
                             });
                             return tweets.map((tweet: any) => {
                                 tweet.mode = mode;
+                                return tweet;
                             });
                         }
                     } else {

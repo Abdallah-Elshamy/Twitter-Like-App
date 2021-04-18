@@ -15,6 +15,7 @@ import Tweet from "./tweet";
 import Group from "./group";
 import UserBelongsToGroup from "./userBelongsToGroup";
 import Likes from "./likes";
+import ReportedTweet from "./reportedTweet"
 
 @Table({
     tableName: "users",
@@ -77,6 +78,9 @@ class User extends Model {
     // many-to-many relation between user and tweet through likes
     @BelongsToMany(() => Tweet, () => Likes, "userId", "tweetId")
     likes?: Tweet[];
+
+    @BelongsToMany(() => Tweet, () => ReportedTweet, "reporterId", "tweetId")
+    reportedTweets?: Tweet[];
 }
 
 export default User;

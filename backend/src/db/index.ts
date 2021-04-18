@@ -10,6 +10,7 @@ import {
     UserBelongsToGroup,
     Likes,
     HasHashtag,
+    ReportedTweet
 } from "../models";
 
 const db: Sequelize = new Sequelize(
@@ -32,6 +33,7 @@ db.addModels([
     UserBelongsToGroup,
     Likes,
     HasHashtag,
+    ReportedTweet
 ]);
 
 export default db;

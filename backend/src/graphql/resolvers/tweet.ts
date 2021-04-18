@@ -126,7 +126,7 @@ const getHashtags = (text: string) => {
     while ((match = numRegex.exec(text))) {
         numOnlyHashtags.push(match[1]);
     }
-    // filter number only hashtags
+    // filter number only hashtags from overall hashtags
     let hashtags = allHashtags.filter((x) => !numOnlyHashtags.includes(x));
     hashtags = hashtags.map((x) => x.toLowerCase());
     const uniqueHashtags = [...new Set(hashtags)];
@@ -134,12 +134,12 @@ const getHashtags = (text: string) => {
     return uniqueHashtags;
 };
 
-// const calculateAge = (dob: Date) => {
-//     const birthDate = new Date(dob);
-//     const difference = Date.now() - birthDate.getTime();
-//     const ageDate = new Date(difference);
-//     return Math.abs(ageDate.getUTCFullYear() - 1970);
-// };
+const calculateAge = (dob: Date) => {
+    const birthDate = new Date(dob);
+    const difference = Date.now() - birthDate.getTime();
+    const ageDate = new Date(difference);
+    return Math.abs(ageDate.getUTCFullYear() - 1970);
+};
 
 export default {
     Query: {
@@ -149,12 +149,17 @@ export default {
             context: any
         ) => {
             const { id, isSFW } = args;
-            // const { user } = context.req;
             let tweet: any = null;
-            // const age = calculateAge(user.birthDate);
-            // const mode = isSFW || age < 18 ? "SFW" : "NSFW";
+            const loggedUser = context.req.user;
+            const age = loggedUser ? calculateAge(loggedUser.birthDate) : 200;
 
-            const mode = isSFW ? "SFW" : "NSFW";
+            let mode = "";
+            if (isSFW === undefined || isSFW === true || age < 18) {
+                mode = "SFW";
+            } else {
+                mode = "NSFW";
+            }
+
             if (mode === "SFW") {
                 // Safe for work
                 tweet = await Tweet.findOne({
@@ -211,11 +216,14 @@ export default {
                 throw error;
             }
 
-            // const { loggedUser } = context.req;
-            // const age = calculateAge(loggedUser.birthDate);
-            // const mode = isSFW || age < 18 ? "SFW" : "NSFW";
-
-            const mode = isSFW ? "SFW" : "NSFW";
+            const loggedUser = context.req.user;
+            const age = loggedUser ? calculateAge(loggedUser.birthDate) : 200;
+            let mode = "";
+            if (isSFW === undefined || isSFW === true || age < 18) {
+                mode = "SFW";
+            } else {
+                mode = "NSFW";
+            }
 
             return {
                 tweets: async () => {
@@ -394,10 +402,13 @@ export default {
             });
             const followingUsersIds = followingUsers.map((user) => user.id);
 
-            // const age = calculateAge(user!.birthDate);
-            // const mode = isSFW || age < 18 ? "SFW" : "NSFW";
-
-            const mode = isSFW ? "SFW" : "NSFW";
+            const age = calculateAge(user!.birthDate);
+            let mode = "";
+            if (isSFW === undefined || isSFW === true || age < 18) {
+                mode = "SFW";
+            } else {
+                mode = "NSFW";
+            }
 
             if (mode === "SFW") {
                 const tweets: any = await Tweet.findAll({

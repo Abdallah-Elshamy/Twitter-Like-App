@@ -1,4 +1,4 @@
-import { Tweet, Likes, User } from "../../models";
+import { Tweet, Likes, User, Hashtag } from "../../models";
 import { tweetValidator } from "../../validators";
 import db from "../../db";
 import { Transaction, Op } from "sequelize";
@@ -111,13 +111,51 @@ const addTweetInDataBase = async (
     return tweet;
 };
 
+const getHashtags = (text: string) => {
+    const allRegex = /#([a-zA-Z0-9_]+)/gim;
+    const numRegex = /#([0-9_]+)/gim;
+    const allHashtags: string[] = [];
+    const numOnlyHashtags: string[] = [];
+    let match;
+
+    // extract all hashtag like strings
+    while ((match = allRegex.exec(text))) {
+        allHashtags.push(match[1]);
+    }
+    //extract hashtags that have numbers and underscores only which is not valid
+    while ((match = numRegex.exec(text))) {
+        numOnlyHashtags.push(match[1]);
+    }
+    // filter number only hashtags
+    let hashtags = allHashtags.filter((x) => !numOnlyHashtags.includes(x));
+    hashtags = hashtags.map((x) => x.toLowerCase());
+    const uniqueHashtags = [...new Set(hashtags)];
+
+    return uniqueHashtags;
+};
+
+// const calculateAge = (dob: Date) => {
+//     const birthDate = new Date(dob);
+//     const difference = Date.now() - birthDate.getTime();
+//     const ageDate = new Date(difference);
+//     return Math.abs(ageDate.getUTCFullYear() - 1970);
+// };
+
 export default {
     Query: {
-        tweet: async (parent: any, args: { id: number; isSFW: boolean }) => {
+        tweet: async (
+            parent: any,
+            args: { id: number; isSFW: boolean },
+            context: any
+        ) => {
             const { id, isSFW } = args;
+            // const { user } = context.req;
             let tweet: any = null;
+            // const age = calculateAge(user.birthDate);
+            // const mode = isSFW || age < 18 ? "SFW" : "NSFW";
 
-            if (isSFW) {
+            const mode = isSFW ? "SFW" : "NSFW";
+            if (mode === "SFW") {
                 // Safe for work
                 tweet = await Tweet.findOne({
                     where: {
@@ -136,7 +174,6 @@ export default {
                 error.statusCode = 404;
                 throw error;
             }
-            const mode = isSFW ? "SFW" : "NSFW";
             tweet.mode = mode;
             return tweet;
         },
@@ -147,7 +184,8 @@ export default {
                 page: number;
                 filter: string;
                 isSFW: boolean;
-            }
+            },
+            context: any
         ) => {
             const { userId, page, filter, isSFW } = args;
             if (
@@ -173,11 +211,15 @@ export default {
                 throw error;
             }
 
+            // const { loggedUser } = context.req;
+            // const age = calculateAge(loggedUser.birthDate);
+            // const mode = isSFW || age < 18 ? "SFW" : "NSFW";
+
             const mode = isSFW ? "SFW" : "NSFW";
 
             return {
                 tweets: async () => {
-                    if (isSFW) {
+                    if (mode === "SFW") {
                         // Safe for work
                         if (!filter) {
                             const tweets: any = await user.$get("tweets", {
@@ -270,7 +312,7 @@ export default {
                     }
                 },
                 totalCount: async () => {
-                    if (isSFW) {
+                    if (mode === "SFW") {
                         // Safe for work
 
                         if (!filter) {
@@ -340,17 +382,20 @@ export default {
             if (authError) {
                 throw authError;
             }
-            const loggedIn = user as User;
 
             const { page, isSFW } = args;
 
-            const followingUsers = await loggedIn.$get("following", {
+            const followingUsers = await user!.$get("following", {
                 attributes: ["id"],
             });
             const followingUsersIds = followingUsers.map((user) => user.id);
 
+            // const age = calculateAge(user!.birthDate);
+            // const mode = isSFW || age < 18 ? "SFW" : "NSFW";
+
             const mode = isSFW ? "SFW" : "NSFW";
-            if (isSFW) {
+
+            if (mode === "SFW") {
                 const tweets: any = await Tweet.findAll({
                     where: {
                         userId: { [Op.in]: followingUsersIds },
@@ -385,14 +430,26 @@ export default {
                 throw authError;
             }
             const { text, mediaURLs } = args.tweet;
+            const hashtagsArr = getHashtags(text);
+            const hashtags_mapped = hashtagsArr.map((hashtag) => {
+                return { word: hashtag };
+            });
+
             const tweet = await db.transaction(async (transaction) => {
-                return await addTweetInDataBase(
+                const tweet = await addTweetInDataBase(
                     text,
                     "O",
                     mediaURLs,
                     user!.id,
                     transaction
                 );
+                const hashtags = await Hashtag.bulkCreate(hashtags_mapped, {
+                    transaction,
+                    updateOnDuplicate: ["word"],
+                });
+                await tweet.$add("hashtags", hashtags, { transaction });
+
+                return tweet;
             });
             return tweet;
         },
@@ -426,6 +483,11 @@ export default {
                 error.statusCode = 422;
                 throw error;
             }
+            const hashtagsArr = getHashtags(text);
+            const hashtags_mapped = hashtagsArr.map((hashtag) => {
+                return { word: hashtag };
+            });
+
             const tweet = await db.transaction(async (transaction) => {
                 const tweet = await addTweetInDataBase(
                     text,
@@ -439,6 +501,12 @@ export default {
                             ? repliedToTweet.id
                             : undefined)
                 );
+                const hashtags = await Hashtag.bulkCreate(hashtags_mapped, {
+                    transaction,
+                    updateOnDuplicate: ["word"],
+                });
+                await tweet.$add("hashtags", hashtags, { transaction });
+
                 return tweet;
             });
             return tweet;
@@ -506,8 +574,13 @@ export default {
                 throw error;
             }
 
+            const hashtagsArr = getHashtags(tweet.text);
+            const hashtags_mapped = hashtagsArr.map((hashtag) => {
+                return { word: hashtag };
+            });
+
             const qTweet = await db.transaction(async (transaction) => {
-                return addTweetInDataBase(
+                const qtweet: Tweet = await addTweetInDataBase(
                     tweet.text,
                     "Q",
                     tweet.mediaURLs,
@@ -517,6 +590,13 @@ export default {
                     undefined,
                     originalTweetId
                 );
+                const hashtags = await Hashtag.bulkCreate(hashtags_mapped, {
+                    transaction,
+                    updateOnDuplicate: ["word"],
+                });
+                await qtweet.$add("hashtags", hashtags, { transaction });
+
+                return qtweet;
             });
             return qTweet;
         },

@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import request from "supertest";
 import app, { serverPromise } from "../app";
-import { User, Tweet, Hashtag } from "../models";
+import { User, Tweet, Hashtag, Group } from "../models";
 import db from "../db";
 
 import {
@@ -104,7 +104,11 @@ const createTweets = async (
     return tweets;
 };
 
-const createRetweets = async(userId: number = 1, originalTweetId: number = 1, it: number = 30) => {
+const createRetweets = async (
+    userId: number = 1,
+    originalTweetId: number = 1,
+    it: number = 30
+) => {
     const tweets = [];
     for (let i = 0; i < it; i++) {
         tweets.push(
@@ -112,14 +116,18 @@ const createRetweets = async(userId: number = 1, originalTweetId: number = 1, it
                 text: "",
                 state: "R",
                 userId,
-                originalTweetId
+                originalTweetId,
             })
         );
     }
     return tweets;
-}
+};
 
-const createQuotedRetweets = async(userId: number = 1, originalTweetId: number = 1, it: number = 30) => {
+const createQuotedRetweets = async (
+    userId: number = 1,
+    originalTweetId: number = 1,
+    it: number = 30
+) => {
     const tweets = [];
     for (let i = 0; i < it; i++) {
         tweets.push(
@@ -127,12 +135,12 @@ const createQuotedRetweets = async(userId: number = 1, originalTweetId: number =
                 text: `tweet${it}`,
                 state: "Q",
                 userId,
-                originalTweetId
+                originalTweetId,
             })
         );
     }
     return tweets;
-}
+};
 
 const createDifferentTypesOfTweets = async (userId: number = 1) => {
     const tweets = [];
@@ -303,7 +311,7 @@ describe("tweet-resolvers", (): void => {
     });
 
     describe("createReply Mutation", () => {
-        let token = ""
+        let token = "";
         before(async () => {
             await db.sync({ force: true });
             await createUser("omarabdo997", "omar ali");
@@ -335,7 +343,11 @@ describe("tweet-resolvers", (): void => {
                 userId: 1,
                 state: "R",
             });
-            const response = await createReply("reply tweet4", rTweet.id, token);
+            const response = await createReply(
+                "reply tweet4",
+                rTweet.id,
+                token
+            );
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
@@ -504,7 +516,7 @@ describe("tweet-resolvers", (): void => {
     });
 
     describe("deleteTweet Mutation", () => {
-        let token = ""
+        let token = "";
         before(async () => {
             await db.sync({ force: true });
             await createUser("omarabdo997", "omar ali");
@@ -546,19 +558,31 @@ describe("tweet-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 403,
-                message: "You don't own this tweet!"
+                message: "You don't own this tweet!",
             });
+        });
+
+        it("succeed delete tweet if user is an admin user", async () => {
+            const group = await Group.create({
+                name: "admin",
+            });
+            const user = await User.findByPk(1);
+            user?.$add("groups", group);
+            const response = await deleteTweet(2, token);
+            expect(response.body.data.deleteTweet).to.be.true;
+            const tweet = await Tweet.findByPk(2);
+            expect(tweet).to.be.null;
         });
     });
 
     describe("tweet Query", () => {
-        let token = ""
+        let token = "";
         before(async () => {
             await db.sync({ force: true });
             const users = await createUsers(30);
             await createUser("omarabdo997", "omar ali");
             const response = await login("omarabdo997", "myPrecious");
-            const loggedInUser = await User.findByPk(31)
+            const loggedInUser = await User.findByPk(31);
             token = response.body.data.login.token;
             await createTweet("hello world", token);
             const oTweet = await Tweet.findByPk(1);
@@ -571,8 +595,8 @@ describe("tweet-resolvers", (): void => {
             //add hashtags to the created tweet
             const hashtags = await createHashtags();
             await oTweet!.$add("hashtags", hashtags);
-            await createRetweets()
-            await createQuotedRetweets(1, 1, 55)
+            await createRetweets();
+            await createQuotedRetweets(1, 1, 55);
         });
 
         it("tweet query", async () => {
@@ -671,14 +695,14 @@ describe("tweet-resolvers", (): void => {
 
         it("tweet query get threadTweet", async () => {
             const resOriginalTweet = await createTweet("test", token); //id = 111
-            const id1 = resOriginalTweet.body.data.createTweet.id; 
-            const resReplyTweet = await createReply("reply1", id1, token);  // id = 112
+            const id1 = resOriginalTweet.body.data.createTweet.id;
+            const resReplyTweet = await createReply("reply1", id1, token); // id = 112
             const reply2 = await createReply(
                 "reply2",
                 resReplyTweet.body.data.createReply.id,
                 token
             );
-            const id2 = reply2.body.data.createReply.id; 
+            const id2 = reply2.body.data.createReply.id;
             const response = await getTweet(id2);
             expect(response.body.data.tweet.threadTweet.id).to.be.equal(id1);
         });
@@ -695,7 +719,7 @@ describe("tweet-resolvers", (): void => {
             expect(response.body.data.tweet.isLiked).to.be.true;
             const response2 = await getTweet(1); // user not logged in
             expect(response2.body.data.tweet.isLiked).to.be.false;
-            const response3 = await getTweet(28,1 ,1 ,1, token); // user logged in but doesn't like the tweet
+            const response3 = await getTweet(28, 1, 1, 1, token); // user logged in but doesn't like the tweet
             expect(response3.body.data.tweet.isLiked).to.be.false;
         });
 
@@ -728,14 +752,16 @@ describe("tweet-resolvers", (): void => {
         });
 
         it("tweet query get retweets count", async () => {
-            let response = await getTweet(1)
-            expect(response.body.data.tweet.retweetsCount).to.be.equal(30)
-        })
+            let response = await getTweet(1);
+            expect(response.body.data.tweet.retweetsCount).to.be.equal(30);
+        });
 
         it("tweet query get quoted retweets count", async () => {
-            let response = await getTweet(1)
-            expect(response.body.data.tweet.quotedRetweetsCount).to.be.equal(55)
-        })
+            let response = await getTweet(1);
+            expect(response.body.data.tweet.quotedRetweetsCount).to.be.equal(
+                55
+            );
+        });
 
         it("fail tweet query for a non existant tweet", async () => {
             const response = await getTweet(150);
@@ -748,7 +774,7 @@ describe("tweet-resolvers", (): void => {
     });
 
     describe("tweets query", () => {
-        let token = ""
+        let token = "";
         before(async () => {
             await db.sync({ force: true });
             const users = await createUsers(30);
@@ -898,7 +924,7 @@ describe("tweet-resolvers", (): void => {
                     userName: `testU${i + 1}`,
                     email: `testU${i + 1}@yahoo.com`,
                     hashedPassword: "12345678910",
-                    birthDate: "1970-01-01"
+                    birthDate: "1970-01-01",
                 });
                 toBeFollowed.push(user);
             }

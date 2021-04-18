@@ -1,4 +1,4 @@
-import { Tweet, Likes, User } from "../../models";
+import { Tweet, Likes, User, Group, UserBelongsToGroup } from "../../models";
 import { tweetValidator } from "../../validators";
 import db from "../../db";
 import { Transaction, Op } from "sequelize";
@@ -11,8 +11,12 @@ interface CustomeError extends Error {
     validators?: { message: string; value: string }[];
 }
 
+interface CustomUser extends User {
+    isAdmin: boolean;
+}
+
 interface CustomeRequest extends Request {
-    user?: User;
+    user?: CustomUser;
     authError?: CustomeError;
 }
 
@@ -348,7 +352,7 @@ export default {
                 throw error;
             }
             const userHasTweet = tweet.userId === user!.id;
-            if (!userHasTweet) {
+            if (!(userHasTweet || user!.isAdmin)) {
                 const error: CustomeError = new Error(
                     "You don't own this tweet!"
                 );

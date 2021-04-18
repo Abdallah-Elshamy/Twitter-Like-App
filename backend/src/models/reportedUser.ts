@@ -8,25 +8,24 @@ import {
     AllowNull,
 } from "sequelize-typescript";
 import User from "./user";
-import Tweet from "./tweet";
 
 @Table({
-    tableName: "reportedTweets",
+    tableName: "reportedUsers",
 })
-class ReportedTweet extends Model {
+class ReportedUser extends Model {
     @PrimaryKey
     @ForeignKey(() => User)
     @Column(DataType.INTEGER)
     reporterId!: number;
 
     @PrimaryKey
-    @ForeignKey(() => Tweet)
+    @ForeignKey(() => User)
     @Column(DataType.INTEGER)
-    tweetId!: number;
+    reportedId!: number;
 
     @AllowNull(true)
     @Column(DataType.TEXT)
     reason?: string;
 }
 
-export default ReportedTweet;
+export default ReportedUser;

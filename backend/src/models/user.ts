@@ -15,7 +15,8 @@ import Tweet from "./tweet";
 import Group from "./group";
 import UserBelongsToGroup from "./userBelongsToGroup";
 import Likes from "./likes";
-import ReportedTweet from "./reportedTweet"
+import ReportedTweet from "./reportedTweet";
+import ReportedUser from "./reportedUser";
 
 @Table({
     tableName: "users",
@@ -47,7 +48,7 @@ class User extends Model {
     @AllowNull(false)
     @Column(DataType.DATEONLY)
     birthDate!: Date;
-    
+
     @AllowNull(true)
     @Column(DataType.STRING)
     imageURL?: string;
@@ -81,6 +82,12 @@ class User extends Model {
 
     @BelongsToMany(() => Tweet, () => ReportedTweet, "reporterId", "tweetId")
     reportedTweets?: Tweet[];
+
+    @BelongsToMany(() => User, () => ReportedUser, "reporterId", "reportedId")
+    reportedBy?: User[];
+
+    @BelongsToMany(() => User, () => ReportedUser, "reportedId", "reporterId")
+    reported?: User[];
 }
 
 export default User;

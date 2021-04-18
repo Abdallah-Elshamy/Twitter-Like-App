@@ -17,7 +17,7 @@ import User from "./user";
 import Likes from "./likes";
 import Hashtag from "./hashtag";
 import HasHashtag from "./hasHashtag";
-import ReportedTweet from "./reportedTweet"
+import ReportedTweet from "./reportedTweet";
 
 @Table({
     timestamps: true,

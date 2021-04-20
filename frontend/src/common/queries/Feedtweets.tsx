@@ -1,10 +1,10 @@
-import {  gql} from '@apollo/client';
+import { gql } from '@apollo/client';
 
 
 
-export const FeedTweets = gql `
+export const FeedTweets = gql`
 query feed_tweets{
-    getFeed { 
+    getFeed (page: 0) { 
        
           user {
             imageURL

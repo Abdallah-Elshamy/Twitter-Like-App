@@ -1,6 +1,5 @@
 import { InMemoryCache, makeVar, ReactiveVar } from "@apollo/client";
 import { searchBarValue } from "./TypesAndInterfaces";
-import  {  logUser } from "./TypesAndInterfaces";
 
 export const cache: InMemoryCache = new InMemoryCache({
   typePolicies: {
@@ -10,14 +9,13 @@ export const cache: InMemoryCache = new InMemoryCache({
           read() {
             return searchBarVar();
           }
+
         },
-        logUser:{
+        authenticated: {
           read() {
-            return userVar ();
+            return authenticatedVal();
           }
         }
-        //next
-
       }
     }
   }
@@ -27,8 +25,7 @@ export const cache: InMemoryCache = new InMemoryCache({
 export const searchBarVar: ReactiveVar<searchBarValue> = makeVar<searchBarValue>(
   { value: '' }
 );
-export const userVar: ReactiveVar< logUser > = makeVar< logUser >(
-  { 
-    user:undefined
-    }
+
+export const authenticatedVal: ReactiveVar<boolean> = makeVar<boolean>(
+  (localStorage.getItem('token') === null) ? false : true
 );

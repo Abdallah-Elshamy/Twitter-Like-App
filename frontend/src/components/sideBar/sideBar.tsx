@@ -5,30 +5,9 @@ import '../../App.css';
 import { SideBarItem } from './sideBarItem/sideBarItem'
 import { TweetButton } from './tweetButton/tweetButton'
 import { FlootProfile } from './flootProfile/flootProfile'
-import {  useQuery } from '@apollo/client';
-import {LoggedUser} from '../../common/queries/Userqery'; 
-import { parseJwt } from '../../common/decode';
-import {User} from '../../common/TypesAndInterfaces'
-import {userVar} from "../../common/cache"
-import Loading from '../../UI/Loading'
-
 
 export function SideBar() {
   // here 
-  var profile:any;
-  if (localStorage.getItem('token') !== " ") {
-    profile = parseJwt(localStorage.getItem('token'));
-  }
-  const { loading, error, data } = useQuery(LoggedUser, { variables: { id: profile.id } });
-
-   if (loading) 
-    return (<div className="mt-8"> </div>);
-  if (error)
-    return <p>`Error! ${error.message}`</p>;
-  else {
-    const user: User = data.user;
-    userVar({ user: user });
-  } 
   
   return (
     <div className="px-2" >

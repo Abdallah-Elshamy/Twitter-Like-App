@@ -10,7 +10,7 @@ export interface PersonEntity {
   followed: boolean,
   numberOfFollowers?: Number,
   imageURI?: string,
-  bio?: string, 
+  bio?: string,
   isFollowing?: Boolean
 }
 export interface User {
@@ -20,21 +20,24 @@ export interface User {
   followed: boolean,
   numberOfFollowers?: Number,
   imageURL?: string,
-  birthDate?:string,
+  birthDate?: string,
   bio?: string,
-  isFollowing?: Boolean,
-  coverImageURL?: string, 
-  createdAt ?:string, 
-  followingCount?:Number,
-  followersCount?:Number,
+  isFollowing?: Boolean
+  coverImageURL?: string,
+  createdAt?: string,
+  followingCount?: Number,
+  followersCount?: Number,
   tweets?: {
     totalCount?: Number
-}
+  }
 }
 export type searchBarValue = {
   value: string
 }
 
-export interface logUser {
-  user?: User
+// export interface logUser {
+//   user?: User }
+  
+export type authinticatedValue = {
+  value: boolean
 }

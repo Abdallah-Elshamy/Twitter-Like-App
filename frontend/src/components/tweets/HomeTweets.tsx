@@ -1,5 +1,5 @@
 import React, { Fragment } from "react"
-import {  useQuery} from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import Tweet from "./Tweet";
 import {TweetData} from './Tweet'
 import {FeedTweets} from '../../common/queries/Feedtweets'
@@ -13,7 +13,7 @@ function HomeTweets() {
     if (error) return <p>`Error! this is the one ${error.message}`</p> 
     
     return (
-        
+
         <Fragment>
                 {console.log(data) }
                 {
@@ -33,4 +33,4 @@ function HomeTweets() {
 }
 
 
-export default HomeTweets ; 
+export default HomeTweets;

@@ -1,15 +1,13 @@
 import { ErrorMessage, Field, Form, Formik } from "formik"
-import React, { useState, useRef } from "react"
+import React, { useRef } from "react"
 import * as Yup from "yup"
 import { TweetButton } from '../sideBar/tweetButton/tweetButton'
 import {Tweets} from '../../common/queries/TweetQuery'
 import {FeedTweets} from '../../common/queries/Feedtweets'
 import   {Post_Tweet}  from '../../common/queries/createTweet'
-import { useMutation, useQuery } from "@apollo/client"
-import {Get_Logged_user} from "../../common/queries/localUser"
+import { useMutation } from "@apollo/client"
 import './tweet.css';
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
-import {User} from '../../common/TypesAndInterfaces'
 import { parseJwt } from '../../common/decode';
 interface Post {
   text:string

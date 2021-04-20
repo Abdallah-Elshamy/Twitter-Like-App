@@ -11,10 +11,10 @@ interface Button_info {
     className? : string ,
     onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
 }
-const defaultProps: Button_info = {
-  type:"button", 
-  name:""
-}
+// const defaultProps: Button_info = {
+//   type:"button", 
+//   name:""
+// }
 export class TweetButton extends Component<Button_info>{
 render() {
   return ( 
@@ -31,5 +31,5 @@ render() {
 </Fragment>
   )
 
-}
+  }
 }

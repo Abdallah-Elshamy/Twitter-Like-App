@@ -12,7 +12,7 @@ export interface TweetFilter {
 
 const TweetList: React.FC<TweetFilter> = (props) => {
   var profile;
-  if (localStorage.getItem('token') !== "LOGOUT") {
+  if (localStorage.getItem('token') !== null) {
     profile = parseJwt(localStorage.getItem('token'))
   }
   const { loading, error, data } = useQuery(Tweets,

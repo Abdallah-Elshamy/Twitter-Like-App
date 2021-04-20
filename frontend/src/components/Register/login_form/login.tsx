@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 import { useQuery } from '@apollo/client'
 import { ApolloClient, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
@@ -11,6 +11,7 @@ import { Logo } from "./../../logo/logo";
 import { FormInput } from '../formInput/formInput';
 import { LOGIN } from '../../../common/queries/login_query';
 import { authenticatedVal, cache } from '../../../common/cache';
+import { withApollo } from '@apollo/react-hoc';
 
 const httpLink = createHttpLink({
   uri: 'http://localhost:8000/graphql',
@@ -46,8 +47,10 @@ export function Login() {
 
     if (!loading && !error && data) {
       localStorage.setItem('token', data.login.token);
+
       authenticatedVal(true)
       navigate('/')
+
     }
     if (error) {
       alert("you have an error" + error)
@@ -95,4 +98,4 @@ export function Login() {
   )
 }
 
-// && document.cookie = 'signedin=false'
+

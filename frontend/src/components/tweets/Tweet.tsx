@@ -3,9 +3,12 @@ import './tweet.css';
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 
 import { timeConverter } from '../../common/utils/timestamp';
+import { FlootProfile } from '../sideBar/flootProfile/flootProfile';
+import { ToolBox } from '../sideBar/toolbox/toolbox';
 
 export interface TweetData {
   user?: {
+    id: string
     imageURL?: string
     name?: string
     userName?: string
@@ -49,10 +52,20 @@ const Tweet : React.FC <TweetData> = (props) =>  (
             <i className="fas fa-reply text-base font-sm "></i>
             <span>{props.repliesCount}</span>
           </a>
-          <a href="/">
+
+          <a>
+            {/* <ToolBox className="fixed">
+          <ul className= "mb-40  absolute ml-16" >
+          <a href="/profile" className="mt-1 w-24 text-center block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 
+          hover:text-gray-900  hover:rounded-full rounded-full" role="menuitem">Retweet</a>
+          <a href="/profile" className="mt-1 w-24  text-center block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 
+          hover:text-gray-900 hover:rounded-full rounded-full" role="menuitem">quote Retweet</a>
+          </ul>
+            </ToolBox> */}
             <i className="fas fa-retweet text-base font-sm"></i>
             <span>2</span>
           </a>
+
           <a href="/">
             <i className="far fa-heart text-base font-sm"></i>
             <span>{props.likesCount}</span>
@@ -63,7 +76,5 @@ const Tweet : React.FC <TweetData> = (props) =>  (
     </div>
 
 );
-
-
 
 export default Tweet

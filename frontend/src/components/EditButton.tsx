@@ -9,7 +9,9 @@ const EditButton: React.FC = () => {
   }
 
   return (
-    < button onClick={showModal} className={"pf--follow-btn   rounded-full px-2 font-semibold  text-xm w-min  "}
+    < button onClick={showModal}
+     className=
+     {"pf--follow-btn rounded-full px-2 font-semibold text-xm w-min"}
     >
       Edit Profile
     </button >

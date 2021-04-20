@@ -1,9 +1,11 @@
 import express, { Application, Request, Response, NextFunction } from "express";
 import { ApolloServer } from "apollo-server-express";
+import  cron  from "node-cron";
 import { resolvers, typeDefs } from "./graphql";
 import path from "path";
 import db from "./db";
 import { auth } from "./middlewares";
+import { SFWRegularCheck } from "./graphql/resolvers/tweet";
 
 const dir: string = path.resolve();
 
@@ -46,6 +48,11 @@ app.use((req: Request, res: Response, next: NextFunction): void => {
 });
 
 const serverPromise = db.sync().then(() => {
+    cron.schedule("0 * * * *", () => {
+        console.log("running SFW regular check on tweets");
+        SFWRegularCheck();
+    });
+
     const server = app.listen(process.env.PORT!, (): void => {
         console.log(`Server is running on port ${process.env.PORT}!`);
     });

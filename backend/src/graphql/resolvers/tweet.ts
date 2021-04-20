@@ -1,4 +1,4 @@
-import { Tweet, Likes, User } from "../../models";
+import { Tweet, Likes, User, Hashtag } from "../../models";
 import { tweetValidator } from "../../validators";
 import db from "../../db";
 import { Transaction, Op } from "sequelize";
@@ -90,11 +90,67 @@ const addTweetInDataBase = async (
     return tweet;
 };
 
+const getHashtags = (text: string) => {
+    const allRegex = /#([a-zA-Z0-9_]+)/gim;
+    const numRegex = /#([0-9_]+)/gim;
+    const allHashtags: string[] = [];
+    const numOnlyHashtags: string[] = [];
+    let match;
+
+    // extract all hashtag like strings
+    while ((match = allRegex.exec(text))) {
+        allHashtags.push(match[1]);
+    }
+    //extract hashtags that have numbers and underscores only which is not valid
+    while ((match = numRegex.exec(text))) {
+        numOnlyHashtags.push(match[1]);
+    }
+    // filter number only hashtags from overall hashtags
+    let hashtags = allHashtags.filter((x) => !numOnlyHashtags.includes(x));
+    hashtags = hashtags.map((x) => x.toLowerCase());
+    const uniqueHashtags = [...new Set(hashtags)];
+
+    return uniqueHashtags;
+};
+
+const calculateAge = (dob: Date) => {
+    const birthDate = new Date(dob);
+    const difference = Date.now() - birthDate.getTime();
+    const ageDate = new Date(difference);
+    return Math.abs(ageDate.getUTCFullYear() - 1970);
+};
+
 export default {
     Query: {
-        tweet: async (parent: any, args: { id: number }) => {
-            const id = args.id;
-            const tweet = await Tweet.findByPk(id);
+        tweet: async (
+            parent: any,
+            args: { id: number; isSFW: boolean },
+            context: any
+        ) => {
+            const { id, isSFW } = args;
+            let tweet: any = null;
+            const loggedUser = context.req.user;
+            const age = loggedUser ? calculateAge(loggedUser.birthDate) : 200;
+
+            let mode = "";
+            if (isSFW === undefined || isSFW === true || age < 18) {
+                mode = "SFW";
+            } else {
+                mode = "NSFW";
+            }
+
+            if (mode === "SFW") {
+                // Safe for work
+                tweet = await Tweet.findOne({
+                    where: {
+                        id: id,
+                        isSFW: true,
+                    },
+                });
+            } else {
+                // Not safe for work
+                tweet = await Tweet.findByPk(id);
+            }
             if (!tweet) {
                 const error: CustomeError = new Error(
                     "No tweet was found with this id!"
@@ -102,13 +158,20 @@ export default {
                 error.statusCode = 404;
                 throw error;
             }
+            tweet.mode = mode;
             return tweet;
         },
         tweets: async (
             parent: any,
-            args: { userId: number; page: number; filter: string }
+            args: {
+                userId: number;
+                page: number;
+                filter: string;
+                isSFW: boolean;
+            },
+            context: any
         ) => {
-            const { userId, page, filter } = args;
+            const { userId, page, filter, isSFW } = args;
             if (
                 !(
                     !filter ||
@@ -131,94 +194,223 @@ export default {
                 error.statusCode = 404;
                 throw error;
             }
+
+            const loggedUser = context.req.user;
+            const age = loggedUser ? calculateAge(loggedUser.birthDate) : 200;
+            let mode = "";
+            if (isSFW === undefined || isSFW === true || age < 18) {
+                mode = "SFW";
+            } else {
+                mode = "NSFW";
+            }
+
             return {
                 tweets: async () => {
-                    if (!filter) {
-                        return await user.$get("tweets", {
-                            where: {
-                                state: {
-                                    [Op.ne]: "C",
+                    if (mode === "SFW") {
+                        // Safe for work
+                        if (!filter) {
+                            const tweets: any = await user.$get("tweets", {
+                                where: {
+                                    state: {
+                                        [Op.ne]: "C",
+                                    },
+                                    isSFW: true,
                                 },
-                            },
-                            order: [["createdAt", "DESC"]],
-                            offset: ((page || 1) - 1) * PAGE_SIZE,
-                            limit: PAGE_SIZE,
-                        });
-                    } else if (filter === "replies&tweets") {
-                        return await user.$get("tweets", {
-                            order: [["createdAt", "DESC"]],
-                            offset: ((page || 1) - 1) * PAGE_SIZE,
-                            limit: PAGE_SIZE,
-                        });
-                    } else if (filter === "likes") {
-                        return await user.$get("likes", {
-                            order: [["createdAt", "DESC"]],
-                            offset: ((page || 1) - 1) * PAGE_SIZE,
-                            limit: PAGE_SIZE,
-                        });
-                    } else if (filter === "media") {
-                        return await user.$get("tweets", {
-                            where: {
-                                mediaURLs: {
-                                    [Op.ne]: [],
+                                order: [["createdAt", "DESC"]],
+                                offset: ((page || 1) - 1) * PAGE_SIZE,
+                                limit: PAGE_SIZE,
+                            });
+                            return tweets.map((tweet: any) => {
+                                tweet.mode = mode;
+                                return tweet;
+                            });
+                        } else if (filter === "replies&tweets") {
+                            const tweets: any = await user.$get("tweets", {
+                                where: { isSFW: true },
+                                order: [["createdAt", "DESC"]],
+                                offset: ((page || 1) - 1) * PAGE_SIZE,
+                                limit: PAGE_SIZE,
+                            });
+                            return tweets.map((tweet: any) => {
+                                tweet.mode = mode;
+                                return tweet;
+                            });
+                        } else if (filter === "likes") {
+                            const tweets: any = await user.$get("likes", {
+                                where: { isSFW: true },
+                                order: [["createdAt", "DESC"]],
+                                offset: ((page || 1) - 1) * PAGE_SIZE,
+                                limit: PAGE_SIZE,
+                            });
+                            return tweets.map((tweet: any) => {
+                                tweet.mode = mode;
+                                return tweet;
+                            });
+                        } else if (filter === "media") {
+                            const tweets: any = await user.$get("tweets", {
+                                where: {
+                                    mediaURLs: {
+                                        [Op.ne]: [],
+                                    },
+                                    isSFW: true,
                                 },
-                            },
-                            order: [["createdAt", "DESC"]],
-                            offset: ((page || 1) - 1) * PAGE_SIZE,
-                            limit: PAGE_SIZE,
-                        });
+                                order: [["createdAt", "DESC"]],
+                                offset: ((page || 1) - 1) * PAGE_SIZE,
+                                limit: PAGE_SIZE,
+                            });
+                            return tweets.map((tweet: any) => {
+                                tweet.mode = mode;
+                                return tweet;
+                            });
+                        }
+                    } else {
+                        // Not safe for work
+                        if (!filter) {
+                            return await user.$get("tweets", {
+                                where: {
+                                    state: {
+                                        [Op.ne]: "C",
+                                    },
+                                },
+                                order: [["createdAt", "DESC"]],
+                                offset: ((page || 1) - 1) * PAGE_SIZE,
+                                limit: PAGE_SIZE,
+                            });
+                        } else if (filter === "replies&tweets") {
+                            return await user.$get("tweets", {
+                                order: [["createdAt", "DESC"]],
+                                offset: ((page || 1) - 1) * PAGE_SIZE,
+                                limit: PAGE_SIZE,
+                            });
+                        } else if (filter === "likes") {
+                            return await user.$get("likes", {
+                                order: [["createdAt", "DESC"]],
+                                offset: ((page || 1) - 1) * PAGE_SIZE,
+                                limit: PAGE_SIZE,
+                            });
+                        } else if (filter === "media") {
+                            return await user.$get("tweets", {
+                                where: {
+                                    mediaURLs: {
+                                        [Op.ne]: [],
+                                    },
+                                },
+                                order: [["createdAt", "DESC"]],
+                                offset: ((page || 1) - 1) * PAGE_SIZE,
+                                limit: PAGE_SIZE,
+                            });
+                        }
                     }
                 },
                 totalCount: async () => {
-                    if (!filter) {
-                        return await user.$count("tweets", {
-                            where: {
-                                state: {
-                                    [Op.ne]: "C",
+                    if (mode === "SFW") {
+                        // Safe for work
+
+                        if (!filter) {
+                            return await user.$count("tweets", {
+                                where: {
+                                    state: {
+                                        [Op.ne]: "C",
+                                    },
+                                    isSFW: true,
                                 },
-                            },
-                        });
-                    } else if (filter === "replies&tweets") {
-                        return await user.$count("tweets");
-                    } else if (filter === "likes") {
-                        return await user.$count("likes");
-                    } else if (filter === "media") {
-                        return await user.$count("tweets", {
-                            where: {
-                                mediaURLs: {
-                                    [Op.ne]: [],
+                            });
+                        } else if (filter === "replies&tweets") {
+                            return await user.$count("tweets", {
+                                where: {
+                                    isSFW: true,
                                 },
-                            },
-                        });
+                            });
+                        } else if (filter === "likes") {
+                            return await user.$count("likes", {
+                                where: {
+                                    isSFW: true,
+                                },
+                            });
+                        } else if (filter === "media") {
+                            return await user.$count("tweets", {
+                                where: {
+                                    mediaURLs: {
+                                        [Op.ne]: [],
+                                    },
+                                    isSFW: true,
+                                },
+                            });
+                        }
+                    } else {
+                        // Not safe for work
+                        if (!filter) {
+                            return await user.$count("tweets", {
+                                where: {
+                                    state: {
+                                        [Op.ne]: "C",
+                                    },
+                                },
+                            });
+                        } else if (filter === "replies&tweets") {
+                            return await user.$count("tweets");
+                        } else if (filter === "likes") {
+                            return await user.$count("likes");
+                        } else if (filter === "media") {
+                            return await user.$count("tweets", {
+                                where: {
+                                    mediaURLs: {
+                                        [Op.ne]: [],
+                                    },
+                                },
+                            });
+                        }
                     }
                 },
             };
         },
         getFeed: async (
             parent: any,
-            args: { page: number },
+            args: { page: number; isSFW: boolean },
             context: { req: CustomeRequest }
         ) => {
             const { user, authError } = context.req;
             if (authError) {
                 throw authError;
             }
-            const loggedIn = user as User;
 
-            const { page } = args;
+            const { page, isSFW } = args;
 
-            const followingUsers = await loggedIn.$get("following", {
+            const followingUsers = await user!.$get("following", {
                 attributes: ["id"],
             });
             const followingUsersIds = followingUsers.map((user) => user.id);
-            const tweets: Tweet[] = await Tweet.findAll({
-                where: { userId: { [Op.in]: followingUsersIds } },
-                offset: ((page || 1) - 1) * PAGE_SIZE,
-                limit: PAGE_SIZE,
-                order: [["createdAt", "DESC"]],
-            });
 
-            return tweets;
+            const age = calculateAge(user!.birthDate);
+            let mode = "";
+            if (isSFW === undefined || isSFW === true || age < 18) {
+                mode = "SFW";
+            } else {
+                mode = "NSFW";
+            }
+
+            if (mode === "SFW") {
+                const tweets: any = await Tweet.findAll({
+                    where: {
+                        userId: { [Op.in]: followingUsersIds },
+                        isSFW: true,
+                    },
+                    offset: ((page || 1) - 1) * PAGE_SIZE,
+                    limit: PAGE_SIZE,
+                    order: [["createdAt", "DESC"]],
+                });
+                return tweets.map((tweet: any) => {
+                    tweet.mode = mode;
+                    return tweet;
+                });
+            } else {
+                return await Tweet.findAll({
+                    where: { userId: { [Op.in]: followingUsersIds } },
+                    offset: ((page || 1) - 1) * PAGE_SIZE,
+                    limit: PAGE_SIZE,
+                    order: [["createdAt", "DESC"]],
+                });
+            }
         },
     },
     Mutation: {
@@ -232,14 +424,26 @@ export default {
                 throw authError;
             }
             const { text, mediaURLs } = args.tweet;
+            const hashtagsArr = getHashtags(text);
+            const hashtags_mapped = hashtagsArr.map((hashtag) => {
+                return { word: hashtag };
+            });
+
             const tweet = await db.transaction(async (transaction) => {
-                return await addTweetInDataBase(
+                const tweet = await addTweetInDataBase(
                     text,
                     "O",
                     mediaURLs,
                     user!.id,
                     transaction
                 );
+                const hashtags = await Hashtag.bulkCreate(hashtags_mapped, {
+                    transaction,
+                    updateOnDuplicate: ["word"],
+                });
+                await tweet.$add("hashtags", hashtags, { transaction });
+
+                return tweet;
             });
             flaskService(tweet);
             return tweet;
@@ -274,6 +478,11 @@ export default {
                 error.statusCode = 422;
                 throw error;
             }
+            const hashtagsArr = getHashtags(text);
+            const hashtags_mapped = hashtagsArr.map((hashtag) => {
+                return { word: hashtag };
+            });
+
             const tweet = await db.transaction(async (transaction) => {
                 const tweet = await addTweetInDataBase(
                     text,
@@ -287,6 +496,12 @@ export default {
                             ? repliedToTweet.id
                             : undefined)
                 );
+                const hashtags = await Hashtag.bulkCreate(hashtags_mapped, {
+                    transaction,
+                    updateOnDuplicate: ["word"],
+                });
+                await tweet.$add("hashtags", hashtags, { transaction });
+
                 return tweet;
             });
             flaskService(tweet);
@@ -355,8 +570,13 @@ export default {
                 throw error;
             }
 
+            const hashtagsArr = getHashtags(tweet.text);
+            const hashtags_mapped = hashtagsArr.map((hashtag) => {
+                return { word: hashtag };
+            });
+
             const qTweet = await db.transaction(async (transaction) => {
-                return addTweetInDataBase(
+                const qtweet: Tweet = await addTweetInDataBase(
                     tweet.text,
                     "Q",
                     tweet.mediaURLs,
@@ -366,6 +586,13 @@ export default {
                     undefined,
                     originalTweetId
                 );
+                const hashtags = await Hashtag.bulkCreate(hashtags_mapped, {
+                    transaction,
+                    updateOnDuplicate: ["word"],
+                });
+                await qtweet.$add("hashtags", hashtags, { transaction });
+
+                return qtweet;
             });
             flaskService(qTweet);
             return qTweet;
@@ -405,8 +632,17 @@ export default {
         user: async (parent: Tweet) => {
             return await parent.$get("user");
         },
-        originalTweet: async (parent: Tweet) => {
-            return await parent.$get("originalTweet");
+        originalTweet: async (parent: any) => {
+            const isSFW = parent.mode === "SFW" ? true : false;
+            if (isSFW) {
+                const tweet: any = await parent.$get("originalTweet", {
+                    where: {
+                        isSFW: isSFW,
+                    },
+                });
+                tweet.mode = "SFW";
+                return tweet;
+            } else return await parent.$get("originalTweet");
         },
         likes: async (parent: Tweet, args: { page: number }) => {
             return {
@@ -425,25 +661,60 @@ export default {
         likesCount: async (parent: Tweet) => {
             return await parent.$count("likes");
         },
-        replies: async (parent: Tweet, args: { page: number }) => {
-            return {
-                tweets: async () => {
-                    return await parent.$get("replies", {
-                        offset: ((args.page || 1) - 1) * PAGE_SIZE,
-                        limit: PAGE_SIZE,
-                        order: [["createdAt", "ASC"]],
-                    });
-                },
-                totalCount: async () => {
-                    return await parent.$count("replies");
-                },
-            };
+        replies: async (parent: any, args: { page: number }) => {
+            const isSFW = parent.mode === "SFW" ? true : false;
+            if (isSFW) {
+                return {
+                    tweets: async () => {
+                        const tweets: any = await parent.$get("replies", {
+                            where: { isSFW: true },
+                            offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                            limit: PAGE_SIZE,
+                            order: [["createdAt", "ASC"]],
+                        });
+                        return tweets.map((tweet: any) => {
+                            tweet.mode = "SFW";
+                            return tweet;
+                        });
+                    },
+                    totalCount: async () => {
+                        return await parent.$count("replies", {
+                            where: { isSFW: true },
+                        });
+                    },
+                };
+            } else {
+                return {
+                    tweets: async () => {
+                        return await parent.$get("replies", {
+                            offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                            limit: PAGE_SIZE,
+                            order: [["createdAt", "ASC"]],
+                        });
+                    },
+                    totalCount: async () => {
+                        return await parent.$count("replies");
+                    },
+                };
+            }
         },
-        repliesCount: async (parent: Tweet) => {
-            return await parent.$count("replies");
+        repliesCount: async (parent: any) => {
+            const isSFW = parent.mode === "SFW" ? true : false;
+            if (isSFW) {
+                return await parent.$count("replies", {
+                    where: { isSFW: true },
+                });
+            } else return await parent.$count("replies");
         },
-        threadTweet: async (parent: Tweet) => {
-            return await parent.$get("thread");
+        threadTweet: async (parent: any) => {
+            const isSFW = parent.mode === "SFW" ? true : false;
+            if (isSFW) {
+                const tweet: any = await parent.$get("thread", {
+                    where: { isSFW: true },
+                });
+                tweet.mode = "SFW";
+                return tweet;
+            } else return await parent.$get("thread");
         },
         hashtags: async (parent: Tweet, args: { page: number }) => {
             return {
@@ -458,8 +729,15 @@ export default {
                 },
             };
         },
-        repliedToTweet: async (parent: Tweet) => {
-            return await parent.$get("repliedTo");
+        repliedToTweet: async (parent: any) => {
+            const isSFW = parent.mode === "SFW" ? true : false;
+            if (isSFW) {
+                const tweet: any = await parent.$get("repliedTo", {
+                    where: { isSFW: true },
+                });
+                tweet.mode = "SFW";
+                return tweet;
+            } else return await parent.$get("repliedTo");
         },
         isLiked: async (
             parent: Tweet,
@@ -485,12 +763,22 @@ export default {
                 },
             });
         },
-        quotedRetweetsCount: async (parent: Tweet) => {
-            return await parent.$count("subTweets", {
-                where: {
-                    state: "Q",
-                },
-            });
+        quotedRetweetsCount: async (parent: any) => {
+            const isSFW = parent.mode === "SFW" ? true : false;
+            if (isSFW) {
+                return await parent.$count("subTweets", {
+                    where: {
+                        state: "Q",
+                        isSFW: true,
+                    },
+                });
+            } else {
+                return await parent.$count("subTweets", {
+                    where: {
+                        state: "Q",
+                    },
+                });
+            }
         },
     },
 };

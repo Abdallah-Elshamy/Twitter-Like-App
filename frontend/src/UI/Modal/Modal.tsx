@@ -5,7 +5,7 @@ type Props = {
   show: Boolean,
   modalClosed?: MouseEventHandler
 }
-const Modal: React.FC<Props> = ({ children, show, modalClosed }: any) => {
+const Modal: React.FC<Props> = ({ children , show, modalClosed }: any) => {
 
   return (
     <Fragment>

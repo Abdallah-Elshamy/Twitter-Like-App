@@ -6,6 +6,7 @@ import { SideBarItem } from './sideBarItem/sideBarItem'
 import { TweetButton } from './tweetButton/tweetButton'
 import { FlootProfile } from './flootProfile/flootProfile'
 import Modal from '../../UI/Modal/Modal';
+import { ToolBox } from './toolbox/toolbox';
 
 
 
@@ -57,6 +58,11 @@ export function SideBar() {
 
 
       <TweetButton name="Tweet" className="w-56" onClick={() => setEdit(true)} />
+
+{/* <ToolBox>
+<SideBarItem item_name='Setting' icon_name="fas fa-cog" />
+</ToolBox> */}
+
       < FlootProfile />
 
     </div>

@@ -5,6 +5,7 @@ import './profile.css';
 import TrendsBar from '../TrendsBar/TrendsBar';
 import '../../styles/layout.css'
 import ProfileWall from './ProfileWall';
+import Profilewallpage from './profileWallPage';
 
 function Profile() {
 

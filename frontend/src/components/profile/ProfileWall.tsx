@@ -50,8 +50,10 @@ function ProfileWall() {
             exact
             path='/profile'
             render={() => (
-              // <TweetList filter={``} />
-              <Profilewallpage  filter={``}/>
+              <TweetList filter={``} />
+    // to test paganation go to profileWallPage
+
+              // <Profilewallpage  filter={``}/>
             )}
           />
           <Route

@@ -10,7 +10,7 @@ import { clientLog } from './components/Register/login_form/login';
 
 var token;
 var decodedToken1;
-if (localStorage.getItem('token') !== ' ') {
+if (localStorage.getItem('token')) {
   token = localStorage.getItem('token')
   token ? decodedToken1 = parseJwt(token) : decodedToken1 = null
 }

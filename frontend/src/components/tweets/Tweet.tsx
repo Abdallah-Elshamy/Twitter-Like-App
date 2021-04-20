@@ -6,6 +6,7 @@ import { timeConverter } from '../../common/utils/timestamp';
 
 export interface TweetData {
   user?: {
+    id: string
     imageURL?: string
     name?: string
     userName?: string

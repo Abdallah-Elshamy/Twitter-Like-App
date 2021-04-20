@@ -1,4 +1,3 @@
-import React, { Children } from 'react';
 import {
   Switch,
   Route,
@@ -6,17 +5,16 @@ import {
 } from "react-router-dom";
 import { NotFoundPage } from '../components/notFound/notFound';
 import { LandingPage } from '../components/Register/landingPage/landingPage';
-import { Login } from '../components/Register/login_form/login';
 import { SignUpForm } from '../components/Register/signup_form/signup';
 import Explore from './Explore';
 import Profile from '../components/profile/Profile';
 import Home from "../components/Home";
 import { useQuery } from '@apollo/client';
 import { GET_ISAUTH } from '../common/queries/Get_isAuth';
+import React from "react";
+import { Login } from "../components/Register/login_form/login";
 
 export const Routing = () => {
-  let auth = useQuery(GET_ISAUTH).data.authenticated
-
 
   return (
     <div>

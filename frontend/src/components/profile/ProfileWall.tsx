@@ -13,7 +13,7 @@ import Loading from "../../UI/Loading"
 
 function ProfileWall() {
   var profile;
-  if (localStorage.getItem('token') !== "LOGOUT" || localStorage.getItem('token') == null) {
+  if (localStorage.getItem('token')) {
     profile = parseJwt(localStorage.getItem('token'))
   }
 

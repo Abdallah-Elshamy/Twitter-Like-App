@@ -35,6 +35,10 @@ function ProfileInfo() {
     <Fragment>
       <Modal show={edit}
         modalClosed={modalClosed}>
+        <EditProfile
+          user={user}
+          show={edit}
+          close={modalClosed} />
       </Modal>
 
       <header className="top-bar px-3 py-2">

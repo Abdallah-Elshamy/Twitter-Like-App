@@ -1,11 +1,11 @@
-import React, { Fragment, MouseEventHandler, ReactNodeArray } from 'react';
+import React, { Fragment, MouseEventHandler  } from 'react';
 import './Modal.css'
 import Backdrop from '../Backdrop/Backdrop'
 type Props = {
   show: Boolean,
   modalClosed?: MouseEventHandler
 }
-const Modal: React.FC<Props> = ({ children, show, modalClosed }: any) => {
+const Modal: React.FC<Props> = ({ children , show, modalClosed }: any) => {
 
   return (
     <Fragment>

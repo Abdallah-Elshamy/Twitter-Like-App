@@ -1,4 +1,3 @@
-
 import { useQuery } from '@apollo/client';
 import { Fragment, useState } from 'react';
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
@@ -11,8 +10,6 @@ import { timeConverter } from '../../common/utils/timestamp';
 import { EditProfileImageVal } from '../../common/cache';
 import { decodedToken } from '../../App';
 import { GET_ISAUTH } from '../../common/queries/Get_isAuth';
-
-
 
 function ProfileInfo() {
 
@@ -28,6 +25,9 @@ function ProfileInfo() {
   if (localStorage.getItem('token') !== null) {
     profile = parseJwt(localStorage.getItem('token'))
   }
+
+
+
   const data = useQuery(LoggedUser, { variables: { id: profile.id } }).data;
   const user: User = data.user;
   return (
@@ -35,11 +35,8 @@ function ProfileInfo() {
     <Fragment>
       <Modal show={edit}
         modalClosed={modalClosed}>
-        <EditProfile close={modalClosed}
-          user={user}
-          show={edit}
-        />
       </Modal>
+
       <header className="top-bar px-3 py-2">
         <span className=" m-3">
           <a href="http://">
@@ -61,6 +58,7 @@ function ProfileInfo() {
           )}
 
         </div>
+
         <div className="pf--avatar">
 
           {
@@ -71,7 +69,6 @@ function ProfileInfo() {
 
         <div className="pf--info">
           <div className="pf--flw-btn-div p-3 h-12">
-            {/*<FollowButton id="1" py="py-1.5" following={false} />*/}
             < button onClick={() => setEdit(true)} className={"pf--follow-btn rounded-full px-3 font-semibold text-xm  py-2.5 mt-3 "}>
               Edit Profile
             </button >

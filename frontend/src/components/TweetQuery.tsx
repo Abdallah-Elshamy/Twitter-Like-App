@@ -1,11 +1,8 @@
-import {  gql} from '@apollo/client';
-
-
+import { gql} from '@apollo/client';
 
 export const Tweets = gql `
-
-query tweets ($userId:ID! $filter:String){
-  tweets(userId: $userId  filter: $filter) { 
+query tweets ($userId:ID! $filter:String $page:Int){
+  tweets(userId: $userId  filter: $filter page:$page ) { 
       totalCount
       tweets{
         user {

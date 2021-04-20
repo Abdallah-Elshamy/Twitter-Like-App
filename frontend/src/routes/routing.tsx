@@ -21,9 +21,9 @@ export const Routing = () => {
 
       <Switch>
         <PublicRoute path="/signup">
-
           <SignUpForm />
         </PublicRoute>
+
         <PublicRoute path="/login">
           <Login />
         </PublicRoute>
@@ -60,11 +60,9 @@ export const Routing = () => {
         </PrivateRoute>
 
 
-
         <PrivateRoute path="/" exact >
           <Home />
         </PrivateRoute>
-
 
 
         <PrivateRoute path="/profile">
@@ -121,13 +119,9 @@ const PublicRoute = ({ children, ...rest }: any) => {
 }
 
 
-
-
 function Setting() {
   return <h2>setting</h2>;
 }
-
-
 
 function Messages() {
   return <h2>Messages</h2>;

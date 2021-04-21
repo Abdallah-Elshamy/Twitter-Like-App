@@ -6,14 +6,15 @@ export default gql`
         users(search: String!, page: Int): PaginatedUsers!
         login(userNameOrEmail: String!, password: String!): Token!
     }
-    
+
     extend type Mutation {
-        createUser(userInput: UserCreateInput!) : User! 
-        updateUser(userInput: UserUpdateInput!) : User! 
+        createUser(userInput: UserCreateInput!): User!
+        updateUser(userInput: UserUpdateInput!): User!
         like(tweetId: ID!): Boolean
         unlike(tweetId: ID!): Boolean
         follow(userId: ID!): Boolean
         unfollow(userId: ID!): Boolean
+        banUser(userId: ID!): Boolean!
     }
 
     type Token {

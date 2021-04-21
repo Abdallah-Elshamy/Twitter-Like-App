@@ -1,12 +1,26 @@
 import bcrypt from "bcryptjs";
 import validator from "validator";
-import { User, Tweet } from "../../models";
+import { User, Tweet, UserBelongsToGroup } from "../../models";
 import UserValidator from "../../validators/user";
 import db from "../../db";
 import { Op } from "sequelize";
 import jwt from "jsonwebtoken";
 
 const PAGE_SIZE = 10;
+
+interface CustomeError extends Error {
+    statusCode?: number;
+    validators?: { message: string; value: string }[];
+}
+
+interface CustomUser extends User {
+    isAdmin: boolean;
+}
+
+interface CustomeRequest extends Request {
+    user?: CustomUser;
+    authError?: CustomeError;
+}
 
 interface UserInput {
     userName: string;
@@ -423,6 +437,56 @@ export default {
             });
             await currentUser.$remove("following", toBeUnfollowed);
 
+            return true;
+        },
+        banUser: async (
+            parent: any,
+            args: { userId: number },
+            context: { req: CustomeRequest },
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            const { userId } = args;
+            if (authError) {
+                throw authError;
+            }
+            if (!user?.isAdmin) {
+                const error: CustomeError = new Error(
+                    "Only admins can ban users!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            const userToBeBanned = await User.findByPk(userId);
+            if (!userToBeBanned) {
+                const error: CustomeError = new Error(
+                    "No user was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+            if (userToBeBanned?.isBanned) {
+                const error: CustomeError = new Error(
+                    "This user is already banned!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+            const isAdmin = await UserBelongsToGroup.findOne({
+                where: {
+                    userId: userId,
+                    groupName: "admin",
+                },
+            });
+            if (isAdmin) {
+                const error: CustomeError = new Error(
+                    "Admin user can not be banned!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            userToBeBanned.isBanned = true;
+            await userToBeBanned.save();
             return true;
         },
     },

@@ -2,7 +2,7 @@ import { expect } from "chai";
 
 import { serverPromise } from "../app";
 import db from "../db";
-import { User, Tweet } from "../models";
+import { User, Tweet, Group } from "../models";
 import {
     getUser,
     createUser,
@@ -32,6 +32,7 @@ import {
     unlike,
     createTweet,
     login,
+    banUser,
 } from "./requests/user-resolvers";
 
 let server: any;
@@ -80,7 +81,7 @@ describe("user-resolvers", (): void => {
                 followingCount: 16,
                 followersCount: 16,
                 birthDate: "1970-01-01",
-                isBanned: false
+                isBanned: false,
             });
             // check that the followers of the followers of the user
             // are retrieved correctly
@@ -1020,6 +1021,84 @@ describe("user-resolvers", (): void => {
         });
         after(async () => {
             await db.sync({ force: true });
+        });
+    });
+
+    describe("banUser resolver", () => {
+        let token: string;
+        before(async () => {
+            await db.sync({ force: true });
+            await createUser("omarabdo997", "omar ali");
+            const response = await login("omarabdo997", "myPrecious");
+            token = response.body.data.login.token;
+            await User.create({
+                name: "omar ali",
+                userName: "omarali997",
+                email: "omarali@gmail.com",
+                hashedPassword: "12345678910",
+                birthDate: "1970-01-01",
+            });
+        });
+
+        it("fail ban user authorization", async () => {
+            const response = await banUser(2);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+                message: "Invalid Token!",
+            });
+        });
+
+        it("fail ban if user is not admin", async () => {
+            const response = await banUser(2, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 403,
+                message: "Only admins can ban users!",
+            });
+            const group = await Group.create({
+                name: "admin",
+            });
+            const user = await User.findByPk(1);
+            user?.$add("groups", group);
+            const response2 = await login("omarabdo997", "myPrecious");
+            token = response2.body.data.login.token;
+        });
+
+        it("fail ban if trying to ban an admin user", async () => {
+            const response = await banUser(1, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 403,
+                message: "Admin user can not be banned!",
+            });
+        });
+
+        it("succeed in user ban", async () => {
+            let user = await User.findByPk(2);
+            expect(user?.isBanned).to.be.false;
+            const response = await banUser(2, token);
+            expect(response.body.data.banUser).to.be.true;
+            user = await User.findByPk(2);
+            expect(user?.isBanned).to.be.true;
+        });
+
+        it("fail to ban a banned user", async () => {
+            const response = await banUser(2, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "This user is already banned!",
+            });
+        });
+
+        it("fail to ban a non existing user", async () => {
+            const response = await banUser(100, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No user was found with this id!",
+            });
         });
     });
 

@@ -626,3 +626,19 @@ export const getUsersWithPage = async (search: string, page: number) => {
             }`,
         });
 };
+
+export const banUser = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                banUser(userId: "${userId}")
+            }
+            `,
+        });
+};

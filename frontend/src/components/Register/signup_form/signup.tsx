@@ -20,8 +20,8 @@ export function SignUpForm() {
   const [userName, setUserName] = useState(' ');
   const [email, setEmail] = useState(' ');
   const [password, setPassword] = useState(' ');
-  // const [birthDate, setBirthDate] = useState(' ')
-  const [birthDate, setValue] = React.useState<any>(new Date("2014-08-18"));
+  const [birthDate, setBirthDate] = useState(' ')
+  // const [birthDate, setValue] = React.useState<any>(new Date("2014-08-18"));
 
 
   const [createUser, { error, data }] = useMutation<{ createUser: User }, { userInput: New_User }>(ADD_USER, {
@@ -85,7 +85,7 @@ export function SignUpForm() {
 
 
 {/* need to handle the output of picker in format yyyy-mm-dd */}
-<div className = "" style={{color: "red"}}>
+{/* <div className = "" style={{color: "red"}}>
 <DatePicker
           disableFuture
           openTo="year"
@@ -93,16 +93,25 @@ export function SignUpForm() {
           value= {birthDate}
           format ="yyyy - MM - dd"
           onChange={(newValue) => {
-            setValue(newValue);
+            setValue("2015-08-17");
             console.log(newValue)
            } }
          className = " "
         />
-</div>
-        <Link to ="/login">
-        <TweetButton name = "Next" className ="w-80 mt-8 h-12" onClick={() => name && userName && email && password && birthDate && createUser()} />
-        </Link>
-          
+</div> */}
+
+
+      <FormInput 
+            type = "name"
+            name="name"
+            onChange={($e: FormEvent<HTMLInputElement>) => setBirthDate($e.currentTarget.value)}
+            className="w-full h-16 -ml-20 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300" 
+            placeholder = "2011-01-01"
+          />
+
+<Link to ="/login">
+       <TweetButton name = "Next" className ="w-80 mt-8 h-12" onClick={() => name && userName && email && password && birthDate && createUser()} />
+       </Link>
 
           <div className="pl-24" >
             <Link to="/login" className="a_login_form mt-12">

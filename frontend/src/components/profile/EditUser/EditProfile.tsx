@@ -1,5 +1,5 @@
 import { Field, Formik } from 'formik';
-import React, { createRef, MouseEventHandler, useRef, useState } from 'react';
+import React, { createRef, MouseEventHandler, useRef } from 'react';
 import { object, string } from 'yup';
 import { User } from '../../../common/TypesAndInterfaces';
 import '../profile.css';
@@ -11,7 +11,7 @@ import './EditProfile.css'
 import { EditProfileImageVal } from '../../../common/cache';
 import { GetEditProfileImage } from '../../../common/queries/GetEditProfileImage';
 import axios from 'axios';
-import { LoggedUser } from '../../../common/queries/Userqery';
+
 
 type Props = {
   user: User,

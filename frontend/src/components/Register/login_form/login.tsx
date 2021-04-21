@@ -11,7 +11,6 @@ import { Logo } from "./../../logo/logo";
 import { FormInput } from '../formInput/formInput';
 import { LOGIN } from '../../../common/queries/login_query';
 import { authenticatedVal, cache } from '../../../common/cache';
-import { withApollo } from '@apollo/react-hoc';
 
 const httpLink = createHttpLink({
   uri: 'http://localhost:8000/graphql',

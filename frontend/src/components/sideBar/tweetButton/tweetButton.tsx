@@ -11,16 +11,13 @@ interface Button_info {
     className? : string ,
     onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
 }
-// const defaultProps: Button_info = {
-//   type:"button", 
-//   name:""
-// }
+
 export class TweetButton extends Component<Button_info>{
 render() {
   return ( 
   
 <Fragment>
-    {/* mt-8 and h-12 has been deleted to be cusmized for each button */}
+
     <button  className= {` focus:outline-none 
           transform transition hover:scale-110 duration-300 
           hover:shadow-md sidebar_tw_btn ${this.props.className}`}  

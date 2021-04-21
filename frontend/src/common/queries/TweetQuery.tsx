@@ -19,3 +19,4 @@ query tweets ($userId:ID! $filter:String $page:Int){
       }
     }}
 `
+

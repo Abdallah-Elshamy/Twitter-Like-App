@@ -1,6 +1,7 @@
 import express, { Application, Request, Response, NextFunction } from "express";
 import { ApolloServer } from "apollo-server-express";
-import  cron  from "node-cron";
+import cron from "node-cron";
+import http from "http";
 import { resolvers, typeDefs } from "./graphql";
 import path from "path";
 import db from "./db";
@@ -31,9 +32,21 @@ const apolloServer: ApolloServer = new ApolloServer({
             validators: error.validators,
         };
     },
+    subscriptions: {
+        path: "/subscriptions",
+        onConnect: (connectionParams, webSocket, context) => {
+            console.log("Client connected");
+        },
+        onDisconnect: (webSocket, context) => {
+            console.log("Client disconnected");
+        },
+    },
 });
 
 apolloServer.applyMiddleware({ app });
+
+const httpServer = http.createServer(app);
+apolloServer.installSubscriptionHandlers(httpServer);
 
 app.use("/uploads", express.static(path.join(dir, "uploads")));
 
@@ -53,7 +66,7 @@ const serverPromise = db.sync().then(() => {
         SFWRegularCheck();
     });
 
-    const server = app.listen(process.env.PORT!, (): void => {
+    const server = httpServer.listen(process.env.PORT!, (): void => {
         console.log(`Server is running on port ${process.env.PORT}!`);
     });
     return server;

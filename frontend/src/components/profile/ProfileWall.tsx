@@ -9,6 +9,7 @@ import TweetList from '../tweets/TweetList'
 import { Switch, NavLink, Route } from "react-router-dom"
 import { parseJwt } from '../../common/decode';
 import Loading from "../../UI/Loading"
+import Profilewallpage from './profileWallPage';
 
 
 function ProfileWall() {
@@ -47,6 +48,8 @@ function ProfileWall() {
             path='/profile'
             render={() => (
               <TweetList filter={``} />
+              // to test paganation go to profileWallPage
+              // <Profilewallpage  filter={``}/>
             )}
           />
           <Route

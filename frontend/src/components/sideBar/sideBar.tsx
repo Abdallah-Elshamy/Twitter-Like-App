@@ -6,24 +6,17 @@ import { SideBarItem } from './sideBarItem/sideBarItem'
 import { TweetButton } from './tweetButton/tweetButton'
 import { FlootProfile } from './flootProfile/flootProfile'
 import Modal from '../../UI/Modal/Modal';
-import { ToolBox } from './toolbox/toolbox';
-
 
 export function SideBar() {
-
 
   const [edit, setEdit] = useState<boolean>(false);
   const modalClosed = () => setEdit(false);
 
-
-
   return (
     
     <div className="px-2" >
-      <Modal show={edit}
-        modalClosed={modalClosed}
-        >
-           <SideBarItem item_name='    ' icon_name="fab fa-twitter" />
+      <Modal show={edit} modalClosed={modalClosed} >
+       
       </Modal>
 
       <Link to="/">
@@ -55,11 +48,7 @@ export function SideBar() {
       </Link>
 
 
-      <TweetButton name="Tweet" className="w-56 h-12 mt-8"  onClick={() => setEdit(true)} />
-
-{/* <ToolBox>
-<SideBarItem item_name='Setting' icon_name="fas fa-cog" />
-</ToolBox> */}
+      <TweetButton name="Tweet" className="w-56 h-12 mt-8" onClick={() => setEdit(true)} />
 
       < FlootProfile />
 
@@ -67,8 +56,6 @@ export function SideBar() {
 
   )
 }
-
-
 
 
 

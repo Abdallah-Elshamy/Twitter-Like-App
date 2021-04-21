@@ -1,19 +1,13 @@
 import React from 'react';
-import { Logout } from '../../Register/logout/logout';
-// import './flootProfile.css';
-
-
 
 interface toolProps {
   className?: string;
-  children ?: any;
+  children?: any;
   design?:any;
 }
 
 export class ToolBox extends React.Component<toolProps>  {
-
-toggleContainer =  React.createRef<HTMLDivElement>();
-
+toggleContainer:any =  React.createRef<HTMLDivElement>();
 state = {
         isOpen: true,
     };
@@ -21,7 +15,7 @@ state = {
   constructor(props :any) {
     super(props);
     this.state = { isOpen: false };
-    this.toggleContainer =  React.createRef();
+    this.toggleContainer  =  React.createRef();
 
     this.onClickHandler = this.onClickHandler.bind(this);
     this.onClickOutsideHandler = this.onClickOutsideHandler.bind(this);
@@ -51,26 +45,15 @@ state = {
     }
 
 
-    // onClickOutsideHandler(event : any ) {
-    //   if (this.state.isOpen && !this.toggleContainer.current.contains(event.target)) {
-    //     this.setState({ isOpen: false });
-    //   }
-    // }
-  
     onClickOutsideHandler(event : any ) {
-      if (this.state.isOpen && !this.toggleContainer.current) {
+      if (this.state.isOpen && !this.toggleContainer.current.contains(event.target)) {
         this.setState({ isOpen: false });
       }
     }
-
-
+  
     render() {
-
-
       return (
-
         <div className="flex-initial"  ref={this.toggleContainer}>
-        
          {this.state.isOpen && (
           <div>
            { this.props.children}
@@ -78,12 +61,9 @@ state = {
         )}
 
           <div>
-          <button className={` ${this.props.className}`} onClick={this.onClickHandler}  >
-
-     
-      <i className=" fas fa-ellipsis-h"></i>
-
-    </button>
+          <a className= {`${this.props.className}`} onClick={this.onClickHandler}>
+      { this.props.design}
+    </a>
     </div>
 
  </div>

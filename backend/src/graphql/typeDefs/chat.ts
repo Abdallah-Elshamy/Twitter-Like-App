@@ -10,4 +10,13 @@ export default gql`
         to: User!
         message: String!
     }
+
+    input SendMessageInput {
+        toUserId: ID!
+        messageBody: String!
+    }
+
+    extend type Mutation {
+        sendMessage(message: SendMessageInput!): ChatMessage!
+    }
 `;

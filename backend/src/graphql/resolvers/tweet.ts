@@ -1,8 +1,9 @@
-import { Tweet, Likes, User, Group, UserBelongsToGroup } from "../../models";
+import { Tweet, Likes, User, ReportedTweet } from "../../models";
 import { tweetValidator } from "../../validators";
 import db from "../../db";
 import { Transaction, Op } from "sequelize";
 import { Request } from "express";
+import { fn, col, literal } from "sequelize";
 
 const PAGE_SIZE = 10;
 
@@ -185,6 +186,55 @@ export default {
             });
 
             return tweets;
+        },
+        reportedTweets: async (
+            parent: any,
+            args: { page: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            const { page } = args;
+            if (authError) {
+                throw authError;
+            }
+            if (!user?.isAdmin) {
+                const error: CustomeError = new Error(
+                    "User must be an admin to get the reported tweets!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            return {
+                tweets: async () => {
+                    const reportedTweets = await ReportedTweet.findAll({
+                        attributes: ["tweetId"],
+                        order: [[fn("count", col("reporterId")), "DESC"]],
+                        group: "tweetId",
+                        offset: ((page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                    });
+                    const sortedTweetsIds = reportedTweets.map(
+                        (reportedTweet) => reportedTweet.tweetId
+                    );
+                    const unsortedTweets = await Tweet.findAll({
+                        where: { id: sortedTweetsIds },
+                    });
+                    const sortedTweets: Tweet[] = [];
+                    for (let tweetId of sortedTweetsIds) {
+                        let tweet = unsortedTweets.find(
+                            (tweet) => tweet.id == tweetId
+                        );
+                        sortedTweets.push(tweet!);
+                    }
+                    return sortedTweets;
+                },
+                totalCount: async () => {
+                    return ReportedTweet.count({
+                        distinct: true,
+                        col: "tweetId",
+                    });
+                },
+            };
         },
     },
     Mutation: {

@@ -5,6 +5,7 @@ export default gql`
         tweet(id: ID!): Tweet!
         tweets(userId: ID!, page: Int, filter:String) : PaginatedTweets!
         getFeed(page: Int): [Tweet]!
+        reportedTweets(page: Int): PaginatedTweets!
     }
     extend type Mutation {
         createTweet(tweet: TweetCreateInput!): Tweet!

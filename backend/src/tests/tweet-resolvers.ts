@@ -16,6 +16,7 @@ import {
     createQuotedRetweetWithMedia,
     getFeed,
     getFeedWithPagination,
+    reportedTweets,
 } from "./requests/tweet-resolvers";
 import { createUser, login } from "./requests/user-resolvers";
 import { truncate } from "fs/promises";
@@ -84,6 +85,12 @@ const createUsers = async (it: number = 30) => {
         );
     }
     return users;
+};
+
+const reportTweet = async (users: User[], tweet: Tweet, it: number) => {
+    for (let i = 0; i < it; i++) {
+        await users[i].$add("reportedTweets", tweet);
+    }
 };
 
 const createTweets = async (
@@ -981,6 +988,66 @@ describe("tweet-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 401,
+            });
+        });
+    });
+
+    describe("reportedTweets", async () => {
+        let authToken: string;
+        before(async () => {
+            await db.sync({ force: true });
+            let response = await createUser("omarabdo997", "Omar Ali");
+            response = await login("omarabdo997", "myPrecious");
+            authToken = response.body.data.login.token;
+            const users = await createUsers(30);
+            await createTweets(1, "O", 3);
+            const tweet1 = await Tweet.findByPk(1);
+            const tweet2 = await Tweet.findByPk(2);
+            const tweet3 = await Tweet.findByPk(3);
+            await reportTweet(users, tweet1!, 10);
+            await reportTweet(users, tweet2!, 30);
+            await reportTweet(users, tweet3!, 20);
+        });
+
+        it("fail reportedTweets authorization", async () => {
+            const response = await reportedTweets(1);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+                message: "Invalid Token!",
+            });
+        });
+
+        it("fail reportedTweets if user is not admin", async () => {
+            const response = await reportedTweets(1, authToken);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 403,
+                message: "User must be an admin to get the reported tweets!",
+            });
+            const group = await Group.create({
+                name: "admin",
+            });
+            const user = await User.findByPk(1);
+            user?.$add("groups", group);
+            const response2 = await login("omarabdo997", "myPrecious");
+            authToken = response2.body.data.login.token;
+        });
+
+        it("succeed get reportedTweets", async () => {
+            const response = await reportedTweets(1, authToken);
+            expect(response.body.data.reportedTweets).to.include({
+                totalCount: 3,
+            });
+            expect(response.body.data.reportedTweets.tweets).to.has.length(3);
+            expect(response.body.data.reportedTweets.tweets[0]).to.include({
+                id: "2",
+            });
+            expect(response.body.data.reportedTweets.tweets[1]).to.include({
+                id: "3",
+            });
+            expect(response.body.data.reportedTweets.tweets[2]).to.include({
+                id: "1",
             });
         });
     });

@@ -504,5 +504,33 @@ export default {
                 },
             });
         },
+        reportedBy: async (
+            parent: Tweet,
+            args: { page: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            if (!user?.isAdmin) {
+                const error: CustomeError = new Error(
+                    "User must be an admin to get the users reporting the tweet!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            return {
+                users: async () => {
+                    return await parent.$get("reportedBy", {
+                        offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                    });
+                },
+                totalCount: async () => {
+                    return await parent.$count("reportedBy");
+                },
+            };
+        },
     },
 };

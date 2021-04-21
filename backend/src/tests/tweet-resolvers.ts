@@ -17,6 +17,7 @@ import {
     getFeed,
     getFeedWithPagination,
     reportedTweets,
+    getTweetsWithReportes,
 } from "./requests/tweet-resolvers";
 import { createUser, login } from "./requests/user-resolvers";
 import { truncate } from "fs/promises";
@@ -1048,6 +1049,101 @@ describe("tweet-resolvers", (): void => {
             });
             expect(response.body.data.reportedTweets.tweets[2]).to.include({
                 id: "1",
+            });
+        });
+    });
+
+    describe("get reporters from tweets if admin", async () => {
+        let authToken: string;
+        before(async () => {
+            await db.sync({ force: true });
+            let response = await createUser("omarabdo997", "Omar Ali");
+            response = await login("omarabdo997", "myPrecious");
+            authToken = response.body.data.login.token;
+            const users = await createUsers(30);
+            await createTweets(1, "O", 3);
+            const tweet1 = await Tweet.findByPk(1);
+            const tweet2 = await Tweet.findByPk(2);
+            const tweet3 = await Tweet.findByPk(3);
+            await reportTweet(users, tweet1!, 10);
+            await reportTweet(users, tweet2!, 30);
+            await reportTweet(users, tweet3!, 20);
+        });
+
+        it("fail get reporters from tweets authorization", async () => {
+            const response = await getTweetsWithReportes(1, 1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+                message: "Invalid Token!",
+            });
+        });
+
+        it("fail get reporters from tweets if user is not admin", async () => {
+            const response = await getTweetsWithReportes(1, 1, "", authToken);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 403,
+                message:
+                    "User must be an admin to get the users reporting the tweet!",
+            });
+            const group = await Group.create({
+                name: "admin",
+            });
+            const user = await User.findByPk(1);
+            user?.$add("groups", group);
+            const response2 = await login("omarabdo997", "myPrecious");
+            authToken = response2.body.data.login.token;
+        });
+
+        it("succeed get reporters from tweets", async () => {
+            const response = await getTweetsWithReportes(1, 1, "", authToken);
+            expect(response.body.data.tweets.tweets).to.has.length(3);
+            expect(response.body.data.tweets.tweets[0]).to.include({
+                id: "3",
+            });
+            expect(response.body.data.tweets.tweets[0].reportedBy).to.include({
+                totalCount: 20,
+            });
+            expect(
+                response.body.data.tweets.tweets[0].reportedBy.users[0]
+            ).to.include({
+                id: "2",
+            });
+            expect(
+                response.body.data.tweets.tweets[0].reportedBy.users[9]
+            ).to.include({
+                id: "11",
+            });
+            expect(response.body.data.tweets.tweets[1]).to.include({
+                id: "2",
+            });
+            expect(response.body.data.tweets.tweets[1].reportedBy).to.include({
+                totalCount: 30,
+            });
+            expect(
+                response.body.data.tweets.tweets[1].reportedBy.users[0]
+            ).to.include({
+                id: "2",
+            });
+            expect(
+                response.body.data.tweets.tweets[1].reportedBy.users[9]
+            ).to.include({
+                id: "11",
+            });
+            expect(response.body.data.tweets.tweets[2]).to.include({
+                id: "1",
+            });
+            expect(response.body.data.tweets.tweets[2].reportedBy).to.include({
+                totalCount: 10,
+            });
+            expect(
+                response.body.data.tweets.tweets[2].reportedBy.users[0]
+            ).to.include({
+                id: "2",
+            });
+            expect(
+                response.body.data.tweets.tweets[2].reportedBy.users[9]
+            ).to.include({
+                id: "11",
             });
         });
     });

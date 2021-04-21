@@ -96,7 +96,7 @@ class Tweet extends Model {
     threadTweet?: number;
 
     @BelongsToMany(() => User, () => ReportedTweet, "tweetId", "reporterId")
-    reportedby?: User[];
+    reportedBy?: User[];
 }
 
 export default Tweet;

@@ -333,3 +333,35 @@ export const reportedTweets = async (
             `,
         });
 };
+
+export const getTweetsWithReportes = async (
+    userId: number,
+    page: number = 1,
+    filter: string | null = "",
+    authorizationToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authorizationToken}`)
+        .send({
+            query: `
+            query {
+                tweets(
+                    userId: ${userId}
+                    page: ${page}
+                    filter: "${filter}"
+                ){
+                    tweets{
+                        id
+                        reportedBy{
+                            users{
+                                id
+                            }
+                            totalCount
+                        }
+                    }
+                }
+            }    
+         `,
+        });
+};

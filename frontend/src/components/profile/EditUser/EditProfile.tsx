@@ -11,7 +11,7 @@ import './EditProfile.css'
 import { EditProfileImageVal } from '../../../common/cache';
 import { GetEditProfileImage } from '../../../common/queries/GetEditProfileImage';
 import axios from 'axios';
-import { LoggedUser } from '../../../Userqery';
+import { LoggedUser } from '../../../common/queries/Userqery';
 
 type Props = {
   user: User,

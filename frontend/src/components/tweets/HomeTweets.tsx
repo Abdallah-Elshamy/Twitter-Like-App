@@ -4,10 +4,19 @@ import Tweet from "./Tweet";
 import {TweetData} from './Tweet'
 import {FeedTweets} from '../../common/queries/Feedtweets'
 import Loading from '../../UI/Loading'
+import { Get_SFW } from "../../common/queries/GET_SFW";
 
 function HomeTweets() {
+  const sfw = useQuery(Get_SFW).data
 
-    const {loading, error, data} = useQuery(FeedTweets); 
+    const {loading, error, data} = useQuery(FeedTweets, 
+      {
+        variables: {
+          isSFW:sfw.SFW.value
+        }
+      }
+      ); 
+
     
     if (loading) return <Loading/>
     if (error) return <p>`Error! this is the one ${error.message}`</p> 

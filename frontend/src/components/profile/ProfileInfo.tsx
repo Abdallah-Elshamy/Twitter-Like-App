@@ -8,8 +8,7 @@ import Modal from '../../UI/Modal/Modal';
 import EditProfile from './EditUser/EditProfile';
 import { timeConverter } from '../../common/utils/timestamp';
 import { EditProfileImageVal } from '../../common/cache';
-import { decodedToken } from '../../App';
-import { GET_ISAUTH } from '../../common/queries/Get_isAuth';
+
 
 function ProfileInfo() {
 
@@ -21,14 +20,15 @@ function ProfileInfo() {
     })
     setEdit(false)
   }
-  var profile;
+
   if (localStorage.getItem('token') !== null) {
-    profile = parseJwt(localStorage.getItem('token'))
+    var profile = parseJwt(localStorage.getItem('token'))
   }
 
 
 
   const data = useQuery(LoggedUser, { variables: { id: profile.id } }).data;
+  
   const user: User = data.user;
   return (
 

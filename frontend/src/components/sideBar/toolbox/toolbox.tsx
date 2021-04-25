@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 
 interface toolProps {
   className?: string;
@@ -53,20 +53,22 @@ state = {
   
     render() {
       return (
+        <Fragment>
         <div className="flex-initial"  ref={this.toggleContainer}>
          {this.state.isOpen && (
           <div>
            { this.props.children}
           </div>
         )}
-
-          <div>
-          <a className= {`${this.props.className}`} onClick={this.onClickHandler}>
+ <div>
+      <a className= {`${this.props.className}`} onClick={this.onClickHandler}>
+        <div>
       { this.props.design}
-    </a>
-    </div>
-
+      </div>
+       </a>
+  </div>
  </div>
+ </Fragment>
       );
     }
   }

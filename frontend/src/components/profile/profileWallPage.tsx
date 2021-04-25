@@ -4,6 +4,7 @@ import { Tweets } from "../../common/queries/TweetQuery";
 import { parseJwt } from '../../common/decode';
 import { InMemoryCache } from "@apollo/client";
 import Feed from "./feed";
+import { VariablesAreInputTypesRule, VariablesInAllowedPositionRule } from "graphql";
 
 
 export interface TweetFilter {
@@ -13,8 +14,7 @@ export interface TweetFilter {
 
 const  Profilewallpage: React.FC<TweetFilter> = (props) => {
   var profile;
-  var page = 2 ;
-
+  var initPage = 1;
 
   if (localStorage.getItem('token') !== "LOGOUT") {
     profile = parseJwt(localStorage.getItem('token'))
@@ -25,11 +25,11 @@ const  Profilewallpage: React.FC<TweetFilter> = (props) => {
       Query: {
         fields: {
           feed: {
-            read(existing) {
-              return existing && existing ;
-            },
+            // read(existing) {
+            //   return existing && existing ;
+            // },
             merge(existing = [], incoming) {
-              return [...existing, ...incoming];
+              return {...existing, ...incoming};
             }
             },
         },
@@ -42,7 +42,7 @@ const  Profilewallpage: React.FC<TweetFilter> = (props) => {
       variables: {
         userId: profile.id,
         filter: props.filter ,
-        page : page
+        page : initPage
       }
     });
 
@@ -54,18 +54,20 @@ const  Profilewallpage: React.FC<TweetFilter> = (props) => {
       onLoadMore = {() =>
         fetchMore({
           variables: {
-            page : page + 1
-    
+            page : initPage +1
           } , 
           // updateQuery: (prev = [], { fetchMoreResult }) => fetchMoreResult
  
-          updateQuery: (prev, { fetchMoreResult }) => {
+          updateQuery: (prev:any , { fetchMoreResult }) => {
             if (!fetchMoreResult) return prev;
-            return Object.assign({}, prev, {
-              tweet: [...prev , ...fetchMoreResult ]
-            });
+            else{
+          console.log("updateQuary")
+          //  return Object.assign( prev , fetchMoreResult  );       
+           return {...prev , ...fetchMoreResult }  ;
+            }
+ 
           }
-
+          
         })
         
       }  

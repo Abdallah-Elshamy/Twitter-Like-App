@@ -21,6 +21,11 @@ export const cache: InMemoryCache = new InMemoryCache({
             return EditProfileImageVal();
           }
         },
+        SFW: {
+          read() {
+            return SFW();
+          }
+        },
       }
     }
   }
@@ -41,3 +46,6 @@ export const EditProfileImageVal: ReactiveVar<{ Image: object | false, ImageURL:
     ImageURL: false
   });
 
+  export const SFW: ReactiveVar< {value:boolean}> = makeVar<any>(
+    { value: true }
+  );

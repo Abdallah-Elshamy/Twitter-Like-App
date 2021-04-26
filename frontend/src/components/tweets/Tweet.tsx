@@ -24,7 +24,9 @@ export interface TweetData {
 function Tweet(props:any){
   const [edit, setEdit] = useState<boolean>(false);
   const modalClosed = () => setEdit(false);
-  console.log (props.mediaURLs)
+  // const displayUploadedFiles=(urls:string[])=> {
+  //   return urls.map((url, i) => <img className="w-full h-15" key={i} src={url}/>);
+  // }
 
   return(
 
@@ -56,6 +58,7 @@ function Tweet(props:any){
         <span>
           {props.text}
         </span>
+        {/* {displayUploadedFiles (props.mediaURLs)} */}
         {(props.mediaURLs)&& <img className="w-full h-15" src={props.mediaURLs } alt=""/>}
         <div className="tweet-toolbar p--light-color">
           <a href="/">

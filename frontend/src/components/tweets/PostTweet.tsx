@@ -64,9 +64,7 @@ const  PostTweet =()=> {
     element.target.style.height = "60px"
     element.target.style.height = (element.target.scrollHeight)+"px"
     inputRef.current.style.height = (element.target.scrollHeight)+"px"
-    console.log (`in ${element.target.style.height}`)
-    console.log (`out ${inputRef.current.style.height}`)
-    console.log (`scroll ${element.target.scrollHeight}`)
+
   }
   const validationSchema = Yup.object({
 		text: Yup.string()
@@ -86,7 +84,7 @@ const  PostTweet =()=> {
         onSubmit={({text}, { setSubmitting, resetForm }) => {
           if(media) handleUpload()
           setSubmitting(true);
-          console.log (text);
+          console.log (media,mediaURL)
           createTweet ({
             variables :{tweetInput: {text, mediaURLs: APIENDPOINT && APIENDPOINT.getUploadURL.split('?')[0] }
             }, 
@@ -122,7 +120,7 @@ const  PostTweet =()=> {
               placeholder="What's happening..."/>
             </div>
              {/* image */}
-            <img className="h-20 w-20 " src={mediaURL} />
+            {media && <img  src={mediaURL} />}
             <hr className="my-2" />
             <div className="flex justify-between items-center">
                 <button className="hover:bg-blue-100 rounded-full py-2 px-3 transition focus:outline-none" onClick={()=>upload.current.click()}>

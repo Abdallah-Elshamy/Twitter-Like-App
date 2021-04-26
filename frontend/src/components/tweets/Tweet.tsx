@@ -18,11 +18,13 @@ export interface TweetData {
   repliesCount?: number
   createdAt?: number
   isLiked?: boolean
+  mediaURLs?:string[]
 }
 
 function Tweet(props:any){
   const [edit, setEdit] = useState<boolean>(false);
   const modalClosed = () => setEdit(false);
+  console.log (props.mediaURLs)
 
   return(
 
@@ -49,10 +51,12 @@ function Tweet(props:any){
           <i className="fas fa-ellipsis-h"></i>
         </span>
       </div>
+      
       <div className="tweet-content">
         <span>
           {props.text}
         </span>
+        {(props.mediaURLs)&& <img className="w-full h-15" src={props.mediaURLs } alt=""/>}
         <div className="tweet-toolbar p--light-color">
           <a href="/">
             <i className="fas fa-reply text-base font-sm "></i>
@@ -82,6 +86,7 @@ function Tweet(props:any){
           <a href="/">
             <i className="far fa-heart text-base font-sm"></i>
             <span>{props.likesCount}</span>
+
           </a>
         </div>
       </div>

@@ -36,7 +36,9 @@ const TweetList: React.FC<TweetFilter> = (props) => {
       {
 
         data.tweets.tweets.map((tweet: TweetData) => {
-          return <Tweet text={tweet.text}
+          return <Tweet 
+            mediaURLs={tweet.mediaURLs}
+            text={tweet.text}
             repliesCount={tweet.repliesCount}
             createdAt={tweet.createdAt}
             isLiked={tweet.isLiked}

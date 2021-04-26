@@ -1,5 +1,6 @@
 import { ErrorMessage, Field, Form, Formik } from "formik"
-import React, { useRef } from "react"
+import React, { useRef} from "react"
+import { useQuery } from '@apollo/client';
 import * as Yup from "yup"
 import { TweetButton } from '../sideBar/tweetButton/tweetButton'
 import {Tweets} from '../../common/queries/TweetQuery'
@@ -9,6 +10,7 @@ import { useMutation } from "@apollo/client"
 import './tweet.css';
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 import { parseJwt } from '../../common/decode';
+import { Get_SFW } from "../../common/queries/GET_SFW";
 interface Post {
   text:string
 }
@@ -23,6 +25,7 @@ const  PostTweet =()=> {
   // console.log (user.imageURL)
 
   const inputRef:any = useRef ()
+  const sfw = useQuery(Get_SFW).data
   // mutation
   const [createTweet , {data}]  = useMutation (Post_Tweet);
   console.log (`this ${inputRef.current}`)
@@ -30,6 +33,7 @@ const  PostTweet =()=> {
   const initialValues: Post = {
     text: ""
   }
+ 
   /********   dynamic hight control funtion   ***********/
   function setInputHight (element:React.ChangeEvent<HTMLElement>){
     element.target.style.height = "60px"
@@ -62,8 +66,13 @@ const  PostTweet =()=> {
             refetchQueries :[ {query:Tweets , 
               variables:{
                  userId: profile.id, 
-                 filter:''} 
-              }, {query: FeedTweets}]
+                 filter:'', 
+                 isSFW:sfw.SFW.value
+                } 
+              }, {query: FeedTweets, 
+                variables: {
+                  isSFW:sfw.SFW.value
+                }}]
             
           });
           console.log (`this ${data}`)
@@ -98,6 +107,7 @@ const  PostTweet =()=> {
                   strokeWidth="2" 
                   d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
+                
                 </button>
                 <ErrorMessage name="text"  render={msg => <div className="text-red-500">{msg}</div>} />
                 

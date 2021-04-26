@@ -18,7 +18,7 @@ interface IRecipeProps {
 
 export function FlootProfile () {
 
-
+ 
 
 
 
@@ -35,7 +35,13 @@ export function FlootProfile () {
         (sfw)? setsfw (false): setsfw (true)
       }
       useEffect(() => {
+        const  local = localStorage.getItem ('SFW')
+        if (local === "true") {setsfw(true)}
+        else (setsfw(false))
+      }, [])
+      useEffect(() => {
         SFW({value:sfw})
+        localStorage.setItem ('SFW',JSON.stringify( sfw))
       }, [sfw])
       const data2 = useQuery (Get_SFW).data 
 

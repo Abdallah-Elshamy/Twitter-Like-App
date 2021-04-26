@@ -8,6 +8,7 @@ import Modal from '../../UI/Modal/Modal';
 import EditProfile from './EditUser/EditProfile';
 import { timeConverter } from '../../common/utils/timestamp';
 import { EditProfileImageVal } from '../../common/cache';
+import { Link } from 'react-router-dom';
 
 
 function ProfileInfo() {
@@ -43,13 +44,15 @@ function ProfileInfo() {
 
       <header className="top-bar px-3 py-2">
         <span className=" m-3">
-          <a href="http://">
+        <Link to="/">
+
             <i className="fa fa-arrow-left  p--main-color" aria-hidden="true"></i>
-          </a>
+        </Link>
+
         </span>
         <div>
-          <p className="font-extrabold text-lg ">Toka</p>
-          {/* featch fron tweet */}
+          <p className="font-extrabold text-lg ">{user.name}</p>
+          {/* featch front tweet */}
           <p className="p--light-color block ">{user.tweets?.totalCount} tweet</p>
         </div>
       </header>

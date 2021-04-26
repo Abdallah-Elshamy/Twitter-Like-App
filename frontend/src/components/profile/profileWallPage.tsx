@@ -4,7 +4,7 @@ import { Tweets } from "../../common/queries/TweetQuery";
 import { parseJwt } from '../../common/decode';
 import { InMemoryCache } from "@apollo/client";
 import Feed from "./feed";
-import { VariablesAreInputTypesRule, VariablesInAllowedPositionRule } from "graphql";
+import { Get_SFW } from "../../common/queries/GET_SFW";
 
 
 export interface TweetFilter {
@@ -14,7 +14,9 @@ export interface TweetFilter {
 
 const  Profilewallpage: React.FC<TweetFilter> = (props) => {
   var profile;
-  var initPage = 1;
+  var Page = 1;
+
+  const sfw = useQuery (Get_SFW).data
 
   if (localStorage.getItem('token') !== "LOGOUT") {
     profile = parseJwt(localStorage.getItem('token'))
@@ -37,24 +39,26 @@ const  Profilewallpage: React.FC<TweetFilter> = (props) => {
     },
   });
 
-  const { loading, data, fetchMore } = useQuery(Tweets,
+  const { loading, data , fetchMore } = useQuery(Tweets,
     {
       variables: {
         userId: profile.id,
         filter: props.filter ,
-        page : initPage
+        page : Page ,
+        isSFW:sfw.SFW.value
       }
     });
 
   if (loading) return <p>'Loading .. '</p>
 
   return (
+    
     < Feed
       tweet = {data.tweets.tweets || []}
-      onLoadMore = {() =>
+      onLoadMore = {()=>
         fetchMore({
           variables: {
-            page : initPage +1
+            page : Page+1
           } , 
           // updateQuery: (prev = [], { fetchMoreResult }) => fetchMoreResult
  

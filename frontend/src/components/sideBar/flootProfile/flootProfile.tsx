@@ -3,25 +3,13 @@ import { Logout } from '../../Register/logout/logout';
 import { ToolBox } from '../toolbox/toolbox';
 import './flootProfile.css';
 import { useQuery } from '@apollo/client';
-import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 import { parseJwt } from '../../../common/decode';
 import { LoggedUser } from '../../../common/queries/Userqery';
 import Loading from "../../../UI/Loading"
 import  {Get_SFW}  from '../../../common/queries/GET_SFW';
 import {SFW} from '../../../common/cache'
-interface IRecipeProps {
-  ingredients?: string[];
-  title?: string;
-  className?: string;
-  instructions?: string;
-}
 
 export function FlootProfile () {
-
-
-
-
-
       var profile;
       if (localStorage.getItem('token') !== null) {
         profile = parseJwt(localStorage.getItem('token'))
@@ -46,9 +34,6 @@ export function FlootProfile () {
       const userYear:number = (data.user.birthDate).split("-", 1)
       const currentYear = new Date()
       const age = currentYear.getFullYear() - userYear   ; 
-      console.log (data2,age, userYear, currentYear.getFullYear())
-
-
       return (
 
          
@@ -71,18 +56,17 @@ export function FlootProfile () {
 </div>
            }>
 
-          <ul className= "px-4 mt-28" >
+          <ul className= "px-4 mt-16" >
           <a href="/profile" className="mt-1 w-52 text-center block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 
           hover:text-gray-900  hover:rounded-full rounded-full" role="menuitem">My Account</a>
-          <Logout/>
+
           {
             (age > 18) &&
             <button className="mt-1 w-52 text-center block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 
             hover:text-gray-900  hover:rounded-full rounded-full focus:outline-none" role="menuitem" 
             onClick={handleSFW}>{(sfw)?'Set NSFW':'Set SFW'}</button>
-
           }
-
+          <Logout/>
             </ul>
 
   </ToolBox>

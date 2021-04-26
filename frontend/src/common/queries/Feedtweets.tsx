@@ -17,6 +17,7 @@ query feed_tweets($isSFW:Boolean){
           repliesCount
           createdAt
           isLiked
+          mediaURLs
         }
       }
 `

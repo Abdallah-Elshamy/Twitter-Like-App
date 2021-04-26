@@ -30,6 +30,7 @@ function HomeTweets() {
                 data.getFeed.map((tweet:TweetData) => {
                   console.log (`tweet is ${tweet}`)
                 return <Tweet text={tweet.text}
+                mediaURLs={tweet.mediaURLs}
                 repliesCount={tweet.repliesCount}
                 createdAt={tweet.createdAt}
                 isLiked={tweet.isLiked}

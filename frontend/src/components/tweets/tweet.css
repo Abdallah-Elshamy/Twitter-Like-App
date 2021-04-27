@@ -1,6 +1,5 @@
 .p--light-color {
   color: var(--dark-grey);
-  font-size: 15px;
 }
 .p--main-color {
   color: var(--main-color);
@@ -19,7 +18,8 @@
   min-height: 90px;
   padding-top: 10px;
 }
-.tweet-icon img {
+.tweet-icon img,
+svg {
   max-width: 53px;
   max-height: 53px;
   border-radius: 50%;
@@ -31,10 +31,14 @@
 } */
 
 .tweet-content {
-  /* height: 60%; */
+  padding: 4px;
   font-weight: 400;
-  /* background: #aaa; */
 }
+/* slove word without space pb */
+.tweet-content > p {
+  word-break: break-word;
+}
+
 .tweet-data {
   display: flex;
   flex-direction: row;

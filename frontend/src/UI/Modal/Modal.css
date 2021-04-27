@@ -1,0 +1,24 @@
+.Modal {
+   left:50%;
+   top:50px;
+
+    position: absolute;
+    z-index: 1500;
+    background-color: white;
+    width: 680px;
+    box-shadow: 2px 2px 2px rgba(0,0,0,0.8);
+   transform: translate(-50%,-50%);   
+    border-radius: 20px;
+    transition: all 0.3s ease-out;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+}
+
+@media (min-width: 600px) {
+    .Modal {
+        width: 580px;
+
+        left: calc(50% - 335px);
+    }
+}

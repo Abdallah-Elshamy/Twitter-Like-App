@@ -27,6 +27,10 @@ function Tweet(props:any){
   // const displayUploadedFiles=(urls:string[])=> {
   //   return urls.map((url, i) => <img className="w-full h-15" key={i} src={url}/>);
   // }
+  const displayUploadedFiles=(urls:string[])=> {
+    console.log(urls, "urls")
+    return urls.map((url, i) => <img className="w-full h-15" src={url} alt=""/>);
+  }
 
   return(
 
@@ -59,7 +63,7 @@ function Tweet(props:any){
           {props.text}
         </span>
         {/* {displayUploadedFiles (props.mediaURLs)} */}
-        {(props.mediaURLs)&& <img className="w-full h-15" src={props.mediaURLs } alt=""/>}
+        {(props.mediaURLs)&& displayUploadedFiles (props.mediaURLs)}
         <div className="tweet-toolbar p--light-color">
           <a href="/">
             <i className="fas fa-reply text-base font-sm "></i>

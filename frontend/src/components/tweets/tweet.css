@@ -66,3 +66,21 @@ svg {
     Arial, sans-serif;
   color: #0f1419;
 }
+.gg-box {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(250px, 1fr));
+  grid-gap: 5px;
+
+  /* margin: 20px 0; */
+}
+.third {
+  grid-row: span 2;
+}
+.gg-box img {
+  object-fit: cover;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+}

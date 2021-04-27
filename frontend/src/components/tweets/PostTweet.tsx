@@ -11,6 +11,7 @@ import { parseJwt } from '../../common/decode';
 import { Get_SFW } from "../../common/queries/GET_SFW";
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 import axios from 'axios';
+
 interface Post {
   text:string
 }
@@ -34,29 +35,73 @@ const  PostTweet =()=> {
     text: ""
   }
   /*********handling media uplaoding **************/
+
   const upload: any = useRef()
   const [media, setmedia] = useState(false)
   const [mediaURL, setmediaURL] = useState("")
+  const [mediaURLs , setmediaURLs] = useState<any>([])
+  const [medias , setmedias] = useState<any>([])
+   
   // var  uploadedMedia: { Media :object | false , MediaURL :string|false} 
   const { data: APIENDPOINT } = useQuery(gql`query{getUploadURL}`, { skip: !media })
-  
 
   const handleUpload = async () => {
-    APIENDPOINT && await axios.put(APIENDPOINT.getUploadURL,media, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    }).then(
-      res => console.log(res)
-    )
-      .catch(error => console.error(error))
+    // let urlsData:any = []
+    // for (let media of medias)  {
+    //   let temp  = await Promise.resolve( axios.put(APIENDPOINT.getUploadURL,media, {
+    //       headers: {
+    //         'Content-Type': 'application/x-binary'
+    //       }
+    //     })
+    //     )
+    //     console.log (temp)
+    //     urlsData.push(temp)
+    // }
+    // urlsData = await Promise.allSettled (urlsData) 
+    // for (let index = 0; index < urlsData.length; index++) {
+    //   urlsData [index] = urlsData[index].config.url.split('?')[0]}
+      
+    // }
+    let urlsData = await  medias.map ( async(media:any)=>{
+      let url:any= await axios.put(APIENDPOINT.getUploadURL,media, {
+        headers: {
+          'Content-Type': 'application/x-binary'
+        }
+      })
+      console.log ("url", url.config.url.split('?')[0])
+      return url.config.url.split('?')[0]
+
+    })
+    // 
+    console.log (urlsData)
+    return urlsData
   }
 
   const handleFile = (e: any) => {
     setmedia( e.target.files[0])
-    setmediaURL( URL.createObjectURL(e.target.files[0]))
+    setmedias ([...medias, e.target.files[0]])
+    
+    setmediaURLs( [...mediaURLs, URL.createObjectURL(e.target.files[0])])
     console.log (media,mediaURL)
   }
+
+  // const setFileUrls =(e:any)=> {
+  //   const temp:any = []
+  //   temp.push (...e.target.files)
+  //   setmedia (temp)
+  //   const urls = temp.map((file:any) => URL.createObjectURL(file));
+  //   if(mediaURL.length > 0) {
+  //     mediaURL.forEach((url) => URL.revokeObjectURL(url));
+  //   }
+  //   setmediaURL(urls);
+  //   console.log (media[0])
+  // }
+  
+  const displayUploadedFiles=(urls:string[])=> {
+    return urls.map((url, i) => 
+    <img className="object-cover w-full" key={i} src={url}/>);
+  }
+  
 
  
   /********   dynamic hight control funtion   ***********/
@@ -82,24 +127,31 @@ const  PostTweet =()=> {
         initialValues ={initialValues}
         validationSchema={validationSchema}
         onSubmit={({text}, { setSubmitting, resetForm }) => {
-          if(media) handleUpload()
+          if(media) {handleUpload().then ( (urls)=> {
+            console.log ("promis urls" , urls)
+            createTweet ({
+              variables :{tweetInput: {text, mediaURLs:urls }
+              }, 
+              refetchQueries :[ {query:Tweets , 
+                variables:{
+                   userId: profile.id, 
+                   filter:'', 
+                   isSFW:sfw.SFW.value
+                  } 
+                }, {query: FeedTweets, 
+                  variables: {
+                    isSFW:sfw.SFW.value
+                  }}]
+              
+            });
+          }
+
+          )}
+          setmedia (false)
+          setmediaURL ("")
           setSubmitting(true);
-          console.log (media,mediaURL)
-          createTweet ({
-            variables :{tweetInput: {text, mediaURLs: APIENDPOINT && APIENDPOINT.getUploadURL.split('?')[0] }
-            }, 
-            refetchQueries :[ {query:Tweets , 
-              variables:{
-                 userId: profile.id, 
-                 filter:'', 
-                 isSFW:sfw.SFW.value
-                } 
-              }, {query: FeedTweets, 
-                variables: {
-                  isSFW:sfw.SFW.value
-                }}]
-            
-          });
+          // console.log (media,mediaURL)
+
           console.log (`this ${data}`)
           setSubmitting(false);
           resetForm();
@@ -120,7 +172,14 @@ const  PostTweet =()=> {
               placeholder="What's happening..."/>
             </div>
              {/* image */}
-            {media && <img  src={mediaURL} />}
+             {/* grid grid-cols-2 gap-0.5 */}
+             <div className="w-full max-h-26 ">
+
+             <div className="gg-box   ">
+             { displayUploadedFiles(mediaURLs) }
+             </div>
+             </div>
+
             <hr className="my-2" />
             <div className="flex justify-between items-center">
                 <button className="hover:bg-blue-100 rounded-full py-2 px-3 transition focus:outline-none" onClick={()=>upload.current.click()}>

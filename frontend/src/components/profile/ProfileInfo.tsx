@@ -7,9 +7,8 @@ import { LoggedUser } from '../../common/queries/Userqery';
 import Modal from '../../UI/Modal/Modal';
 import EditProfile from './EditUser/EditProfile';
 import { timeConverter } from '../../common/utils/timestamp';
-import { EditProfileImageVal } from '../../common/cache';
+import { EditProfileBgVal, EditProfileImageVal } from '../../common/cache';
 import { Link } from 'react-router-dom';
-
 
 
 function ProfileInfo() {
@@ -19,6 +18,10 @@ function ProfileInfo() {
     EditProfileImageVal({
       Image: false,
       ImageURL: false
+    })
+    EditProfileBgVal({
+      BgImage: false,
+      BgImageURL: false
     })
     setEdit(false)
   }
@@ -30,6 +33,7 @@ function ProfileInfo() {
 
 
   const data = useQuery(LoggedUser, { variables: { id: profile.id } }).data;
+
 
   const user: User = data.user;
   return (
@@ -95,8 +99,8 @@ function ProfileInfo() {
             </div>
             <div className="font-bold pb-1">
               {/* featch followers count  */}
-              <a href="/"> {user.followingCount} <span className="p--light-color mr-4 ">following</span> </a>
-              <a href="/">{user.followersCount} <span className="p--light-color mr-4">Follower</span> </a>
+              <a href="/"> {Number(user.followingCount) - 1} <span className="p--light-color mr-4 ">Following</span> </a>
+              <a href="/">{Number(user.followersCount) - 1} <span className="p--light-color mr-4">Follower</span> </a>
             </div>
           </div>
         </div>

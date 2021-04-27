@@ -8,9 +8,10 @@ import { gql, useMutation, useQuery } from '@apollo/client';
 import { EditUser } from '../../../common/queries/EditUser';
 import avatar from "../../../routes/mjv-d5z8_400x400.jpg";
 import './EditProfile.css'
-import { EditProfileImageVal } from '../../../common/cache';
+import { EditProfileBgVal, EditProfileImageVal } from '../../../common/cache';
 import { GetEditProfileImage } from '../../../common/queries/GetEditProfileImage';
 import axios from 'axios';
+import { GetEditBgImage } from '../../../common/queries/GetEditBgImage';
 
 
 type Props = {
@@ -31,6 +32,14 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
   const { data: avatarData } = useQuery(GetEditProfileImage)
   if (avatarData) {
     var { EditProfileImage: { Image, ImageURL } } = avatarData
+  }
+
+  const { data: BgData } = useQuery(GetEditBgImage)
+  if (BgData) {
+    //console.assert(BgData, "happened")
+
+    var { EditProfileBg: { BgImage, BgImageURL } } = BgData
+    // console.log(BgImageURL)
   }
 
   const { data: APIENDPOINT } = useQuery(gql`query{getUploadURL}`, { skip: !Image })
@@ -57,6 +66,9 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
   //avatar image ref
   const avatarButton: any = useRef()
 
+  const BgButton: any = useRef()
+
+
 
   const save = () => {
     const dataValues = formRef.current.values
@@ -66,22 +78,15 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
     let yourDate = dataValues.birthdate
     if (typeof yourDate == 'string') ageError = false
     else {
-      console.log(dataValues.birthdate)
       yourDate = new Date(dataValues.birthdate.getTime() - (yourDate.getTimezoneOffset() * 60 * 1000))
-      console.log(yourDate)
       yourDate = yourDate.toISOString().split('T')[0]
-      console.log(yourDate)
-
       //check age is older than 12
       ageError = !((new Date().getFullYear() - Number(yourDate.substring(0, 4))) >= 12)
       if (!ageError) dataValues.birthdate = yourDate
-
     }
-
 
     //overall error
     let error = ((Object.keys(formRef.current.errors).length !== 0) || ageError)
-    console.log(error)
 
     if (!error) {
       if (Image) {
@@ -97,13 +102,10 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
             birthDate: dataValues.birthdate,
             imageURL: APIENDPOINT && APIENDPOINT.getUploadURL.split('?')[0]
           },
-          /*refetchQueries: [{
-            query: LoggedUser
-          }]*/
         }
       })
 
-      closeButton.current.click()
+      !loading && closeButton.current.click()
     }
 
 
@@ -125,7 +127,17 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
       Image: e.target.files[0],
       ImageURL: URL.createObjectURL(e.target.files[0])
     })
+  }
 
+  const handleBgPreview = (e: any) => {
+
+    console.log("After change")
+    EditProfileBgVal({
+      BgImage: e.target.files[0],
+      BgImageURL: URL.createObjectURL(e.target.files[0])
+    })
+
+    console.log(BgImageURL)
 
   }
 
@@ -153,12 +165,25 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
 
       <main className="p-4">
 
-        <div className="media h-64">
-          <div className="pf--bg" >
-            {user.imageURL && (
-              <img src={user.coverImageURL}
-                alt="avatar" />
+        <div className="media h-64 ">
+          <div className="pf--bg relative " >
+
+            {(
+              <img className="" src={BgImageURL || user.coverImageURL || avatar}
+                alt="bg" />
             )}
+            <div className="absolute top-0  h-full w-full 
+            hover:bg-gray-100 hover:bg-opacity-25 
+             p-16 "
+              onClick={() => BgButton.current.click()}
+            >
+
+              <svg className="h-6 text-white m-auto opacity-50" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <input className=" hidden" type="file" onChange={(e) => handleBgPreview(e)} accept="image/*" ref={BgButton} />
+
 
           </div>
 
@@ -174,11 +199,11 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
               onClick={() => avatarButton.current.click()}
             >
 
-              <svg className="h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-6 text-white opacity-50" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
-            <input className="file-upload  hidden" type="file" onChange={(e) => handleAvatarPreview(e)} accept="image/*" ref={avatarButton} />
+            <input className="hidden" type="file" onChange={(e) => handleAvatarPreview(e)} accept="image/*" ref={avatarButton} />
           </div>
 
         </div>

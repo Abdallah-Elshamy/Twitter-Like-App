@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Switch,
   Route,
@@ -12,11 +11,10 @@ import Profile from '../components/profile/Profile';
 import Home from "../components/Home";
 import { useQuery } from '@apollo/client';
 import { GET_ISAUTH } from '../common/queries/Get_isAuth';
+import React from "react";
 import { Login } from "../components/Register/login_form/login";
 
 export const Routing = () => {
-  // let auth = useQuery(GET_ISAUTH).data.authenticated
-
 
   return (
     <div>
@@ -73,10 +71,10 @@ export const Routing = () => {
 
 
       </Switch>
+
     </div>
   )
 };
-
 
 const PrivateRoute = ({ children, ...rest }: any) => {
   let auth = useQuery(GET_ISAUTH).data.authenticated
@@ -99,6 +97,8 @@ const PrivateRoute = ({ children, ...rest }: any) => {
   );
 }
 
+
+
 const PublicRoute = ({ children, ...rest }: any) => {
   let auth = !useQuery(GET_ISAUTH).data.authenticated
   return (
@@ -120,10 +120,11 @@ const PublicRoute = ({ children, ...rest }: any) => {
   );
 }
 
-
 function Setting() {
   return <h2>setting</h2>;
 }
+
+
 
 function Messages() {
   return <h2>Messages</h2>;

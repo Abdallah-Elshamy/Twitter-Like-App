@@ -44,10 +44,8 @@
     color: var(--main-color);
   } */
 .pf--info {
-  position: relative;
   display: flex;
   flex-direction: column;
-  z-index: 0;
 }
 
 .pf--nav-ul {

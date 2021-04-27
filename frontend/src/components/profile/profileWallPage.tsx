@@ -1,6 +1,6 @@
 import React from "react"
 import { useQuery } from '@apollo/client';
-import { Tweets } from "../TweetQuery";
+import { Tweets } from "../../common/queries/TweetQuery";
 import { parseJwt } from '../../common/decode';
 import { InMemoryCache } from "@apollo/client";
 import Feed from "./feed";

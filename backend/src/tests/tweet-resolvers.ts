@@ -18,7 +18,6 @@ import {
     getFeedWithPagination,
 } from "./requests/tweet-resolvers";
 import { createUser, login } from "./requests/user-resolvers";
-import { truncate } from "fs/promises";
 
 let server: any;
 

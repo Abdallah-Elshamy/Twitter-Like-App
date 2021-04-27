@@ -5,19 +5,22 @@ import './profile.css';
 import TrendsBar from '../TrendsBar/TrendsBar';
 import '../../styles/layout.css'
 import ProfileWall from './ProfileWall';
+// import Profilewallpage from './profileWallPage';
 
 function Profile() {
 
   return (
     <Fragment>
+
       <main className="main-container">
-        <aside className="sb-left"><SideBar /></aside>
+        <aside className="sb-left">< SideBar /></aside>
         <article className="wall">
           <ProfileWall/>
           </article>
-        <aside className="sb-right"><TrendsBar /></aside>
+        <aside className="sb-right">< TrendsBar /></aside>
 
       </main>
+   
     </Fragment>
   );
 }

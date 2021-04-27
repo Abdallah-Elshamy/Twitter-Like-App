@@ -2,9 +2,9 @@ import { gql } from "apollo-server-express";
 
 export default gql`
     extend type Query {
-        tweet(id: ID!): Tweet!
-        tweets(userId: ID!, page: Int, filter:String) : PaginatedTweets!
-        getFeed(page: Int): [Tweet]!
+        tweet(id: ID!, isSFW: Boolean): Tweet!
+        tweets(userId: ID!, page: Int, filter:String, isSFW: Boolean) : PaginatedTweets!
+        getFeed(page: Int, isSFW: Boolean): [Tweet]!
     }
     extend type Mutation {
         createTweet(tweet: TweetCreateInput!): Tweet!
@@ -20,6 +20,7 @@ export default gql`
         mediaURLs: [String]!
         state: String!
         originalTweet: Tweet!
+        isSFW: Boolean!
         likes(page: Int): PaginatedUsers!
         likesCount: Int!
         replies(page: Int): PaginatedTweets!
@@ -32,6 +33,7 @@ export default gql`
         quotedRetweetsCount: Int!
         createdAt: String!
         updatedAt: String!
+        mode: String
     }
 
     type PaginatedTweets {

@@ -60,3 +60,4 @@ export const EditProfileBgVal: ReactiveVar<{ BgImage: object | false, BgImageURL
 export const SFW: ReactiveVar<{ value: boolean }> = makeVar<any>(
   { value: true }
 );
+

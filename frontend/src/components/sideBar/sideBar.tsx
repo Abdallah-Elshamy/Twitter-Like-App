@@ -1,5 +1,7 @@
+
 import React, { useState } from 'react'
 import { Link } from "react-router-dom";
+import '../../App.css';
 
 import { SideBarItem } from './sideBarItem/sideBarItem'
 import { TweetButton } from './tweetButton/tweetButton'
@@ -66,8 +68,3 @@ export function SideBar() {
 
   )
 }
-
-
-
-
-

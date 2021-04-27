@@ -12,8 +12,8 @@ import Loading from "../../UI/Loading"
 
 
 function ProfileWall() {
-  var profile;
-  if (localStorage.getItem('token') !== "LOGOUT" || localStorage.getItem('token') == null) {
+  let profile;
+  if (localStorage.getItem('token')) {
     profile = parseJwt(localStorage.getItem('token'))
   }
 

@@ -1,16 +1,30 @@
-import React from 'react'
+import React , { useState } from 'react'
 import { Link } from "react-router-dom";
 import '../../App.css';
 
 import { SideBarItem } from './sideBarItem/sideBarItem'
 import { TweetButton } from './tweetButton/tweetButton'
 import { FlootProfile } from './flootProfile/flootProfile'
+import Modal from '../../UI/Modal/Modal';
+import { ToolBox } from './toolbox/toolbox';
+
 
 export function SideBar() {
-  // here 
-  
+
+
+  const [edit, setEdit] = useState<boolean>(false);
+  const modalClosed = () => setEdit(false);
+
+
+
   return (
+    
     <div className="px-2" >
+      <Modal show={edit}
+        modalClosed={modalClosed}
+        >
+           <SideBarItem item_name='    ' icon_name="fab fa-twitter" />
+      </Modal>
 
       <Link to="/">
         <SideBarItem item_name='    ' icon_name="fab fa-twitter" />
@@ -41,7 +55,12 @@ export function SideBar() {
       </Link>
 
 
-      <TweetButton name="Tweet" className="w-56 h-12 mt-8" />
+      <TweetButton name="Tweet" className="w-56 h-12 mt-8" onClick={() => setEdit(true)} />
+
+{/* <ToolBox>
+<SideBarItem item_name='Setting' icon_name="fas fa-cog" />
+</ToolBox> */}
+
       < FlootProfile />
 
     </div>

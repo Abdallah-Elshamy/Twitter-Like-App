@@ -6,6 +6,7 @@ import './PersonItem.css'
 import '../../../profile/profile.css'
 import FollowButton from '../../../FollowButton/FollowButton';
 import { decodedToken } from '../../../../App';
+import { parseJwt } from '../../../../common/decode';
 
 const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, username, followed = false, imageURI, numberOfFollowers }) => {
   const profilePicture = (imageURI === undefined || imageURI === null) ?

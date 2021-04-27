@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Link } from "react-router-dom";
 
 import { TweetButton } from '../../sideBar/tweetButton/tweetButton';
@@ -17,7 +17,6 @@ export const LandingPage: React.FC = () => (
       </div>
 
       <div>
-
         <div className="flex ">
           <input type="Email" className="h-10 w-40 pr-3 py-2 pl-2 rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300 mt-4 ml-12"
             placeholder="Email" />

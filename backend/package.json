@@ -23,6 +23,7 @@
     "jsonwebtoken": "^8.5.1",
     "node-cron": "^3.0.0",
     "node-fetch": "^2.6.1",
+    "peers": "^0.1.0",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.3",
     "sequelize": "^6.3.5",

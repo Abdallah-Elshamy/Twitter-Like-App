@@ -1,0 +1,11 @@
+<<<<<<< HEAD
+*env3
+media_files/*
+!media_files/.gitkeep
+env2
+||||||| b0a00ab
+=======
+*env3
+media_files/*
+!media_files/.gitkeep
+>>>>>>> 13de5c0e34d29d0f85c922b7ffcc6a8b9ffc108f

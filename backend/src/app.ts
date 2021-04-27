@@ -1,9 +1,11 @@
 import express, { Application, Request, Response, NextFunction } from "express";
 import { ApolloServer } from "apollo-server-express";
+// import  cron  from "node-cron";
 import { resolvers, typeDefs } from "./graphql";
 import path from "path";
 import db from "./db";
 import { auth } from "./middlewares";
+// import { SFWRegularCheck } from "./graphql/resolvers/tweet";
 
 const dir: string = path.resolve();
 
@@ -15,7 +17,7 @@ const apolloServer: ApolloServer = new ApolloServer({
     typeDefs,
     resolvers,
     playground: process.env.DEVELOPMENT_ENVIROMENT == "true",
-    context: ({req}) => ({
+    context: ({ req }) => ({
         req,
     }),
     formatError: (err) => {
@@ -46,6 +48,7 @@ app.use((req: Request, res: Response, next: NextFunction): void => {
 });
 
 const serverPromise = db.sync().then(() => {
+
     const server = app.listen(process.env.PORT!, (): void => {
         console.log(`Server is running on port ${process.env.PORT}!`);
     });

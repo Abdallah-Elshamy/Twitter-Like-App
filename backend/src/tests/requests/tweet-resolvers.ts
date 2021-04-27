@@ -188,7 +188,7 @@ export const getTweet = async (
         .send({
             query: `
                 query {
-                    tweet(id: ${id}){
+                    tweet(id: ${id},isSFW: ${false}){
                         id
                         text
                         state
@@ -250,7 +250,8 @@ export const getTweets = async (
                 tweets(
                     userId: ${userId}
                     page: ${page}
-                    filter: "${filter}"
+                    filter: "${filter}",
+                    isSFW: ${false}
                 ){
                     tweets{
                         id
@@ -270,7 +271,7 @@ export const getFeed = async (authToken: string | undefined = undefined) => {
         .send({
             query: `
             query {
-                getFeed {
+                getFeed(isSFW: ${false}) {
                     text
                     user {
                         id
@@ -291,7 +292,7 @@ export const getFeedWithPagination = async (
         .send({
             query: `
             query {
-                getFeed(page: ${page}) {
+                getFeed(page: ${page}, isSFW: ${false}) {
                     text
                     user {
                         id

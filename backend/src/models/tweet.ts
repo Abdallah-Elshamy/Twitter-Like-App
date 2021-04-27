@@ -47,6 +47,16 @@ class Tweet extends Model {
     mediaURLs!: string[];
 
     @AllowNull(false)
+    @Default(false)
+    @Column(DataType.BOOLEAN)
+    isChecked!: boolean;
+
+    @AllowNull(false)
+    @Default(false)
+    @Column(DataType.BOOLEAN)
+    isSFW!: boolean;
+
+    @AllowNull(false)
     @Column(DataType.CHAR(1))
     state!: string;
 

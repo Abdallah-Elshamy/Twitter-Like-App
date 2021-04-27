@@ -41,9 +41,18 @@ const  PostTweet =()=> {
   const [mediaURL, setmediaURL] = useState("")
   const [mediaURLs , setmediaURLs] = useState<any>([])
   const [medias , setmedias] = useState<any>([])
+  const [apis, setAPIs] = useState<any>([])
    
   // var  uploadedMedia: { Media :object | false , MediaURL :string|false} 
-  const { data: APIENDPOINT } = useQuery(gql`query{getUploadURL}`, { skip: !media })
+  const { data: APIENDPOINT, loading, refetch } = useQuery(gql`query{getUploadURL}`)
+  if (loading) {
+    console.log("loading...........")
+  }
+  if(!loading && APIENDPOINT){
+    if(APIENDPOINT.getUploadURL !== apis[apis.length-1]){
+      setAPIs([...apis, APIENDPOINT.getUploadURL])
+    }
+  }
 
   const handleUpload = async () => {
     // let urlsData:any = []
@@ -63,7 +72,7 @@ const  PostTweet =()=> {
       
     // }
     let urlsData = await  medias.map ( async(media:any)=>{
-      let url:any= await axios.put(APIENDPOINT.getUploadURL,media, {
+      let url:any= await axios.put(apis.pop(),media, {
         headers: {
           'Content-Type': 'application/x-binary'
         }
@@ -74,7 +83,7 @@ const  PostTweet =()=> {
     })
     // 
     console.log (urlsData)
-    return urlsData
+    return await Promise.all(urlsData)
   }
 
   const handleFile = (e: any) => {
@@ -82,6 +91,7 @@ const  PostTweet =()=> {
     setmedias ([...medias, e.target.files[0]])
     
     setmediaURLs( [...mediaURLs, URL.createObjectURL(e.target.files[0])])
+    refetch()
     console.log (media,mediaURL)
   }
 

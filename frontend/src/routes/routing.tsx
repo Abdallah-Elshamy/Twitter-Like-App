@@ -12,7 +12,6 @@ import Profile from '../components/profile/Profile';
 import Home from "../components/Home";
 import { useQuery } from '@apollo/client';
 import { GET_ISAUTH } from '../common/queries/Get_isAuth';
-import React from "react";
 import { Login } from "../components/Register/login_form/login";
 
 export const Routing = () => {

@@ -4,8 +4,6 @@ import { searchBarValue } from "./TypesAndInterfaces";
 const createPaginationAndCombine = (keyArgs: any[]) => ({
     merge(existing: any, incoming: any) {
         const merged = existing ? existing.slice(0) : [];
-        console.log("incoming data is", incoming)
-        console.log("merged data befor", merged)
 
         let breakFlag = 0;
         let i = 0;
@@ -37,9 +35,7 @@ const createPaginationAndCombineObjectElements = (keyArgs: any[]) => ({
         const merged = existing
             ? { totalCount: existing.totalCount, tweets: [...existing.tweets] }
             : { totalCount: 0, tweets: [] };
-        console.log("incoming data is", incoming)
         merged.totalCount = incoming.totalCount;
-        console.log("merged data befor", merged)
         let breakFlag = 0;
         let i = 0;
         let j = 0;
@@ -59,7 +55,6 @@ const createPaginationAndCombineObjectElements = (keyArgs: any[]) => ({
             merged.tweets[++i] = incoming.tweets[j];
         }
         merged.tweets.slice(0, i + 1);
-        console.log("merged data is", merged);
         return merged;
     },
     read(existing: any) {

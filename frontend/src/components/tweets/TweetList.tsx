@@ -29,9 +29,6 @@ const TweetList: React.FC<TweetFilter> = (props) => {
             isSFW: sfw.SFW.value,
         },
     });
-    if (data) {
-        console.log(data);
-    }
     if (loading) return <Loading />;
     if (error) return <p>`Error! ${error.message}`</p>;
 

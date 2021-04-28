@@ -1,5 +1,6 @@
 import { Tweets } from "../queries/TweetQuery";
 import { FeedTweets } from "../queries/Feedtweets";
+import { LoggedUser } from '../queries/Userqery';
 import { parseJwt } from "../decode";
 import { apolloClient } from "../apolloClient";
 
@@ -28,6 +29,26 @@ const writeTweetsFeedData = async(isSFW: boolean, cache: any, newTweet: any) => 
         },
     });
 };
+const incrementTweetsCount = async (cache: any, userId: number) => {
+    const user = await cache.readQuery({
+        query: LoggedUser,
+        variables: {
+           id: userId 
+        },
+    })
+    
+    user && cache.modify({
+        id: cache.identify(user.user),
+        fields: {
+          tweets(prevTweets: any) {
+            const newTweets = {...prevTweets}
+            newTweets.totalCount++
+            return newTweets
+          },
+        },
+    });
+    
+}
 
 const writeTweetsProfileData =  async(
     isSFW: boolean,
@@ -36,7 +57,6 @@ const writeTweetsProfileData =  async(
     filter: string,
     newTweet: any
 ) => {
-    console.log(isSFW, cache, userId, filter, newTweet);
     const tweets: any = cache.readQuery({
         query: Tweets,
         variables: {
@@ -87,5 +107,6 @@ export const updateTweetsCacheForCreateTweet = (cache: any, { data }: any) => {
         writeTweetsProfileData(true, cache, profile.id, "media", newTweet);
         writeTweetsProfileData(false, cache, profile.id, "media", newTweet);
     }
+    incrementTweetsCount(cache, profile.id)
 
 };

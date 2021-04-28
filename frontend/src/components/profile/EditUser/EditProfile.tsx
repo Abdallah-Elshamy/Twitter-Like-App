@@ -1,5 +1,5 @@
 import { Field, Formik } from 'formik';
-import React, { createRef, MouseEventHandler, useRef } from 'react';
+import React, { createRef, MouseEventHandler, useRef, useState } from 'react';
 import { object, string } from 'yup';
 import { User } from '../../../common/TypesAndInterfaces';
 import '../profile.css';
@@ -26,8 +26,9 @@ interface initials {
 
 }
 const EditProfile: React.FC<Props> = ({ user, close, show }) => {
+  const [apis, setAPIs] = useState<any>([])
 
-  const [editUser, { loading }] = useMutation(EditUser)
+  const [editUser, { loading: mutLoading }] = useMutation(EditUser)
 
   const { data: avatarData } = useQuery(GetEditProfileImage)
   if (avatarData) {
@@ -42,7 +43,16 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
     // console.log(BgImageURL)
   }
 
-  const { data: APIENDPOINT } = useQuery(gql`query{getUploadURL}`, { skip: !Image })
+  const { data: APIENDPOINT, loading, refetch } = useQuery(gql`query{getUploadURL}`)
+  if (loading) {
+    console.log("loading...........")
+  }
+  if (!loading && APIENDPOINT) {
+    if (APIENDPOINT.getUploadURL !== apis[apis.length - 1]) {
+      setAPIs([...apis, APIENDPOINT.getUploadURL])
+    }
+  }
+
 
   //initial values for formik
   const initialValues: initials = {
@@ -70,7 +80,7 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
 
 
 
-  const save = () => {
+  const save = async () => {
     const dataValues = formRef.current.values
     dataValues.bio = dataValues.bio.replaceAll(/  +/g, ' ');
     //convert date to string
@@ -90,8 +100,12 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
 
     if (!error) {
       if (Image) {
-        handleImageUpload()
+        var pfUrl = await Promise.resolve(handleImageUpload(Image))
       }
+      if (BgImage) {
+        var bgUrl = await Promise.resolve(handleImageUpload(BgImage))
+      }
+      console.log(`profile link:${pfUrl}\nbackground link:${bgUrl}\n`)
       editUser({
         variables:
         {
@@ -100,26 +114,27 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
             name: dataValues.name,
             bio: dataValues.bio,
             birthDate: dataValues.birthdate,
-            imageURL: APIENDPOINT && APIENDPOINT.getUploadURL.split('?')[0]
+            imageURL: apis && pfUrl,
+            coverImageURL: apis && bgUrl
           },
         }
       })
 
-      !loading && closeButton.current.click()
+      !mutLoading && closeButton.current.click()
     }
 
 
   }
 
-  const handleImageUpload = async () => {
-    APIENDPOINT && await axios.put(APIENDPOINT.getUploadURL, Image, {
+  const handleImageUpload: any = async (image: any, type?: Number) => {
+    let url: any = await axios.put(apis.pop(), image, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
-    }).then(
-      res => console.log(res)
-    )
-      .catch(error => console.error(error))
+    })
+    console.log("url", url.config.url.split('?')[0])
+    return url.config.url.split('?')[0]
+
   }
 
   const handleAvatarPreview = (e: any) => {
@@ -136,6 +151,7 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
       BgImage: e.target.files[0],
       BgImageURL: URL.createObjectURL(e.target.files[0])
     })
+    refetch()
 
     console.log(BgImageURL)
 

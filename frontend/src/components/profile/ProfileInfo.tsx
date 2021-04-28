@@ -30,8 +30,6 @@ function ProfileInfo() {
     var profile = parseJwt(localStorage.getItem('token'))
   }
 
-
-
   const data = useQuery(LoggedUser, { variables: { id: profile.id } }).data;
 
 

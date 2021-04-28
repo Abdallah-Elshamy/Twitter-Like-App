@@ -1,10 +1,12 @@
 
 import { useQuery } from '@apollo/client';
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Get_SearchBar_Value } from '../common/queries/Get_SearchBar_Value';
 import { Get_Search_Result } from '../common/queries/Get_Search_Result';
 import { PersonEntity } from '../common/TypesAndInterfaces';
 import ListOfUsers from './TrendsBar/ListOfUsers/listofusers';
+import InfiniteScroll from "react-infinite-scroll-component";
+import PersonItem from "./TrendsBar/ListOfUsers/PersonItem/PersonItem";
 import Loading from '../UI/Loading';
 
 const SearchResult: React.FC = () => {
@@ -19,8 +21,8 @@ const SearchResult: React.FC = () => {
   const search = useQuery(Get_SearchBar_Value)
   const searchQ: string = search.data.searchBarValue.value
 
-
-  const { data, loading, error } = useQuery(Get_Search_Result, { variables: { name: searchQ } })
+  const [page, setPage] = useState<any>(1)
+  const { data, loading, error, fetchMore} = useQuery(Get_Search_Result, { variables: { name: searchQ } })
   if (searchQ === "") {
     return <h1 className="text-lg text-center pt-4">Try searching for people, names, usernames
 </h1>
@@ -28,11 +30,39 @@ const SearchResult: React.FC = () => {
   if (loading) return <Loading />
   if (error) return <h1 className="text-lg text-center pt-4 text-gray-500">Something went wrong :( </h1>
 
-  const resultList: PersonEntity[] = data.users.users
+  const list: PersonEntity[] = data.users.users
+  if (list.length === 0)
+        return <h1 className="text-lg text-center pt-4">No Results</h1>;
   return (
-    <Fragment>
-      <ListOfUsers list={resultList} />
-    </Fragment>
+    <InfiniteScroll
+            dataLength={list?.length || 0}
+            next={() => {
+                setPage(page + 1);
+                return fetchMore({
+                    variables: {
+                        page: page + 1,
+                        name: searchQ,
+                    },
+                });
+            }}
+            hasMore={list?.length >= page * 10 || false}
+            loader={<Loading />}
+        >
+            {list.map((person) => {
+                return (
+                    <PersonItem
+                        key={person.username}
+                        id={person.id}
+                        name={person.name}
+                        username={person.username}
+                        followed={person.followed}
+                        imageURI={person.imageURI}
+                        isFollowing={person.isFollowing}
+                        bio={person.bio}
+                    />
+                );
+            })}
+        </InfiniteScroll>
 
   )
 }

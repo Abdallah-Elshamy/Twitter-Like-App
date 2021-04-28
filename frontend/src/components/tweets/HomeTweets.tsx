@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import InfiniteScroll from 'react-infinite-scroll-component';
+import InfiniteScroll from "react-infinite-scroll-component";
 import { useQuery } from "@apollo/client";
 import Tweet from "./Tweet";
 import { TweetData } from "./Tweet";
@@ -8,7 +8,7 @@ import Loading from "../../UI/Loading";
 import { Get_SFW } from "../../common/queries/GET_SFW";
 
 function HomeTweets() {
-  const [page, setPage] = useState(1)
+    let [page, setPage] = useState(1);
     const sfw = useQuery(Get_SFW).data;
     const { loading, error, data, fetchMore } = useQuery(FeedTweets, {
         variables: {

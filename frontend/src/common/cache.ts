@@ -30,7 +30,7 @@ const createPaginationAndCombine = (keyArgs: any[]) => ({
     },
     keyArgs,
 });
-const createPaginationAndCombineObjectElements = (keyArgs: any[]) => ({
+const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
     merge(existing: any, incoming: any) {
         const merged = existing
             ? { totalCount: existing.totalCount, tweets: [...existing.tweets] }
@@ -63,6 +63,38 @@ const createPaginationAndCombineObjectElements = (keyArgs: any[]) => ({
     keyArgs,
 });
 
+const createPaginationAndCombineUsersElements = (keyArgs: any[]) => ({
+  merge(existing: any, incoming: any) {
+      const merged = existing
+          ? { users: [...existing.users] }
+          : { users: [] };
+      let breakFlag = 0;
+      let i = 0;
+      let j = 0;
+      for (i = 0; i < merged.users.length; i++) {
+          if (breakFlag) break;
+          for (j = 0; j < incoming.users.length; j++) {
+              if (merged.users[i].__ref == incoming.users[j].__ref) {
+                  breakFlag = 1;
+                  i -= 2;
+                  break;
+              }
+          }
+          j = 0;
+      }
+      if (i == merged.users.length) i--;
+      for (; j < incoming.users.length; j++) {
+          merged.users[++i] = incoming.users[j];
+      }
+      merged.users.slice(0, i + 1);
+      return merged;
+  },
+  read(existing: any) {
+      return existing;
+  },
+  keyArgs,
+});
+
 export const cache: InMemoryCache = new InMemoryCache({
     typePolicies: {
         Query: {
@@ -89,11 +121,12 @@ export const cache: InMemoryCache = new InMemoryCache({
                     },
                 },
                 getFeed: createPaginationAndCombine(["isSFW"]),
-                tweets: createPaginationAndCombineObjectElements([
+                tweets: createPaginationAndCombineTweetsElements([
                     "userId",
                     "filter",
                     "isSFW",
                 ]),
+                users: createPaginationAndCombineUsersElements(["name"])
             },
         },
     },

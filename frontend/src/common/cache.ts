@@ -3,7 +3,6 @@ import { searchBarValue } from "./TypesAndInterfaces";
 
 const createPaginationAndCombine = (keyArgs: any[]) => ({
   merge(existing: any, incoming: any) {
-    console.log("incoming", incoming)
       const merged = existing ? existing.slice(0) : [];
       let breakFlag = 0;
       let i = 0;
@@ -11,7 +10,6 @@ const createPaginationAndCombine = (keyArgs: any[]) => ({
       for (i = 0; i < merged.length; i++) {
           if (breakFlag) break;
           for (j = 0; j < incoming.length; j++) {
-              console.log(j);
               if (merged[i].__ref == incoming[j].__ref) {
                   breakFlag = 1;
                   i -= 2;
@@ -22,23 +20,18 @@ const createPaginationAndCombine = (keyArgs: any[]) => ({
       }
       if (i == merged.length) i--;
       for (; j < incoming.length; j++) {
-          console.log("incoming here", incoming[j])
           merged[++i] = incoming[j];
       }
-      console.log("after merge", merged)
       return merged.slice(0, i + 1);
   },
   read(existing: any) {
-      console.log("existi", existing)
       return existing;
   },
   keyArgs
 });
 const createPaginationAndCombineObjectElements = (keyArgs: any[]) => ({
   merge(existing: any, incoming: any) {
-    console.log("incoming", incoming)
       const merged = existing ? {...existing} : {totalCount: 0, tweets: []};
-      console.log("merged after making obj", merged)
       merged.totalCount = incoming.totalCount
       merged.tweets = []
       let breakFlag = 0;
@@ -47,7 +40,6 @@ const createPaginationAndCombineObjectElements = (keyArgs: any[]) => ({
       for (i = 0; i < merged.tweets.length; i++) {
           if (breakFlag) break;
           for (j = 0; j < incoming.tweets.length; j++) {
-              console.log(j);
               if (merged.tweets[i].__ref == incoming.tweets[j].__ref) {
                   breakFlag = 1;
                   i -= 2;
@@ -58,15 +50,12 @@ const createPaginationAndCombineObjectElements = (keyArgs: any[]) => ({
       }
       if (i == merged.tweets.length) i--;
       for (; j < incoming.tweets.length; j++) {
-          console.log("incoming here", incoming[j])
           merged.tweets[++i] = incoming.tweets[j];
       }
-      console.log("after merge", merged)
       merged.tweets.slice(0, i + 1);
       return merged
   },
   read(existing: any) {
-      console.log("existi", existing)
       return existing;
   },
   keyArgs

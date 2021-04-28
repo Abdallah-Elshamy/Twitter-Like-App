@@ -5,7 +5,7 @@ import http from "http";
 import { resolvers, typeDefs } from "./graphql";
 import path from "path";
 import db from "./db";
-import { auth } from "./middlewares";
+import { auth, authWebSocket } from "./middlewares";
 import { SFWRegularCheck } from "./graphql/resolvers/tweet";
 
 const dir: string = path.resolve();
@@ -18,8 +18,9 @@ const apolloServer: ApolloServer = new ApolloServer({
     typeDefs,
     resolvers,
     playground: process.env.DEVELOPMENT_ENVIROMENT == "true",
-    context: ({ req }) => ({
+    context: ({ req, connection }) => ({
         req,
+        connection,
     }),
     formatError: (err) => {
         if (!err.originalError) {
@@ -34,8 +35,19 @@ const apolloServer: ApolloServer = new ApolloServer({
     },
     subscriptions: {
         path: "/subscriptions",
-        onConnect: (connectionParams, webSocket, context) => {
+        onConnect: async (
+            connectionParams: any,
+            webSocket: any,
+            context: any
+        ) => {
             console.log("Client connected");
+            await authWebSocket(connectionParams);
+            const { user, authError } = connectionParams;
+            if (authError) {
+                throw authError;
+            } else {
+                return user;
+            }
         },
         onDisconnect: (webSocket, context) => {
             console.log("Client disconnected");

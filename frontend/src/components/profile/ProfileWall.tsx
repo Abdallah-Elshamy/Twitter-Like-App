@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import '../../App.css';
 import './profile.css';
 import ProfileInfo from "./ProfileInfo";
@@ -9,7 +9,6 @@ import TweetList from '../tweets/TweetList'
 import { Switch, NavLink, Route } from "react-router-dom"
 import { parseJwt } from '../../common/decode';
 import Loading from "../../UI/Loading"
-import Profilewallpage from './profileWallPage';
 
 
 function ProfileWall() {
@@ -19,6 +18,11 @@ function ProfileWall() {
   }
 
   const { loading, error } = useQuery(LoggedUser, { variables: { id: profile.id } });
+  const [tweetsPage, setTweetsPage] = useState<any>(1);
+  const [tweetsRepliesPage, setTweetsRepliesPage] = useState<any>(1);
+  const [mediaPage, setMediaPage] = useState<any>(1);
+  const [likesPage, setLikesPage] = useState<any>(1);
+
   if (loading) return (<div className="mt-8" ><Loading /></div>)
   if (error) return <p>`Error! ${error.message}`</p>
   return (
@@ -47,7 +51,7 @@ function ProfileWall() {
             exact
             path='/profile'
             render={() => (
-              <TweetList filter={``} />
+              <TweetList filter={``} page={tweetsPage} setPage={setTweetsPage} />
               // to test paganation go to profileWallPage
               // <Profilewallpage  filter={``}/>
             )}
@@ -56,21 +60,21 @@ function ProfileWall() {
             exact
             path='/profile/replies'
             render={() => (
-              <TweetList filter={`replies&tweets`} />
+              <TweetList filter={`replies&tweets`} page={tweetsRepliesPage} setPage={setTweetsRepliesPage}/>
             )}
           />
           <Route
             exact
             path='/profile/media'
             render={() => (
-              <TweetList filter={`media`} />
+              <TweetList filter={`media`} page={mediaPage} setPage={setMediaPage}/>
             )}
           />
           <Route
             exact
             path='/profile/likes'
             render={() => (
-              <TweetList filter={`likes`} />
+              <TweetList filter={`likes`} page={likesPage} setPage={setLikesPage}/>
             )}
           />
         </Switch>

@@ -3,7 +3,7 @@ import { tweetValidator } from "../../validators";
 import db from "../../db";
 import { Transaction, Op } from "sequelize";
 import { Request } from "express";
-import { fn, col, literal } from "sequelize";
+import { fn, col } from "sequelize";
 
 const PAGE_SIZE = 10;
 

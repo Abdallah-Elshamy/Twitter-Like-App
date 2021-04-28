@@ -89,10 +89,10 @@ class User extends Model {
     @BelongsToMany(() => Tweet, () => ReportedTweet, "reporterId", "tweetId")
     reportedTweets?: Tweet[];
 
-    @BelongsToMany(() => User, () => ReportedUser, "reporterId", "reportedId")
+    @BelongsToMany(() => User, () => ReportedUser, "reportedId", "reporterId")
     reportedBy?: User[];
 
-    @BelongsToMany(() => User, () => ReportedUser, "reportedId", "reporterId")
+    @BelongsToMany(() => User, () => ReportedUser, "reporterId", "reportedId")
     reported?: User[];
 }
 

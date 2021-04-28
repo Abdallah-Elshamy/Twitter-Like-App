@@ -5,6 +5,7 @@ export default gql`
         user(id: ID!): User!
         users(search: String!, page: Int): PaginatedUsers!
         login(userNameOrEmail: String!, password: String!): Token!
+        reportedUsers(page: Int): PaginatedUsers!
     }
 
     extend type Mutation {

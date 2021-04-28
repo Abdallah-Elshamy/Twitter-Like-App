@@ -1,9 +1,9 @@
 import bcrypt from "bcryptjs";
 import validator from "validator";
-import { User, Tweet, UserBelongsToGroup } from "../../models";
+import { User, Tweet, UserBelongsToGroup, ReportedUser } from "../../models";
 import UserValidator from "../../validators/user";
 import db from "../../db";
-import { Op } from "sequelize";
+import { fn, col, Op } from "sequelize";
 import jwt from "jsonwebtoken";
 
 const PAGE_SIZE = 10;
@@ -142,6 +142,58 @@ export default {
             );
             return {
                 token,
+            };
+        },
+        reportedUsers: async (
+            parent: any,
+            args: { page: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            const { page } = args;
+            if (authError) {
+                throw authError;
+            }
+            if (!user?.isAdmin) {
+                const error: CustomeError = new Error(
+                    "User must be an admin to get the reported users!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+
+            return {
+                users: async () => {
+                    const reportedUsers = await ReportedUser.findAll({
+                        attributes: ["reportedId"],
+                        order: [[fn("count", col("reporterId")), "DESC"]],
+                        group: "reportedId",
+                        offset: ((page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                    });
+
+                    const sortedUsersIds = reportedUsers.map(
+                        (reportedUser) => reportedUser.reportedId
+                    );
+
+                    const unsortedUsers = await User.findAll({
+                        where: { id: sortedUsersIds },
+                    });
+                    const sortedUsers: User[] = [];
+                    for (let userId of sortedUsersIds) {
+                        let cUser = unsortedUsers.find(
+                            (user) => user.id === userId
+                        );
+                        sortedUsers.push(cUser!);
+                    }
+                    return sortedUsers;
+                },
+                totalCount: async () => {
+                    return ReportedUser.count({
+                        distinct: true,
+                        col: "reportedId",
+                    });
+                },
             };
         },
     },

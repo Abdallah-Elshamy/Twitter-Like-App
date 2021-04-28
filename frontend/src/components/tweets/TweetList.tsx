@@ -37,7 +37,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
 
     return (
         <InfiniteScroll
-            dataLength={data.tweets.tweets.length}
+            dataLength={data?.tweets?.tweets?.length || 0}
             next={() => {
                 setPage(page + 1);
                 return fetchMore({
@@ -49,7 +49,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
                     },
                 });
             }}
-            hasMore={data.tweets.tweets.length >= page * 10}
+            hasMore={data?.tweets?.tweets?.length >= page * 10 || false}
             loader={<Loading />}
         >
             {data.tweets.tweets.map((tweet: TweetData) => {
@@ -66,21 +66,6 @@ const TweetList: React.FC<TweetFilter> = (props) => {
                 );
             })}
         </InfiniteScroll>
-
-        // <Fragment>
-        //   {console.log(data.tweets.tweets)}
-        //   {
-
-        //     data.tweets.tweets.map((tweet: TweetData) => {
-        //       return <Tweet text={tweet.text}
-        //         repliesCount={tweet.repliesCount}
-        //         createdAt={tweet.createdAt}
-        //         isLiked={tweet.isLiked}
-        //         user={tweet.user}
-        //         likesCount={tweet.likesCount}
-        //         key={tweet.id} />
-        //     })}
-        // </Fragment>
     );
 };
 

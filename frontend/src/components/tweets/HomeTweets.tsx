@@ -20,7 +20,7 @@ function HomeTweets() {
 
     return (
         <InfiniteScroll
-            dataLength={data.getFeed.length}
+            dataLength={data?.getFeed?.length || 0}
             next={() => {
                 setPage(page + 1);
                 return fetchMore({
@@ -30,7 +30,7 @@ function HomeTweets() {
                     },
                 });
             }}
-            hasMore={data.getFeed.length >= page * 10}
+            hasMore={data?.getFeed?.length >= page * 10 || false}
             loader={<Loading />}
         >
             {data.getFeed.map((tweet: TweetData) => {

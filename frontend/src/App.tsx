@@ -4,7 +4,7 @@ import { ApolloProvider } from '@apollo/client';
 import { BrowserRouter } from 'react-router-dom';
 import { parseJwt } from './common/utils/jwtDecoder';
 import { Routing } from './routes/routing';
-import { apolloClient } from "./common/ApolloClient";
+import { apolloClient } from "./common/apolloClient";
 
 var token;
 var decodedToken1;

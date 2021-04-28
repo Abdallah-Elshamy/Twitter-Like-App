@@ -72,7 +72,7 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
   //formik ref
   const formRef: any = useRef();
   //used after save
-  const closeButton: any = createRef();
+  const closeButton: any = useRef();
   //avatar image ref
   const avatarButton: any = useRef()
 

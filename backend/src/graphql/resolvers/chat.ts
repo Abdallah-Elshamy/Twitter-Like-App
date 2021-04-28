@@ -1,4 +1,4 @@
-import { PubSub } from "apollo-server-express";
+import { PubSub, withFilter } from "apollo-server-express";
 import { User } from "../../models";
 
 const pubsub = new PubSub();
@@ -13,7 +13,12 @@ export default {
     Subscription: {
         messageSent: {
             // More on pubsub below
-            subscribe: () => pubsub.asyncIterator(["MESSAGE_SENT"]),
+            subscribe: withFilter(
+                () => pubsub.asyncIterator(["MESSAGE_SENT"]),
+                (payload: any, args: any, context: any) => {
+                    return payload.messageSent.to.id === context.connection.context.id;
+                }
+            ),
         },
     },
     Mutation: {

@@ -11,11 +11,6 @@ export const cache: InMemoryCache = new InMemoryCache({
           }
 
         },
-        authenticated: {
-          read() {
-            return authenticatedVal();
-          }
-        },
         EditProfileImage: {
           read() {
             return EditProfileImageVal();
@@ -39,10 +34,6 @@ export const cache: InMemoryCache = new InMemoryCache({
 
 export const searchBarVar: ReactiveVar<searchBarValue> = makeVar<searchBarValue>(
   { value: '' }
-);
-
-export const authenticatedVal: ReactiveVar<boolean> = makeVar<boolean>(
-  (localStorage.getItem('token') === null) ? false : true
 );
 
 export const EditProfileImageVal: ReactiveVar<{ Image: object | false, ImageURL: string | false }> = makeVar<any>(

@@ -1,5 +1,5 @@
 import { Field, Formik } from 'formik';
-import React, { createRef, MouseEventHandler, useRef, useState } from 'react';
+import React, { MouseEventHandler, useRef, useState } from 'react';
 import { object, string } from 'yup';
 import { User } from '../../../common/TypesAndInterfaces';
 import '../profile.css';
@@ -13,8 +13,6 @@ import { GetEditProfileImage } from '../../../common/queries/GetEditProfileImage
 import axios from 'axios';
 import { GetEditBgImage } from '../../../common/queries/GetEditBgImage';
 import { DeleteMedia } from '../../../common/queries/DeleteMedia';
-import Loading from '../../../UI/Loading';
-import ImageViewer from '../../../UI/ImageViewer';
 
 
 type Props = {
@@ -33,7 +31,7 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
   const [apis, setAPIs] = useState<any>([])
 
   const [editUser, { loading: mutLoading }] = useMutation(EditUser)
-  const [deleteMedia, { data: delData, error: delError }] = useMutation(DeleteMedia)
+  const [deleteMedia] = useMutation(DeleteMedia)
   //console.log(delData, delError)
   const { data: avatarData } = useQuery(GetEditProfileImage)
   if (avatarData) {

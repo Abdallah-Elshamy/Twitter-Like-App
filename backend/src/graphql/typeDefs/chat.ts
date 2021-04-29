@@ -6,6 +6,7 @@ export default gql`
     }
 
     type ChatMessage {
+        id: ID!
         from: User!
         to: User!
         message: String!

@@ -1,11 +1,8 @@
 import { withFilter } from "apollo-server-express";
 import { User } from "../../models";
 import pubsub from "../../messaging";
-interface ChatMessage {
-    from: User;
-    to: User;
-    message: String;
-}
+import db from "../../db";
+import { ChatMessage } from "../../models";
 
 export default {
     Subscription: {
@@ -15,7 +12,7 @@ export default {
                 () => pubsub.asyncIterator(["MESSAGE_SENT"]),
                 (payload: any, args: any, context: any) => {
                     return (
-                        payload.messageSent.to.id ===
+                        payload.messageSent.to ===
                         context.connection.context.id
                     );
                 }
@@ -40,21 +37,42 @@ export default {
 
             const from: User = user;
             const to = await User.findByPk(args.message.toUserId);
+
             if (!to) {
                 const error: any = new Error("No user was found with this id!");
                 error.statusCode = 404;
                 throw error;
             }
-            const payload: ChatMessage = {
-                from,
-                to,
-                message: args.message.messageBody,
-            };
+
+            if (args.message.messageBody.length === 0) {
+                const error: any = new Error("The message is empty!");
+                error.statusCode = 400;
+                throw error;
+            }
+
+            const message = await db.transaction(async (transaction) => {
+                return await ChatMessage.create(
+                    {
+                        from: from.id,
+                        to: to.id,
+                        message: args.message.messageBody,
+                    },
+                    { transaction }
+                );
+            });
 
             pubsub.publish("MESSAGE_SENT", {
-                messageSent: payload,
+                messageSent: message,
             });
-            return payload;
+            return message;
+        },
+    },
+    ChatMessage: {
+        from: async (parent: ChatMessage) => {
+            return await User.findByPk(parent.from);
+        },
+        to: async (parent: ChatMessage) => {
+            return await User.findByPk(parent.to);
         },
     },
 };

@@ -66,7 +66,7 @@ export function SignUpForm() {
             .max(70, "Value is too long!")
             .required("This filed is required!"),
         password: Yup.string()
-            .min(8, "Password must be equal to or more than than 8 chars!")
+            .min(8, "Password must be equal to or more than 8 chars!")
             .max(70, "Value is too long!")
             .required("This filed is required!"),
         userName: Yup.string()
@@ -74,8 +74,8 @@ export function SignUpForm() {
                 /^[a-zA-Z0-9_]*$/i,
                 "Username can only contain letters, numbers, and underscores"
             )
-            .min(4, "User name must be equal to or more than than 4 chars!")
-            .max(15, "User name must be equal to or less than than 15 chars!")
+            .min(4, "User name must be equal to or more than 4 chars!")
+            .max(15, "User name must be equal to or less than 15 chars!")
             .required("This field is required!"),
         name: Yup.string()
             .max(50, "name must be equal to or less than 50 chars!")

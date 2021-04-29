@@ -1,6 +1,12 @@
 import bcrypt from "bcryptjs";
 import validator from "validator";
-import { User, Tweet, UserBelongsToGroup, ReportedUser } from "../../models";
+import {
+    User,
+    Tweet,
+    UserBelongsToGroup,
+    ReportedUser,
+    Group,
+} from "../../models";
 import UserValidator from "../../validators/user";
 import db from "../../db";
 import { fn, col, Op } from "sequelize";
@@ -543,13 +549,13 @@ export default {
         },
     },
     User: {
-        followingCount: async (parent: any) => {
+        followingCount: async (parent: User) => {
             return await parent.$count("following");
         },
-        followersCount: async (parent: any) => {
+        followersCount: async (parent: User) => {
             return await parent.$count("followers");
         },
-        following: async (parent: any, args: { page: number }) => {
+        following: async (parent: User, args: { page: number }) => {
             return {
                 totalCount: async () => {
                     return await parent.$count("following");
@@ -564,7 +570,7 @@ export default {
                 },
             };
         },
-        followers: async (parent: any, args: { page: number }) => {
+        followers: async (parent: User, args: { page: number }) => {
             return {
                 totalCount: async () => {
                     return await parent.$count("followers");
@@ -597,7 +603,7 @@ export default {
             const isFollower = await loggedIn.$has("follower", parent);
             return isFollower;
         },
-        tweets: async (parent: any, args: { page: number }) => {
+        tweets: async (parent: User, args: { page: number }) => {
             return {
                 totalCount: async () => {
                     return await parent.$count("tweets");
@@ -612,7 +618,7 @@ export default {
                 },
             };
         },
-        likes: async (parent: any, args: { page: number }) => {
+        likes: async (parent: User, args: { page: number }) => {
             return {
                 totalCount: async () => {
                     return await parent.$count("likes");
@@ -627,13 +633,13 @@ export default {
                 },
             };
         },
-        groups: async (parent: any) => {
-            const groups: any = await parent.$get("groups");
-            const names: string[] = groups.map((group: any) => group.name);
+        groups: async (parent: User) => {
+            const groups: Group[] = await parent.$get("groups");
+            const names: string[] = groups.map((group: Group) => group.name);
             return names;
         },
-        permissions: async (parent: any) => {
-            const groups: any = await parent.$get("groups");
+        permissions: async (parent: User) => {
+            const groups: Group[] = await parent.$get("groups");
             const result: string[] = [];
 
             for (const group of groups) {
@@ -645,6 +651,60 @@ export default {
             }
 
             return result;
+        },
+        reportedTweets: async (parent: User, args: { page: number }) => {
+            return {
+                tweets: async () => {
+                    return await parent.$get("reportedTweets", {
+                        offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                    });
+                },
+                totalCount: async () => {
+                    return await parent.$count("reportedTweets");
+                },
+            };
+        },
+        reportedBy: async (
+            parent: User,
+            args: { page: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            if (!user?.isAdmin) {
+                const error: CustomeError = new Error(
+                    "User must be an admin to get the users reporting this user!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            return {
+                users: async () => {
+                    return await parent.$get("reportedBy", {
+                        offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                    });
+                },
+                totalCount: async () => {
+                    return await parent.$count("reportedBy");
+                },
+            };
+        },
+        reported: async (parent: User, args: { page: number }) => {
+            return {
+                users: async () => {
+                    return await parent.$get("reported", {
+                        offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                    });
+                },
+                totalCount: async () => {
+                    return await parent.$count("reported");
+                },
+            };
         },
     },
 };

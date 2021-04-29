@@ -42,6 +42,9 @@ export default gql`
         likes(page: Int): PaginatedTweets!
         groups: [String]!
         permissions: [String]!
+        reportedTweets(page: Int): PaginatedTweets
+        reportedBy(page: Int): PaginatedUsers
+        reported(page: Int): PaginatedUsers
         createdAt: String!
         updatedAt: String!
     }

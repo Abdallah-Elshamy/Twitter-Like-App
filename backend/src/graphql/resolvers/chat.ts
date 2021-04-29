@@ -1,8 +1,6 @@
-import { PubSub, withFilter } from "apollo-server-express";
+import { withFilter } from "apollo-server-express";
 import { User } from "../../models";
-
-const pubsub = new PubSub();
-
+import pubsub from "../../messaging";
 interface ChatMessage {
     from: User;
     to: User;
@@ -16,7 +14,10 @@ export default {
             subscribe: withFilter(
                 () => pubsub.asyncIterator(["MESSAGE_SENT"]),
                 (payload: any, args: any, context: any) => {
-                    return payload.messageSent.to.id === context.connection.context.id;
+                    return (
+                        payload.messageSent.to.id ===
+                        context.connection.context.id
+                    );
                 }
             ),
         },

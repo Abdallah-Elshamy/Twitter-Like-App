@@ -1,7 +1,7 @@
 .pf--avatar-edit{
   position: absolute;
-  height: 180px;
-  width: 180px;
+  height: 150px;
+  width: 150px;
    border-radius: 50%;
    border-style: solid;
   border-width: 4px;
@@ -12,5 +12,6 @@
   overflow: hidden;
   display: grid;
   place-items: center;
+  margin-bottom: 75px;
 }
 

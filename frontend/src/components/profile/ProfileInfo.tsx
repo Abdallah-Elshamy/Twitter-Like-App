@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import { Fragment, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 import { parseJwt } from '../../common/decode';
 import { User } from '../../common/TypesAndInterfaces'
@@ -9,11 +9,21 @@ import EditProfile from './EditUser/EditProfile';
 import { timeConverter } from '../../common/utils/timestamp';
 import { EditProfileBgVal, EditProfileImageVal } from '../../common/cache';
 import { Link } from 'react-router-dom';
+import Viewer from 'react-viewer';
 
 
 function ProfileInfo() {
 
+  //EDIT PROFILE MODAL
   const [edit, setEdit] = useState<boolean>(false)
+
+  //background viewer
+  const [bgVisible, setBgVisible] = useState(false);
+
+  //profile picture viewer
+  const [pfVisible, setPfVisible] = useState(false);
+
+
   const modalClosed = () => {
     EditProfileImageVal({
       Image: false,
@@ -64,9 +74,15 @@ function ProfileInfo() {
 
         <div className="pf--bg" >
           {user.coverImageURL && (
+
             <img className="pf--avatar-img" src={user.coverImageURL}
-              alt="avatar" />
+              alt="avatar" onClick={() => user.coverImageURL && setBgVisible(true)} />
           )}
+          <Viewer
+            visible={bgVisible}
+            onClose={() => { setBgVisible(false); }}
+            images={[{ src: user.coverImageURL || "", alt: 'background image' }]}
+          />
 
         </div>
 
@@ -74,8 +90,15 @@ function ProfileInfo() {
 
           {
             <img src={user.imageURL || avatar}
-              alt="avatar" />
+              alt="avatar" onClick={() => user.imageURL && setPfVisible(true)} />
+
+
           }
+          <Viewer
+            visible={pfVisible}
+            onClose={() => { setPfVisible(false); }}
+            images={[{ src: user.imageURL || "", alt: 'profile image' }]}
+          />
         </div>
 
         <div className="pf--info">

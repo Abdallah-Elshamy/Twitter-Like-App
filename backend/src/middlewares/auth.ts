@@ -48,7 +48,7 @@ const auth = async (req: CustomRequest, res: Response, next: NextFunction) => {
             const error: CustomError = new Error(
                 "No user was found with this id!"
             );
-            error.statusCode = 405;
+            error.statusCode = 404;
             throw error;
         }
         if (user.isBanned) {

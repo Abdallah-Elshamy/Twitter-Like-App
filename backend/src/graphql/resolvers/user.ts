@@ -547,6 +547,57 @@ export default {
             await userToBeBanned.save();
             return true;
         },
+        reportUser: async (
+            parent: any,
+            args: { userId: number; reason: string },
+            context: { req: CustomeRequest },
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            const { userId } = args;
+            if (authError) {
+                throw authError;
+            }
+
+            if (user!.id === +userId) {
+                const error: CustomeError = new Error(
+                    "User cannot report himself!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            const userToBeReported = await User.findByPk(userId);
+            if (!userToBeReported) {
+                const error: CustomeError = new Error(
+                    "No user was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+            const isReported = await user!.$has("reported", userToBeReported);
+            if (isReported) {
+                const error: CustomeError = new Error(
+                    "You have already reported this user!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            await db.transaction(async (transaction) => {
+                await ReportedUser.create(
+                    {
+                        reporterId: user!.id,
+                        reportedId: userId,
+                        reason: args.reason ? args.reason : null,
+                    },
+                    {
+                        transaction,
+                    }
+                );
+            });
+            return true;
+        },
     },
     User: {
         followingCount: async (parent: User) => {
@@ -652,18 +703,35 @@ export default {
 
             return result;
         },
-        reportedTweets: async (parent: User, args: { page: number }) => {
-            return {
-                tweets: async () => {
-                    return await parent.$get("reportedTweets", {
-                        offset: ((args.page || 1) - 1) * PAGE_SIZE,
-                        limit: PAGE_SIZE,
-                    });
-                },
-                totalCount: async () => {
-                    return await parent.$count("reportedTweets");
-                },
-            };
+        reportedTweets: async (
+            parent: User,
+            args: { page: number },
+            context: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+
+            if (user?.id === parent.id) {
+                return {
+                    tweets: async () => {
+                        return await parent.$get("reportedTweets", {
+                            offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                            limit: PAGE_SIZE,
+                        });
+                    },
+                    totalCount: async () => {
+                        return await parent.$count("reportedTweets");
+                    },
+                };
+            } else {
+                const error: CustomeError = new Error(
+                    "User cannot see the tweets which other users have reported!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
         },
         reportedBy: async (
             parent: User,
@@ -693,18 +761,35 @@ export default {
                 },
             };
         },
-        reported: async (parent: User, args: { page: number }) => {
-            return {
-                users: async () => {
-                    return await parent.$get("reported", {
-                        offset: ((args.page || 1) - 1) * PAGE_SIZE,
-                        limit: PAGE_SIZE,
-                    });
-                },
-                totalCount: async () => {
-                    return await parent.$count("reported");
-                },
-            };
+        reported: async (
+            parent: User,
+            args: { page: number },
+            context: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+
+            if (user?.id === parent.id) {
+                return {
+                    users: async () => {
+                        return await parent.$get("reported", {
+                            offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                            limit: PAGE_SIZE,
+                        });
+                    },
+                    totalCount: async () => {
+                        return await parent.$count("reported");
+                    },
+                };
+            } else {
+                const error: CustomeError = new Error(
+                    "User cannot see what other users have reported!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
         },
     },
 };

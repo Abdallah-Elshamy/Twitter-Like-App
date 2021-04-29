@@ -16,6 +16,7 @@ export default gql`
         follow(userId: ID!): Boolean
         unfollow(userId: ID!): Boolean
         banUser(userId: ID!): Boolean!
+        reportUser(userId: ID!, reason: String): Boolean!
     }
 
     type Token {

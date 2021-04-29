@@ -412,6 +412,58 @@ export default {
             await tweet.destroy();
             return true;
         },
+        reportTweet: async (
+            parent: any,
+            args: { id: number; reason: string },
+            context: { req: CustomeRequest },
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+
+            const tweet = await Tweet.findByPk(+args.id);
+            if (!tweet) {
+                const error: CustomeError = new Error(
+                    "No tweet was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+
+            const isOwned = await user!.$has("tweets", tweet);
+            if (isOwned) {
+                const error: CustomeError = new Error(
+                    "User cannot report his own tweet!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            const isReported = await user!.$has("reportedTweets", tweet);
+            if (isReported) {
+                const error: CustomeError = new Error(
+                    "You have already reported this tweet!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            await db.transaction(async (transaction) => {
+                await ReportedTweet.create(
+                    {
+                        reporterId: user!.id,
+                        tweetId: args.id,
+                        reason: args.reason ? args.reason : null,
+                    },
+                    {
+                        transaction,
+                    }
+                );
+            });
+            return true;
+        },
     },
     Tweet: {
         user: async (parent: Tweet) => {

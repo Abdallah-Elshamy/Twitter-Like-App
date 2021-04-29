@@ -16,6 +16,7 @@ export default gql`
             tweet: TweetCreateInput!
         ): Tweet!
         deleteTweet(id: ID!): Boolean!
+        reportTweet(id: ID!, reason: String): Boolean!
     }
     type Tweet {
         id: ID!

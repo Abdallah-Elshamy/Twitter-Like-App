@@ -13,6 +13,8 @@ import { GetEditProfileImage } from '../../../common/queries/GetEditProfileImage
 import axios from 'axios';
 import { GetEditBgImage } from '../../../common/queries/GetEditBgImage';
 import { DeleteMedia } from '../../../common/queries/DeleteMedia';
+import Loading from '../../../UI/Loading';
+import { LoggedUser } from '../../../common/queries/Userqery';
 
 
 type Props = {
@@ -29,6 +31,8 @@ interface initials {
 const EditProfile: React.FC<Props> = ({ user, close, show }) => {
   //save media apis in state
   const [apis, setAPIs] = useState<any>([])
+
+  const [loadingSave, setLoadingSave] = useState<boolean>(false)
 
   const [editUser, { loading: mutLoading }] = useMutation(EditUser)
   const [deleteMedia] = useMutation(DeleteMedia)
@@ -82,6 +86,7 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
 
 
   const save = async () => {
+    setLoadingSave(true)
     const dataValues = formRef.current.values
     dataValues.bio = dataValues.bio.replaceAll(/  +/g, ' ');
     //convert date to string
@@ -102,7 +107,7 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
     if (!error) {
       if (Image) {
         var pfUrl = await Promise.resolve(handleImageUpload(Image))
-        if (pfUrl) {
+        if (pfUrl && user.imageURL && user.imageURL !== '') {
           let lastIndex = Number(user.imageURL?.lastIndexOf('/')) + 1
           let id = user.imageURL?.substr(lastIndex || 0)
           deleteMedia({
@@ -114,7 +119,7 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
       }
       if (BgImage) {
         var bgUrl = await Promise.resolve(handleImageUpload(BgImage))
-        if (bgUrl) {
+        if (bgUrl && user.coverImageURL && user.coverImageURL !== '') {
 
           let lastIndex = Number(user.coverImageURL?.lastIndexOf('/')) + 1
           let id = user.coverImageURL?.substr(lastIndex || 0)
@@ -138,13 +143,16 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
             imageURL: apis && pfUrl,
             coverImageURL: apis && bgUrl
           },
+          refetchQueries: [{
+            qurey: LoggedUser
+          }]
         }
       })
 
       !mutLoading && closeButton.current.click()
     }
 
-
+    setLoadingSave(false)
 
   }
 
@@ -156,7 +164,6 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
     }).catch((e) => undefined)
 
 
-    console.log("url", url.config.url.split('?')[0])
     return url.config.url.split('?')[0]
 
   }
@@ -166,6 +173,8 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
       Image: e.target.files[0],
       ImageURL: URL.createObjectURL(e.target.files[0])
     })
+    refetch()
+
   }
 
   const handleBgPreview = (e: any) => {
@@ -192,12 +201,19 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
         </div>
 
         <div>
-          <h1 className="font-bold font-lg">Edit Profile</h1></div>
+          {loadingSave ? <Loading size={30} /> :
+            <h1 className="font-bold font-lg">Edit Profile</h1>
+          }
+        </div>
 
         <div>
-          <button onClick={save}
+          <button onClick={save} disabled={loadingSave}
             className="inline-block rounded-full px-4 
-           py-1.5 font-semibold  text-gray-800 border border-blue-400">
+           py-1.5 font-semibold  text-gray-800 border 
+           border-blue-400 outline-none 
+           hover:border-blue-500 hover:cursor-pointer
+           disabled:bg-gray-100 disabled:border-gray-200 disabled:cursor-not-allowed 
+              ">
             Save
           </button>
         </div>

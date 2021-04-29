@@ -89,7 +89,7 @@ function ProfileInfo() {
         <div className="pf--avatar">
 
           {
-            <img src={user.imageURL || avatar}
+            <img src={user.imageURL || avatar} className="pf--avatar-img"
               alt="avatar" onClick={() => user.imageURL && setPfVisible(true)} />
 
 

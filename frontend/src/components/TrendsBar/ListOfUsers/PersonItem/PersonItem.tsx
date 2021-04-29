@@ -5,7 +5,7 @@ import { PersonEntity } from '../../../../common/TypesAndInterfaces';
 import './PersonItem.css'
 import '../../../profile/profile.css'
 import FollowButton from '../../../FollowButton/FollowButton';
-import { decodedToken } from '../../../../App';
+import { parseJwt } from '../../../../common/decode';
 
 
 const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, username, followed = false, imageURI, numberOfFollowers }) => {
@@ -26,7 +26,7 @@ const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, usernam
         <p>{bio}</p>
       </div>
       <div>
-          {decodedToken && (id == decodedToken.id) ? null :
+        {localStorage.getItem('token') && (id == parseJwt(localStorage.getItem('token')).id) ? null :
           <FollowButton id={id} following={isFollowing} />}
       </div>
     </div>

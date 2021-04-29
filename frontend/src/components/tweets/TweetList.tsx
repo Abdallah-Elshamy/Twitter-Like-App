@@ -6,6 +6,7 @@ import { Tweets } from "../../common/queries/TweetQuery";
 import { TweetData } from './Tweet'
 import { parseJwt } from '../../common/decode';
 import { Get_SFW } from "../../common/queries/GET_SFW";
+import Loading from "../../UI/Loading";
 
 export interface TweetFilter {
   filter: string
@@ -26,7 +27,8 @@ const TweetList: React.FC<TweetFilter> = (props) => {
       }
     });
 
-  if (loading) return <p>'Loading .. '</p>
+  if (loading) return <Loading />
+
   if (error) return <p>`Error! ${error.message}`</p>
 
   return (

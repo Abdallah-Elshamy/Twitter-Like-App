@@ -32,7 +32,7 @@ export function Login() {
         <div>
             <div className="register-container mt-4 text-center">
                 <Logo />
-                <strong className="text-4xl font-serif mt-4">
+                <strong className="text-4xl font-serif mt-4 ">
                     Log In To Twitter
                 </strong>
                 <Formik
@@ -76,10 +76,9 @@ export function Login() {
                             ) : null}
                             {error ? (
                                 <div className="text-red-700 mt-5">
-                                    {error ? error.message : ""}
+                                    {error.message}
                                 </div>
                             ) : null}
-                            {console.log("rerendered correctly")}
                             <TweetButton
                                 name="Login"
                                 disabled={loading}

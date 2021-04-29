@@ -1,7 +1,10 @@
 .register-container {
    display: grid;
-   padding-right: 550px;
-  padding-left: 550px;
+   /* padding-right: 550px;
+  padding-left: 550px; */
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto
 }
 
 .a_login_form{

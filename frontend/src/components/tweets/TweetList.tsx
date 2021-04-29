@@ -34,7 +34,6 @@ const TweetList: React.FC<TweetFilter> = (props) => {
     <Fragment>
       {console.log(data.tweets.tweets)}
       {
-
         data.tweets.tweets.map((tweet: TweetData) => {
           return <Tweet text={tweet.text}
             repliesCount={tweet.repliesCount}

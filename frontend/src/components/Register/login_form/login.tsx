@@ -10,26 +10,6 @@ import { TweetButton } from "./../../sideBar/tweetButton/tweetButton";
 import { Logo } from "./../../logo/logo";
 import { FormInput } from '../formInput/formInput';
 import { LOGIN } from '../../../common/queries/login_query';
-import { authenticatedVal, cache } from '../../../common/cache';
-
-const httpLink = createHttpLink({
-  uri: 'http://localhost:8000/graphql',
-});
-const token = localStorage.getItem('token');
-const authLink = setContext((_, { headers }) => {
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : " ",
-    }
-  }
-});
-
-export const clientLog = new ApolloClient({
-  link: authLink.concat(httpLink),
-  cache: cache
-});
-
 
 export function Login() {
   const [email, setEmail] = useState(' ');
@@ -46,8 +26,6 @@ export function Login() {
 
     if (!loading && !error && data) {
       localStorage.setItem('token', data.login.token);
-
-      authenticatedVal(true)
       navigate('/')
 
     }

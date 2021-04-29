@@ -77,7 +77,7 @@ export const Routing = () => {
 };
 
 const PrivateRoute = ({ children, ...rest }: any) => {
-  let auth = useQuery(GET_ISAUTH).data.authenticated
+  let auth = localStorage.getItem('token') ? true : false
   return (
     <Route
       {...rest}
@@ -100,7 +100,7 @@ const PrivateRoute = ({ children, ...rest }: any) => {
 
 
 const PublicRoute = ({ children, ...rest }: any) => {
-  let auth = !useQuery(GET_ISAUTH).data.authenticated
+  let auth = localStorage.getItem('token') ? false : true
   return (
     <Route
       {...rest}

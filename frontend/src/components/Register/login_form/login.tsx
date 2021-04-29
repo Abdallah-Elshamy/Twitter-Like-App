@@ -24,7 +24,7 @@ export function Login() {
             .max(70, "Too Long!")
             .required("This filed is required!"),
         password: Yup.string()
-            .min(8, "Password must be more than 8 chars!")
+            .min(8, "Password must be equal to or more than 8 chars!")
             .required("This filed is required!"),
     });
 
@@ -33,7 +33,7 @@ export function Login() {
             <div className="register-container mt-4 text-center">
                 <Logo />
                 <strong className="text-4xl font-serif mt-4">
-                    Log in to Twitter
+                    Log In To Twitter
                 </strong>
                 <Formik
                     initialValues={{
@@ -57,7 +57,7 @@ export function Login() {
                             <Field
                                 type="name"
                                 name="email"
-                                className="w-4/5 h-16  pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300 mb-2 mt-4"
+                                className="w-4/5 h-16  pl-10 pr-10 py-2 rounded-lg border-2 border-gray-200 outline-none hover:border-blue-300 transition duration-300 focus:border-blue-300 mb-2 mt-4"
                                 placeholder="Email or Username"
                             />
                             {errors.email && touched.email ? (
@@ -67,7 +67,7 @@ export function Login() {
                                 type="password"
                                 name="password"
                                 placeholder="Password"
-                                className="w-4/5 h-16  pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-blue-300 mb-2 mt-4"
+                                className="w-4/5 h-16  pl-10 pr-10 py-2 rounded-lg border-2 border-gray-200 outline-none hover:border-blue-300 transition duration-300 focus:border-blue-300 mb-2 mt-4"
                             />
                             {errors.password && touched.password ? (
                                 <div className="text-red-700 text-left pl-10 w-4/5 ml-auto mr-auto">
@@ -91,11 +91,11 @@ export function Login() {
                 </Formik>
 
                 <div className="mt-3">
-                    <Link to="/forget_password" className="a_login_form m-8">
+                    <Link to="/forget_password" className="a_login_form transition mr-4 hover:text-blue-800 duration-300">
                         Forget password?
                     </Link>
 
-                    <Link to="/signUp" className="a_login_form">
+                    <Link to="/signUp" className="a_login_form transition ml-4 hover:text-blue-800 duration-300">
                         Sign up for Twitter
                     </Link>
                 </div>

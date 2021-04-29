@@ -29,6 +29,17 @@ const TweetList: React.FC<TweetFilter> = (props) => {
             isSFW: sfw.SFW.value,
         },
     });
+    if(!loading && data && data?.tweets?.tweets?.length === 10 && page === 1){
+        setPage(page + 1);
+        fetchMore({
+            variables: {
+                userId: profile.id,
+                isSFW: sfw.SFW.value,
+                page: page + 1,
+                filter: filter
+            },
+        })
+    }
     if (loading) return <Loading />;
     if (error) return <p>`Error! ${error.message}`</p>;
 

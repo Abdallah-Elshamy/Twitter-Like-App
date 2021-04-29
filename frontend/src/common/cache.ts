@@ -126,7 +126,7 @@ export const cache: InMemoryCache = new InMemoryCache({
                     "filter",
                     "isSFW",
                 ]),
-                users: createPaginationAndCombineUsersElements(["name"])
+                users: createPaginationAndCombineUsersElements(["search"])
             },
         },
     },

@@ -15,6 +15,15 @@ function HomeTweets() {
             isSFW: sfw.SFW.value,
         },
     });
+    if(!loading && data && data?.getFeed?.length === 10 && page === 1){
+        setPage(page + 1);
+        fetchMore({
+            variables: {
+                isSFW: sfw.SFW.value,
+                page: page + 1,
+            },
+        })
+    }
     if (loading) return <Loading />;
     if (error) return <p>`Error! this is the one ${error.message}`</p>;
 

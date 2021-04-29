@@ -27,6 +27,15 @@ const SearchResult: React.FC = () => {
     return <h1 className="text-lg text-center pt-4">Try searching for people, names, usernames
 </h1>
   }
+  if(!loading && data && data?.users?.users?.length === 10 && page === 1){
+    setPage(page + 1);
+    fetchMore({
+        variables: {
+            page: page + 1,
+            name: searchQ,
+        },
+    })
+}
   if (loading) return <Loading />
   if (error) return <h1 className="text-lg text-center pt-4 text-gray-500">Something went wrong :( </h1>
 

@@ -1,5 +1,5 @@
 import { Field, Formik } from 'formik';
-import React, { createRef, MouseEventHandler, useRef, useState } from 'react';
+import React, { MouseEventHandler, useRef, useState } from 'react';
 import { object, string } from 'yup';
 import { User } from '../../../common/TypesAndInterfaces';
 import '../profile.css';
@@ -12,6 +12,7 @@ import { EditProfileBgVal, EditProfileImageVal } from '../../../common/cache';
 import { GetEditProfileImage } from '../../../common/queries/GetEditProfileImage';
 import axios from 'axios';
 import { GetEditBgImage } from '../../../common/queries/GetEditBgImage';
+import { DeleteMedia } from '../../../common/queries/DeleteMedia';
 
 
 type Props = {
@@ -26,10 +27,12 @@ interface initials {
 
 }
 const EditProfile: React.FC<Props> = ({ user, close, show }) => {
+  //save media apis in state
   const [apis, setAPIs] = useState<any>([])
 
   const [editUser, { loading: mutLoading }] = useMutation(EditUser)
-
+  const [deleteMedia] = useMutation(DeleteMedia)
+  //console.log(delData, delError)
   const { data: avatarData } = useQuery(GetEditProfileImage)
   if (avatarData) {
     var { EditProfileImage: { Image, ImageURL } } = avatarData
@@ -44,9 +47,7 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
   }
 
   const { data: APIENDPOINT, loading, refetch } = useQuery(gql`query{getUploadURL}`)
-  if (loading) {
-    console.log("loading...........")
-  }
+
   if (!loading && APIENDPOINT) {
     if (APIENDPOINT.getUploadURL !== apis[apis.length - 1]) {
       setAPIs([...apis, APIENDPOINT.getUploadURL])
@@ -101,12 +102,32 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
     if (!error) {
       if (Image) {
         var pfUrl = await Promise.resolve(handleImageUpload(Image))
+        if (pfUrl) {
+          let lastIndex = Number(user.imageURL?.lastIndexOf('/')) + 1
+          let id = user.imageURL?.substr(lastIndex || 0)
+          deleteMedia({
+            variables: {
+              id: id
+            }
+          })
+        }
       }
       if (BgImage) {
         var bgUrl = await Promise.resolve(handleImageUpload(BgImage))
+        if (bgUrl) {
+
+          let lastIndex = Number(user.coverImageURL?.lastIndexOf('/')) + 1
+          let id = user.coverImageURL?.substr(lastIndex || 0)
+          console.log(id)
+          deleteMedia({
+            variables: {
+              id: id
+            }
+          })
+        }
       }
-      console.log(`profile link:${pfUrl}\nbackground link:${bgUrl}\n`)
-      editUser({
+      //console.log(`profile link:${pfUrl}\nbackground link:${bgUrl}\n`)
+      await editUser({
         variables:
         {
           userInput:
@@ -124,14 +145,17 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
     }
 
 
+
   }
 
   const handleImageUpload: any = async (image: any, type?: Number) => {
     let url: any = await axios.put(apis.pop(), image, {
       headers: {
-        'Content-Type': 'multipart/form-data'
+        'Content-Type': `${image.type}`
       }
-    })
+    }).catch((e) => undefined)
+
+
     console.log("url", url.config.url.split('?')[0])
     return url.config.url.split('?')[0]
 
@@ -153,7 +177,6 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
     })
     refetch()
 
-    console.log(BgImageURL)
 
   }
 
@@ -168,7 +191,8 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
           </svg>
         </div>
 
-        <div><h1 className="font-bold font-lg">Edit Profile</h1></div>
+        <div>
+          <h1 className="font-bold font-lg">Edit Profile</h1></div>
 
         <div>
           <button onClick={save}
@@ -184,10 +208,11 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
         <div className="media h-64 ">
           <div className="pf--bg relative " >
 
-            {(
-              <img className="" src={BgImageURL || user.coverImageURL || avatar}
-                alt="bg" />
-            )}
+            {
+
+              (BgImageURL || user.coverImageURL) ? <img className="" src={BgImageURL || user.coverImageURL}
+                alt="bg" /> : null
+            }
             <div className="absolute top-0  h-full w-full 
             hover:bg-gray-100 hover:bg-opacity-25 
              p-16 "
@@ -206,8 +231,11 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
 
           <div className="pf--avatar-edit" >
             {(
+
               <img className="pf--avatar-img" src={ImageURL || user.imageURL || avatar}
                 alt="avatar" />
+
+
             )}
             <div className="absolute h-100 w-100 
             hover:bg-gray-100 hover:bg-opacity-25 

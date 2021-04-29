@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
 import './tweet.css';
-import avatar from "../../routes/mjv-d5z8_400x400.jpg";
-
-import { timeConverter } from '../../common/utils/timestamp';
 import { ToolBox } from '../sideBar/toolbox/toolbox';
 import Modal from '../../UI/Modal/Modal';
 import PostTweet from './PostTweet';
+import Tweet_info from './Tweet_userInfo';
+import Tweet_img from './Tweet_img';
 
 export interface TweetData {
   user?: {
@@ -44,15 +43,17 @@ function Tweet(props: any) {
         <PostTweet />
       </Modal>
 
+      <Tweet_img imageURL={props.user.imageURL} />
 
-      <div className="tweet-icon mr-2">
-        {props.user?.imageURL ? (
-          <img src={props.user?.imageURL}
-            alt="avatar" />
-        ) : (<img src={avatar} alt="avatar" />)}
-      </div>
       <div className="tweet-aside">
-        <div className="tweet-data py-1">
+
+        <Tweet_info
+          userName={props.user?.userName}
+          createdAt={props.createdAt}
+          name={props.user?.name}
+        />
+
+        {/*  <div className="tweet-data py-1">
           <p className="font-bold mr-1">{props.user?.name}</p>
           <p className="p--light-color"> @{props.user?.userName} . </p>
           <p className="p--light-color px-1"> {props.createdAt ? timeConverter(Number(props.createdAt)) : null}</p>
@@ -65,7 +66,7 @@ function Tweet(props: any) {
               }
             >
 
-              <ul className=" bg-gray-100 mb-40 ml-4 absolute bg-gray-100 " >
+              <ul className=" mb-40 ml-4 absolute bg-gray-100 " >
 
                 <a href="/profile" className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" >block</a>
@@ -76,7 +77,9 @@ function Tweet(props: any) {
             </ToolBox>
 
           </span>
-        </div>
+        </div> */}
+
+
         <div className="tweet-content">
           <span>
             {props.text}
@@ -111,11 +114,12 @@ function Tweet(props: any) {
               <i className="far fa-heart text-base font-sm"></i>
               <span>{props.likesCount}</span>
             </a>
+
           </div>
         </div>
       </div>
-
     </div>
+
   )
 }
 

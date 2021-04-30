@@ -409,29 +409,48 @@ export default {
             } else {
                 mode = "NSFW";
             }
-
-            if (mode === "SFW") {
-                const tweets: any = await Tweet.findAll({
-                    where: {
-                        userId: { [Op.in]: followingUsersIds },
-                        isSFW: true,
-                    },
-                    offset: ((page || 1) - 1) * PAGE_SIZE,
-                    limit: PAGE_SIZE,
-                    order: [["createdAt", "DESC"]],
-                });
-                return tweets.map((tweet: any) => {
-                    tweet.mode = mode;
-                    return tweet;
-                });
-            } else {
-                return await Tweet.findAll({
-                    where: { userId: { [Op.in]: followingUsersIds } },
-                    offset: ((page || 1) - 1) * PAGE_SIZE,
-                    limit: PAGE_SIZE,
-                    order: [["createdAt", "DESC"]],
-                });
-            }
+            return {
+                tweets: async () => {
+                    if (mode === "SFW") {
+                        const tweets: any = await Tweet.findAll({
+                            where: {
+                                userId: { [Op.in]: followingUsersIds },
+                                isSFW: true,
+                            },
+                            offset: ((page || 1) - 1) * PAGE_SIZE,
+                            limit: PAGE_SIZE,
+                            order: [["createdAt", "DESC"]],
+                        });
+                        return tweets.map((tweet: any) => {
+                            tweet.mode = mode;
+                            return tweet;
+                        });
+                    } else {
+                        return await Tweet.findAll({
+                            where: { userId: { [Op.in]: followingUsersIds } },
+                            offset: ((page || 1) - 1) * PAGE_SIZE,
+                            limit: PAGE_SIZE,
+                            order: [["createdAt", "DESC"]],
+                        });
+                    }
+                },
+                totalCount: async () => {
+                    if (mode === "SFW") {
+                        return await Tweet.count({
+                            where: {
+                                userId: { [Op.in]: followingUsersIds },
+                                isSFW: true,
+                            },
+                        });
+                    } else {
+                        return await Tweet.count({
+                            where: {
+                                userId: { [Op.in]: followingUsersIds },
+                            },
+                        });
+                    }
+                },
+            };
         },
     },
     Mutation: {

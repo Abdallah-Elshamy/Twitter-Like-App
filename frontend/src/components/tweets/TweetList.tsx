@@ -1,50 +1,81 @@
-import React, { Fragment } from "react"
-import { useQuery } from '@apollo/client';
+import React, { Fragment } from "react";
+
+import { useQuery } from "@apollo/client";
+// import Tweet from '../Tweet';
 import Tweet from "./Tweet";
 import { Tweets } from "../../common/queries/TweetQuery";
-import { TweetData } from './Tweet'
-import { parseJwt } from '../../common/decode';
+import { TweetData } from "./Tweet";
+import { parseJwt } from "../../common/decode";
 import { Get_SFW } from "../../common/queries/GET_SFW";
+import Loading from "../../UI/Loading";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 export interface TweetFilter {
-  filter: string
+    filter: string;
+    page: number;
+    setPage: any;
+    id: string;
 }
 
 const TweetList: React.FC<TweetFilter> = (props) => {
-  var profile;
-  if (localStorage.getItem('token') !== null) {
-    profile = parseJwt(localStorage.getItem('token'))
-  }
-  const sfw = useQuery(Get_SFW).data
-  const { loading, error, data } = useQuery(Tweets,
-    {
-      variables: {
-        userId: profile.id,
-        filter: props.filter,
-        isSFW: sfw.SFW.value
-      }
+
+    const { filter, page, setPage } = props;
+    const sfw = useQuery(Get_SFW).data;
+    const { loading, error, data, fetchMore } = useQuery(Tweets, {
+        variables: {
+            userId: props.id,
+            filter: filter,
+            isSFW: sfw.SFW.value,
+        },
     });
 
-  if (loading) return <p>'Loading .. '</p>
-  if (error) return <p>`Error! ${error.message}`</p>
+    if (!loading && data && data?.tweets?.tweets?.length === 10 && page === 1) {
+        setPage(page + 1);
+        fetchMore({
+            variables: {
+                userId: props.id,
+                isSFW: sfw.SFW.value,
+                page: page + 1,
+                filter: filter
+            },
+        })
+    }
+    if (loading) return <Fragment><br /> <br /> <Loading size={30} /></Fragment>;
+    if (error) return <p>`Error! ${error.message}`</p>;
 
-  return (
-    <Fragment>
-      {
-        data.tweets.tweets.map((tweet: TweetData) => {
-          return <Tweet text={tweet.text}
-            repliesCount={tweet.repliesCount}
-            createdAt={tweet.createdAt}
-            isLiked={tweet.isLiked}
-            user={tweet.user}
-            likesCount={tweet.likesCount}
-            key={tweet.id}
-            quotedRetweetsCount = {tweet. quotedRetweetsCount}
-            retweetsCount = { tweet.retweetsCount}
-            />
-        })}
-    </Fragment>
-  )
-}
+    return (
+        <InfiniteScroll
+            dataLength={data?.tweets?.tweets?.length || 0}
+            next={() => {
+                setPage(page + 1);
+                return fetchMore({
+                    variables: {
+                        userId: props.id,
+                        isSFW: sfw.SFW.value,
+                        page: page + 1,
+                        filter: filter
+                    },
+                });
+            }}
+            hasMore={data?.tweets?.tweets?.length >= page * 10 || false}
+            loader={<Loading />}
+        >
+            {data.tweets.tweets.map((tweet: TweetData) => {
+                return (
+                    <Tweet
+                        id={tweet.id}
+                        text={tweet.text}
+                        repliesCount={tweet.repliesCount}
+                        createdAt={tweet.createdAt}
+                        isLiked={tweet.isLiked}
+                        user={tweet.user}
+                        likesCount={tweet.likesCount}
+                        key={tweet.id}
+                    />
+                );
+            })}
+        </InfiniteScroll>
+    );
+};
 
 export default TweetList;

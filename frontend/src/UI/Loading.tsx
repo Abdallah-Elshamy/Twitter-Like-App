@@ -1,10 +1,11 @@
 import React from 'react';
-import Loader from "react-loader-spinner"
+import { HashLoader } from 'react-spinners';
+import { LengthType } from 'react-spinners/interfaces';
 
-const Loading: React.FC = () => {
+const Loading: React.FC<{ size?: LengthType }> = ({ size }) => {
 
-  return (<div className="w-full flex justify-center items-center h-1/2">
-    <Loader type="TailSpin" color="lightgray" width="60" height="60" />
+  return (<div className="w-full grid justify-center items-center h-1/2">
+    <HashLoader color={'#ccc'} loading={true} size={size || 50} />
   </div>)
 }
 export default Loading

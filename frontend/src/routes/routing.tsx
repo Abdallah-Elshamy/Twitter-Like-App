@@ -13,6 +13,7 @@ import { useQuery } from '@apollo/client';
 import { GET_ISAUTH } from '../common/queries/Get_isAuth';
 import React from "react";
 import { Login } from "../components/Register/login_form/login";
+import ExtendedTweet from "../components/tweets/ExtendedTweet/ExtendedTweet";
 
 export const Routing = () => {
 
@@ -65,10 +66,17 @@ export const Routing = () => {
         </PrivateRoute>
 
 
+        <PrivateRoute path="/tweet/:id">
+          <ExtendedTweet />
+        </PrivateRoute>
+
         <PrivateRoute path="/profile">
           <Profile />
         </PrivateRoute>
 
+        <Route path='/:id'>
+          <Profile />
+        </Route>
 
       </Switch>
 
@@ -77,7 +85,7 @@ export const Routing = () => {
 };
 
 const PrivateRoute = ({ children, ...rest }: any) => {
-  let auth = useQuery(GET_ISAUTH).data.authenticated
+  let auth = localStorage.getItem('token') ? true : false
   return (
     <Route
       {...rest}
@@ -100,7 +108,7 @@ const PrivateRoute = ({ children, ...rest }: any) => {
 
 
 const PublicRoute = ({ children, ...rest }: any) => {
-  let auth = !useQuery(GET_ISAUTH).data.authenticated
+  let auth = localStorage.getItem('token') ? false : true
   return (
     <Route
       {...rest}

@@ -6,6 +6,7 @@ import { Tweets } from '../../common/queries/TweetQuery'
 import { FeedTweets } from '../../common/queries/Feedtweets'
 import { Post_Tweet } from '../../common/queries/createTweet'
 import { useMutation } from "@apollo/client"
+import {updateTweetsCacheForCreateTweet} from "../../common/utils/writeCache"
 import './tweet.css';
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 import { parseJwt } from '../../common/decode';
@@ -24,7 +25,9 @@ const PostTweet = () => {
 
   const inputRef: any = useRef()
   // mutation
-  const [createTweet, { data }] = useMutation(Post_Tweet);
+  const [createTweet, { data }] = useMutation(Post_Tweet, {
+    update: updateTweetsCacheForCreateTweet
+  });
   console.log(`this ${inputRef.current}`)
 
   const initialValues: Post = {
@@ -59,14 +62,6 @@ const PostTweet = () => {
           console.log(text);
           createTweet({
             variables: { tweetInput: { text } },
-            refetchQueries: [{
-              query: Tweets,
-              variables: {
-                userId: profile.id,
-                filter: ''
-              }
-            }, { query: FeedTweets }]
-
           });
           console.log(`this ${data}`)
           setSubmitting(false);

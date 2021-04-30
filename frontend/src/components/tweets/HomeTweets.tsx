@@ -1,48 +1,65 @@
-import React, { Fragment } from "react"
-import { useQuery } from '@apollo/client';
+import React, { useState } from "react";
+
+import { useQuery } from "@apollo/client";
 import Tweet from "./Tweet";
-import { TweetData } from './Tweet'
-import { FeedTweets } from '../../common/queries/Feedtweets'
-import Loading from '../../UI/Loading'
+import { TweetData } from "./Tweet";
+import { FeedTweets } from "../../common/queries/Feedtweets";
+import Loading from "../../UI/Loading";
 import { Get_SFW } from "../../common/queries/GET_SFW";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 function HomeTweets() {
-  const sfw = useQuery(Get_SFW).data
-
-  const { loading, error, data } = useQuery(FeedTweets,
-    {
-      variables: {
-        isSFW: sfw.SFW.value
-      }
+    let [page, setPage] = useState(1);
+    const sfw = useQuery(Get_SFW).data;
+    const { loading, error, data, fetchMore } = useQuery(FeedTweets, {
+        variables: {
+            isSFW: sfw.SFW.value,
+        },
+    });
+    if (!loading && data && data?.getFeed?.length === 10 && page === 1) {
+        setPage(page + 1);
+        fetchMore({
+            variables: {
+                isSFW: sfw.SFW.value,
+                page: page + 1,
+            },
+        })
     }
-  );
+    if (loading) return <Loading />;
+    if (error) return <p>`Error! this is the one ${error.message}`</p>;
 
-
-  if (loading) return <Loading />
-  if (error) return <p>`Error! this is the one ${error.message}`</p>
-
-  return (
-
-    <Fragment>
-      {console.log(data)}
-      {
-
-        data.getFeed.map((tweet: TweetData) => {
-          console.log(`tweet is ${tweet}`)
-          return <Tweet text={tweet.text}
-            repliesCount={tweet.repliesCount}
-            createdAt={tweet.createdAt}
-            isLiked={tweet.isLiked}
-            user={tweet.user}
-            likesCount={tweet.likesCount}
-            key={tweet.id}
-            quotedRetweetsCount = {tweet. quotedRetweetsCount}
-            retweetsCount = { tweet.retweetsCount}
-            />
-        })}
-    </Fragment>
-  )
+    return (
+        <InfiniteScroll
+            dataLength={data?.getFeed?.length || 0}
+            next={() => {
+                setPage(page + 1);
+                return fetchMore({
+                    variables: {
+                        isSFW: sfw.SFW.value,
+                        page: page + 1,
+                    },
+                });
+            }}
+            hasMore={data?.getFeed?.length >= page * 10 || false}
+            loader={<Loading />}
+        >
+            {data.getFeed.map((tweet: TweetData) => {
+                console.log(`tweet is ${tweet}`);
+                return (
+                    <Tweet
+                        id={tweet.id}
+                        text={tweet.text}
+                        repliesCount={tweet.repliesCount}
+                        createdAt={tweet.createdAt}
+                        isLiked={tweet.isLiked}
+                        user={tweet.user}
+                        likesCount={tweet.likesCount}
+                        key={tweet.id}
+                    />
+                );
+            })}
+        </InfiniteScroll>
+    );
 }
-
 
 export default HomeTweets;

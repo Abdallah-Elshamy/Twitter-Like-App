@@ -61,7 +61,15 @@ export default {
 
             return {
                 totalCount: async () => {
-                    return sortedWords.length;
+                    return await await HasHashtag.count({
+                        col: "hashtag",
+                        distinct: true,
+                        where: {
+                            createdAt: {
+                                [Op.gte]: dateBefore2Weeks,
+                            },
+                        },
+                    });
                 },
                 hashtags: async () => {
                     // this will get the trending hashtags but not sorted

@@ -45,7 +45,7 @@ const PostTweet = () => {
     let urlsData = await  medias.map ( async(media:any)=>{
       let url:any= await axios.put(apis.pop(),media, {
         headers: {
-          'Content-Type': 'application/x-binary'
+          'Content-Type': media.type
         }
       })
       // console.log ("url", url.config.url.split('?')[0])
@@ -105,7 +105,7 @@ const PostTweet = () => {
               });
             })}
             setmedia (false)
-            setmediaURL ("")
+            setmediaURLs ([])
             setSubmitting(true);
             setSubmitting(false);
             resetForm();

@@ -16,6 +16,7 @@ query tweets ($userId:ID! $filter:String $page:Int $isSFW:Boolean){
         repliesCount
         createdAt
         isLiked
+        mediaURLs
       }
     }}
 `

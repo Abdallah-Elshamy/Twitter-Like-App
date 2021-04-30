@@ -18,11 +18,17 @@ export interface TweetData {
   repliesCount?: number
   createdAt?: number
   isLiked?: boolean
+  mediaURLs?:string[]
 }
 
 function Tweet(props: any) {
   const [edit, setEdit] = useState<boolean>(false);
   const modalClosed = () => setEdit(false);
+
+  const displayUploadedFiles=(urls:string[])=> {
+    console.log(urls, "urls")
+    return urls.map((url, i) => <img className="w-full h-15" src={url} alt=""/>);
+  }
 
   return (
 
@@ -84,6 +90,7 @@ function Tweet(props: any) {
           <span>
             {props.text}
           </span>
+          {(props.mediaURLs) && displayUploadedFiles (props.mediaURLs)}
           <div className="tweet-toolbar p--light-color">
             <a onClick={() => setEdit(true)}>
               <i className="fas fa-reply text-base font-sm "></i>

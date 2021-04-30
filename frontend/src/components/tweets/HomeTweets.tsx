@@ -43,9 +43,10 @@ function HomeTweets() {
             loader={<Loading />}
         >
             {data.getFeed.map((tweet: TweetData) => {
-                console.log(`tweet is ${tweet}`);
+                console.log("tweet", tweet);
                 return (
                     <Tweet
+                        mediaURLs={tweet.mediaURLs}
                         text={tweet.text}
                         repliesCount={tweet.repliesCount}
                         createdAt={tweet.createdAt}

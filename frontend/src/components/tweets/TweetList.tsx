@@ -8,6 +8,7 @@ import { TweetData } from "./Tweet";
 import { parseJwt } from "../../common/decode";
 import { Get_SFW } from "../../common/queries/GET_SFW";
 import Loading from "../../UI/Loading";
+import './tweet.css';
 
 export interface TweetFilter {
     filter: string;
@@ -63,6 +64,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
             {data.tweets.tweets.map((tweet: TweetData) => {
                 return (
                     <Tweet
+                        mediaURLs={tweet.mediaURLs}
                         text={tweet.text}
                         repliesCount={tweet.repliesCount}
                         createdAt={tweet.createdAt}

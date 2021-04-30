@@ -9,7 +9,7 @@ export const Post_Tweet = gql`
                 userName
             }
             id
-            text
+            text 
             likesCount
             repliesCount
             createdAt

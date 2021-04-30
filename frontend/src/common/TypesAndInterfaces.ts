@@ -25,7 +25,8 @@ export interface User {
   imageURL?: string,
   birthDate?: string,
   bio?: string,
-  isFollowing?: Boolean
+  isFollowing?: Boolean,
+  isFollower: boolean,
   coverImageURL?: string,
   createdAt?: string,
   followingCount?: Number,

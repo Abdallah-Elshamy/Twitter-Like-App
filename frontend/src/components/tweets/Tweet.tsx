@@ -3,11 +3,13 @@ import './tweet.css';
 import { ToolBox } from '../sideBar/toolbox/toolbox';
 import Modal from '../../UI/Modal/Modal';
 import PostTweet from './PostTweet';
-import Tweet_info from './Tweet_userInfo';
+import Tweet_info from './Tweet_Info';
 import Tweet_img from './Tweet_img';
+import Tweet_Info from './Tweet_Info';
 
 export interface TweetData {
   user?: {
+    id?: string
     imageURL?: string
     name?: string
     userName?: string
@@ -43,14 +45,16 @@ function Tweet(props: any) {
         <PostTweet />
       </Modal>
 
-      <Tweet_img imageURL={props.user?.imageURL} />
+      <Tweet_img imageURL={props.user?.imageURL} id={props.user?.id} />
 
       <div className="tweet-aside">
 
-        <Tweet_info
+        <Tweet_Info
           userName={props.user?.userName}
           createdAt={props.createdAt}
           name={props.user?.name}
+          id={props.user.id}
+
         />
 
         {/*  <div className="tweet-data py-1">

@@ -6,9 +6,10 @@ import './FollowButton.css'
 type Props = {
   id: string
   py?: string
+  px?: string
   following?: Boolean
 }
-const FollowButton: React.FC<Props> = ({ id, py = "py-0.5", following = false }) => {
+const FollowButton: React.FC<Props> = ({ id, py = "py-0.5", px = "px-2", following = false }) => {
   const [followingState, setFollowing] = useState(following)
   const [follow, resFlw] = useMutation(FOLLOW)
   const [unfollow, resUnflw] = useMutation(UNFOLLOW)
@@ -31,14 +32,14 @@ const FollowButton: React.FC<Props> = ({ id, py = "py-0.5", following = false })
   return (
     followingState ?
       < button
-        className={"pf--follow-btn unfollow rounded-full px-2 font-semibold  text-xm w-min  " + py}
-        onClick={handleUnFollow}
+        className={"pf--follow-btn unfollow rounded-full  font-semibold  text-xm w-min  " + py + ' ' + px}
+        onClick={(e) => { handleUnFollow(); e.stopPropagation() }}
 
       >
         <span className="following">Following</span>  <span className="unfollowing">Unfollow</span>
       </button > :
-      < button className={"pf--follow-btn rounded-full px-2 font-semibold  text-xm w-min  " + py}
-        onClick={handleFollow}
+      < button className={"pf--follow-btn rounded-full  font-semibold  text-xm w-min  " + py + ' ' + px}
+        onClick={(e) => { handleFollow(); e.stopPropagation() }}
       >
         Follow
   </button >

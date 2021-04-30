@@ -47,9 +47,9 @@ const PostTweet = () => {
   })
   return (
     <div className="mb-3 p-3 w-full shadow bg-white flex">
-      {/* this shoud be dynamic */}
-      <div className="tweet-icon ">
-        <img src={avatar} alt="avatar" />
+      {/* this should be dynamic */}
+      <div className="tweet-icon">
+      <img src={profile.imageURL || avatar } alt="avatar" />
       </div>
       <Formik
         initialValues={initialValues}
@@ -81,7 +81,6 @@ const PostTweet = () => {
                 name="text"
                 type="text"
                 as="textarea"
-                // onChange={setInputHight}
                 onKeyPress={setInputHight}
                 className="w-full placeholder-gray4 p-3 ml-2 
               focus:outline-none resize-none overflow-hidden min-h-12"

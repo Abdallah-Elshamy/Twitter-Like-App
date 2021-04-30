@@ -2,29 +2,14 @@ import './tweet.css';
 import { timeConverter } from '../../common/utils/timestamp';
 import { ToolBox } from '../sideBar/toolbox/toolbox';
 
-
-export interface TweetData {
-  user?: {
-    imageURL?: string
-    name?: string
-    userName?: string
-  }
-  id?: string
-  text: string
-  likesCount?: number
-  repliesCount?: number
-  createdAt?: number
-  isLiked?: boolean
-}
-
 function Tweet_info(props:any){
 
   return(
 
-      <div className="tweet-data py-1">
-        <a href ="/user_route" className="font-bold mr-1">{props.name}</a>
-        <p className="p--light-color"> @{props.userName}. </p>
-        <a href ="/tweet_route" className="p--light-color px-1"> {props.createdAt ? timeConverter(Number(props.createdAt)) : null}</a>
+      <div className={`tweet-data ${props.className}`}>
+        <a href ="/user_route" className="font-bold mr-1 hover:underline">{props.name}</a>
+        <p className="p--light-color  "> @{props.userName}. </p>
+        <a href ="/tweet_route" className="p--light-color px-1 hover:underline"> {props.createdAt ? timeConverter(Number(props.createdAt)) : null}</a>
         <span className="tweet-ellipsis p--light-color z-10 ">
         
 

@@ -1,6 +1,5 @@
 import React, { Fragment } from "react"
 import { useQuery } from '@apollo/client';
-// import Tweet from '../Tweet';
 import Tweet from "./Tweet";
 import { Tweets } from "../../common/queries/TweetQuery";
 import { TweetData } from './Tweet'
@@ -30,9 +29,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
   if (error) return <p>`Error! ${error.message}`</p>
 
   return (
-
     <Fragment>
-      {console.log(data.tweets.tweets)}
       {
         data.tweets.tweets.map((tweet: TweetData) => {
           return <Tweet text={tweet.text}
@@ -41,11 +38,13 @@ const TweetList: React.FC<TweetFilter> = (props) => {
             isLiked={tweet.isLiked}
             user={tweet.user}
             likesCount={tweet.likesCount}
-            key={tweet.id} />
+            key={tweet.id}
+            quotedRetweetsCount = {tweet. quotedRetweetsCount}
+            retweetsCount = { tweet.retweetsCount}
+            />
         })}
     </Fragment>
   )
 }
-
 
 export default TweetList;

@@ -8,6 +8,7 @@ import { LoggedUser } from '../../../common/queries/Userqery';
 import Loading from "../../../UI/Loading"
 import  {Get_SFW}  from '../../../common/queries/GET_SFW';
 import {SFW} from '../../../common/cache'
+import avatar from "../../../routes/mjv-d5z8_400x400.jpg"
 
 export function FlootProfile () {
       var profile;
@@ -44,12 +45,13 @@ export function FlootProfile () {
 <div className="flex justify-between items-start p-3">
 
 <div className="person-item-image w-11 h-11  rounded-full  flex-none mr-2 ">
-  
+<img src={data.user.imageURL || avatar }
+              alt="avatar" />
  </div>
 
  <div className="flex-grow pr-20">
    <h3 className=" text-xm font-bold">{(data.user.name).split(" ", 1)}</h3>
-   <p className=""><span className="text-xm ">@</span>{data.user.userName}</p>   
+   <p><span className="text-xm ">@</span>{data.user.userName}</p>   
  </div>
 
  <i className=" fas fa-ellipsis-h"></i>
@@ -58,12 +60,12 @@ export function FlootProfile () {
 
           <ul className= "px-4 mt-16" >
           <a href="/profile" className="mt-1 w-52 text-center block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 
-          hover:text-gray-900  hover:rounded-full rounded-full" role="menuitem">My Account</a>
+          hover:text-gray-900  hover:rounded-full rounded-full">My Account</a>
 
           {
             (age > 18) &&
             <button className="mt-1 w-52 text-center block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 
-            hover:text-gray-900  hover:rounded-full rounded-full focus:outline-none" role="menuitem" 
+            hover:text-gray-900 hover:rounded-full rounded-full focus:outline-none" 
             onClick={handleSFW}>{(sfw)?'Set NSFW':'Set SFW'}</button>
           }
           <Logout/>

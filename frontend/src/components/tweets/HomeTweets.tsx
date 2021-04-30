@@ -35,7 +35,10 @@ function HomeTweets() {
             isLiked={tweet.isLiked}
             user={tweet.user}
             likesCount={tweet.likesCount}
-            key={tweet.id} />
+            key={tweet.id}
+            quotedRetweetsCount = {tweet. quotedRetweetsCount}
+            retweetsCount = { tweet.retweetsCount}
+            />
         })}
     </Fragment>
   )

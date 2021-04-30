@@ -12,7 +12,9 @@ query feed_tweets($isSFW:Boolean){
           id
           text 
           likesCount
+          retweetsCount
           repliesCount
+          quotedRetweetsCount
           createdAt
           isLiked
         }

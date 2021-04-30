@@ -28,7 +28,6 @@ function Tweet(props: any) {
   const [ visible, setVisible ] = React.useState(false);
 
   const displayUploadedFiles=(urls:string[])=> {
-    console.log(urls, "urls")
     return urls.map((url, i) => 
     <Fragment>
     <img className="w-full h-15 cursor-pointer"  key={i}  src={url} onClick={() => { setVisible(true); }}  alt="tweet"/>

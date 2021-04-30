@@ -2,8 +2,6 @@ import { ErrorMessage, Field, Form, Formik } from "formik"
 import React, { Fragment, useRef, useState } from "react"
 import * as Yup from "yup"
 import { TweetButton } from '../sideBar/tweetButton/tweetButton'
-import { Tweets } from '../../common/queries/TweetQuery'
-import { FeedTweets } from '../../common/queries/Feedtweets'
 import { Post_Tweet } from '../../common/queries/createTweet'
 import {updateTweetsCacheForCreateTweet} from "../../common/utils/writeCache"
 import './tweet.css';
@@ -13,9 +11,6 @@ import axios from 'axios';
 import { useQuery, gql, useMutation } from '@apollo/client';
 import Viewer from 'react-viewer';
 import { LoggedUser } from '../../common/queries/Userqery';
-import { User } from '../../common/TypesAndInterfaces'
-import Loading from '../../UI/Loading'
-import Tweet_img from './Tweet_img'
 interface Post {
   text: string
 }
@@ -38,6 +33,7 @@ const PostTweet = () => {
     update: updateTweetsCacheForCreateTweet
   });
   const { data: APIENDPOINT, loading, refetch } = useQuery(gql`query{getUploadURL}`)
+  
   if(!loading && APIENDPOINT) {
     if(APIENDPOINT.getUploadURL !== apis[apis.length-1]){
       setAPIs([...apis, APIENDPOINT.getUploadURL])

@@ -19,13 +19,16 @@ const writeTweetsFeedData = async(isSFW: boolean, cache: any, newTweet: any) => 
             }
         })
     }
-    cache.writeQuery({
+    feedData && cache.writeQuery({
         query: FeedTweets,
         variables: {
             isSFW,
         },
         data: {
-            getFeed: [newTweet, ...(feedData?.getFeed || [])],
+            getFeed: {
+                tweets: [newTweet, ...(feedData.getFeed.tweets || [])],
+                totalCount: feedData.getFeed.totalCount + 1
+            },
         },
     });
 };

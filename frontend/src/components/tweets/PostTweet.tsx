@@ -21,7 +21,6 @@ interface Post {
 }
 
 const PostTweet = () => {
-  // states 
   const inputRef: any = useRef()
   const upload: any = useRef()
   const [media, setmedia] = useState(false)
@@ -30,66 +29,22 @@ const PostTweet = () => {
   const [medias , setmedias] = useState<any>([])
   const [apis, setAPIs] = useState<any>([])
   const [ visible, setVisible ] = React.useState(false);
-
-
-
-  if (localStorage.getItem('token')) {
-    var profile = parseJwt(localStorage.getItem('token'))
-  }
-  const { loading:userLoad, data:userData } = useQuery (LoggedUser, { variables: { id: profile.id } });
-
-
-
-
-//   const { data:userData, loading:userLoading } = useQuery(LoggedUser, { variables: { id: profile.id } });
-//   if (userLoading) return 
-//   else {
-//   const user: User = userData.user;
-// }
-// const userImage: any = user.imageURL;
-//   console.log (userImage)
-
-
-
-
-
-
-
-
-
-
-  var profile: any;
-  if (localStorage.getItem('token') !== "LOGOUT") {
-    profile = parseJwt(localStorage.getItem('token'))
-  }
-  // const userData = useQuery (Get_Logged_user)
-  // const user:User = userData.data.logUser.user
-  // console.log (user.imageURL)
-
-  // mutation
-  const [createTweet, { data }] = useMutation(Post_Tweet, {
-    update: updateTweetsCacheForCreateTweet
-  });
-  console.log(`this ${inputRef.current}`)
-
   const initialValues: Post = {
     text: ""
   }
-  //////////////////// upload media //////////////////
-
-   
-  // var  uploadedMedia: { Media :object | false , MediaURL :string|false} 
+  if (localStorage.getItem('token')) var profile = parseJwt(localStorage.getItem('token'))
+  const { loading:userLoad, data:userData } = useQuery (LoggedUser, { variables: { id: profile.id } });
+  const [createTweet, { data }] = useMutation(Post_Tweet, {
+    update: updateTweetsCacheForCreateTweet
+  });
   const { data: APIENDPOINT, loading, refetch } = useQuery(gql`query{getUploadURL}`)
-  if (loading) {
-    console.log("loading...........")
-  }
-  if(!loading && APIENDPOINT){
+  if(!loading && APIENDPOINT) {
     if(APIENDPOINT.getUploadURL !== apis[apis.length-1]){
       setAPIs([...apis, APIENDPOINT.getUploadURL])
     }
   }
-  if (userLoad) {return (<div className="mt-8" ><Loading /></div>)}
-  console.log(userData)
+  if (userLoad) {return (<div></div>)}
+
 
   const handleUpload = async () => {
     let urlsData = await  medias.map ( async(media:any)=>{
@@ -98,18 +53,15 @@ const PostTweet = () => {
           'Content-Type': 'application/x-binary'
         }
       })
-      console.log ("url", url.config.url.split('?')[0])
+      // console.log ("url", url.config.url.split('?')[0])
       return url.config.url.split('?')[0]
-
     })
-    // 
-    console.log (urlsData)
     return await Promise.all(urlsData)
   }
+
   const handleFile = (e: any) => {
     setmedia( e.target.files[0])
-    setmedias ([...medias, e.target.files[0]])
-    
+    setmedias ([...medias, e.target.files[0]]) 
     setmediaURLs( [...mediaURLs, URL.createObjectURL(e.target.files[0])])
     refetch()
     console.log (media,mediaURL)
@@ -118,103 +70,88 @@ const PostTweet = () => {
   const displayUploadedFiles=(urls:string[])=> {
     return urls.map((url, i) => 
     <Fragment>
-    <img className="object-cover w-full cursor-pointer" key={i} src={url} onClick={() => { setVisible(true);}}/>
-    <Viewer
-    visible={visible}
-    onClose={() => { setVisible(false); } }
-    images={[{ src: url || "", alt: 'background image'}]}
-    />
+      <img className="object-cover w-full cursor-pointer" key={i} src={url} onClick={() => { setVisible(true);}}/>
+      <Viewer
+      visible={visible}
+      onClose={() => { setVisible(false); } }
+      images={[{ src: url || "", alt: 'background image'}]}
+      />
     </Fragment>
     );
   }
-  
-  /********   dynamic hight control funtion   ***********/
+
   function setInputHight(element: React.ChangeEvent<HTMLElement>) {
     element.target.style.height = "60px"
     element.target.style.height = (element.target.scrollHeight) + "px"
     inputRef.current.style.height = (element.target.scrollHeight) + "px"
   }
+
   const validationSchema = Yup.object({
     text: Yup.string()
       .required()
       .min(1, "Must be more than 1 character")
       .max(256, "Must be less than 257 characters")
   })
+
   return (
     <div className="mb-3 tweet-box shadow bg-white flex">
-      {/* this shoud be dynamic */}
       <div className="tweet-icon" >
         <img src={userData.user.imageURL || avatar} alt="avatar" />
       </div>
       <div className="tweet-aside">
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={({ text }, { setSubmitting, resetForm }) => {
-          
-
-          if(media) {handleUpload().then ( (urls)=> {
-            createTweet({
-              variables: { tweetInput: {text, mediaURLs:urls }}
-            });
-          })}
-
-        
-          setmedia (false)
-          setmediaURL ("")
-          setSubmitting(true);
-          // console.log (media,mediaURL)
-
-          console.log (`this ${data}`)
-          setSubmitting(false);
-          resetForm();
-        }}
-      >
-
-        <Form >
-            <div ref={inputRef} className="w-full mb-2 tweet-text flex h-16">
-              <Field
-              
-              name="text"
-              type="text"
-              as="textarea"
-              // onChange={setInputHight}
-              onKeyPress={setInputHight}
-              className="w-full placeholder-gray4 p-3 ml-2 
-              focus:outline-none resize-none overflow-hidden min-h-12"
-              placeholder="What's happening..."/>
-            </div>
-             {/* image */}
-             {/* grid grid-cols-2 gap-0.5 */}
-             <div className="w-full max-h-26 ">
-
-             <div className="gg-box   ">
-             { displayUploadedFiles(mediaURLs) }
-             </div>
-             </div>
-
-            <hr className="my-2" />
-            <div className="flex justify-between items-center mb-2">
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={({ text }, { setSubmitting, resetForm }) => {
+            if(media) {handleUpload().then ( (urls)=> {
+              createTweet({
+                variables: { tweetInput: {text, mediaURLs:urls }}
+              });
+            })}
+            setmedia (false)
+            setmediaURL ("")
+            setSubmitting(true);
+            setSubmitting(false);
+            resetForm();
+          }}
+        >
+          <Form >
+              <div ref={inputRef} className="w-full mb-2 tweet-text flex h-16">
+                <Field
+                name="text"
+                type="text"
+                as="textarea"
+                onKeyPress={setInputHight}
+                className="w-full placeholder-gray4 p-3 ml-2 
+                focus:outline-none resize-none overflow-hidden min-h-12"
+                placeholder="What's happening..."/>
+              </div>
+              <div className="w-full max-h-26 ">
+                <div className="gg-box   ">
+                { displayUploadedFiles(mediaURLs) }
+                </div>
+              </div>
+              <hr className="my-2" />
+              <div className="flex justify-between items-center mb-2">
                 <button className="hover:bg-blue-100 rounded-full py-2 px-3 transition focus:outline-none" onClick={()=>upload.current.click()}>
-                <svg 
-                  className="h-8 w-8 text-blue-400 "
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth="2" 
-                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <input className="file-upload  hidden focus:outline-none" type="file"  accept="image/*, video/*" ref={upload} onChange={(e)=> handleFile(e)} />
+                  <svg 
+                    className="h-8 w-8 text-blue-400 "
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth="2" 
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <input className="file-upload  hidden focus:outline-none" type="file"  accept="image/*, video/*" ref={upload} onChange={(e)=> handleFile(e)} />
                 </button>
-                <ErrorMessage name="text"  render={msg => <div className="text-red-500">{msg}</div>} />
-                
-              <TweetButton name="Tweet" type="submit" className=" rounded-full py-3 px-6"/>
-            </div>
-            
-          </Form>
-      </Formik>
+                <ErrorMessage name="text"  render={msg => <div className="text-red-500">{msg}</div>} /> 
+                <TweetButton name="Tweet" type="submit" className=" rounded-full py-3 px-6"/>
+              </div>
+              
+            </Form>
+        </Formik>
       </div>
     </div>
   )

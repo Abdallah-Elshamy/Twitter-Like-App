@@ -64,35 +64,36 @@ const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
 });
 
 const createPaginationAndCombineUsersElements = (keyArgs: any[]) => ({
-  merge(existing: any, incoming: any) {
-      const merged = existing
-          ? { users: [...existing.users] }
-          : { users: [] };
-      let breakFlag = 0;
-      let i = 0;
-      let j = 0;
-      for (i = 0; i < merged.users.length; i++) {
-          if (breakFlag) break;
-          for (j = 0; j < incoming.users.length; j++) {
-              if (merged.users[i].__ref == incoming.users[j].__ref) {
-                  breakFlag = 1;
-                  i -= 2;
-                  break;
-              }
-          }
-          j = 0;
-      }
-      if (i == merged.users.length) i--;
-      for (; j < incoming.users.length; j++) {
-          merged.users[++i] = incoming.users[j];
-      }
-      merged.users.slice(0, i + 1);
-      return merged;
-  },
-  read(existing: any) {
-      return existing;
-  },
-  keyArgs,
+    merge(existing: any, incoming: any) {
+        const merged = existing
+            ? { totalCount: existing.totalCount, users: [...existing.users] }
+            : { totalCount: 0, users: [] };
+        merged.totalCount = incoming.totalCount;
+        let breakFlag = 0;
+        let i = 0;
+        let j = 0;
+        for (i = 0; i < merged.users.length; i++) {
+            if (breakFlag) break;
+            for (j = 0; j < incoming.users.length; j++) {
+                if (merged.users[i].__ref == incoming.users[j].__ref) {
+                    breakFlag = 1;
+                    i -= 2;
+                    break;
+                }
+            }
+            j = 0;
+        }
+        if (i == merged.users.length) i--;
+        for (; j < incoming.users.length; j++) {
+            merged.users[++i] = incoming.users[j];
+        }
+        merged.users.slice(0, i + 1);
+        return merged;
+    },
+    read(existing: any) {
+        return existing;
+    },
+    keyArgs,
 });
 
 export const cache: InMemoryCache = new InMemoryCache({
@@ -120,13 +121,13 @@ export const cache: InMemoryCache = new InMemoryCache({
                         return SFW();
                     },
                 },
-                getFeed: createPaginationAndCombine(["isSFW"]),
+                getFeed: createPaginationAndCombineTweetsElements(["isSFW"]),
                 tweets: createPaginationAndCombineTweetsElements([
                     "userId",
                     "filter",
                     "isSFW",
                 ]),
-                users: createPaginationAndCombineUsersElements(["search"])
+                users: createPaginationAndCombineUsersElements(["search"]),
             },
         },
     },

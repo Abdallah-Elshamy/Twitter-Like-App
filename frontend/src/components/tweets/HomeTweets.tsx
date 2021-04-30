@@ -16,7 +16,7 @@ function HomeTweets() {
             isSFW: sfw.SFW.value,
         },
     });
-    if (!loading && data && data?.getFeed?.length === 10 && page === 1) {
+    if(!loading && data && data?.getFeed?.tweets?.length == 10 && page == 1){
         setPage(page + 1);
         fetchMore({
             variables: {
@@ -30,21 +30,23 @@ function HomeTweets() {
 
     return (
         <InfiniteScroll
-            dataLength={data?.getFeed?.length || 0}
+            dataLength={data?.getFeed?.tweets?.length || 0}
             next={() => {
-                setPage(page + 1);
+                setPage(((data?.getFeed?.tweets?.length || 10)/10) +1 );
                 return fetchMore({
                     variables: {
                         isSFW: sfw.SFW.value,
-                        page: page + 1,
+                        page: ((data?.getFeed?.tweets?.length || 10)/10) +1 ,
                     },
                 });
             }}
-            hasMore={data?.getFeed?.length >= page * 10 || false}
+            hasMore={data?.getFeed?.totalCount >= page * 10 || false}
             loader={<Loading />}
+            style={{
+                overflow: "hidden"
+            }}
         >
-            {data.getFeed.map((tweet: TweetData) => {
-                console.log(`tweet is ${tweet}`);
+            {data?.getFeed?.tweets?.map((tweet: TweetData) => {
                 return (
                     <Tweet
                         id={tweet.id}

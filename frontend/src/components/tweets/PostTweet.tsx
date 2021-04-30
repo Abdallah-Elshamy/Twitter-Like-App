@@ -33,14 +33,13 @@ const PostTweet = () => {
     update: updateTweetsCacheForCreateTweet
   });
   const { data: APIENDPOINT, loading, refetch } = useQuery(gql`query{getUploadURL}`)
-  
+
   if(!loading && APIENDPOINT) {
     if(APIENDPOINT.getUploadURL !== apis[apis.length-1]){
       setAPIs([...apis, APIENDPOINT.getUploadURL])
     }
   }
   if (userLoad) {return (<div></div>)}
-
 
   const handleUpload = async () => {
     let urlsData = await  medias.map ( async(media:any)=>{
@@ -66,7 +65,7 @@ const PostTweet = () => {
   const displayUploadedFiles=(urls:string[])=> {
     return urls.map((url, i) => 
     <Fragment>
-      <img className="object-cover w-full cursor-pointer" key={i} src={url} onClick={() => { setVisible(true);}}/>
+      <img className="object-cover w-full cursor-pointer " key={i} src={url} onClick={() => { setVisible(true);}}/>
       <Viewer
       visible={visible}
       onClose={() => { setVisible(false); } }
@@ -92,7 +91,8 @@ const PostTweet = () => {
   return (
     <div className="mb-3 tweet-box shadow bg-white flex">
       <div className="tweet-icon" >
-        <img src={userData.user.imageURL || avatar} alt="avatar" />
+         <img src= {userData.user.imageURL || avatar} alt="avatar" />
+         {/* <img src= {avatar} alt="avatar" /> */}
       </div>
       <div className="tweet-aside">
         <Formik
@@ -122,10 +122,9 @@ const PostTweet = () => {
                 focus:outline-none resize-none overflow-hidden min-h-12"
                 placeholder="What's happening..."/>
               </div>
-              <div className="w-full max-h-26 ">
-                <div className="gg-box   ">
+
+                <div className="gg-box ">
                 { displayUploadedFiles(mediaURLs) }
-                </div>
               </div>
               <hr className="my-2" />
               <div className="flex justify-between items-center mb-2">

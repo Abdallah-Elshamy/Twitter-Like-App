@@ -6,6 +6,7 @@ import PostTweet from './PostTweet';
 import Tweet_info from './Tweet_userInfo';
 import Tweet_img from './Tweet_img';
 import Viewer from 'react-viewer';
+import ImageSlideshow from 'material-ui/svg-icons/image/slideshow';
 
 export interface TweetData {
   user?: {
@@ -28,13 +29,19 @@ function Tweet(props: any) {
   const [ visible, setVisible ] = React.useState(false);
 
   const displayUploadedFiles=(urls:string[])=> {
+    const check = (urls.length == 3)? true : false
+
     return urls.map((url, i) => 
     <Fragment>
-    <img className="w-full h-15 cursor-pointer"  key={i}  src={url} onClick={() => { setVisible(true); }}  alt="tweet"/>
+    <img className="w-full h-15 cursor-pointer" 
+    style={{gridRow:(check && (i==1))?" 1/3":"",
+    gridColumn: (check && (i==1))?" 2/3":"", 
+    height: (check && (i==1))?"300px":""}}  key={i}  src={url} onClick={() => { setVisible(true); }}  alt="tweet"/>
+
     <Viewer
     visible={visible}
     onClose={() => { setVisible(false); } }
-    images={[{ src: url || "", alt: 'background image'}]}
+    images={[{ src: url || ""}]}
     />
     </Fragment>
     )
@@ -47,7 +54,6 @@ function Tweet(props: any) {
     <div className="tweet-box ">
 
       <Modal show={edit} modalClosed={modalClosed} className="pb-4" >
-
         <header className="flex justify-between items-center px-3 h-8 w-full border-b border-gray-200 pb-6 pt-2">
 
           <div onClick={modalClosed} className=" p-1 rounded-full">
@@ -101,7 +107,12 @@ function Tweet(props: any) {
           <span>
             {props.text}
           </span>
-          {(props.mediaURLs) && displayUploadedFiles (props.mediaURLs)}
+          {(props.mediaURLs) && 
+                <div className="gg-box">
+
+                { displayUploadedFiles(props.mediaURLs) }
+
+              </div>}
           <div className="tweet-toolbar p--light-color">
             <a onClick={() => setEdit(true)}>
               <i className="fas fa-reply text-base font-sm "></i>

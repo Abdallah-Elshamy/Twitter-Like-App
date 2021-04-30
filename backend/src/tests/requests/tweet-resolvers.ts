@@ -365,3 +365,35 @@ export const getTweetsWithReportes = async (
          `,
         });
 };
+
+export const report_Tweet = async (
+    id: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                reportTweet(id: "${id}")
+            }
+            `,
+        });
+};
+
+export const reportTweetWithReason = async (
+    id: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                reportTweet(id: "${id}", reason: "Offensive language")
+            }
+            `,
+        });
+};

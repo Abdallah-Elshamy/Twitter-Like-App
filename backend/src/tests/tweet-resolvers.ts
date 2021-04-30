@@ -18,9 +18,14 @@ import {
     getFeedWithPagination,
     reportedTweets,
     getTweetsWithReportes,
+    report_Tweet,
+    reportTweetWithReason,
 } from "./requests/tweet-resolvers";
-import { createUser, login } from "./requests/user-resolvers";
-import { truncate } from "fs/promises";
+import {
+    createUser,
+    createUserWithBio,
+    login,
+} from "./requests/user-resolvers";
 
 let server: any;
 
@@ -1144,6 +1149,94 @@ describe("tweet-resolvers", (): void => {
                 response.body.data.tweets.tweets[2].reportedBy.users[9]
             ).to.include({
                 id: "11",
+            });
+        });
+    });
+
+    describe("reportTweet resolver", () => {
+        let token: string;
+        before(async () => {
+            await db.sync({ force: true });
+            await createUser("Bilbo11", "Bilbo the great");
+            await createUserWithBio("frodo11", "frodo the wise");
+            const response = await login("Bilbo11", "myPrecious");
+            token = response.body.data.login.token;
+            await Tweet.create({
+                text: "test tweet",
+                userId: 1,
+                state: "O",
+                mediaURLs: [],
+            });
+            for (let i = 0; i < 2; i++) {
+                await Tweet.create({
+                    text: `test tweet ${i + 1}`,
+                    userId: 2,
+                    state: "O",
+                    mediaURLs: [],
+                });
+            }
+        });
+        it("fails to report tweet if user is not authenticated", async () => {
+            const response = await report_Tweet(1);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+                message: "Invalid Token!",
+            });
+        });
+
+        it("fails to report a non existent tweet", async () => {
+            const response = await report_Tweet(0, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No tweet was found with this id!",
+            });
+        });
+
+        it("fails to report a tweet of the loggedin user", async () => {
+            const response = await report_Tweet(1, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "User cannot report his own tweet!",
+            });
+        });
+
+        it("succeeds in reporting a tweet", async () => {
+            const response = await report_Tweet(2, token);
+            expect(response.body.data).to.include({
+                reportTweet: true,
+            });
+            const reportedTweet = await Tweet.findByPk(2);
+            const reporterUser = await User.findByPk(1);
+            const isReported = await reporterUser!.$has(
+                "reportedTweets",
+                reportedTweet!
+            );
+            expect(isReported).to.be.true;
+        });
+
+        it("succeeds in reporting a tweet with a reason", async () => {
+            const response = await reportTweetWithReason(3, token);
+            expect(response.body.data).to.include({
+                reportTweet: true,
+            });
+            const reportedTweet = await Tweet.findByPk(3);
+            const reporterUser = await User.findByPk(1);
+            const isReported = await reporterUser!.$has(
+                "reportedTweets",
+                reportedTweet!
+            );
+            expect(isReported).to.be.true;
+        });
+
+        it("fails to report another user which is already reported", async () => {
+            const response = await report_Tweet(2, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "You have already reported this tweet!",
             });
         });
     });

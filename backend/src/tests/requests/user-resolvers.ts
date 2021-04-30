@@ -642,3 +642,108 @@ export const banUser = async (
             `,
         });
 };
+
+export const reportUser = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                reportUser(userId: "${userId}")
+            }
+            `,
+        });
+};
+
+export const reportUserWithReason = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                reportUser(userId: "${userId}", reason: "Offensive language")
+            }
+            `,
+        });
+};
+
+export const reportedUsers = async (
+    page: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            query {
+                reportedUsers(page: ${page}){
+                    totalCount
+                    users{id}
+                }
+            }
+            `,
+        });
+};
+
+export const getUserWithOwnReports = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            query {
+                user(id: ${userId}){
+                   name
+                   reportedTweets {
+                       tweets {
+                           text
+                       }
+                       totalCount
+                   }
+                   reported {
+                       users {
+                           userName
+                       }
+                       totalCount
+                   }
+                }
+            }
+            `,
+        });
+};
+
+export const getUserWithReportedBy = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            query {
+                user(id: ${userId}){
+                   name
+                   reportedBy {
+                       users {
+                           userName
+                       }
+                       totalCount
+                   }
+                }
+            }
+            `,
+        });
+};

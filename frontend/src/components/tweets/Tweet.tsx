@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { Fragment, useState } from 'react'
 import './tweet.css';
 import { ToolBox } from '../sideBar/toolbox/toolbox';
 import Modal from '../../UI/Modal/Modal';
 import PostTweet from './PostTweet';
 import Tweet_info from './Tweet_userInfo';
 import Tweet_img from './Tweet_img';
+import Viewer from 'react-viewer';
 
 export interface TweetData {
   user?: {
@@ -24,10 +25,21 @@ export interface TweetData {
 function Tweet(props: any) {
   const [edit, setEdit] = useState<boolean>(false);
   const modalClosed = () => setEdit(false);
+  const [ visible, setVisible ] = React.useState(false);
 
   const displayUploadedFiles=(urls:string[])=> {
     console.log(urls, "urls")
-    return urls.map((url, i) => <img className="w-full h-15" src={url} alt=""/>);
+    return urls.map((url, i) => 
+    <Fragment>
+    <img className="w-full h-15 cursor-pointer"  key={i}  src={url} onClick={() => { setVisible(true); }}  alt="tweet"/>
+    <Viewer
+    visible={visible}
+    onClose={() => { setVisible(false); } }
+    images={[{ src: url || "", alt: 'background image'}]}
+    />
+    </Fragment>
+    )
+
   }
 
   return (

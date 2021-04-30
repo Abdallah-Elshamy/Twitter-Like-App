@@ -1,5 +1,5 @@
 import { ErrorMessage, Field, Form, Formik } from "formik"
-import React, { useRef, useState } from "react"
+import React, { Fragment, useRef, useState } from "react"
 import * as Yup from "yup"
 import { TweetButton } from '../sideBar/tweetButton/tweetButton'
 import { Tweets } from '../../common/queries/TweetQuery'
@@ -11,6 +11,8 @@ import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 import { parseJwt } from '../../common/decode';
 import axios from 'axios';
 import { useQuery, gql, useMutation } from '@apollo/client';
+import Viewer from 'react-viewer';
+
 interface Post {
   text: string
 }
@@ -41,6 +43,7 @@ const PostTweet = () => {
   const [mediaURLs , setmediaURLs] = useState<any>([])
   const [medias , setmedias] = useState<any>([])
   const [apis, setAPIs] = useState<any>([])
+  const [ visible, setVisible ] = React.useState(false);
    
   // var  uploadedMedia: { Media :object | false , MediaURL :string|false} 
   const { data: APIENDPOINT, loading, refetch } = useQuery(gql`query{getUploadURL}`)
@@ -79,7 +82,15 @@ const PostTweet = () => {
 
   const displayUploadedFiles=(urls:string[])=> {
     return urls.map((url, i) => 
-    <img className="object-cover w-full" key={i} src={url}/>);
+    <Fragment>
+    <img className="object-cover w-full cursor-pointer" key={i} src={url} onClick={() => { setVisible(true);}}/>
+    <Viewer
+    visible={visible}
+    onClose={() => { setVisible(false); } }
+    images={[{ src: url || "", alt: 'background image'}]}
+    />
+    </Fragment>
+    );
   }
   
   /********   dynamic hight control funtion   ***********/

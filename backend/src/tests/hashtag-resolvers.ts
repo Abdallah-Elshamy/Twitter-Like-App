@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import { Console } from "console";
 
 import { serverPromise } from "../app";
 import db from "../db";
@@ -9,6 +8,7 @@ import {
     hashtags,
     hashtagsWithPagination,
 } from "./requests/hashtag-resolvers";
+import { createUser } from "./requests/user-resolvers";
 
 let server: any;
 
@@ -60,31 +60,30 @@ describe("hashtag-resolvers", (): void => {
     describe("hashtags resolver", () => {
         before(async () => {
             await db.sync({ force: true });
-            const user = await User.create({
-                name: "Bilbo Bagins",
-                userName: "Bilbothecrazy",
-                email: "bilboisacoolhobbit@yahoo.com",
-                hashedPassword: "sadsadsa",
-                birthDate: "1992-06-12",
-            });
+            await createUser("Bilbo11", "Bilbo The Cool");
+
             const hashtags: Hashtag[] = [];
-            for (let i = 0; i < 11; i++) {
-                let hashtag = await Hashtag.create({ word: `HASHTAG #${i+1}` });
+            for (let i = 0; i < 12; i++) {
+                let hashtag = await Hashtag.create({
+                    word: `HASHTAG #${i + 1}`,
+                });
                 hashtags.push(hashtag);
             }
+
             const tweets: Tweet[] = [];
-            for (let i = 0; i < 11; i++) {
+            for (let i = 0; i < 12; i++) {
                 let tweet = await Tweet.create({
-                    userId: user.id,
+                    userId: 1,
                     text: `test tweet ${i}`,
                     mediaURLs: [],
                     state: "O",
                 });
                 tweets.push(tweet);
             }
-            for (let i = 1; i <= hashtags.length; i++) {
-                for (let j = 0; j < i; j++) {
-                    await hashtags[i - 1].$add("tweets", tweets[j]);
+
+            for (let i = 0; i < 12; i++) {
+                for (let j = 0; j <= i; j++) {
+                    await tweets[i].$add("hashtags", hashtags[j]);
                 }
             }
         });
@@ -92,19 +91,19 @@ describe("hashtag-resolvers", (): void => {
         it("gets the trending hashtags", async () => {
             const response = await hashtags();
             expect(response.body.data.hashtags).to.include({
-                totalCount: 11,
+                totalCount: 12,
             });
             expect(response.body.data.hashtags.hashtags[0]).to.include({
-                word: "HASHTAG #11",
+                word: "HASHTAG #1",
             });
             expect(response.body.data.hashtags.hashtags[0].tweets).to.include({
-                totalCount: 11,
+                totalCount: 12,
             });
             expect(response.body.data.hashtags.hashtags[9]).to.include({
-                word: "HASHTAG #2",
+                word: "HASHTAG #10",
             });
             expect(response.body.data.hashtags.hashtags[9].tweets).to.include({
-                totalCount: 2,
+                totalCount: 3,
             });
         });
 
@@ -112,12 +111,18 @@ describe("hashtag-resolvers", (): void => {
             const response = await hashtagsWithPagination(2);
 
             expect(response.body.data.hashtags).to.include({
-                totalCount: 11,
+                totalCount: 12,
             });
             expect(response.body.data.hashtags.hashtags[0]).to.include({
-                word: "HASHTAG #1",
+                word: "HASHTAG #11",
             });
             expect(response.body.data.hashtags.hashtags[0].tweets).to.include({
+                totalCount: 2,
+            });
+            expect(response.body.data.hashtags.hashtags[1]).to.include({
+                word: "HASHTAG #12",
+            });
+            expect(response.body.data.hashtags.hashtags[1].tweets).to.include({
                 totalCount: 1,
             });
         });

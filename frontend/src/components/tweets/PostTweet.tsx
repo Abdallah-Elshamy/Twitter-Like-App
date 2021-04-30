@@ -12,21 +12,60 @@ import { parseJwt } from '../../common/decode';
 import axios from 'axios';
 import { useQuery, gql, useMutation } from '@apollo/client';
 import Viewer from 'react-viewer';
-
+import { LoggedUser } from '../../common/queries/Userqery';
+import { User } from '../../common/TypesAndInterfaces'
+import Loading from '../../UI/Loading'
+import Tweet_img from './Tweet_img'
 interface Post {
   text: string
 }
+
 const PostTweet = () => {
+  // states 
+  const inputRef: any = useRef()
+  const upload: any = useRef()
+  const [media, setmedia] = useState(false)
+  const [mediaURL, setmediaURL] = useState("")
+  const [mediaURLs , setmediaURLs] = useState<any>([])
+  const [medias , setmedias] = useState<any>([])
+  const [apis, setAPIs] = useState<any>([])
+  const [ visible, setVisible ] = React.useState(false);
+
+
+
+  if (localStorage.getItem('token')) {
+    var profile = parseJwt(localStorage.getItem('token'))
+  }
+  const { loading:userLoad, data:userData } = useQuery (LoggedUser, { variables: { id: profile.id } });
+
+
+
+
+//   const { data:userData, loading:userLoading } = useQuery(LoggedUser, { variables: { id: profile.id } });
+//   if (userLoading) return 
+//   else {
+//   const user: User = userData.user;
+// }
+// const userImage: any = user.imageURL;
+//   console.log (userImage)
+
+
+
+
+
+
+
+
+
+
   var profile: any;
   if (localStorage.getItem('token') !== "LOGOUT") {
     profile = parseJwt(localStorage.getItem('token'))
   }
-  console.log(profile.id)
   // const userData = useQuery (Get_Logged_user)
   // const user:User = userData.data.logUser.user
   // console.log (user.imageURL)
 
-  const inputRef: any = useRef()
   // mutation
   const [createTweet, { data }] = useMutation(Post_Tweet, {
     update: updateTweetsCacheForCreateTweet
@@ -37,13 +76,7 @@ const PostTweet = () => {
     text: ""
   }
   //////////////////// upload media //////////////////
-  const upload: any = useRef()
-  const [media, setmedia] = useState(false)
-  const [mediaURL, setmediaURL] = useState("")
-  const [mediaURLs , setmediaURLs] = useState<any>([])
-  const [medias , setmedias] = useState<any>([])
-  const [apis, setAPIs] = useState<any>([])
-  const [ visible, setVisible ] = React.useState(false);
+
    
   // var  uploadedMedia: { Media :object | false , MediaURL :string|false} 
   const { data: APIENDPOINT, loading, refetch } = useQuery(gql`query{getUploadURL}`)
@@ -55,6 +88,8 @@ const PostTweet = () => {
       setAPIs([...apis, APIENDPOINT.getUploadURL])
     }
   }
+  if (userLoad) {return (<div className="mt-8" ><Loading /></div>)}
+  console.log(userData)
 
   const handleUpload = async () => {
     let urlsData = await  medias.map ( async(media:any)=>{
@@ -106,11 +141,12 @@ const PostTweet = () => {
       .max(256, "Must be less than 257 characters")
   })
   return (
-    <div className="mb-3 p-3 w-full shadow bg-white flex">
+    <div className="mb-3 tweet-box shadow bg-white flex">
       {/* this shoud be dynamic */}
-      <div className="tweet-icon ">
-        <img src={avatar} alt="avatar" />
+      <div className="tweet-icon" >
+        <img src={userData.user.imageURL || avatar} alt="avatar" />
       </div>
+      <div className="tweet-aside">
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -134,7 +170,7 @@ const PostTweet = () => {
           resetForm();
         }}
       >
-        <div className="w-full mx-4 flex flex-col">
+
         <Form >
             <div ref={inputRef} className="w-full mb-2 tweet-text flex h-16">
               <Field
@@ -158,7 +194,7 @@ const PostTweet = () => {
              </div>
 
             <hr className="my-2" />
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-2">
                 <button className="hover:bg-blue-100 rounded-full py-2 px-3 transition focus:outline-none" onClick={()=>upload.current.click()}>
                 <svg 
                   className="h-8 w-8 text-blue-400 "
@@ -178,8 +214,8 @@ const PostTweet = () => {
             </div>
             
           </Form>
-        </div>
       </Formik>
+      </div>
     </div>
   )
 }

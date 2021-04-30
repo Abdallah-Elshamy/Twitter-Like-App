@@ -57,6 +57,8 @@ function HomeTweets() {
                         user={tweet.user}
                         likesCount={tweet.likesCount}
                         key={tweet.id}
+                        quotedRetweetsCount = {tweet. quotedRetweetsCount}
+                        retweetsCount = { tweet.retweetsCount}
                     />
                 );
             })}

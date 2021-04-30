@@ -24,8 +24,8 @@ function Tweet_toolbarIcons(props: any) {
         </header>
         <PostTweet/>
         </Modal>
-            <a onClick={() => setEdit(true)}>
-              <i className="fas fa-reply text-base font-sm "></i>
+            <a onClick={(e) => { setEdit(true); e.stopPropagation() }}>
+              <i className="fas fa-reply text-base font-sm " ></i>
               <span>{props.repliesCount}</span>
             </a>
 
@@ -43,7 +43,7 @@ function Tweet_toolbarIcons(props: any) {
           <a href="/profile" className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" >Retweet</a>
           <a className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
-          hover:text-gray-900" onClick={() => setEdit(true)}>quote Retweet</a>
+          hover:text-gray-900" onClick={(e) => { setEdit(true); e.stopPropagation() }}>quote Retweet</a>
 
                 </ul>
               </ToolBox>

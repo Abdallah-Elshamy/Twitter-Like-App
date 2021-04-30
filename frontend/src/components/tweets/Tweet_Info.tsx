@@ -28,10 +28,10 @@ function Tweet_Info(props: any) {
   }
   return (
 
-    <div className="tweet-data py-1">
-      <a onClick={(e) => { goToProfile(); e.stopPropagation() }} className="font-bold mr-1">{props.name}</a>
+    <div className={`tweet-data py-1 ${props.className}`}>
+      <a onClick={(e) => { goToProfile(); e.stopPropagation() }} className="font-bold mr-1 hover:underline">{props.name}</a>
       <p className="p--light-color"> @{props.userName}. </p>
-      <a href="/tweet_route" className="p--light-color px-1"> {props.createdAt ? timeConverter(Number(props.createdAt)) : null}</a>
+      <a href="" className="p--light-color px-1 hover:underline"> {props.createdAt ? timeConverter(Number(props.createdAt)) : null}</a>
       <span className="tweet-ellipsis p--light-color z-10 ">
 
 
@@ -40,7 +40,7 @@ function Tweet_Info(props: any) {
             <i className="fas fa-ellipsis-h"></i>
           }
         >
-          <ul className=" bg-gray-100 mb-40 ml-4 absolute bg-gray-100 " >
+          <ul className="mb-40 ml-4 absolute bg-gray-100 " >
             <a href="/profile" className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" >block</a>
             <a className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200

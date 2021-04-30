@@ -12,9 +12,9 @@ function Tweet_img(props: any) {
     })
   }
   return (
-    
-    <p className="tweet-icon mr-2"
-      onClick={(e) => { goToProfile(); e.stopPropagation() }}>
+    <p className={`${props.className}`}
+    onClick={(e) => { goToProfile(); e.stopPropagation() }}>
+
 
       {props.imageURL ? (
         <img src={props.imageURL}

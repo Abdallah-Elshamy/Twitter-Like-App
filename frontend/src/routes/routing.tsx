@@ -13,6 +13,7 @@ import { useQuery } from '@apollo/client';
 import { GET_ISAUTH } from '../common/queries/Get_isAuth';
 import React from "react";
 import { Login } from "../components/Register/login_form/login";
+import ExtendedTweet from "../components/tweets/ExtendedTweet/ExtendedTweet";
 
 export const Routing = () => {
 
@@ -64,6 +65,10 @@ export const Routing = () => {
           <Home />
         </PrivateRoute>
 
+
+        <PrivateRoute path="/tweet/:id">
+          <ExtendedTweet />
+        </PrivateRoute>
 
         <PrivateRoute path="/profile">
           <Profile />

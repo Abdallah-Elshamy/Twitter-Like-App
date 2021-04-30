@@ -3,9 +3,9 @@ import './tweet.css';
 import { ToolBox } from '../sideBar/toolbox/toolbox';
 import Modal from '../../UI/Modal/Modal';
 import PostTweet from './PostTweet';
-import Tweet_info from './Tweet_Info';
 import Tweet_img from './Tweet_img';
 import Tweet_Info from './Tweet_Info';
+import { useHistory } from 'react-router';
 
 export interface TweetData {
   user?: {
@@ -14,7 +14,7 @@ export interface TweetData {
     name?: string
     userName?: string
   }
-  id?: string
+  id: string
   text: string
   likesCount?: number
   repliesCount?: number
@@ -26,10 +26,15 @@ function Tweet(props: any) {
   const [edit, setEdit] = useState<boolean>(false);
   const modalClosed = () => setEdit(false);
 
+  const history = useHistory();
+  //redirect to tweet
+  const goToTweet = () => {
+    history.push({
+      pathname: '/tweet/' + props.id,
+    })
+  }
   return (
-
-
-    <div className="tweet-box ">
+    <div className="tweet-box " onClick={goToTweet}>
 
       <Modal show={edit} modalClosed={modalClosed} className="pb-4" >
 
@@ -89,7 +94,7 @@ function Tweet(props: any) {
             {props.text}
           </span>
           <div className="tweet-toolbar p--light-color">
-            <a onClick={() => setEdit(true)}>
+            <a onClick={(e) => { setEdit(true); e.stopPropagation() }}>
               <i className="fas fa-reply text-base font-sm "></i>
               <span>{props.repliesCount}</span>
             </a>
@@ -108,13 +113,13 @@ function Tweet(props: any) {
                   <a href="/profile" className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" >Retweet</a>
                   <a className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
-          hover:text-gray-900" onClick={() => setEdit(true)}>quote Retweet</a>
+          hover:text-gray-900" onClick={(e) => { setEdit(true); e.stopPropagation() }}>quote Retweet</a>
 
                 </ul>
               </ToolBox>
             </a>
 
-            <a href="/">
+            <a href="/" >
               <i className="far fa-heart text-base font-sm"></i>
               <span>{props.likesCount}</span>
             </a>

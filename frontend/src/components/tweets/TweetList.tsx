@@ -27,6 +27,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
             isSFW: sfw.SFW.value,
         },
     });
+
     if (!loading && data && data?.tweets?.tweets?.length === 10 && page === 1) {
         setPage(page + 1);
         fetchMore({
@@ -61,6 +62,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
             {data.tweets.tweets.map((tweet: TweetData) => {
                 return (
                     <Tweet
+                        id={tweet.id}
                         text={tweet.text}
                         repliesCount={tweet.repliesCount}
                         createdAt={tweet.createdAt}

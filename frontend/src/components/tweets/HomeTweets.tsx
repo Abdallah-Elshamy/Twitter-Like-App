@@ -15,7 +15,7 @@ function HomeTweets() {
             isSFW: sfw.SFW.value,
         },
     });
-    if(!loading && data && data?.getFeed?.length === 10 && page === 1){
+    if (!loading && data && data?.getFeed?.length === 10 && page === 1) {
         setPage(page + 1);
         fetchMore({
             variables: {
@@ -46,6 +46,7 @@ function HomeTweets() {
                 console.log(`tweet is ${tweet}`);
                 return (
                     <Tweet
+                        id={tweet.id}
                         text={tweet.text}
                         repliesCount={tweet.repliesCount}
                         createdAt={tweet.createdAt}

@@ -29,8 +29,8 @@ const TweetList: React.FC<TweetFilter> = (props) => {
     });
     // data?.tweets?.totalCount
     // data?.tweets?.tweets?.length
-    // console.log("totalCount", data?.tweets?.totalCount)
-    if (!loading && data && data?.tweets?.totalCount > 10 && page === 1) {
+    console.log("totalCount", data?.tweets?.totalCount)
+    if (!loading && data && data?.tweets?.tweets?.length == 10 && page == 1) {
         setPage(page + 1);
         fetchMore({
             variables: {

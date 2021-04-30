@@ -4,6 +4,7 @@ export const Post_Tweet = gql`
     mutation createTweet($tweetInput: TweetCreateInput!) {
         createTweet(tweet: $tweetInput) {
             user {
+                id
                 imageURL
                 name
                 userName

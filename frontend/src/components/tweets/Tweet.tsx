@@ -23,6 +23,14 @@ export interface TweetData {
   createdAt?: number
   isLiked?: boolean
   state?:string
+  originalTweet? :{
+    user?:
+    {
+      imageURL?: string
+      name?: string
+      userName?: string
+    }
+  }
 }
 
 function Tweet(props: any) {
@@ -54,7 +62,7 @@ return (
  {/* the text/media of the original tweet */}
         <div className="tweet-content">        
           <span>
-            {props.text} {props.state}
+            {props.text} 
           </span>
 
         <Tweet_toolbarIcons 

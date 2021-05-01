@@ -14,6 +14,7 @@ query search (
        imageURI: imageURL 
       bio
     }
+    totalCount
   }
 }
 

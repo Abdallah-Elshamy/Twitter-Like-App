@@ -1,7 +1,10 @@
 import request from "supertest";
 import app from "../../app";
 
-export const createTweet = async (text: any, token: string | undefined = undefined) => {
+export const createTweet = async (
+    text: any,
+    token: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
         .set("Authorization", `Bearer ${token}`)
@@ -114,7 +117,10 @@ export const createQuotedRetweet = async (
         });
 };
 
-export const createTweetWithMedia = async (text: any, token: string | undefined = undefined) => {
+export const createTweetWithMedia = async (
+    text: any,
+    token: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
         .set("Authorization", `Bearer ${token}`)
@@ -139,7 +145,11 @@ export const createTweetWithMedia = async (text: any, token: string | undefined 
         });
 };
 
-export const createReply = async (text: any, repliedToTweet: any, token: string | undefined = undefined) => {
+export const createReply = async (
+    text: any,
+    repliedToTweet: any,
+    token: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
         .set("Authorization", `Bearer ${token}`)
@@ -162,7 +172,10 @@ export const createReply = async (text: any, repliedToTweet: any, token: string 
         });
 };
 
-export const deleteTweet = async (id: number, token: string | undefined = undefined) => {
+export const deleteTweet = async (
+    id: number,
+    token: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
         .set("Authorization", `Bearer ${token}`)
@@ -272,10 +285,13 @@ export const getFeed = async (authToken: string | undefined = undefined) => {
             query: `
             query {
                 getFeed(isSFW: ${false}) {
-                    text
-                    user {
-                        id
+                    tweets {
+                        text
+                        user{
+                            id
+                        }
                     }
+                    totalCount
                 }
             }
         `,
@@ -293,10 +309,13 @@ export const getFeedWithPagination = async (
             query: `
             query {
                 getFeed(page: ${page}, isSFW: ${false}) {
-                    text
-                    user {
-                        id
+                    tweets {
+                        text
+                        user{
+                            id
+                        }
                     }
+                    totalCount
                 }
             }
         `,

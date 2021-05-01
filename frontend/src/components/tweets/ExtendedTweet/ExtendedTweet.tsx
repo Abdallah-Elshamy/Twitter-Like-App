@@ -68,7 +68,6 @@ const ExtendedTweet: React.FC = () => {
           <div>
             <pre className="p-4 bg-gray-900 text-blue-200" ><span className="text-green-500 block">//TODO: fetch tweet replies</span>
               <span className="text-blue-400">const</span> replies <span className="text-white">=</span> fetch(<span className="text-blue-400">replies</span>);
-
             </pre>
           </div>
         </article>

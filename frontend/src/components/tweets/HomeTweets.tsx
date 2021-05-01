@@ -61,6 +61,7 @@ function HomeTweets() {
                         retweetsCount = { tweet.retweetsCount}
                         state= {tweet.state}
                         originalTweet = { tweet.originalTweet}
+                        repliedToTweet = { tweet.repliedToTweet}
                     />
                 );
             })}

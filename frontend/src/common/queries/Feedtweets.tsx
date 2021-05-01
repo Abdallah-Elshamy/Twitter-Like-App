@@ -25,8 +25,19 @@ query feed_tweets($isSFW:Boolean, $page: Int){
             userName
             name
             imageURL
-          }
-        }
+                   }
+            originalTweet{id}
+                      }
+        repliedToTweet{
+          id 
+          state
+          user{
+            id
+            userName
+            name
+            imageURL 
+                   }
+                       }
         id
         text 
         likesCount
@@ -37,6 +48,5 @@ query feed_tweets($isSFW:Boolean, $page: Int){
         createdAt
         isLiked
       }
-        }
-      }
+        }}
 `

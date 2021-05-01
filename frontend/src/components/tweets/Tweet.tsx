@@ -1,5 +1,3 @@
-//design of tweet with retweet
-
 import React from 'react'
 import './tweet.css';
 
@@ -7,6 +5,7 @@ import { useHistory } from 'react-router';
 import Tweet_info from './Tweet_Info';
 import Tweet_img from './Tweet_img';
 import Tweet_toolbarIcons from './Tweet_toolbarIcons';
+
 
 export interface TweetData {
   user?: {
@@ -31,7 +30,13 @@ export interface TweetData {
       userName?: string
     }
   }
+  repliedToTweet:{
+    user?:string
+    id? :string
+    state? :string
+      }
 }
+
 
 function Tweet(props: any) {
   
@@ -43,13 +48,12 @@ function Tweet(props: any) {
     })
   }
 
-return (
-    <div >
 
-
-{/* the design of tweet */}
-<div className="tweet-box mt-2" onClick={goToTweet} >
-<Tweet_img imageURL={props.user.imageURL}  id={props.user?.id} className ="tweet-icon"/>   
+  switch( props.state) {
+    
+    case "O":
+      return  <div className="tweet-box mt-2" onClick={e => { goToTweet(); e.stopPropagation() }} >
+       <Tweet_img imageURL={props.user.imageURL}  id={props.user?.id} className ="tweet-icon"/>   
 
       <div className="tweet-aside">
         <Tweet_info
@@ -58,8 +62,6 @@ return (
           name={props.user?.name}
           id={props.user.id}
         />
-
- {/* the text/media of the original tweet */}
         <div className="tweet-content">        
           <span>
             {props.text} 
@@ -72,16 +74,68 @@ return (
           retweetsCount = {props.retweetsCount}
         />
 
-        </div>
       </div>
     </div>
-{/* the end of tweet */}
+    <hr />
+  </div> 
 
+
+    
+
+    case "C":
+      return <div>
+
+      <div className="tweet-box mt-2" onClick={e => { goToTweet(); e.stopPropagation() }} >
+        <Tweet_img imageURL={props.user.imageURL} className ="tweet-icon"/>
+        <div className="tweet-aside">
+          <Tweet_info
+            id = {props.user?.id}
+            userName={props.user?.userName}
+            createdAt={props.createdAt}
+            name={props.user?.name}
+          />
+          {/* the added design of Reply design  */}
+          <div className="space-x-2 -mt-3 -ml-12"> 
+            <p className=" p--light-color mt-2 ml-12 inline-block"> Repling to  </p>
+            <a className ="text-blue-500 inline-block hover:underline"> @{props.repliedToTweet.user?.name}</a>
+          </div>
   
-<hr />
-   </div>
+         {/* the text/media of the original tweet */}
+          <div className="tweet-content pb-4 pt-2">        
+            <span>
+              {props.text}
+            </span>
   
-  )
+          </div>
+        </div>
+      </div>
+  
+  <div className = "ml-16">
+  <Tweet_toolbarIcons 
+      repliesCount  = {props.repliesCount}
+      likesCount    = {props.likesCount}
+      quotedRetweetsCount = {props.quotedRetweetsCount}
+      retweetsCount = {props.retweetsCount}
+    />
+  
+  </div>
+  <hr/>
+ </div>
+    
+
+    case "Q":
+      return <div>
+           Quoted
+           <hr/>
+        </div>
+  
+  
+
+    default:
+      return <div>
+ </div>   
+  }
+
 }
 
 export default Tweet;

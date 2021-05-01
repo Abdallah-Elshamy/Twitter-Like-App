@@ -1,7 +1,7 @@
 import './tweet.css';
 import { timeConverter } from '../../common/utils/timestamp';
 import { ToolBox } from '../sideBar/toolbox/toolbox';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 
 export interface TweetData {
@@ -23,7 +23,7 @@ function Tweet_Info(props: any) {
 
   const goToProfile = () => {
     history.push({
-      pathname: '/' + props.id,
+      pathname: '/tweet' + props.id,
     })
   }
   return (

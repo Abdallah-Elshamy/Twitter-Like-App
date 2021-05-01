@@ -16,6 +16,8 @@ query tweet ($tweetId:ID!  $isSFW:Boolean){
         repliesCount
         createdAt
         isLiked
+        state
+        
       }
     }
 `

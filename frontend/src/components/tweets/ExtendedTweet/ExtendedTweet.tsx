@@ -63,6 +63,9 @@ const ExtendedTweet: React.FC = () => {
             isLiked={tweet.isLiked}
             user={tweet.user}
             likesCount={tweet.likesCount}
+            quotedRetweetsCount={tweet.quotedRetweetsCount}
+            retweetsCount={tweet.retweetsCount}
+            state={tweet.state}
           />
 
           <div>

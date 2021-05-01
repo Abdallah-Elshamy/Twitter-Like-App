@@ -6,43 +6,40 @@
 }
 
 .tweet-box {
-  font-size: 17px;
-  font-weight: 400;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
-  padding: 0px 15px 0px 15px;
-  display: grid;
-  grid-template-columns: 0.1fr 0.9fr;
   cursor: pointer;
-  /* border-bottom: solid 0.5px var(--extra-light);
-  min-height: 90px;
-  padding-top: 10px; */
+ 
+ 
+
 }
 
 
 .tweet-icon{
   width: 50px;
   height: 50px;
+   border-radius: 50%;
+  object-fit:cover;
+   flex-shrink:0
 }
 
 
 .tweet-small-icon{
-  width: 50px;
-  height: 50px;
+  width: 30px;
+  height: 30px;
+   border-radius: 50%;
+  object-fit:cover;
+   flex-shrink:0
 }
 
 .tweet-small-icon img,
 svg {
-  width: 60%;
-  height: 60%;
-  border-radius: 50%;
-  object-fit:cover;
+  width: 30px;
+  height: 30px;
 }
 
 .tweet-icon img,
 svg {
-  width: 100%;
-  height: 100%;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   object-fit:cover;
 }
@@ -61,10 +58,7 @@ svg {
   word-break: break-word;
 }
 
-.tweet-data {
-  display: flex;
-  flex-direction: row;
-}
+
 .tweet-ellipsis {
   cursor: pointer;
   margin-left: auto;

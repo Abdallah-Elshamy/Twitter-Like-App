@@ -60,6 +60,7 @@ function HomeTweets() {
                         quotedRetweetsCount = {tweet. quotedRetweetsCount}
                         retweetsCount = { tweet.retweetsCount}
                         state= {tweet.state}
+                        originalTweet = { tweet.originalTweet}
                     />
                 );
             })}

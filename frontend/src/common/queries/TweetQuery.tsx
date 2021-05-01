@@ -5,20 +5,37 @@ query tweets ($userId:ID! $filter:String $page:Int $isSFW:Boolean){
   tweets(userId: $userId  filter: $filter page:$page isSFW:$isSFW) { 
       totalCount
       tweets{
-        user {
+        user{
           id
           imageURL
           name
           userName
         }
+        originalTweet{
+          id 
+          text
+          likesCount
+          retweetsCount
+          repliesCount
+          state
+          createdAt
+          isLiked
+          user{
+            id
+            userName
+            name
+            imageURL
+          }
+          originalTweet{id}
+        }
         id
         text 
         likesCount
         retweetsCount
-        repliesCount
         quotedRetweetsCount
-        createdAt
+        repliesCount
         state
+        createdAt
         isLiked
       }
     }}

@@ -1,6 +1,7 @@
 import './tweet.css';
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 import { useHistory } from 'react-router';
+import { Fragment } from 'react';
 
 
 function Tweet_img(props: any) {
@@ -12,15 +13,16 @@ function Tweet_img(props: any) {
     })
   }
   return (
-    <p className={`${props.className}`}
-    onClick={(e) => { goToProfile(); e.stopPropagation() }}>
 
+    <Fragment>
+      {
+        props.imageURL ? (
+          <img className={props.className} onClick={(e) => { goToProfile(); e.stopPropagation() }} src={props.imageURL}
+            alt="avatar" />
+        ) : (<img className={props.className} src={avatar} alt="avatar" />)
+      }
 
-      {props.imageURL ? (
-        <img src={props.imageURL}
-          alt="avatar" />
-      ) : (<img src={avatar} alt="avatar" />)}
-    </p>
+    </Fragment>
 
   )
 }

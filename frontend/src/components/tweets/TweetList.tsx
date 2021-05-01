@@ -20,6 +20,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
 
     const { filter, page, setPage } = props;
     const sfw = useQuery(Get_SFW).data;
+    const loggedUser = parseJwt(localStorage.getItem('token')!)
     const { loading, error, data, fetchMore } = useQuery(Tweets, {
         variables: {
             userId: props.id,
@@ -69,6 +70,8 @@ const TweetList: React.FC<TweetFilter> = (props) => {
                         createdAt={tweet.createdAt}
                         isLiked={tweet.isLiked}
                         user={tweet.user}
+                        loggedUser={loggedUser}
+                        id={tweet.id}
                         likesCount={tweet.likesCount}
                         key={tweet.id}
                     />

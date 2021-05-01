@@ -1,7 +1,9 @@
 import './tweet.css';
 import { timeConverter } from '../../common/utils/timestamp';
 import { ToolBox } from '../sideBar/toolbox/toolbox';
+import deleteTweetMutation from '../../common/queries/deleteTweet'
 import { Link, useHistory } from 'react-router-dom';
+import { useMutation } from "@apollo/client"
 
 
 export interface TweetData {
@@ -20,11 +22,30 @@ export interface TweetData {
 
 function Tweet_Info(props: any) {
   const history = useHistory();
+  const [deleteTweet] = useMutation(deleteTweetMutation, {
+    update(cache) {
+      const normalizedId = cache.identify({ id: props.tweetId, __typename: 'Tweet' });
+      cache.evict({ id: normalizedId });
+    }
+  })
 
   const goToProfile = () => {
     history.push({
       pathname: '/' + props.id,
     })
+  }
+  const handleDeleteButton = async() => {
+    try {
+      console.log("tweetId", props.tweetId)
+      await deleteTweet({
+        variables: {
+          id: props.tweetId
+        }
+      })
+    }
+    catch (e) {
+
+    }
   }
   return (
 
@@ -40,7 +61,9 @@ function Tweet_Info(props: any) {
             <i className="fas fa-ellipsis-h"></i>
           }
         >
-          <ul className=" bg-gray-100 mb-40 ml-4 absolute bg-gray-100 " >
+          <ul className=" bg-gray-100 mb-40 right-4 absolute bg-gray-100 " >
+          {props?.loggedUser?.id == props?.userId ? <button onClick={handleDeleteButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
+          " >Delete</button>: null}
             <a href="/profile" className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" >block</a>
             <a className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200

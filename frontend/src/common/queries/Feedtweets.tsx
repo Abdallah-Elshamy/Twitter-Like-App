@@ -16,6 +16,7 @@ query feed_tweets($isSFW:Boolean, $page: Int){
           retweetsCount
           repliesCount
           quotedRetweetsCount
+          state
           createdAt
           isLiked
         }

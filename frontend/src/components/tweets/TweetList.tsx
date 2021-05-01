@@ -75,6 +75,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
                         key={tweet.id}
                         quotedRetweetsCount = {tweet. quotedRetweetsCount}
                         retweetsCount = { tweet.retweetsCount}
+                        state= {tweet.state}
                     />
                 );
             })}

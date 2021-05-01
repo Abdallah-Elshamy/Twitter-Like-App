@@ -22,6 +22,7 @@ export interface TweetData {
   quotedRetweetsCount?:number
   createdAt?: number
   isLiked?: boolean
+  state?:string
 }
 
 function Tweet(props: any) {
@@ -53,7 +54,7 @@ return (
  {/* the text/media of the original tweet */}
         <div className="tweet-content">        
           <span>
-            {props.text}
+            {props.text} {props.state}
           </span>
 
         <Tweet_toolbarIcons 
@@ -61,7 +62,6 @@ return (
           likesCount    = {props.likesCount}
           quotedRetweetsCount = {props.quotedRetweetsCount}
           retweetsCount = {props.retweetsCount}
-
         />
 
         </div>

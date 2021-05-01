@@ -7,5 +7,4 @@ query isFollowing($id:ID!){
     isFollowing 
   }
 }
-
 `

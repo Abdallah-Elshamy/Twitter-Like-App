@@ -33,7 +33,7 @@ const ExtendedTweet: React.FC = () => {
   console.log(data)
 
   const tweet: TweetData = data.tweet
-  console.log(tweet)
+  //console.log(tweet)
   return (
     <Fragment>
 
@@ -63,6 +63,11 @@ const ExtendedTweet: React.FC = () => {
             isLiked={tweet.isLiked}
             user={tweet.user}
             likesCount={tweet.likesCount}
+            quotedRetweetsCount={tweet.quotedRetweetsCount}
+            retweetsCount={tweet.retweetsCount}
+            state={tweet.state}
+            originalTweet={tweet.originalTweet}
+
           />
 
           <div>

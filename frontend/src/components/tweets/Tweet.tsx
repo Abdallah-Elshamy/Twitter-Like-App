@@ -7,6 +7,8 @@ import Tweet_info from './Tweet_userInfo';
 import Tweet_img from './Tweet_img';
 import Viewer from 'react-viewer';
 import ImageSlideshow from 'material-ui/svg-icons/image/slideshow';
+import {LIKE, UNLIKE} from '../../common/queries/like'
+import { useMutation } from '@apollo/react-hoc';
 
 export interface TweetData {
   user?: {
@@ -24,13 +26,16 @@ export interface TweetData {
 }
 
 function Tweet(props: any) {
+  let img:any =[]
   const [edit, setEdit] = useState<boolean>(false);
   const modalClosed = () => setEdit(false);
   const [ visible, setVisible ] = React.useState(false);
 
+
+
   const displayUploadedFiles=(urls:string[])=> {
     const check = (urls.length == 3)? true : false
-
+    img = urls.map ((url)=> {return {src:url}})
     return urls.map((url, i) => 
     <Fragment>
     <img className="w-full h-15 cursor-pointer" 
@@ -41,7 +46,7 @@ function Tweet(props: any) {
     <Viewer
     visible={visible}
     onClose={() => { setVisible(false); } }
-    images={[{ src: url || ""}]}
+    images={img}
     />
     </Fragment>
     )
@@ -124,7 +129,7 @@ function Tweet(props: any) {
                 design={
                   <div className="border-0">
                     <i className="fas fa-retweet text-base font-sm"></i>
-                    <span>2</span>
+                    <span>{props.quotedRetweetsCount}</span>
                   </div>
                 }
               >
@@ -139,10 +144,10 @@ function Tweet(props: any) {
               </ToolBox>
             </a>
 
-            <a href="/">
+            <button  className="focus:outline-none hover:bg-red-100 hover:text-red-500 rounded-full py-2 px-2">
               <i className="far fa-heart text-base font-sm"></i>
               <span>{props.likesCount}</span>
-            </a>
+            </button>
 
           </div>
         </div>

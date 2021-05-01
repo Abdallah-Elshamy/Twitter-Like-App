@@ -11,6 +11,7 @@ import axios from 'axios';
 import { useQuery, gql, useMutation } from '@apollo/client';
 import Viewer from 'react-viewer';
 import { LoggedUser } from '../../common/queries/Userqery';
+import ReactPlayer from 'react-player'
 interface Post {
   text: string
 }
@@ -24,6 +25,7 @@ const PostTweet = () => {
   const [medias , setmedias] = useState<any>([])
   const [apis, setAPIs] = useState<any>([])
   const [ visible, setVisible ] = React.useState(false);
+  let img:any =[]
   const initialValues: Post = {
     text: ""
   }
@@ -60,17 +62,21 @@ const PostTweet = () => {
     setmediaURLs( [...mediaURLs, URL.createObjectURL(e.target.files[0])])
     refetch()
     console.log (media,mediaURL)
+
   }
 
   const displayUploadedFiles=(urls:string[])=> {
+    img = urls.map ((url)=> {return {src:url}})
     return urls.map((url, i) => 
     <Fragment>
+      {/* <ReactPlayer url={url} height="300px" width="300" controls={true}/> */}
+
       <img className="object-cover w-full cursor-pointer " key={i} src={url} onClick={() => { setVisible(true);}}/>
       <Viewer
-      visible={visible}
-      onClose={() => { setVisible(false); } }
-      images={[{ src: url || "", alt: 'background image'}]}
-      />
+                  visible={visible}
+                  onClose={() => { setVisible(false); } }
+                  images={img}
+                  />
     </Fragment>
     );
   }
@@ -104,9 +110,9 @@ const PostTweet = () => {
                 variables: { tweetInput: {text, mediaURLs:urls }}
               });
             })}
+            setSubmitting(true);
             setmedia (false)
             setmediaURLs ([])
-            setSubmitting(true);
             setSubmitting(false);
             resetForm();
           }}
@@ -125,6 +131,7 @@ const PostTweet = () => {
 
                 <div className="gg-box ">
                 { displayUploadedFiles(mediaURLs) }
+
               </div>
               <hr className="my-2" />
               <div className="flex justify-between items-center mb-2">

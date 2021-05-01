@@ -34,6 +34,7 @@
     "react-infinite-scroll-component": "^6.1.0",
     "react-loader-spinner": "^4.0.0",
     "react-loadingg": "^1.7.2",
+    "react-player": "^2.9.0",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",

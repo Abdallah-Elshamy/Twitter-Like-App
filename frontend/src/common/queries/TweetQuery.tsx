@@ -25,9 +25,13 @@ query tweets ($userId:ID! $filter:String $page:Int $isSFW:Boolean){
           userName
           name
           imageURL
-                 }
-          originalTweet{id}
-                    }
+        }
+        originalTweet{id}
+        repliedToTweet{
+          id
+          user{username}
+        }
+      }
       repliedToTweet{
         id 
         state

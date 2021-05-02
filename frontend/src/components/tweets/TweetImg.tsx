@@ -4,7 +4,7 @@ import { useHistory } from 'react-router';
 import { Fragment } from 'react';
 
 
-function Tweet_img(props: any) {
+function TweetImg(props: any) {
   const history = useHistory();
 
   const goToProfile = () => {
@@ -27,4 +27,4 @@ function Tweet_img(props: any) {
   )
 }
 
-export default Tweet_img;
+export default TweetImg;

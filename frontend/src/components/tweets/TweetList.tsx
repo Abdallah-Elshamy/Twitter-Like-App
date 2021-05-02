@@ -28,13 +28,12 @@ const TweetList: React.FC<TweetFilter> = (props) => {
             isSFW: sfw.SFW.value,
         },
     });
-    if (!loading && data && data?.tweets?.tweets?.length == 10 && page == 1) {
-        setPage(page + 1);
+    if (!loading && data && data?.tweets?.tweets?.length == 10 && data?.tweets?.totalCount > 10) {
         fetchMore({
             variables: {
                 userId: props.id,
                 isSFW: sfw.SFW.value,
-                page: page + 1,
+                page: 2,
                 filter: filter
             },
         })
@@ -46,12 +45,12 @@ const TweetList: React.FC<TweetFilter> = (props) => {
         <InfiniteScroll
             dataLength={data?.tweets?.tweets?.length || 0}
             next={() => {
-                setPage(((data?.tweets?.tweets?.length || 10)/10) +1);
+                setPage(Math.floor((data?.tweets?.tweets?.length || 10)/10) +1);
                 return fetchMore({
                     variables: {
                         userId: props.id,
                         isSFW: sfw.SFW.value,
-                        page: ((data?.tweets?.tweets?.length || 10)/10) +1,
+                        page: Math.floor((data?.tweets?.tweets?.length || 10)/10) +1,
                         filter: filter
                     },
                 });
@@ -71,6 +70,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
                         isLiked={tweet.isLiked}
                         user={tweet.user}
                         loggedUser={loggedUser}
+                        tweet={tweet}
                         id={tweet.id}
                         likesCount={tweet.likesCount}
                         key={tweet.id}

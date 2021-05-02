@@ -17,12 +17,11 @@ function HomeTweets() {
             isSFW: sfw.SFW.value,
         },
     });
-    if(!loading && data && data?.getFeed?.tweets?.length == 10 && page == 1){
-        setPage(page + 1);
+    if(!loading && data && data?.getFeed?.tweets?.length == 10 && data?.getFeed?.totalCount > 10){
         fetchMore({
             variables: {
                 isSFW: sfw.SFW.value,
-                page: page + 1,
+                page: 2,
             },
         })
     }
@@ -33,11 +32,11 @@ function HomeTweets() {
         <InfiniteScroll
             dataLength={data?.getFeed?.tweets?.length || 0}
             next={() => {
-                setPage(((data?.getFeed?.tweets?.length || 10)/10) +1 );
+                setPage(Math.floor((data?.getFeed?.tweets?.length || 10)/10) +1 );
                 return fetchMore({
                     variables: {
                         isSFW: sfw.SFW.value,
-                        page: ((data?.getFeed?.tweets?.length || 10)/10) +1 ,
+                        page: Math.floor((data?.getFeed?.tweets?.length || 10)/10) +1 ,
                     },
                 });
             }}
@@ -56,6 +55,7 @@ function HomeTweets() {
                         isLiked={tweet.isLiked}
                         user={tweet.user}
                         loggedUser={loggedUser}
+                        tweet={tweet}
                         id={tweet.id}
                         likesCount={tweet.likesCount}
                         key={tweet.id}

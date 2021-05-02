@@ -23,7 +23,6 @@ export interface TweetData {
 }
 
 function Tweet(props: any) {
-  console.log("props are", props)
   const [edit, setEdit] = useState<boolean>(false);
   const modalClosed = () => setEdit(false);
 
@@ -55,6 +54,8 @@ function Tweet(props: any) {
           createdAt={props.createdAt}
           name={props.user?.name}
           userId={props.user.id}
+          tweetMediaUrls = {props.mediaUrls}
+          tweet = {props.tweet}
           tweetId={props.id}
           loggedUser={props.loggedUser}
 

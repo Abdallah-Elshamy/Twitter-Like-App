@@ -60,7 +60,7 @@ export default {
                     ...searchConditions,
                     offset: ((page || 1) - 1) * PAGE_SIZE,
                     limit: PAGE_SIZE,
-                    order: [["createdAt", "DESC"]]
+                    order: [["createdAt", "DESC"]],
                 }),
                 totalCount: ChatMessage.count(searchConditions),
             };
@@ -112,6 +112,44 @@ export default {
                 messageSent: message,
             });
             return message;
+        },
+        setMessageSeen: async (
+            parent: any,
+            args: {
+                messageId: number;
+            },
+            context: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+
+            const message = await ChatMessage.findByPk(args.messageId);
+            if (!message) {
+                const error: any = new Error(
+                    "No message was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+
+            if(message.to !== user.id) {
+                const error: any = new Error(
+                    "This message was sent to another user!"
+                );
+                error.statusCode = 400;
+                throw error;
+            }
+            
+            const toBeUpdatedMessage: ChatMessage = message;
+            toBeUpdatedMessage.isSeen = true;
+
+            await db.transaction(async (transaction) => {
+                return await toBeUpdatedMessage.save({ transaction });
+            });
+
+            return true;
         },
     },
     ChatMessage: {

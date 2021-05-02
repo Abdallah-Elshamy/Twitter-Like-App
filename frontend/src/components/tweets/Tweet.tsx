@@ -112,7 +112,7 @@ function Tweet(props: any) {
             <span>
               {props.text}
             </span>
-            <QuotedTweet OTweet = {props.originalTweet}  repliedToTweet = {props.repliedToTweet}/> 
+            <QuotedTweet OTweet = {props.originalTweet} /> 
             <Tweet_toolbarIcons
               repliesCount={props.repliesCount}
               likesCount={props.likesCount}
@@ -130,6 +130,10 @@ function Tweet(props: any) {
     </div>
     default:
       return <div>
+        <a onClick={e => { goToTweet(); e.stopPropagation() }} >
+        unhaundled case "{props.state}"
+        </a>
+        <hr/>
  </div>   
   }
 

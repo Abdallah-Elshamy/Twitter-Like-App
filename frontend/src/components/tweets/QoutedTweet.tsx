@@ -51,7 +51,7 @@ function QuotedTweet({ OTweet }: any) {
     {/* the added design of Reply design  */}
     <div className="space-x-2 -mt-3 -ml-12"> 
 <p className=" p--light-color mt-2 ml-12 inline-block"> Repling to  </p>
-<a href= "#" className ="text-blue-500 inline-block hover:underline"> @{OTweet.user?.name}</a>
+<a className ="text-blue-500 inline-block hover:underline"> @{OTweet.repliedToTweet.user.userName}</a>
 </div>
 
 {/* the text/media of the original tweet */}

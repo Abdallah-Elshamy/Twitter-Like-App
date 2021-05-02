@@ -27,8 +27,8 @@ query tweets ($userId:ID! $filter:String $page:Int $isSFW:Boolean){
           imageURL
                  }
           originalTweet{id}
-                    }
-      repliedToTweet{
+                    
+        repliedToTweet{
         id 
         state
         user{
@@ -36,8 +36,22 @@ query tweets ($userId:ID! $filter:String $page:Int $isSFW:Boolean){
           userName
           name
           imageURL 
+
                  }
                      }
+                    }
+
+          repliedToTweet{
+            id
+            state
+          mode
+          user{
+            id
+            userName
+            name
+            imageURL
+          } 
+          }
       id
       text 
       likesCount
@@ -47,7 +61,7 @@ query tweets ($userId:ID! $filter:String $page:Int $isSFW:Boolean){
       state
       createdAt
       isLiked
-    }
+                  }    
     }}
 `
 

@@ -3,6 +3,9 @@ import { User } from "../../models";
 import pubsub from "../../messaging";
 import db from "../../db";
 import { ChatMessage } from "../../models";
+import { Op } from "sequelize";
+
+const PAGE_SIZE = 20;
 
 export default {
     Subscription: {
@@ -12,11 +15,55 @@ export default {
                 () => pubsub.asyncIterator(["MESSAGE_SENT"]),
                 (payload: any, args: any, context: any) => {
                     return (
-                        payload.messageSent.to ===
-                        context.connection.context.id
+                        payload.messageSent.to === context.connection.context.id
                     );
                 }
             ),
+        },
+    },
+    Query: {
+        getChatHistory: async (
+            parent: any,
+            args: { otherUserId: number; page: number },
+            context: any,
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+
+            const { otherUserId, page } = args;
+
+            if(! await User.findByPk(otherUserId)) {
+                const error: any = new Error("No user was found with this id!");
+                error.statusCode = 404;
+                throw error;
+            }
+
+            const searchConditions = {
+                where: {
+                    [Op.or]: [
+                        {
+                            from: user.id,
+                            to: otherUserId,
+                        },
+                        {
+                            to: user.id,
+                            from: otherUserId,
+                        },
+                    ],
+                },
+            };
+            return {
+                messages: await ChatMessage.findAll({
+                    ...searchConditions,
+                    offset: ((page || 1) - 1) * PAGE_SIZE,
+                    limit: PAGE_SIZE,
+                    order: [["createdAt", "DESC"]]
+                }),
+                totalCount: ChatMessage.count(searchConditions),
+            };
         },
     },
     Mutation: {

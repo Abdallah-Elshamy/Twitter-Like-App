@@ -12,9 +12,18 @@ export default gql`
         message: String!
     }
 
+    type PaginatedChatMessages {
+        totalCount: Int!
+        messages: [ChatMessage]!
+    }
+
     input SendMessageInput {
         toUserId: ID!
         messageBody: String!
+    }
+
+    extend type Query {
+        getChatHistory(otherUserId: ID!, page: Int): PaginatedChatMessages!
     }
 
     extend type Mutation {

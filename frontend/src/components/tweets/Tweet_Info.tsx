@@ -7,6 +7,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { useMutation } from "@apollo/client"
 import {CustomDialog} from 'react-st-modal'
 import DeleteConfirmationDialog from "../../UI/Dialogs/DeleteConfirmationDialog"
+import ErrorDialog from "../../UI/Dialogs/ErroDialog"
 import {updateTweetsCacheForDeleteTweet} from "../../common/utils/writeCache"
 
 export interface TweetData {
@@ -66,7 +67,10 @@ function Tweet_Info(props: any) {
       }  
     }
     catch (e) {
-      
+      const error = await CustomDialog(<ErrorDialog message={e.message} />, {
+        title: 'Error!',
+        showCloseIcon: false,
+      });
     }
   }
   return (

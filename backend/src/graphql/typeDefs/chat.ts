@@ -25,6 +25,7 @@ export default gql`
 
     extend type Query {
         getChatHistory(otherUserId: ID!, page: Int): PaginatedChatMessages!
+        getUnseenMessages(page: Int): PaginatedChatMessages!
     }
 
     extend type Mutation {

@@ -65,6 +65,32 @@ export default {
                 totalCount: ChatMessage.count(searchConditions),
             };
         },
+        getUnseenMessages: async (
+            parent: any,
+            args: { page: number },
+            context: any,
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const searchConditions = {
+                where: {
+                    to: user.id,
+                    isSeen: false,
+                },
+            };
+            return {
+                messages: await ChatMessage.findAll({
+                    ...searchConditions,
+                    offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                    limit: PAGE_SIZE,
+                    order: [["createdAt", "DESC"]],
+                }),
+                totalCount: ChatMessage.count(searchConditions),
+            };
+        },
     },
     Mutation: {
         sendMessage: async (

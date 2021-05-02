@@ -4,7 +4,8 @@ import { ToolBox } from '../sideBar/toolbox/toolbox';
 import deleteTweetMutation from '../../common/queries/deleteTweet'
 import { Link, useHistory } from 'react-router-dom';
 import { useMutation } from "@apollo/client"
-
+import {CustomDialog} from 'react-st-modal'
+import DeleteConfirmationDialog from "../../UI/Dialogs/DeleteConfirmationDialog"
 
 export interface TweetData {
   user?: {
@@ -37,14 +38,20 @@ function Tweet_Info(props: any) {
   const handleDeleteButton = async() => {
     try {
       console.log("tweetId", props.tweetId)
-      await deleteTweet({
-        variables: {
-          id: props.tweetId
-        }
-      })
+      const result = await CustomDialog(<DeleteConfirmationDialog />, {
+        title: 'Confirm Delete',
+        showCloseIcon: false,
+      });
+      if (result) {
+        await deleteTweet({
+          variables: {
+            id: props.tweetId
+          }
+        })
+      }  
     }
     catch (e) {
-
+      
     }
   }
   return (

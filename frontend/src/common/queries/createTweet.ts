@@ -9,6 +9,33 @@ export const Post_Tweet = gql`
                 name
                 userName
             }
+            originalTweet{
+                id 
+                text
+                likesCount
+                retweetsCount
+                repliesCount
+                state
+                createdAt
+                isLiked
+                user{
+                  id
+                  userName
+                  name
+                  imageURL
+                         }
+                  originalTweet{id}
+                            }
+              repliedToTweet{
+                id 
+                state
+                user{
+                  id
+                  userName
+                  name
+                  imageURL 
+                         }
+                             }
             id
             text
             likesCount

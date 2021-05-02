@@ -5,37 +5,7 @@ import { useHistory } from 'react-router';
 import Tweet_info from './Tweet_Info';
 import Tweet_img from './Tweet_img';
 import Tweet_toolbarIcons from './Tweet_toolbarIcons';
-
-
-export interface TweetData {
-  user?: {
-    imageURL?: string
-    name?: string
-    userName?: string
-  }
-  id?: string
-  text: string
-  likesCount?: number
-  repliesCount?: number
-  retweetsCount?:number
-  quotedRetweetsCount?:number
-  createdAt?: number
-  isLiked?: boolean
-  state?:string
-  originalTweet? :{
-    user?:
-    {
-      imageURL?: string
-      name?: string
-      userName?: string
-    }
-  }
-  repliedToTweet:{
-    user?:string
-    id? :string
-    state? :string
-      }
-}
+import QuotedTweet from './QoutedTweet';
 
 
 function Tweet(props: any) {
@@ -48,14 +18,14 @@ function Tweet(props: any) {
     })
   }
 
-
   switch( props.state) {
     
     case "O":
-      return  <div className="tweet-box mt-2" onClick={e => { goToTweet(); e.stopPropagation() }} >
-       <Tweet_img imageURL={props.user.imageURL}  id={props.user?.id} className ="tweet-icon"/>   
+      return <div>  
+      <div className="tweet-box mt-2" onClick={e => { goToTweet(); e.stopPropagation() }} >
+       <Tweet_img imageURL={props.user.imageURL}  id={props.user?.id} className ="tweet-icon "/>   
 
-      <div className="tweet-aside">
+      <div className="tweet-aside -ml-2">
         <Tweet_info
           userName={props.user?.userName}
           createdAt={props.createdAt}
@@ -76,27 +46,27 @@ function Tweet(props: any) {
 
       </div>
     </div>
-    <hr />
   </div> 
-
-
-    
+  
+  <hr />
+  </div>
 
     case "C":
       return <div>
 
       <div className="tweet-box mt-2" onClick={e => { goToTweet(); e.stopPropagation() }} >
         <Tweet_img imageURL={props.user.imageURL} className ="tweet-icon"/>
-        <div className="tweet-aside">
+        <div className="tweet-aside -ml-2">
           <Tweet_info
             id = {props.user?.id}
             userName={props.user?.userName}
             createdAt={props.createdAt}
             name={props.user?.name}
+            className = " -mt-1"
           />
           {/* the added design of Reply design  */}
           <div className="space-x-2 -mt-3 -ml-12"> 
-            <p className=" p--light-color mt-2 ml-12 inline-block"> Repling to  </p>
+            <p className=" p--light-color mt-2 ml-12 inline-block"> Repling to </p>
             <a className ="text-blue-500 inline-block hover:underline"> @{props.repliedToTweet.user?.name}</a>
           </div>
   
@@ -125,12 +95,39 @@ function Tweet(props: any) {
 
     case "Q":
       return <div>
-           Quoted
-           <hr/>
-        </div>
-  
-  
+      {/* the design of tweet */}
+      <div className="flex p-2" onClick={goToTweet} >
+        <Tweet_img imageURL={props.user.imageURL} id={props.user?.id} className="tweet-icon " />
 
+        <div className="w-full">
+          <Tweet_info
+            userName={props.user?.userName}
+            createdAt={props.createdAt}
+            name={props.user?.name}
+            id={props.user.id}
+          />
+
+          {/* the text/media of the original tweet */}
+          <div className="tweet-content ml-2">
+            <span>
+              {props.text}
+            </span>
+            <QuotedTweet OTweet = {props.originalTweet}  repliedToTweet = {props.repliedToTweet}/> 
+            <Tweet_toolbarIcons
+              repliesCount={props.repliesCount}
+              likesCount={props.likesCount}
+              quotedRetweetsCount={props.quotedRetweetsCount}
+              retweetsCount={props.retweetsCount}
+            />
+
+          </div>
+        </div>
+      </div>
+      {/* the end of tweet */}
+
+
+      <hr />
+    </div>
     default:
       return <div>
  </div>   

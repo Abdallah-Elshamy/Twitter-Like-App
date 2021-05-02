@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import '../../../styles/layout.css'
-import Tweet, { TweetData } from '../Tweet';
+import Tweet  from '../Tweet';
+import  { TweetData }  from '../TweetData_interface'
 import { SideBar } from '../../sideBar/sideBar';
 import TrendsBar from '../../TrendsBar/TrendsBar';
 import { useQuery } from '@apollo/client';

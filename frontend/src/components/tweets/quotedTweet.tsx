@@ -23,7 +23,7 @@ export interface TweetData {
   isLiked?: boolean
 }
 
-function QuotedTweet(props: any) {
+function QuotedTweet_design(props: any) {
   return (
     <div>
 
@@ -89,4 +89,4 @@ function QuotedTweet(props: any) {
   )
 }
 
-export default QuotedTweet;
+export default QuotedTweet_design;

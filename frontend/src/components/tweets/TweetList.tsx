@@ -4,7 +4,7 @@ import { useQuery } from "@apollo/client";
 // import Tweet from '../Tweet';
 import Tweet from "./Tweet";
 import { Tweets } from "../../common/queries/TweetQuery";
-import { TweetData } from "./Tweet";
+import { TweetData } from "./TweetData_interface";
 import { parseJwt } from "../../common/decode";
 import { Get_SFW } from "../../common/queries/GET_SFW";
 import Loading from "../../UI/Loading";

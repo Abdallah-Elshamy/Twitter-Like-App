@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { useQuery } from "@apollo/client";
 import Tweet from "./Tweet";
-import { TweetData } from "./Tweet";
+import { TweetData } from "./TweetData_interface";
 import { FeedTweets } from "../../common/queries/Feedtweets";
 import Loading from "../../UI/Loading";
 import { Get_SFW } from "../../common/queries/GET_SFW";

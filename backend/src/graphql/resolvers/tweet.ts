@@ -107,7 +107,20 @@ const addTweetInDataBase = async (
     );
     tweet.originalTweetId = originalTweetId ? originalTweetId : tweet.id;
     await tweet.save({ transaction });
-    SFWService(tweet);
+    if (state === "R") {
+        const originalTweet = await Tweet.findOne({
+            attributes: ["isChecked", "isSFW"],
+            where: {
+                id: originalTweetId,
+            },
+        });
+        tweet.isChecked = originalTweet!.isChecked;
+        tweet.isSFW = originalTweet!.isSFW;
+        await tweet.save({ transaction });
+    } else {
+        SFWService(tweet);
+    }
+
     return tweet;
 };
 
@@ -241,6 +254,9 @@ export default {
                                 offset: ((page || 1) - 1) * PAGE_SIZE,
                                 limit: PAGE_SIZE,
                             });
+                            if (!tweets) {
+                                return [];
+                            }
                             return tweets.map((tweet: any) => {
                                 tweet.mode = mode;
                                 return tweet;
@@ -252,6 +268,9 @@ export default {
                                 offset: ((page || 1) - 1) * PAGE_SIZE,
                                 limit: PAGE_SIZE,
                             });
+                            if (!tweets) {
+                                return [];
+                            }
                             return tweets.map((tweet: any) => {
                                 tweet.mode = mode;
                                 return tweet;
@@ -263,6 +282,9 @@ export default {
                                 offset: ((page || 1) - 1) * PAGE_SIZE,
                                 limit: PAGE_SIZE,
                             });
+                            if (!tweets) {
+                                return [];
+                            }
                             return tweets.map((tweet: any) => {
                                 tweet.mode = mode;
                                 return tweet;
@@ -279,6 +301,9 @@ export default {
                                 offset: ((page || 1) - 1) * PAGE_SIZE,
                                 limit: PAGE_SIZE,
                             });
+                            if (!tweets) {
+                                return [];
+                            }
                             return tweets.map((tweet: any) => {
                                 tweet.mode = mode;
                                 return tweet;
@@ -326,7 +351,6 @@ export default {
                 totalCount: async () => {
                     if (mode === "SFW") {
                         // Safe for work
-
                         if (!filter) {
                             return await user.$count("tweets", {
                                 where: {
@@ -677,7 +701,7 @@ export default {
                         isSFW: isSFW,
                     },
                 });
-                tweet.mode = "SFW";
+                tweet && (tweet.mode = "SFW");
                 return tweet;
             } else return await parent.$get("originalTweet");
         },
@@ -710,7 +734,7 @@ export default {
                             order: [["createdAt", "ASC"]],
                         });
                         return tweets.map((tweet: any) => {
-                            tweet.mode = "SFW";
+                            tweet && (tweet.mode = "SFW");
                             return tweet;
                         });
                     },
@@ -749,7 +773,7 @@ export default {
                 const tweet: any = await parent.$get("thread", {
                     where: { isSFW: true },
                 });
-                tweet.mode = "SFW";
+                tweet && (tweet.mode = "SFW");
                 return tweet;
             } else return await parent.$get("thread");
         },
@@ -772,7 +796,7 @@ export default {
                 const tweet: any = await parent.$get("repliedTo", {
                     where: { isSFW: true },
                 });
-                tweet.mode = "SFW";
+                tweet && (tweet.mode = "SFW");
                 return tweet;
             } else return await parent.$get("repliedTo");
         },

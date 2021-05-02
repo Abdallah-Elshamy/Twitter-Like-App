@@ -23,12 +23,12 @@ function TweetInfo(props: any) {
 
   const goToProfile = () => {
     history.push({
-      pathname: '/tweet' + props.id,
+      pathname:  props.id,
     })
   }
   return (
 
-    <div className={`flex flex-row my-1 px-2 w-full   ${props.className}`}>
+    <div className={`flex flex-row my-1 px-2 w-full ${props.className}`}>
       <div></div>
       <a onClick={(e) => { goToProfile(); e.stopPropagation() }} className="font-bold mr-1 hover:underline">{props.name}</a>
       <p className="p--light-color"> @{props.userName}. </p>
@@ -44,7 +44,8 @@ function TweetInfo(props: any) {
           <ul className="mb-40 ml-4 absolute bg-gray-100 " >
             <a href="/profile" className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" >block</a>
-            <a className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
+            <a className="mt-1 w-40 text-center block 
+            px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" >mute</a>
 
           </ul>

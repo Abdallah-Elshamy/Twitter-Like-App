@@ -25,6 +25,10 @@ export const Post_Tweet = gql`
                   imageURL
                          }
                   originalTweet{id}
+                   repliedToTweet{
+          id
+          user{userName}
+        }
                             }
               repliedToTweet{
                 id 

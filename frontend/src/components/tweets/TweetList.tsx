@@ -5,7 +5,6 @@ import { useQuery } from "@apollo/client";
 import Tweet from "./Tweet";
 import { Tweets } from "../../common/queries/TweetQuery";
 import { TweetData } from "./TweetData_interface";
-import { parseJwt } from "../../common/decode";
 import { Get_SFW } from "../../common/queries/GET_SFW";
 import Loading from "../../UI/Loading";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -73,11 +72,11 @@ const TweetList: React.FC<TweetFilter> = (props) => {
                         user={tweet.user}
                         likesCount={tweet.likesCount}
                         key={tweet.id}
-                        quotedRetweetsCount = {tweet. quotedRetweetsCount}
-                        retweetsCount = { tweet.retweetsCount}
-                        state= {tweet.state}
-                        originalTweet = { tweet.originalTweet}
-                        repliedToTweet = { tweet.repliedToTweet}
+                        quotedRetweetsCount={tweet.quotedRetweetsCount}
+                        retweetsCount={tweet.retweetsCount}
+                        state={tweet.state}
+                        originalTweet={tweet.originalTweet}
+                        repliedToTweet={tweet.repliedToTweet}
                     />
                 );
             })}

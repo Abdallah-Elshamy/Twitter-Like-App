@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import '../../../styles/layout.css'
-import Tweet  from '../Tweet';
-import  { TweetData }  from '../TweetData_interface'
+import Tweet from '../Tweet';
+import { TweetData } from '../TweetData_interface'
 import { SideBar } from '../../sideBar/sideBar';
 import TrendsBar from '../../TrendsBar/TrendsBar';
 import { useQuery } from '@apollo/client';
@@ -11,7 +11,6 @@ import { useLocation } from 'react-router';
 import Loading from '../../../UI/Loading';
 import FoF from '../../../UI/FoF/FoF';
 import { Link } from 'react-router-dom';
-// import Profilewallpage from './profileWallPage';
 
 const ExtendedTweet: React.FC = () => {
 
@@ -26,7 +25,7 @@ const ExtendedTweet: React.FC = () => {
       isSFW: sfw.SFW.value,
     }
   })
-  console.log(error)
+  console.log("%c%o", "color:red", error?.extraInfo)
   if (loading) return (<div className="mt-8" ><Loading /></div>)
   if (error) return <FoF
     msg="This tweet doesn’t exist"
@@ -34,17 +33,17 @@ const ExtendedTweet: React.FC = () => {
   console.log(data)
 
   const tweet: TweetData = data.tweet
-  //console.log(tweet)
+  console.log(tweet)
   return (
     <Fragment>
 
       <main className="main-container">
         <aside className="sb-left">< SideBar /></aside>
         <article className="wall">
+
           <header className="top-bar px-3 py-2">
             <span className=" m-3">
               <Link to="/">
-
                 <i className="fa fa-arrow-left  p--main-color" aria-hidden="true"></i>
               </Link>
 
@@ -68,11 +67,12 @@ const ExtendedTweet: React.FC = () => {
             retweetsCount={tweet.retweetsCount}
             state={tweet.state}
             originalTweet={tweet.originalTweet}
+            repliedToTweet={tweet.repliedToTweet}
 
           />
 
           <div>
-            <pre className="p-4 bg-gray-900 text-blue-200" ><span className="text-green-500 block">//TODO: fetch tweet replies</span>
+            <pre className="p-4 bg-gray-900 text-blue-200" ><span className="text-green-500 block">{"//TODO: fetch tweet replies"}</span>
               <span className="text-blue-400">const</span> replies <span className="text-white">=</span> fetch(<span className="text-blue-400">replies</span>);
             </pre>
           </div>

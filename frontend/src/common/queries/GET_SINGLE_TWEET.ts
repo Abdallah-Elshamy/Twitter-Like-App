@@ -3,14 +3,13 @@ import { gql } from '@apollo/client';
 export const GET_SINGLE_TWEET = gql`
 query tweet ($tweetId:ID!  $isSFW:Boolean){
   tweet(id:$tweetId isSFW:$isSFW) {
-    totalCount
-    tweets{
       user{
         id
         imageURL
         name
         userName
       }
+
       originalTweet{
         id 
         text
@@ -25,9 +24,13 @@ query tweet ($tweetId:ID!  $isSFW:Boolean){
           userName
           name
           imageURL
-                 }
-          originalTweet{id}
-                    }
+        }
+        originalTweet{id}
+         repliedToTweet{
+          id
+          user{userName}
+        }
+      }
       repliedToTweet{
         id 
         state
@@ -36,20 +39,19 @@ query tweet ($tweetId:ID!  $isSFW:Boolean){
           userName
           name
           imageURL 
-                 }
-                     }
-      id
-      text 
-      likesCount
-      retweetsCount
-      quotedRetweetsCount
-      repliesCount
-      state
-      createdAt
-      isLiked
-    }
-        
+        }
       }
+        id
+        text
+        likesCount
+        retweetsCount
+        repliesCount
+        state
+        createdAt
+        isLiked
+        mode
+        
     }
+  }
 `
 

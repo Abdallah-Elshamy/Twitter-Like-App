@@ -27,8 +27,12 @@ query feed_tweets($isSFW:Boolean, $page: Int){
             imageURL
                    }
             originalTweet{id}
+             repliedToTweet{
+          id
+          user{userName}
+        }
                       
-          repliedToTweet{
+        repliedToTweet{
           id 
           state
           user{

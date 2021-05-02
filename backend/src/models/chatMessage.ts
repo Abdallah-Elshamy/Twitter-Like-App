@@ -7,6 +7,7 @@ import {
     DataType,
     AllowNull,
     AutoIncrement,
+    Default,
 } from "sequelize-typescript";
 import User from "./user";
 
@@ -32,6 +33,11 @@ class ChatMessage extends Model {
     @AllowNull(false)
     @Column(DataType.TEXT)
     message!: string;
+
+    @AllowNull(false)
+    @Default(false)
+    @Column(DataType.BOOLEAN)
+    isSeen!: boolean;
 }
 
 export default ChatMessage;

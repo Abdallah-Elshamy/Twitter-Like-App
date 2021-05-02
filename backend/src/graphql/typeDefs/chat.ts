@@ -10,6 +10,7 @@ export default gql`
         from: User!
         to: User!
         message: String!
+        isSeen: Boolean
     }
 
     type PaginatedChatMessages {

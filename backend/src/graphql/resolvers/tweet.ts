@@ -464,6 +464,54 @@ export default {
             });
             return true;
         },
+        ignoreReportedTweet: async (
+            parent: any,
+            args: { id: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+
+            if (!user?.isAdmin) {
+                const error: CustomeError = new Error(
+                    "Only admins can ignore reported tweets!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            const tweet = await Tweet.findByPk(+args.id);
+            if (!tweet) {
+                const error: CustomeError = new Error(
+                    "No tweet was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+
+            const toBeIgnored = await ReportedTweet.findAll({
+                where: {
+                    tweetId: args.id,
+                },
+            });
+            if (toBeIgnored.length === 0) {
+                const error: CustomeError = new Error(
+                    "This tweet is not reported!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+            await db.transaction(async (transaction) => {
+                await ReportedTweet.destroy({
+                    where: {
+                        tweetId: args.id,
+                    },
+                    transaction,
+                });
+            });
+            return true;
+        },
     },
     Tweet: {
         user: async (parent: Tweet) => {

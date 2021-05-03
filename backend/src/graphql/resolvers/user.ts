@@ -598,6 +598,54 @@ export default {
             });
             return true;
         },
+        ignoreReportedUser: async (
+            parent: any,
+            args: { userId: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+
+            if (!user?.isAdmin) {
+                const error: CustomeError = new Error(
+                    "Only admins can ignore reported users!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            const userToBeIgnored = await User.findByPk(+args.userId);
+            if (!userToBeIgnored) {
+                const error: CustomeError = new Error(
+                    "No user was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+
+            const reportsTobeIgnored = await ReportedUser.findAll({
+                where: {
+                    reportedId: +args.userId,
+                },
+            });
+            if (reportsTobeIgnored.length === 0) {
+                const error: CustomeError = new Error(
+                    "This user is not reported!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+            await db.transaction(async (transaction) => {
+                await ReportedUser.destroy({
+                    where: {
+                        reportedId: +args.userId,
+                    },
+                    transaction,
+                });
+            });
+            return true;
+        },
     },
     User: {
         followingCount: async (parent: User) => {

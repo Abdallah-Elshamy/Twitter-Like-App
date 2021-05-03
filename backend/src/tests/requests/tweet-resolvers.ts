@@ -397,3 +397,19 @@ export const reportTweetWithReason = async (
             `,
         });
 };
+
+export const ignoreReportedTweet = async (
+    tweetId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                ignoreReportedTweet(id: "${tweetId}")
+            }
+            `,
+        });
+};

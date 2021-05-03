@@ -747,3 +747,19 @@ export const getUserWithReportedBy = async (
             `,
         });
 };
+
+export const ignoreReportedUser = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                ignoreReportedUser(userId: ${userId})
+            }
+            `,
+        });
+};

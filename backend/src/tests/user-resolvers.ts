@@ -38,6 +38,7 @@ import {
     reportedUsers,
     getUserWithOwnReports,
     getUserWithReportedBy,
+    ignoreReportedUser,
 } from "./requests/user-resolvers";
 
 let server: any;
@@ -1219,6 +1220,74 @@ describe("user-resolvers", (): void => {
             expect(response.body.errors[0]).to.include({
                 statusCode: 422,
                 message: "You have already reported this user!",
+            });
+        });
+    });
+
+    describe("ignoreReportedUser resolver", async () => {
+        let authToken: string;
+        let authTokenAdmin: string;
+        before(async () => {
+            await db.sync({ force: true });
+            await createUser("Bilbo11", "Bilbo the great");
+            const group = await Group.create({
+                name: "admin",
+            });
+            const user = await User.findByPk(1);
+            user!.$add("groups", group);
+            const response = await login("Bilbo11", "myPrecious");
+            authTokenAdmin = response.body.data.login.token;
+            await createUserWithBio("bilbo11", "bilbo the wise");
+            const response2 = await login("bilbo11", "myPrecious");
+            authToken = response2.body.data.login.token;
+            const users = await createUsers(3);
+            for (let i = 0; i < 3; i++) {
+                for (let j = 2; j >= i; j--) {
+                    await users[i].$add("reported", users[j]);
+                }
+            }
+        });
+
+        it("succeeds in ignoring a reported user", async () => {
+            const response = await ignoreReportedUser(4, authTokenAdmin);
+            expect(response.body.data).to.include({
+                ignoreReportedUser: true,
+            });
+        });
+
+        it("fails to ignore reported user if not authenticated", async () => {
+            const response = await ignoreReportedUser(4);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+                message: "Invalid Token!",
+            });
+        });
+
+        it("fails to ignore reported user if not admin", async () => {
+            const response = await ignoreReportedUser(4, authToken);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 403,
+                message: "Only admins can ignore reported users!",
+            });
+        });
+
+        it("fails to ignore report of a non existent user", async () => {
+            const response = await ignoreReportedUser(0, authTokenAdmin);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No user was found with this id!",
+            });
+        });
+
+        it("fails to ignore a non reported user", async () => {
+            const response = await ignoreReportedUser(2, authTokenAdmin);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "This user is not reported!",
             });
         });
     });

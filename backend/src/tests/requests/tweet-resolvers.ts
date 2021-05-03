@@ -357,6 +357,7 @@ export const getTweetsWithReportes = async (
                     userId: ${userId}
                     page: ${page}
                     filter: "${filter}"
+                    isSFW: false
                 ){
                     tweets{
                         id
@@ -383,7 +384,7 @@ export const report_Tweet = async (
         .send({
             query: `
             mutation {
-                reportTweet(id: "${id}")
+                reportTweet(id: ${id})
             }
             `,
         });
@@ -399,7 +400,7 @@ export const reportTweetWithReason = async (
         .send({
             query: `
             mutation {
-                reportTweet(id: "${id}", reason: "Offensive language")
+                reportTweet(id: ${id}, reason: "Offensive language")
             }
             `,
         });

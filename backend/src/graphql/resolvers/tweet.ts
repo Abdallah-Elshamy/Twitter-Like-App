@@ -1,10 +1,11 @@
-import { Tweet, Likes, User, Hashtag } from "../../models";
+import { Tweet, Likes, User, Hashtag, ReportedTweet } from "../../models";
 import { tweetValidator } from "../../validators";
 import db from "../../db";
 import { Transaction, Op } from "sequelize";
 import { Request } from "express";
 import fetch from "node-fetch";
 import { backOff } from "exponential-backoff";
+import { fn, col } from "sequelize";
 
 const PAGE_SIZE = 10;
 
@@ -13,8 +14,12 @@ interface CustomeError extends Error {
     validators?: { message: string; value: string }[];
 }
 
+interface CustomUser extends User {
+    isAdmin: boolean;
+}
+
 interface CustomeRequest extends Request {
-    user?: User;
+    user?: CustomUser;
     authError?: CustomeError;
 }
 
@@ -476,6 +481,55 @@ export default {
                 },
             };
         },
+        reportedTweets: async (
+            parent: any,
+            args: { page: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            const { page } = args;
+            if (authError) {
+                throw authError;
+            }
+            if (!user?.isAdmin) {
+                const error: CustomeError = new Error(
+                    "User must be an admin to get the reported tweets!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            return {
+                tweets: async () => {
+                    const reportedTweets = await ReportedTweet.findAll({
+                        attributes: ["tweetId"],
+                        order: [[fn("count", col("reporterId")), "DESC"]],
+                        group: "tweetId",
+                        offset: ((page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                    });
+                    const sortedTweetsIds = reportedTweets.map(
+                        (reportedTweet) => reportedTweet.tweetId
+                    );
+                    const unsortedTweets = await Tweet.findAll({
+                        where: { id: sortedTweetsIds },
+                    });
+                    const sortedTweets: Tweet[] = [];
+                    for (let tweetId of sortedTweetsIds) {
+                        let tweet = unsortedTweets.find(
+                            (tweet) => tweet.id == tweetId
+                        );
+                        sortedTweets.push(tweet!);
+                    }
+                    return sortedTweets;
+                },
+                totalCount: async () => {
+                    return ReportedTweet.count({
+                        distinct: true,
+                        col: "tweetId",
+                    });
+                },
+            };
+        },
     },
     Mutation: {
         createTweet: async (
@@ -678,7 +732,7 @@ export default {
                 throw error;
             }
             const userHasTweet = tweet.userId === user!.id;
-            if (!userHasTweet) {
+            if (!(userHasTweet || user!.isAdmin)) {
                 const error: CustomeError = new Error(
                     "You don't own this tweet!"
                 );
@@ -686,6 +740,106 @@ export default {
                 throw error;
             }
             await tweet.destroy();
+            return true;
+        },
+        reportTweet: async (
+            parent: any,
+            args: { id: number; reason: string },
+            context: { req: CustomeRequest },
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+
+            const tweet = await Tweet.findByPk(+args.id);
+            if (!tweet) {
+                const error: CustomeError = new Error(
+                    "No tweet was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+
+            const isOwned = await user!.$has("tweets", tweet);
+            if (isOwned) {
+                const error: CustomeError = new Error(
+                    "User cannot report his own tweet!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            const isReported = await user!.$has("reportedTweets", tweet);
+            if (isReported) {
+                const error: CustomeError = new Error(
+                    "You have already reported this tweet!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            await db.transaction(async (transaction) => {
+                await ReportedTweet.create(
+                    {
+                        reporterId: user!.id,
+                        tweetId: args.id,
+                        reason: args.reason ? args.reason : null,
+                    },
+                    {
+                        transaction,
+                    }
+                );
+            });
+            return true;
+        },
+        ignoreReportedTweet: async (
+            parent: any,
+            args: { id: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+
+            if (!user?.isAdmin) {
+                const error: CustomeError = new Error(
+                    "Only admins can ignore reported tweets!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            const tweet = await Tweet.findByPk(+args.id);
+            if (!tweet) {
+                const error: CustomeError = new Error(
+                    "No tweet was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+
+            const toBeIgnored = await ReportedTweet.findAll({
+                where: {
+                    tweetId: args.id,
+                },
+            });
+            if (toBeIgnored.length === 0) {
+                const error: CustomeError = new Error(
+                    "This tweet is not reported!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+            await db.transaction(async (transaction) => {
+                await ReportedTweet.destroy({
+                    where: {
+                        tweetId: args.id,
+                    },
+                    transaction,
+                });
+            });
             return true;
         },
     },
@@ -840,6 +994,34 @@ export default {
                     },
                 });
             }
+        },
+        reportedBy: async (
+            parent: Tweet,
+            args: { page: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            if (!user?.isAdmin) {
+                const error: CustomeError = new Error(
+                    "User must be an admin to get the users reporting the tweet!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            return {
+                users: async () => {
+                    return await parent.$get("reportedBy", {
+                        offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                    });
+                },
+                totalCount: async () => {
+                    return await parent.$count("reportedBy");
+                },
+            };
         },
     },
 };

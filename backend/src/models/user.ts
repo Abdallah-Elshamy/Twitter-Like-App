@@ -9,12 +9,15 @@ import {
     DataType,
     BelongsToMany,
     Unique,
+    Default,
 } from "sequelize-typescript";
 import Follows from "./follows";
 import Tweet from "./tweet";
 import Group from "./group";
 import UserBelongsToGroup from "./userBelongsToGroup";
 import Likes from "./likes";
+import ReportedTweet from "./reportedTweet";
+import ReportedUser from "./reportedUser";
 
 @Table({
     tableName: "users",
@@ -46,7 +49,7 @@ class User extends Model {
     @AllowNull(false)
     @Column(DataType.DATEONLY)
     birthDate!: Date;
-    
+
     @AllowNull(true)
     @Column(DataType.STRING)
     imageURL?: string;
@@ -58,6 +61,11 @@ class User extends Model {
     @AllowNull(true)
     @Column(DataType.STRING)
     coverImageURL?: string;
+
+    @AllowNull(false)
+    @Default(false)
+    @Column(DataType.BOOLEAN)
+    isBanned!: boolean;
 
     // one-to-many relation between user and tweets
     @HasMany(() => Tweet, "userId")
@@ -77,6 +85,15 @@ class User extends Model {
     // many-to-many relation between user and tweet through likes
     @BelongsToMany(() => Tweet, () => Likes, "userId", "tweetId")
     likes?: Tweet[];
+
+    @BelongsToMany(() => Tweet, () => ReportedTweet, "reporterId", "tweetId")
+    reportedTweets?: Tweet[];
+
+    @BelongsToMany(() => User, () => ReportedUser, "reportedId", "reporterId")
+    reportedBy?: User[];
+
+    @BelongsToMany(() => User, () => ReportedUser, "reporterId", "reportedId")
+    reported?: User[];
 }
 
 export default User;

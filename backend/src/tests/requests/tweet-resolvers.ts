@@ -321,3 +321,102 @@ export const getFeedWithPagination = async (
         `,
         });
 };
+
+export const reportedTweets = async (
+    page: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            query {
+                reportedTweets(page: ${page}){
+                    totalCount
+                    tweets{id}
+                }
+            }
+            `,
+        });
+};
+
+export const getTweetsWithReportes = async (
+    userId: number,
+    page: number = 1,
+    filter: string | null = "",
+    authorizationToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authorizationToken}`)
+        .send({
+            query: `
+            query {
+                tweets(
+                    userId: ${userId}
+                    page: ${page}
+                    filter: "${filter}"
+                ){
+                    tweets{
+                        id
+                        reportedBy{
+                            users{
+                                id
+                            }
+                            totalCount
+                        }
+                    }
+                }
+            }    
+         `,
+        });
+};
+
+export const report_Tweet = async (
+    id: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                reportTweet(id: "${id}")
+            }
+            `,
+        });
+};
+
+export const reportTweetWithReason = async (
+    id: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                reportTweet(id: "${id}", reason: "Offensive language")
+            }
+            `,
+        });
+};
+
+export const ignoreReportedTweet = async (
+    tweetId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                ignoreReportedTweet(id: "${tweetId}")
+            }
+            `,
+        });
+};

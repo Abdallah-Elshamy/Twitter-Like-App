@@ -1,7 +1,11 @@
 import request from "supertest";
 import app from "../../app";
 
-export const sendMessage = async (message: string, to: number, token: string | undefined = undefined) => {
+export const sendMessage = async (
+    message: string,
+    to: number,
+    token: string | undefined = undefined
+) => {
     return await request(app)
         .post("/graphql")
         .set("Authorization", `Bearer ${token}`)
@@ -17,6 +21,35 @@ export const sendMessage = async (message: string, to: number, token: string | u
                     to { id }
                     message
                     isSeen
+                }
+            }
+        `,
+        });
+};
+
+export const getChatHistory = async (
+    otherUserId: number,
+    page: number,
+    token: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+            query: `
+            query {
+                getChatHistory(
+                    otherUserId: ${otherUserId}
+                    page: ${page}
+                ){
+                    messages {
+                        id
+                        from {id}
+                        to { id }
+                        message
+                        isSeen
+                    }
+                    totalCount
                 }
             }
         `,

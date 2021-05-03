@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { serverPromise } from "../app";
 import db from "../db";
 import { ChatMessage } from "../models";
-import { sendMessage } from "./requests/chat-resolvers";
+import { sendMessage, getChatHistory } from "./requests/chat-resolvers";
 import { createTwentyUser, login } from "./requests/user-resolvers";
 
 let server: any;
@@ -68,6 +68,57 @@ describe("chat-resolvers", (): void => {
         });
         it("fails to send a message without a token", async () => {
             const response = await sendMessage("hello", 2);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+            });
+        });
+    });
+
+    describe("getChatHistory resolver", () => {
+        it("succeeds in getting sorted History", async () => {
+            const response = await getChatHistory(2, 1, token);
+            expect(response.body.data.getChatHistory.totalCount).to.equal(21);
+            expect(response.body.data.getChatHistory.messages).to.have.length(
+                20
+            );
+            expect(response.body.data.getChatHistory.messages[0]).to.include({
+                id: "81",
+                message: "hello",
+                isSeen: false,
+            });
+            expect(
+                response.body.data.getChatHistory.messages[0].from.id
+            ).to.equal("1");
+            expect(
+                response.body.data.getChatHistory.messages[0].to.id
+            ).to.equal("2");
+        });
+
+        it("succeeds in paginating History", async () => {
+            const response = await getChatHistory(2, 2, token);
+            expect(response.body.data.getChatHistory.totalCount).to.equal(21);
+            expect(response.body.data.getChatHistory.messages).to.have.length(
+                1
+            );
+            expect(response.body.data.getChatHistory.messages[0]).to.include({
+                message: "hi",
+                isSeen: false,
+            });
+        });
+
+        it("fails to get chat history with a non existent user", async () => {
+            const response = await getChatHistory(50, 1, token);
+
+            expect(response.body.errors).has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No user was found with this id!",
+            });
+        });
+
+        it("fails to get chat history without a token", async () => {
+            const response = await getChatHistory(2, 0);
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 401,

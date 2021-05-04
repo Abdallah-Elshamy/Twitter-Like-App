@@ -134,9 +134,13 @@ export default {
                 );
             });
 
-            pubsub.publish("MESSAGE_SENT", {
-                messageSent: message,
-            });
+            // Disable publishing events in the test environment
+            if (!process.env.TEST_ENVIROMENT) {
+                pubsub.publish("MESSAGE_SENT", {
+                    messageSent: message,
+                });
+            }
+            
             return message;
         },
         setMessageSeen: async (

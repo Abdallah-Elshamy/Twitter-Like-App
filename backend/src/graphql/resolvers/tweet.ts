@@ -35,6 +35,11 @@ export const SFWRegularCheck = async () => {
 };
 
 const SFWService = async (tweet: Tweet) => {
+    // Disable SFW checking in the test environment
+    if (process.env.TEST_ENVIROMENT) {
+        return;
+    }
+    
     const serviceUrl: string = process.env.SFW_SERVICE!;
     try {
         const serverRes = await backOff(() => fetch(serviceUrl), {

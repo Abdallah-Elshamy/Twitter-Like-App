@@ -73,10 +73,13 @@ app.use((req: Request, res: Response, next: NextFunction): void => {
 });
 
 const serverPromise = db.sync().then(() => {
-    cron.schedule("0 * * * *", () => {
-        console.log("running SFW regular check on tweets");
-        SFWRegularCheck();
-    });
+    // Disable SFW regular check in testing environment 
+    if (!process.env.TEST_ENVIROMENT) {
+        cron.schedule("0 * * * *", () => {
+            console.log("running SFW regular check on tweets");
+            SFWRegularCheck();
+        });
+    }
 
     const server = httpServer.listen(process.env.PORT!, (): void => {
         console.log(`Server is running on port ${process.env.PORT}!`);

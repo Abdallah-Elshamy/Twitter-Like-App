@@ -73,3 +73,30 @@ export const setMessageSeen = async (
         `,
         });
 };
+
+export const getUnseenMessages = async (
+    page: number,
+    token: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+            query: `
+            query {
+                getUnseenMessages(
+                    page: ${page}
+                ){
+                    messages {
+                        id
+                        from {id}
+                        to { id }
+                        message
+                        isSeen
+                    }
+                    totalCount
+                }
+            }
+        `,
+        });
+};

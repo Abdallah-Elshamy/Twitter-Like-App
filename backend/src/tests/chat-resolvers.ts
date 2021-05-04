@@ -6,6 +6,7 @@ import {
     sendMessage,
     getChatHistory,
     setMessageSeen,
+    getUnseenMessages,
 } from "./requests/chat-resolvers";
 import { createTwentyUser, login } from "./requests/user-resolvers";
 
@@ -166,6 +167,64 @@ describe("chat-resolvers", (): void => {
             expect(response.body.errors[0]).to.include({
                 statusCode: 400,
                 message: "This message was sent to another user!",
+            });
+        });
+    });
+
+    describe("getUnseenMessages resolver", () => {
+        it("succeeds in getting unseen messages", async () => {
+            const response = await getUnseenMessages(1, token);
+            expect(response.body.data.getUnseenMessages.totalCount).to.equal(
+                40
+            );
+            expect(
+                response.body.data.getUnseenMessages.messages
+            ).to.have.length(20);
+            expect(response.body.data.getUnseenMessages.messages[5]).to.include(
+                {
+                    message: "hi",
+                    isSeen: false,
+                }
+            );
+            expect(
+                response.body.data.getUnseenMessages.messages[7].to.id
+            ).to.equal("1");
+        });
+
+        it("succeeds in paginating unseen messages", async () => {
+            const response = await getUnseenMessages(2, token);
+            expect(response.body.data.getUnseenMessages.totalCount).to.equal(
+                40
+            );
+            expect(
+                response.body.data.getUnseenMessages.messages
+            ).to.have.length(20);
+            expect(response.body.data.getUnseenMessages.messages[5]).to.include(
+                {
+                    message: "hi",
+                    isSeen: false,
+                }
+            );
+            expect(
+                response.body.data.getUnseenMessages.messages[7].to.id
+            ).to.equal("1");
+        });
+
+        it("succeeds in paginating unseen messages", async () => {
+            const response = await getUnseenMessages(3, token);
+            expect(response.body.data.getUnseenMessages.totalCount).to.equal(
+                40
+            );
+            expect(
+                response.body.data.getUnseenMessages.messages
+            ).to.have.length(0);
+        });
+
+        it("fails to get unseen messages without a token", async () => {
+            const response = await getUnseenMessages(1);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
             });
         });
     });

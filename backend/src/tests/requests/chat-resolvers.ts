@@ -55,3 +55,21 @@ export const getChatHistory = async (
         `,
         });
 };
+
+export const setMessageSeen = async (
+    messageId: number,
+    token: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+            query: `
+            mutation {
+                setMessageSeen(
+                    messageId: ${messageId}
+                )
+            }
+        `,
+        });
+};

@@ -2,7 +2,11 @@ import { expect } from "chai";
 import { serverPromise } from "../app";
 import db from "../db";
 import { ChatMessage } from "../models";
-import { sendMessage, getChatHistory } from "./requests/chat-resolvers";
+import {
+    sendMessage,
+    getChatHistory,
+    setMessageSeen,
+} from "./requests/chat-resolvers";
 import { createTwentyUser, login } from "./requests/user-resolvers";
 
 let server: any;
@@ -122,6 +126,46 @@ describe("chat-resolvers", (): void => {
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 401,
+            });
+        });
+    });
+
+    describe("setMessageSeen resolver", () => {
+        before(async () => {
+            ChatMessage.create({ from: 2, to: 1, message: "hi" });
+        });
+
+        it("succeeds in setting isSeen for a message", async () => {
+            const response = await setMessageSeen(82, token);
+            expect(response.body.data.setMessageSeen).to.equal(true);
+            expect((await ChatMessage.findByPk(82))!.isSeen).to.equal(true);
+        });
+
+        it("fails to set isSeen for a non existent message", async () => {
+            const response = await setMessageSeen(100, token);
+
+            expect(response.body.errors).has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No message was found with this id!",
+            });
+        });
+
+        it("fails to set isSeen for a message without a token", async () => {
+            const response = await setMessageSeen(81);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+            });
+        });
+
+        it("fails to set isSeen for a message sent to another user", async () => {
+            const response = await setMessageSeen(1, token);
+
+            expect(response.body.errors).has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 400,
+                message: "This message was sent to another user!",
             });
         });
     });

@@ -12,6 +12,7 @@ import {
     HasHashtag,
     ReportedTweet,
     ReportedUser,
+    ChatMessage,
 } from "../models";
 
 const db: Sequelize = new Sequelize(
@@ -36,6 +37,7 @@ db.addModels([
     HasHashtag,
     ReportedTweet,
     ReportedUser,
+    ChatMessage,
 ]);
 
 export default db;

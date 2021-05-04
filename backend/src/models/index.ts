@@ -10,6 +10,7 @@ import Likes from "./likes";
 import HasHashtag from "./hasHashtag";
 import ReportedTweet from "./reportedTweet";
 import ReportedUser from "./reportedUser";
+import ChatMessage from "./chatMessage";
 
 export {
     Tweet,
@@ -24,4 +25,5 @@ export {
     HasHashtag,
     ReportedTweet,
     ReportedUser,
+    ChatMessage,
 };

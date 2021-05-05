@@ -11,6 +11,7 @@ export default gql`
         ): PaginatedTweets!
         getFeed(page: Int, isSFW: Boolean): PaginatedTweets
         reportedTweets(page: Int): PaginatedTweets!
+        NSFWTweets(page: Int): PaginatedTweets!
     }
     extend type Mutation {
         createTweet(tweet: TweetCreateInput!): Tweet!

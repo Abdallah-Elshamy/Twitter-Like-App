@@ -21,6 +21,8 @@ import {
     report_Tweet,
     reportTweetWithReason,
     ignoreReportedTweet,
+    NSFWTweets,
+    NSFWTweetsWithPagination
 } from "./requests/tweet-resolvers";
 import {
     createUser,
@@ -1010,6 +1012,73 @@ describe("tweet-resolvers", (): void => {
             expect(response.body.errors).to.have.lengthOf(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 401,
+            });
+        });
+    });
+
+    describe("NSFWTweets query", async () => {
+        let authToken: string;
+        let authTokenAdmin: string;
+        before(async () => {
+            await db.sync({ force: true });
+            await createUser("Bilbo11", "Bilbo the great");
+            const group = await Group.create({
+                name: "admin",
+            });
+            const user = await User.findByPk(1);
+            user!.$add("groups", group);
+            const response = await login("Bilbo11", "myPrecious");
+            authTokenAdmin = response.body.data.login.token;
+            await createUserWithBio("bilbo11", "bilbo the wise");
+            const response2 = await login("bilbo11", "myPrecious");
+            authToken = response2.body.data.login.token;
+            // create 12 tweets which are NSFW by default
+            await createTweets(2, "O", 12);  
+        });
+
+        it("succeeds in fetching NSFW tweets", async () => {
+            const response = await NSFWTweets(authTokenAdmin);
+            expect(response.body.data.NSFWTweets).to.include({
+                totalCount: 12,
+            });
+            expect(response.body.data.NSFWTweets.tweets).to.has.length(10);
+            expect(response.body.data.NSFWTweets.tweets[0]).to.include({
+                text: "tweet11"
+            })
+            expect(response.body.data.NSFWTweets.tweets[9]).to.include({
+                text: "tweet2"
+            })
+        });
+
+        it("succeeds in fetching NSFW tweets with pagination", async () => {
+            const response = await NSFWTweetsWithPagination(2, authTokenAdmin);
+            expect(response.body.data.NSFWTweets).to.include({
+                totalCount: 12,
+            });
+            expect(response.body.data.NSFWTweets.tweets).to.has.length(2);
+            expect(response.body.data.NSFWTweets.tweets[0]).to.include({
+                text: "tweet1"
+            })
+            expect(response.body.data.NSFWTweets.tweets[1]).to.include({
+                text: "tweet0"
+            })
+        });
+
+        it("fails to fetch NSFW tweets if not authenticated", async () => {
+            const response = await NSFWTweets()
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+                message: "Invalid Token!",
+            });
+        });
+
+        it("fails to fetch NSFW tweets if user is not an admin", async () => {
+            const response = await NSFWTweets(authToken)
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 403,
+                message: "User must be an admin to get only NSFW tweets!",
             });
         });
     });

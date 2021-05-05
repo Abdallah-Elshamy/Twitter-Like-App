@@ -421,3 +421,43 @@ export const ignoreReportedTweet = async (
             `,
         });
 };
+
+export const NSFWTweets = async (authToken: string | undefined = undefined) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            query {
+                NSFWTweets{
+                    tweets {
+                        text
+                    }
+                    totalCount
+                }    
+            }
+            `,
+        });
+};
+
+export const NSFWTweetsWithPagination = async (
+    page: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            query {
+                NSFWTweets(page: ${page}) {
+                    tweets {
+                       text
+                    }
+                    totalCount
+                }
+                
+            }
+            `,
+        });
+};

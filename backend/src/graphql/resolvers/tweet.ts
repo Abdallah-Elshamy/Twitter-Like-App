@@ -39,7 +39,7 @@ const SFWService = async (tweet: Tweet) => {
     if (process.env.TEST_ENVIROMENT) {
         return;
     }
-    
+
     const serviceUrl: string = process.env.SFW_SERVICE!;
     try {
         const serverRes = await backOff(() => fetch(serviceUrl), {
@@ -533,6 +533,38 @@ export default {
                         col: "tweetId",
                     });
                 },
+            };
+        },
+        NSFWTweets: async (
+            parent: any,
+            args: { page: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            if (!user!.isAdmin) {
+                const error: CustomeError = new Error(
+                    "User must be an admin to get only NSFW tweets!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            return {
+                tweets: await Tweet.findAll({
+                    where: {
+                        isSFW: false,
+                    },
+                    offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                    limit: PAGE_SIZE,
+                    order: [["createdAt", "DESC"]],
+                }),
+                totalCount: await Tweet.count({
+                    where: {
+                        isSFW: false,
+                    },
+                }),
             };
         },
     },

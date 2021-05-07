@@ -6,6 +6,7 @@ import {
     UserBelongsToGroup,
     ReportedUser,
     Group,
+    MutedUser,
 } from "../../models";
 import UserValidator from "../../validators/user";
 import db from "../../db";
@@ -646,6 +647,98 @@ export default {
             });
             return true;
         },
+        muteUser: async (
+            parent: any,
+            args: { userId: number },
+            context: { req: CustomeRequest },
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            const { userId } = args;
+            if (authError) {
+                throw authError;
+            }
+
+            if (user!.id === +userId) {
+                const error: CustomeError = new Error(
+                    "User cannot mute himself!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            const userToBeMuted = await User.findByPk(userId);
+            if (!userToBeMuted) {
+                const error: CustomeError = new Error(
+                    "No user was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+            const isMuted = await user!.$has("muted", userToBeMuted);
+            if (isMuted) {
+                const error: CustomeError = new Error(
+                    "You have already muted this user!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            await db.transaction(async (transaction) => {
+                await MutedUser.create(
+                    {
+                        muterId: user!.id,
+                        mutedId: userId,
+                    },
+                    {
+                        transaction,
+                    }
+                );
+            });
+            return true;
+        },
+        unmuteUser: async (
+            parent: any,
+            args: { userId: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            const { userId } = args;
+            if (authError) {
+                throw authError;
+            }
+
+            if (user!.id === +userId) {
+                const error: CustomeError = new Error(
+                    "User cannot unmute himself!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            const userToBeUnmuted = await User.findByPk(+args.userId);
+            if (!userToBeUnmuted) {
+                const error: CustomeError = new Error(
+                    "No user was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+
+            const isMuted = await user!.$has("muted", userToBeUnmuted);
+            if (!isMuted) {
+                const error: CustomeError = new Error(
+                    "This user is not muted!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            await db.transaction(async (transaction) => {
+                await user!.$remove("muted", userToBeUnmuted, { transaction });
+            });
+            return true;
+        },
     },
     User: {
         followingCount: async (parent: User) => {
@@ -761,7 +854,7 @@ export default {
                 throw authError;
             }
 
-            if (user?.id === parent.id) {
+            if (user!.id === parent.id) {
                 return {
                     tweets: async () => {
                         return await parent.$get("reportedTweets", {
@@ -790,7 +883,7 @@ export default {
             if (authError) {
                 throw authError;
             }
-            if (!user?.isAdmin) {
+            if (!user!.isAdmin) {
                 const error: CustomeError = new Error(
                     "User must be an admin to get the users reporting this user!"
                 );
@@ -819,7 +912,7 @@ export default {
                 throw authError;
             }
 
-            if (user?.id === parent.id) {
+            if (user!.id === parent.id) {
                 return {
                     users: async () => {
                         return await parent.$get("reported", {
@@ -834,6 +927,32 @@ export default {
             } else {
                 const error: CustomeError = new Error(
                     "User cannot see what other users have reported!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+        },
+        muted: async (parent: User, args: { page: number }, context: any) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+
+            if (user!.id === parent.id) {
+                return {
+                    users: async () => {
+                        return await parent.$get("muted", {
+                            offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                            limit: PAGE_SIZE,
+                        });
+                    },
+                    totalCount: async () => {
+                        return await parent.$count("muted");
+                    },
+                };
+            } else {
+                const error: CustomeError = new Error(
+                    "User cannot see what other users activities!"
                 );
                 error.statusCode = 403;
                 throw error;

@@ -39,6 +39,8 @@ import {
     getUserWithOwnReports,
     getUserWithReportedBy,
     ignoreReportedUser,
+    muteUser,
+    unmuteUser,
 } from "./requests/user-resolvers";
 
 let server: any;
@@ -1450,6 +1452,140 @@ describe("user-resolvers", (): void => {
             });
             expect(response.body.data.user.reported.users[0]).to.include({
                 userName: "test0",
+            });
+        });
+    });
+
+    describe("muteUser resolver", () => {
+        let token: string;
+        before(async () => {
+            await db.sync({ force: true });
+            await createUser("Bilbo11", "Bilbo the great");
+            const response = await login("Bilbo11", "myPrecious");
+            token = response.body.data.login.token;
+            for (let i = 0; i < 2; i++) {
+                await User.create({
+                    name: "omar ali",
+                    userName: `omar112${i}`,
+                    email: `omarali${i}@gmail.com`,
+                    hashedPassword: "12345678910",
+                    birthDate: "1970-01-01",
+                });
+            }
+        });
+        it("fails to mute other user if user is not authenticated", async () => {
+            const response = await muteUser(2);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+                message: "Invalid Token!",
+            });
+        });
+
+        it("fails to mute a non existent user", async () => {
+            const response = await muteUser(0, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No user was found with this id!",
+            });
+        });
+
+        it("fails to mute the user himself", async () => {
+            const response = await muteUser(1, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "User cannot mute himself!",
+            });
+        });
+
+        it("succeeds in muting another user", async () => {
+            const response = await muteUser(2, token);
+            expect(response.body.data).to.include({
+                muteUser: true,
+            });
+            const mutedUser = await User.findByPk(2);
+            const muterUser = await User.findByPk(1);
+            const isMuted = await muterUser!.$has("muted", mutedUser!);
+            expect(isMuted).to.be.true;
+        });
+
+        it("fails to mute other user which is already muted", async () => {
+            const response = await muteUser(2, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "You have already muted this user!",
+            });
+        });
+    });
+
+    describe("unmuteUser resolver", () => {
+        let token: string;
+        before(async () => {
+            await db.sync({ force: true });
+            await createUser("Bilbo11", "Bilbo the great");
+            const response = await login("Bilbo11", "myPrecious");
+            token = response.body.data.login.token;
+            const users = [];
+            for (let i = 0; i < 2; i++) {
+                let user = await User.create({
+                    name: "omar ali",
+                    userName: `omar112${i}`,
+                    email: `omarali${i}@gmail.com`,
+                    hashedPassword: "12345678910",
+                    birthDate: "1970-01-01",
+                });
+                users.push(user);
+            }
+            const user = await User.findByPk(1);
+            await user!.$add("muted", users[0]);
+        });
+        it("fails to unmute other user if user is not authenticated", async () => {
+            const response = await unmuteUser(2);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+                message: "Invalid Token!",
+            });
+        });
+
+        it("fails to mute a non existent user", async () => {
+            const response = await unmuteUser(0, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No user was found with this id!",
+            });
+        });
+
+        it("fails to mute the user himself", async () => {
+            const response = await unmuteUser(1, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "User cannot unmute himself!",
+            });
+        });
+
+        it("succeeds in unmuting another user", async () => {
+            const response = await unmuteUser(2, token);
+            expect(response.body.data).to.include({
+                unmuteUser: true,
+            });
+            const mutedUser = await User.findByPk(2);
+            const muterUser = await User.findByPk(1);
+            const isMuted = await muterUser!.$has("muted", mutedUser!);
+            expect(isMuted).to.be.false;
+        });
+
+        it("fails to mute other user which is already muted", async () => {
+            const response = await unmuteUser(2, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "This user is not muted!",
             });
         });
     });

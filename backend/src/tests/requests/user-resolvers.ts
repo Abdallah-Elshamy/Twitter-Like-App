@@ -763,3 +763,35 @@ export const ignoreReportedUser = async (
             `,
         });
 };
+
+export const muteUser = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                muteUser(userId: "${userId}")
+            }
+            `,
+        });
+};
+
+export const unmuteUser = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                unmuteUser(userId: ${userId})
+            }
+            `,
+        });
+};

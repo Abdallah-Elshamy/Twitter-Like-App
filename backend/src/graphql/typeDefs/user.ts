@@ -18,6 +18,8 @@ export default gql`
         banUser(userId: ID!): Boolean!
         reportUser(userId: ID!, reason: String): Boolean!
         ignoreReportedUser(userId: ID!): Boolean!
+        muteUser(userId: ID!): Boolean!
+        unmuteUser(userId: ID!): Boolean!
     }
 
     type Token {
@@ -47,6 +49,7 @@ export default gql`
         reportedTweets(page: Int): PaginatedTweets
         reportedBy(page: Int): PaginatedUsers
         reported(page: Int): PaginatedUsers
+        muted(page: Int): PaginatedUsers
         createdAt: String!
         updatedAt: String!
     }

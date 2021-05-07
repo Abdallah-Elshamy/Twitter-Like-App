@@ -18,6 +18,7 @@ import UserBelongsToGroup from "./userBelongsToGroup";
 import Likes from "./likes";
 import ReportedTweet from "./reportedTweet";
 import ReportedUser from "./reportedUser";
+import MutedUser from "./mutedUser";
 
 @Table({
     tableName: "users",
@@ -94,6 +95,9 @@ class User extends Model {
 
     @BelongsToMany(() => User, () => ReportedUser, "reporterId", "reportedId")
     reported?: User[];
+
+    @BelongsToMany(() => User, () => MutedUser, "muterId", "mutedId")
+    muted?: User[];
 }
 
 export default User;

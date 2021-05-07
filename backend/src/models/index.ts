@@ -11,6 +11,7 @@ import HasHashtag from "./hasHashtag";
 import ReportedTweet from "./reportedTweet";
 import ReportedUser from "./reportedUser";
 import ChatMessage from "./chatMessage";
+import MutedUser from "./mutedUser";
 
 export {
     Tweet,
@@ -26,4 +27,5 @@ export {
     ReportedTweet,
     ReportedUser,
     ChatMessage,
+    MutedUser,
 };

@@ -13,6 +13,7 @@ import {
     ReportedTweet,
     ReportedUser,
     ChatMessage,
+    MutedUser,
 } from "../models";
 
 const db: Sequelize = new Sequelize(
@@ -38,6 +39,7 @@ db.addModels([
     ReportedTweet,
     ReportedUser,
     ChatMessage,
+    MutedUser,
 ]);
 
 export default db;

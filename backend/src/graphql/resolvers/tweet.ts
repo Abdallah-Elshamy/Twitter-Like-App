@@ -430,9 +430,19 @@ export default {
             }
 
             const { page, isSFW } = args;
+            const mutedUsers = await user!.$get("muted", {
+                attributes: ["id"],
+            });
+
+            const mutedUsersIds = mutedUsers.map((user: any) => user.id);
 
             const followingUsers = await user!.$get("following", {
                 attributes: ["id"],
+                where: {
+                    id: {
+                        [Op.notIn]: mutedUsersIds,
+                    },
+                },
             });
             const followingUsersIds = followingUsers.map((user) => user.id);
 

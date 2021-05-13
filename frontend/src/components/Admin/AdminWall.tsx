@@ -37,7 +37,7 @@ function AdminWall() {
                     <NavLink
                         activeClassName="active"
                         className="pf--nav-link"
-                        to={match.url + "/nsf-tweets"}
+                        to={match.url + "/nsfw-tweets"}
                     >
                         <li>NSFW Tweets</li>
                     </NavLink>
@@ -52,7 +52,7 @@ function AdminWall() {
                             <TweetList
                                 page={reportedTweetsPage}
                                 setPage={setReportedTweetsPage}
-                                isAdminBoard={true}
+                                queryName="ReportedTweets"
                             />
                         )}
                     />
@@ -63,22 +63,21 @@ function AdminWall() {
                             <TweetList
                                 page={reportedTweetsPage}
                                 setPage={setReportedTweetsPage}
-                                isAdminBoard={true}
+                                queryName="ReportedTweets"
                             />
                         )}
                     />
-                    {/* <Route
+                    <Route
                         exact
-                        path={match.url + "/media"}
+                        path={match.url + "/nsfw-tweets"}
                         render={() => (
                             <TweetList
-                                filter={`media`}
-                                page={mediaPage}
-                                setPage={setMediaPage}
-                                id={ID}
+                                page={NSFWTweetsPage}
+                                setPage={setNSFWTweetsPage}
+                                queryName="NSFWTweets"
                             />
                         )}
-                    /> */}
+                    />
                 </Switch>
             </div>
         </Fragment>

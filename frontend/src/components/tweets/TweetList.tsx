@@ -9,23 +9,29 @@ import { parseJwt } from "../../common/decode";
 import { Get_SFW } from "../../common/queries/GET_SFW";
 import Loading from "../../UI/Loading";
 import ReportedTweets from "../../common/queries/reportedTweets"
+import NSFWTweets from "../../common/queries/NSFWTweets"
 
 export interface TweetFilter {
     filter?: string;
     page: number;
     setPage: any;
     id?: string;
-    isAdminBoard?: boolean;
+    queryName?: string;
 }
 
 const TweetList: React.FC<TweetFilter> = (props) => {
     TweetList.defaultProps= {
-        isAdminBoard: false
+        queryName: "Tweets"
     }
-    const { filter, page, setPage, isAdminBoard } = props;
+    const queryName: any = {
+        NSFWTweets,
+        ReportedTweets,
+        Tweets,
+    }
+    const { filter, page, setPage } = props;
     const sfw = useQuery(Get_SFW).data;
     const loggedUser = parseJwt(localStorage.getItem('token')!)
-    let { loading, error, data, fetchMore } = useQuery(isAdminBoard? ReportedTweets:Tweets, {
+    let { loading, error, data, fetchMore } = useQuery(queryName[props.queryName!] ? queryName[props.queryName!] : Tweets, {
         variables: {
             userId: props.id,
             filter: filter,
@@ -34,6 +40,9 @@ const TweetList: React.FC<TweetFilter> = (props) => {
     });
     if(data?.reportedTweets) {
         data = {tweets: data.reportedTweets}
+    }
+    if(data?.NSFWTweets) {
+        data = {tweets: data.NSFWTweets}
     }
     if (!loading && data && data?.tweets?.tweets?.length == 10 && data?.tweets?.totalCount > 10) {
         fetchMore({

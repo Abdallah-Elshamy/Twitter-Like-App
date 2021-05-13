@@ -53,7 +53,11 @@ function Tweet(props: any) {
           userName={props.user?.userName}
           createdAt={props.createdAt}
           name={props.user?.name}
-          id={props.user.id}
+          userId={props.user.id}
+          tweetMediaUrls = {props.mediaUrls}
+          tweet = {props.tweet}
+          tweetId={props.id}
+          loggedUser={props.loggedUser}
 
         />
 
@@ -103,8 +107,7 @@ function Tweet(props: any) {
                   </div>
                 }
               >
-                <ul className="mb-40 absolute ml-12 bg-gray-100 " >
-
+                <ul className="mb-40 absolute ml-12 bg-gray-100" >
                   <a href="/profile" className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" >Retweet</a>
                   <a className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200

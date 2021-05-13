@@ -134,7 +134,8 @@ export const cache: InMemoryCache = new InMemoryCache({
                     "isSFW",
                 ]),
                 users: createPaginationAndCombineUsersElements(["search"]),
-                reportedTweets: createPaginationAndCombineTweetsElements([])
+                reportedTweets: createPaginationAndCombineTweetsElements([]),
+                reportedUsers: createPaginationAndCombineUsersElements([])
             },
         },
     },

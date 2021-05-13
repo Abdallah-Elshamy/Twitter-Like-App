@@ -25,7 +25,7 @@ const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, usernam
 
   return (
 
-    <div className=" person-item flex  justify-between items-start p-3 hover:bg-gray-100 relative" onClick={goToProfile}>
+    <div className=" person-item flex  justify-between items-start p-3 hover:bg-gray-100 relative cursor-pointer" onClick={goToProfile}>
 
       <div className="person-item-image w-11 h-11  rounded-full  flex-none mr-2 ">
         {profilePicture}
@@ -45,7 +45,7 @@ const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, usernam
             <i className="fas fa-ellipsis-h hover:bg-gray-400 p-1 px-2 rounded-full cursor-pointer"></i>
           }
         >
-          <ul className=" bg-gray-100 mb-40 right-8 absolute bg-gray-100 z-10 cursor-pointer" >
+          <ul className=" bg-gray-100 mb-40 right-8 absolute bg-gray-100 z-10 cursor-pointer " >
           {/* {props?.loggedUser?.id == props?.tweet?.user?.id ? <button onClick={handleDeleteButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
           " >Delete</button>: null} */}
             <a href="/profile" className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200

@@ -4,6 +4,7 @@ import "../profile/profile.css";
 import "../../styles/layout.css";
 import React, { Fragment, useState } from "react";
 import TweetList from "../tweets/TweetList"
+import PersonList from "../TrendsBar/ListOfUsers/PersonList"
 
 function AdminWall() {
     const match = useRouteMatch();
@@ -49,10 +50,10 @@ function AdminWall() {
                         exact
                         path={match.url}
                         render={() => (
-                            <TweetList
-                                page={reportedTweetsPage}
-                                setPage={setReportedTweetsPage}
-                                queryName="ReportedTweets"
+                            <PersonList
+                                page={reportedUsersPage}
+                                setPage={setReportedUsersPage}
+                                queryName="ReportedUsers"
                             />
                         )}
                     />

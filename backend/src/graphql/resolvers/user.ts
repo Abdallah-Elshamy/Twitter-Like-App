@@ -107,7 +107,7 @@ export default {
                         { email: userNameOrEmail },
                     ],
                 },
-            });
+            }) as CustomUser;
             if (!user) {
                 const error: any = new Error(
                     "No user was found with this user name or email!"
@@ -133,6 +133,12 @@ export default {
                 error.statusCode = 401;
                 throw error;
             }
+            user.isAdmin = await UserBelongsToGroup.findOne({
+                where: {
+                    userId: user.id,
+                    groupName: "admin",
+                },
+            })? true: false;
             const token = jwt.sign(
                 {
                     id: user.id,
@@ -142,6 +148,7 @@ export default {
                     imageURL: user.imageURL,
                     coverImageURL: user.coverImageURL,
                     birthDate: user.birthDate,
+                    isAdmin: user.isAdmin,
                     createdAt: user.createdAt,
                     updatedAt: user.updatedAt,
                 },

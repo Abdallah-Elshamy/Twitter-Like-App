@@ -59,6 +59,10 @@ export function SideBar() {
         <SideBarItem item_name='Setting' icon_name="fas fa-cog" />
       </Link>
 
+      <Link to='/admin'>
+        <SideBarItem item_name='Admin' icon_name="fas fa-user-lock" />
+      </Link>
+
 
       <TweetButton name="Tweet" className="w-56 h-12 mt-8" onClick={() => setEdit(true)} />
 

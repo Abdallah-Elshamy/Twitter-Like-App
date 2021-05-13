@@ -36,22 +36,25 @@ const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
             ? { totalCount: existing.totalCount, tweets: [...existing.tweets] }
             : { totalCount: 0, tweets: [] };
         merged.totalCount = incoming.totalCount;
-        let breakFlag = 0;
         let i = 0;
         let j = 0;
+        let k = 0;
         for (i = 0; i < merged.tweets.length; i++) {
-            if (breakFlag) break;
-            for (j = 0; j < incoming.tweets.length; j++) {
+            for (j = k; j < incoming.tweets.length; j++) {
+                if (merged.tweets[i].__ref < incoming.tweets[j].__ref) {
+                    merged.tweets.unshift(incoming.tweets[j])
+                    k++;
+                    break
+                }
                 if (merged.tweets[i].__ref == incoming.tweets[j].__ref) {
-                    breakFlag = 1;
-                    i -= 2;
+                    merged.tweets[i] = incoming.tweets[j];
+                    k++;        
                     break;
                 }
             }
-            j = 0;
-        }
+        }  
         if (i == merged.tweets.length) i--;
-        for (; j < incoming.tweets.length; j++) {
+        for (j=k; j < incoming.tweets.length; j++) {
             merged.tweets[++i] = incoming.tweets[j];
         }
         merged.tweets.slice(0, i + 1);
@@ -69,22 +72,25 @@ const createPaginationAndCombineUsersElements = (keyArgs: any[]) => ({
             ? { totalCount: existing.totalCount, users: [...existing.users] }
             : { totalCount: 0, users: [] };
         merged.totalCount = incoming.totalCount;
-        let breakFlag = 0;
         let i = 0;
         let j = 0;
+        let k = 0;
         for (i = 0; i < merged.users.length; i++) {
-            if (breakFlag) break;
-            for (j = 0; j < incoming.users.length; j++) {
+            for (j = k; j < incoming.users.length; j++) {
+                if (merged.users[i].__ref < incoming.users[j].__ref) {
+                    merged.users.unshift(incoming.users[j])
+                    k++;
+                    break
+                }
                 if (merged.users[i].__ref == incoming.users[j].__ref) {
-                    breakFlag = 1;
-                    i -= 2;
+                    merged.users[i] = incoming.users[j]
+                    k++
                     break;
                 }
             }
-            j = 0;
         }
         if (i == merged.users.length) i--;
-        for (; j < incoming.users.length; j++) {
+        for (j=k; j < incoming.users.length; j++) {
             merged.users[++i] = incoming.users[j];
         }
         merged.users.slice(0, i + 1);

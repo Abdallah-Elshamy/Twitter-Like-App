@@ -8,11 +8,13 @@ import { LandingPage } from '../components/Register/landingPage/landingPage';
 import { SignUpForm } from '../components/Register/signup_form/signup';
 import Explore from './Explore';
 import Profile from '../components/profile/Profile';
+import AdminDashBoard from "../components/Admin/AdminDashBoard"
 import Home from "../components/Home";
 import { useQuery } from '@apollo/client';
 import { GET_ISAUTH } from '../common/queries/Get_isAuth';
 import React from "react";
 import { Login } from "../components/Register/login_form/login";
+import {parseJwt} from '../common/utils/jwtDecoder'
 
 export const Routing = () => {
 
@@ -54,7 +56,9 @@ export const Routing = () => {
           <LandingPage />
         </PublicRoute>
 
-
+        <AdminRoute path="/admin">
+          <AdminDashBoard />
+        </AdminRoute>
         <PrivateRoute path="/Notifications">
           <Notifications />
         </PrivateRoute>
@@ -109,6 +113,46 @@ const PublicRoute = ({ children, ...rest }: any) => {
       {...rest}
       render={({ location }) =>
         auth ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/",
+              state: { from: location }
+            }}
+          />
+        )
+      }
+    />
+  );
+}
+
+const AdminRoute = ({ children, ...rest }: any) => {
+  const token = localStorage.getItem('token')
+  if (!token) {
+    return (
+      <Route
+        {...rest}
+        render={({ location}) => 
+        (
+          <Redirect to={{
+            pathname: "/login",
+            state: { from: location }
+          }}
+          />
+        )
+        }
+      />
+      
+    )
+  }
+  const user = parseJwt(token)
+  const isAdmin = user.isAdmin
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        isAdmin ? (
           children
         ) : (
           <Redirect

@@ -41,7 +41,7 @@ const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
         let k = 0;
         for (i = 0; i < merged.tweets.length; i++) {
             for (j = k; j < incoming.tweets.length; j++) {
-                if (merged.tweets[i].__ref < incoming.tweets[j].__ref) {
+                if (parseInt(merged.tweets[i].__ref.split(":")[1]) < parseInt(incoming.tweets[j].__ref.split(":")[1])) {
                     merged.tweets.unshift(incoming.tweets[j])
                     k++;
                     break
@@ -77,7 +77,7 @@ const createPaginationAndCombineUsersElements = (keyArgs: any[]) => ({
         let k = 0;
         for (i = 0; i < merged.users.length; i++) {
             for (j = k; j < incoming.users.length; j++) {
-                if (merged.users[i].__ref < incoming.users[j].__ref) {
+                if (parseInt(merged.users[i].__ref.split(":")[1]) < parseInt(incoming.users[j].__ref.split(":")[1])) {
                     merged.users.unshift(incoming.users[j])
                     k++;
                     break

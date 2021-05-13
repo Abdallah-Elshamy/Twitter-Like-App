@@ -32,7 +32,7 @@ const FollowButton: React.FC<Props> = ({ id, py = "py-0.5", px = "px-2", followi
   return (
     followingState ?
       < button
-        className={"pf--follow-btn unfollow rounded-full  font-semibold  text-xm w-min  " + py + ' ' + px}
+        className={"pf--follow-btn unfollow rounded-full  font-semibold  text-xm w-min " + py + ' ' + px}
         onClick={(e) => { handleUnFollow(); e.stopPropagation() }}
 
       >

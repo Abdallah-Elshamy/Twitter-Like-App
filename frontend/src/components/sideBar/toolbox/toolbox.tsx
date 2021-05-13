@@ -22,6 +22,7 @@ state = {
   }
   
   onClickHandler  = (e:any) => {
+      e.stopPropagation();
       this.setState(state => {
         if (this.state.isOpen){
           return {
@@ -54,7 +55,7 @@ state = {
     render() {
       return (
         <Fragment>
-        <div className="flex-initial relative"  ref={this.toggleContainer}>
+        <div className="flex-initial relative "  ref={this.toggleContainer}>
          {this.state.isOpen && (
           <div>
            { this.props.children}

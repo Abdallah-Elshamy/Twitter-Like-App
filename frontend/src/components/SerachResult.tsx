@@ -55,6 +55,10 @@ const SearchResult: React.FC = () => {
             }}
             hasMore={data?.users?.totalCount >= page * 10 || false}
             loader={<Loading />}
+            style={{
+                overflow: "hidden"
+            }}
+            className="pb-20"
         >
             {list.map((person) => {
                 return (

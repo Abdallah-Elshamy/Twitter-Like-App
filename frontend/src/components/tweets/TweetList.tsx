@@ -74,6 +74,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
             style={{
                 overflow: "hidden"
             }}
+            className="pb-20"
             hasMore={data?.tweets?.totalCount > page * 10 || false}
             loader={<Loading />}
         >

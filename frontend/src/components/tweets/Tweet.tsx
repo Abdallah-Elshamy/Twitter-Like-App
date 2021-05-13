@@ -53,6 +53,7 @@ function Tweet(props: any) {
           userName={props.user?.userName}
           createdAt={props.createdAt}
           name={props.user?.name}
+          id={props.user.id}
           userId={props.user.id}
           tweetMediaUrls = {props.mediaUrls}
           tweet = {props.tweet}

@@ -1,12 +1,33 @@
 import bcrypt from "bcryptjs";
 import validator from "validator";
-import { User, Tweet } from "../../models";
+import {
+    User,
+    Tweet,
+    UserBelongsToGroup,
+    ReportedUser,
+    Group,
+    MutedUser,
+} from "../../models";
 import UserValidator from "../../validators/user";
 import db from "../../db";
-import { Op } from "sequelize";
+import { fn, col, Op } from "sequelize";
 import jwt from "jsonwebtoken";
 
 const PAGE_SIZE = 10;
+
+interface CustomeError extends Error {
+    statusCode?: number;
+    validators?: { message: string; value: string }[];
+}
+
+interface CustomUser extends User {
+    isAdmin: boolean;
+}
+
+interface CustomeRequest extends Request {
+    user?: CustomUser;
+    authError?: CustomeError;
+}
 
 interface UserInput {
     userName: string;
@@ -94,6 +115,13 @@ export default {
                 error.statusCode = 404;
                 throw error;
             }
+            if (user.isBanned) {
+                const error: any = new Error(
+                    "User is banned and can no longer access the website!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
             const isCorrectPassword = await bcrypt.compare(
                 password,
                 user.hashedPassword
@@ -121,6 +149,58 @@ export default {
             );
             return {
                 token,
+            };
+        },
+        reportedUsers: async (
+            parent: any,
+            args: { page: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            const { page } = args;
+            if (authError) {
+                throw authError;
+            }
+            if (!user?.isAdmin) {
+                const error: CustomeError = new Error(
+                    "User must be an admin to get the reported users!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+
+            return {
+                users: async () => {
+                    const reportedUsers = await ReportedUser.findAll({
+                        attributes: ["reportedId"],
+                        order: [[fn("count", col("reporterId")), "DESC"]],
+                        group: "reportedId",
+                        offset: ((page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                    });
+
+                    const sortedUsersIds = reportedUsers.map(
+                        (reportedUser) => reportedUser.reportedId
+                    );
+
+                    const unsortedUsers = await User.findAll({
+                        where: { id: sortedUsersIds },
+                    });
+                    const sortedUsers: User[] = [];
+                    for (let userId of sortedUsersIds) {
+                        let cUser = unsortedUsers.find(
+                            (user) => user.id === userId
+                        );
+                        sortedUsers.push(cUser!);
+                    }
+                    return sortedUsers;
+                },
+                totalCount: async () => {
+                    return ReportedUser.count({
+                        distinct: true,
+                        col: "reportedId",
+                    });
+                },
             };
         },
     },
@@ -418,15 +498,256 @@ export default {
 
             return true;
         },
+        banUser: async (
+            parent: any,
+            args: { userId: number },
+            context: { req: CustomeRequest },
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            const { userId } = args;
+            if (authError) {
+                throw authError;
+            }
+            if (!user?.isAdmin) {
+                const error: CustomeError = new Error(
+                    "Only admins can ban users!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            const userToBeBanned = await User.findByPk(userId);
+            if (!userToBeBanned) {
+                const error: CustomeError = new Error(
+                    "No user was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+            if (userToBeBanned?.isBanned) {
+                const error: CustomeError = new Error(
+                    "This user is already banned!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+            const isAdmin = await UserBelongsToGroup.findOne({
+                where: {
+                    userId: userId,
+                    groupName: "admin",
+                },
+            });
+            if (isAdmin) {
+                const error: CustomeError = new Error(
+                    "Admin user can not be banned!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            userToBeBanned.isBanned = true;
+            await userToBeBanned.save();
+            return true;
+        },
+        reportUser: async (
+            parent: any,
+            args: { userId: number; reason: string },
+            context: { req: CustomeRequest },
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            const { userId } = args;
+            if (authError) {
+                throw authError;
+            }
+
+            if (user!.id === +userId) {
+                const error: CustomeError = new Error(
+                    "User cannot report himself!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            const userToBeReported = await User.findByPk(userId);
+            if (!userToBeReported) {
+                const error: CustomeError = new Error(
+                    "No user was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+            const isReported = await user!.$has("reported", userToBeReported);
+            if (isReported) {
+                const error: CustomeError = new Error(
+                    "You have already reported this user!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            await db.transaction(async (transaction) => {
+                await ReportedUser.create(
+                    {
+                        reporterId: user!.id,
+                        reportedId: userId,
+                        reason: args.reason ? args.reason : null,
+                    },
+                    {
+                        transaction,
+                    }
+                );
+            });
+            return true;
+        },
+        ignoreReportedUser: async (
+            parent: any,
+            args: { userId: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+
+            if (!user?.isAdmin) {
+                const error: CustomeError = new Error(
+                    "Only admins can ignore reported users!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            const userToBeIgnored = await User.findByPk(+args.userId);
+            if (!userToBeIgnored) {
+                const error: CustomeError = new Error(
+                    "No user was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+
+            const reportsTobeIgnored = await ReportedUser.findAll({
+                where: {
+                    reportedId: +args.userId,
+                },
+            });
+            if (reportsTobeIgnored.length === 0) {
+                const error: CustomeError = new Error(
+                    "This user is not reported!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+            await db.transaction(async (transaction) => {
+                await ReportedUser.destroy({
+                    where: {
+                        reportedId: +args.userId,
+                    },
+                    transaction,
+                });
+            });
+            return true;
+        },
+        muteUser: async (
+            parent: any,
+            args: { userId: number },
+            context: { req: CustomeRequest },
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            const { userId } = args;
+            if (authError) {
+                throw authError;
+            }
+
+            if (user!.id === +userId) {
+                const error: CustomeError = new Error(
+                    "User cannot mute himself!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            const userToBeMuted = await User.findByPk(userId);
+            if (!userToBeMuted) {
+                const error: CustomeError = new Error(
+                    "No user was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+            const isMuted = await user!.$has("muted", userToBeMuted);
+            if (isMuted) {
+                const error: CustomeError = new Error(
+                    "You have already muted this user!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            await db.transaction(async (transaction) => {
+                await MutedUser.create(
+                    {
+                        muterId: user!.id,
+                        mutedId: userId,
+                    },
+                    {
+                        transaction,
+                    }
+                );
+            });
+            return true;
+        },
+        unmuteUser: async (
+            parent: any,
+            args: { userId: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            const { userId } = args;
+            if (authError) {
+                throw authError;
+            }
+
+            if (user!.id === +userId) {
+                const error: CustomeError = new Error(
+                    "User cannot unmute himself!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            const userToBeUnmuted = await User.findByPk(+args.userId);
+            if (!userToBeUnmuted) {
+                const error: CustomeError = new Error(
+                    "No user was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+
+            const isMuted = await user!.$has("muted", userToBeUnmuted);
+            if (!isMuted) {
+                const error: CustomeError = new Error(
+                    "This user is not muted!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            await db.transaction(async (transaction) => {
+                await user!.$remove("muted", userToBeUnmuted, { transaction });
+            });
+            return true;
+        },
     },
     User: {
-        followingCount: async (parent: any) => {
+        followingCount: async (parent: User) => {
             return await parent.$count("following");
         },
-        followersCount: async (parent: any) => {
+        followersCount: async (parent: User) => {
             return await parent.$count("followers");
         },
-        following: async (parent: any, args: { page: number }) => {
+        following: async (parent: User, args: { page: number }) => {
             return {
                 totalCount: async () => {
                     return await parent.$count("following");
@@ -441,7 +762,7 @@ export default {
                 },
             };
         },
-        followers: async (parent: any, args: { page: number }) => {
+        followers: async (parent: User, args: { page: number }) => {
             return {
                 totalCount: async () => {
                     return await parent.$count("followers");
@@ -474,7 +795,7 @@ export default {
             const isFollower = await loggedIn.$has("follower", parent);
             return isFollower;
         },
-        tweets: async (parent: any, args: { page: number }) => {
+        tweets: async (parent: User, args: { page: number }) => {
             return {
                 totalCount: async () => {
                     return await parent.$count("tweets");
@@ -489,7 +810,7 @@ export default {
                 },
             };
         },
-        likes: async (parent: any, args: { page: number }) => {
+        likes: async (parent: User, args: { page: number }) => {
             return {
                 totalCount: async () => {
                     return await parent.$count("likes");
@@ -504,13 +825,13 @@ export default {
                 },
             };
         },
-        groups: async (parent: any) => {
-            const groups: any = await parent.$get("groups");
-            const names: string[] = groups.map((group: any) => group.name);
+        groups: async (parent: User) => {
+            const groups: Group[] = await parent.$get("groups");
+            const names: string[] = groups.map((group: Group) => group.name);
             return names;
         },
-        permissions: async (parent: any) => {
-            const groups: any = await parent.$get("groups");
+        permissions: async (parent: User) => {
+            const groups: Group[] = await parent.$get("groups");
             const result: string[] = [];
 
             for (const group of groups) {
@@ -522,6 +843,120 @@ export default {
             }
 
             return result;
+        },
+        reportedTweets: async (
+            parent: User,
+            args: { page: number },
+            context: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+
+            if (user!.id === parent.id) {
+                return {
+                    tweets: async () => {
+                        return await parent.$get("reportedTweets", {
+                            offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                            limit: PAGE_SIZE,
+                        });
+                    },
+                    totalCount: async () => {
+                        return await parent.$count("reportedTweets");
+                    },
+                };
+            } else {
+                const error: CustomeError = new Error(
+                    "User cannot see the tweets which other users have reported!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+        },
+        reportedBy: async (
+            parent: User,
+            args: { page: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            if (!user!.isAdmin) {
+                const error: CustomeError = new Error(
+                    "User must be an admin to get the users reporting this user!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            return {
+                users: async () => {
+                    return await parent.$get("reportedBy", {
+                        offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                    });
+                },
+                totalCount: async () => {
+                    return await parent.$count("reportedBy");
+                },
+            };
+        },
+        reported: async (
+            parent: User,
+            args: { page: number },
+            context: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+
+            if (user!.id === parent.id) {
+                return {
+                    users: async () => {
+                        return await parent.$get("reported", {
+                            offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                            limit: PAGE_SIZE,
+                        });
+                    },
+                    totalCount: async () => {
+                        return await parent.$count("reported");
+                    },
+                };
+            } else {
+                const error: CustomeError = new Error(
+                    "User cannot see what other users have reported!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+        },
+        muted: async (parent: User, args: { page: number }, context: any) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+
+            if (user!.id === parent.id) {
+                return {
+                    users: async () => {
+                        return await parent.$get("muted", {
+                            offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                            limit: PAGE_SIZE,
+                        });
+                    },
+                    totalCount: async () => {
+                        return await parent.$count("muted");
+                    },
+                };
+            } else {
+                const error: CustomeError = new Error(
+                    "User cannot see what other users activities!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
         },
     },
 };

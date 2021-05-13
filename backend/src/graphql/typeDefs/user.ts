@@ -5,15 +5,21 @@ export default gql`
         user(id: ID!): User!
         users(search: String!, page: Int): PaginatedUsers!
         login(userNameOrEmail: String!, password: String!): Token!
+        reportedUsers(page: Int): PaginatedUsers!
     }
-    
+
     extend type Mutation {
-        createUser(userInput: UserCreateInput!) : User! 
-        updateUser(userInput: UserUpdateInput!) : User! 
+        createUser(userInput: UserCreateInput!): User!
+        updateUser(userInput: UserUpdateInput!): User!
         like(tweetId: ID!): Boolean
         unlike(tweetId: ID!): Boolean
         follow(userId: ID!): Boolean
         unfollow(userId: ID!): Boolean
+        banUser(userId: ID!): Boolean!
+        reportUser(userId: ID!, reason: String): Boolean!
+        ignoreReportedUser(userId: ID!): Boolean!
+        muteUser(userId: ID!): Boolean!
+        unmuteUser(userId: ID!): Boolean!
     }
 
     type Token {
@@ -29,6 +35,7 @@ export default gql`
         imageURL: String
         bio: String
         coverImageURL: String
+        isBanned: Boolean!
         isFollowing: Boolean
         following(page: Int): PaginatedUsers!
         followingCount: Int!
@@ -39,6 +46,10 @@ export default gql`
         likes(page: Int): PaginatedTweets!
         groups: [String]!
         permissions: [String]!
+        reportedTweets(page: Int): PaginatedTweets
+        reportedBy(page: Int): PaginatedUsers
+        reported(page: Int): PaginatedUsers
+        muted(page: Int): PaginatedUsers
         createdAt: String!
         updatedAt: String!
     }

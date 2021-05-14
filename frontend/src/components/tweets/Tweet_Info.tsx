@@ -4,13 +4,14 @@ import { ToolBox } from '../sideBar/toolbox/toolbox';
 import deleteTweetMutation from '../../common/queries/deleteTweet'
 import IgnoreReportedTweet from "../../common/queries/ignoreReportedTweet"
 import BanUser from "../../common/queries/banUser"
+import UnbanUser from "../../common/queries/unbanUser"
 import {DeleteMedia} from '../../common/queries/DeleteMedia'
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useMutation } from "@apollo/client"
 import {CustomDialog} from 'react-st-modal'
 import DangerConfirmationDialog from "../../UI/Dialogs/DangerConfirmationDialog"
 import ErrorDialog from "../../UI/Dialogs/ErroDialog"
-import {updateTweetsCacheForDeleteTweet, updateTweetsCacheForIgnoreReportedTweet, updateUsersCacheForBanUser} from "../../common/utils/writeCache"
+import {updateTweetsCacheForDeleteTweet, updateTweetsCacheForIgnoreReportedTweet, updateUsersCacheForBanUser, updateUsersCacheForUnBanUser} from "../../common/utils/writeCache"
 
 export interface TweetData {
   user?: {
@@ -35,6 +36,11 @@ function Tweet_Info(props: any) {
   const [banUser] = useMutation(BanUser, {
     update(cache) {
       updateUsersCacheForBanUser(cache, tweet.user)
+    }
+  })
+  const [unbanUser] = useMutation(UnbanUser, {
+    update(cache) {
+      updateUsersCacheForUnBanUser(cache, tweet.user)
     }
   })
   const [deleteTweet] = useMutation(deleteTweetMutation, {
@@ -116,6 +122,10 @@ function Tweet_Info(props: any) {
   const handleBanButton = (e:any) => {
     handleToolBoxButtons(e, banUser, "Are you sure you want to ban this user?", "Confirm Ban")
   }
+
+  const handleUnbanButton = (e: any) => {
+    handleToolBoxButtons(e, unbanUser, "Are you sure you want to unban this user?", "Confirm Unban")
+  }
   return (
 
     <div className="tweet-data py-1">
@@ -132,7 +142,7 @@ function Tweet_Info(props: any) {
         >
           <ul className=" bg-gray-100 mb-40 right-8 absolute z-10 cursor-pointer" >
           {props?.loggedUser?.isAdmin && props?.loggedUser?.id != tweet?.user?.id && !tweet?.user?.isBanned ? <button onClick={handleBanButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
-          " >Ban</button>: props?.loggedUser?.isAdmin && tweet?.user?.isBanned ? <button onClick={handleBanButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
+          " >Ban</button>: props?.loggedUser?.isAdmin && tweet?.user?.isBanned ? <button onClick={handleUnbanButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           " >Unban</button>: null}
           {props?.loggedUser?.id == props?.tweet?.user?.id || props?.loggedUser?.isAdmin ? <button onClick={handleDeleteButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
           " >Delete</button>: null}

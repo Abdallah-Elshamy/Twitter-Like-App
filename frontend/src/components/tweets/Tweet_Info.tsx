@@ -3,10 +3,10 @@ import { timeConverter } from '../../common/utils/timestamp';
 import { ToolBox } from '../sideBar/toolbox/toolbox';
 import deleteTweetMutation from '../../common/queries/deleteTweet'
 import {DeleteMedia} from '../../common/queries/DeleteMedia'
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useMutation } from "@apollo/client"
 import {CustomDialog} from 'react-st-modal'
-import DeleteConfirmationDialog from "../../UI/Dialogs/DeleteConfirmationDialog"
+import DangerConfirmationDialog from "../../UI/Dialogs/DangerConfirmationDialog"
 import ErrorDialog from "../../UI/Dialogs/ErroDialog"
 import {updateTweetsCacheForDeleteTweet} from "../../common/utils/writeCache"
 
@@ -26,6 +26,8 @@ export interface TweetData {
 
 function Tweet_Info(props: any) {
   const history = useHistory();
+  const location = useLocation()
+  console.log("admin path", location.pathname.includes("/admin"))
   const {tweet} = props
   const [deleteMedia] = useMutation(DeleteMedia)
   const [deleteTweet] = useMutation(deleteTweetMutation, {
@@ -47,7 +49,7 @@ function Tweet_Info(props: any) {
   }
   const handleDeleteButton = async() => {
     try {
-      const result = await CustomDialog(<DeleteConfirmationDialog />, {
+      const result = await CustomDialog(<DangerConfirmationDialog message="Are you sure you want to delete this tweet?"/>, {
         title: 'Confirm Delete',
         showCloseIcon: false,
       });
@@ -88,8 +90,10 @@ function Tweet_Info(props: any) {
           }
         >
           <ul className=" bg-gray-100 mb-40 right-8 absolute bg-gray-100 z-10 cursor-pointer" >
-          {props?.loggedUser?.id == props?.tweet?.user?.id ? <button onClick={handleDeleteButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
+          {props?.loggedUser?.id == props?.tweet?.user?.id || props?.loggedUser?.isAdmin ? <button onClick={handleDeleteButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
           " >Delete</button>: null}
+          {props?.loggedUser?.isAdmin &&  location.pathname.includes("/admin/reported-tweets") ? <button onClick={handleDeleteButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
+          " >Ignore</button>: null}
             <a href="/profile" className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" >block</a>
             <a className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200

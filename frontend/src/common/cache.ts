@@ -77,11 +77,6 @@ const createPaginationAndCombineUsersElements = (keyArgs: any[]) => ({
         let k = 0;
         for (i = 0; i < merged.users.length; i++) {
             for (j = k; j < incoming.users.length; j++) {
-                if (parseInt(merged.users[i].__ref.split(":")[1]) < parseInt(incoming.users[j].__ref.split(":")[1])) {
-                    merged.users.unshift(incoming.users[j])
-                    k++;
-                    break
-                }
                 if (merged.users[i].__ref == incoming.users[j].__ref) {
                     merged.users[i] = incoming.users[j]
                     k++
@@ -135,7 +130,8 @@ export const cache: InMemoryCache = new InMemoryCache({
                 ]),
                 users: createPaginationAndCombineUsersElements(["search"]),
                 reportedTweets: createPaginationAndCombineTweetsElements([]),
-                reportedUsers: createPaginationAndCombineUsersElements([])
+                reportedUsers: createPaginationAndCombineUsersElements([]),
+                NSFWTweets: createPaginationAndCombineTweetsElements([])
             },
         },
     },

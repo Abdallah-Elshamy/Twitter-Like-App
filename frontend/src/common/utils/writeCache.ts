@@ -126,27 +126,28 @@ const writeTweetsProfileData = async (
             },
         });
     }
-    tweets && cache.writeQuery({
-        query: Tweets,
-        variables: {
-            userId,
-            filter,
-            isSFW,
-        },
-        data: {
-            tweets: {
-                tweets: [newTweet, ...(tweets?.tweets?.tweets || [])],
-                totalCount: tweets?.tweets?.totalCount + 1,
+    tweets &&
+        cache.writeQuery({
+            query: Tweets,
+            variables: {
+                userId,
+                filter,
+                isSFW,
             },
-        },
-    });
+            data: {
+                tweets: {
+                    tweets: [newTweet, ...(tweets?.tweets?.tweets || [])],
+                    totalCount: tweets?.tweets?.totalCount + 1,
+                },
+            },
+        });
 };
 
 const decrementTweetsProfileData = (
     isSFW: boolean,
     cache: any,
     userId: number,
-    filter: string,
+    filter: string
 ) => {
     const tweets: any = cache.readQuery({
         query: Tweets,
@@ -173,7 +174,10 @@ const decrementTweetsProfileData = (
         });
 };
 
-export const updateTweetsCacheForCreateTweet = async(cache: any, { data }: any) => {
+export const updateTweetsCacheForCreateTweet = async (
+    cache: any,
+    { data }: any
+) => {
     const profile = parseJwt(localStorage.getItem("token"));
     const newTweet = data.createTweet;
     writeTweetsFeedData(true, cache, newTweet);
@@ -195,20 +199,25 @@ export const updateTweetsCacheForCreateTweet = async(cache: any, { data }: any) 
     incrementTweetsCount(cache, profile.id);
 };
 
-export const updateTweetsCacheForDeleteTweet = (cache: any, tweet: any) => {
+export const updateTweetsCacheForDeleteTweet = (
+    cache: any,
+    tweet: any,
+) => {
     const profile = parseJwt(localStorage.getItem("token"));
-    decrementTweetsCount(cache, profile.id)
-    decrementTweetsFeedData(true, cache);
-    decrementTweetsFeedData(false, cache);
-    decrementTweetsProfileData(true, cache, profile.id, "");
-    decrementTweetsProfileData(false, cache, profile.id, "");
-    decrementTweetsProfileData(true, cache, profile.id, "replies&tweets");
-    decrementTweetsProfileData(false, cache, profile.id, "replies&tweets");
-    if(tweet?.mediaURLs?.length > 0) {
-        decrementTweetsProfileData(true, cache, profile.id, "media");
-        decrementTweetsProfileData(false, cache, profile.id, "media");
+    if (tweet?.user?.id == profile?.id) {
+        decrementTweetsCount(cache, profile.id);
+        decrementTweetsFeedData(true, cache);
+        decrementTweetsFeedData(false, cache);
+        decrementTweetsProfileData(true, cache, profile.id, "");
+        decrementTweetsProfileData(false, cache, profile.id, "");
+        decrementTweetsProfileData(true, cache, profile.id, "replies&tweets");
+        decrementTweetsProfileData(false, cache, profile.id, "replies&tweets");
+        if (tweet?.mediaURLs?.length > 0) {
+            decrementTweetsProfileData(true, cache, profile.id, "media");
+            decrementTweetsProfileData(false, cache, profile.id, "media");
+        }
     }
-    if(tweet?.isLiked) {
+    if (tweet?.isLiked) {
         decrementTweetsProfileData(true, cache, profile.id, "likes");
         decrementTweetsProfileData(false, cache, profile.id, "likes");
     }

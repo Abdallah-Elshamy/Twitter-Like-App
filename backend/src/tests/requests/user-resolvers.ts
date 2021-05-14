@@ -643,6 +643,22 @@ export const banUser = async (
         });
 };
 
+export const unbanUser = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                unbanUser(userId: "${userId}")
+            }
+            `,
+        });
+};
+
 export const reportUser = async (
     userId: number,
     authToken: string | undefined = undefined

@@ -16,6 +16,7 @@ export default gql`
         follow(userId: ID!): Boolean
         unfollow(userId: ID!): Boolean
         banUser(userId: ID!): Boolean!
+        unbanUser(userId: ID!): Boolean!
         reportUser(userId: ID!, reason: String): Boolean!
         ignoreReportedUser(userId: ID!): Boolean!
         muteUser(userId: ID!): Boolean!

@@ -245,7 +245,7 @@ export const updateTweetsCacheForIgnoreReportedTweet = (
         });
 };
 
-export const updateUsersCacheForBanUser = (cache: any, user: any) => {
+const removeUserFromReportedUsers = (cache: any, user: any) => {
     let reportedUsers: any = cache.readQuery({
         query: ReportedUsers,
     });
@@ -254,14 +254,23 @@ export const updateUsersCacheForBanUser = (cache: any, user: any) => {
             query: ReportedUsers,
             data: {
                 reportedUsers: {
-                    __typename: "BanUser",
+                    __typename: "BanOrIgnoreUser",
                     users: reportedUsers?.reportedUsers?.users?.filter(
                         (existingUser: any) => existingUser?.id != user?.id
                     ),
                     totalCount: reportedUsers?.reportedUsers?.totalCount - 1,
                 },
             },
-        }) &&
+        });
+    return reportedUsers;
+};
+
+export const updateUsersCacheForIgnoreReportedUser = (cache: any, user: any) => {
+    removeUserFromReportedUsers(cache, user);
+};
+
+export const updateUsersCacheForBanUser = (cache: any, user: any) => {
+    removeUserFromReportedUsers(cache, user) &&
         cache.modify({
             id: `User:${user.id}`,
             fields: {

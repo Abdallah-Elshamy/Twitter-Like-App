@@ -32,8 +32,8 @@ const createPaginationAndCombine = (keyArgs: any[]) => ({
 });
 const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
     merge(existing: any, incoming: any) {
-        if (incoming?.__typename == "IgnoreReportedTweet"){
-            return incoming
+        if (incoming?.__typename && (incoming?.__typename == "IgnoreReportedTweet" || incoming?.__typename == "ReportTweet")) {
+            return incoming;
         }
         const merged = existing
             ? { totalCount: existing.totalCount, tweets: [...existing.tweets] }
@@ -44,20 +44,23 @@ const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
         let k = 0;
         for (i = 0; i < merged.tweets.length; i++) {
             for (j = k; j < incoming.tweets.length; j++) {
-                if (parseInt(merged.tweets[i].__ref.split(":")[1]) < parseInt(incoming.tweets[j].__ref.split(":")[1])) {
-                    merged.tweets.unshift(incoming.tweets[j])
+                if (
+                    parseInt(merged.tweets[i].__ref.split(":")[1]) <
+                    parseInt(incoming.tweets[j].__ref.split(":")[1])
+                ) {
+                    merged.tweets.unshift(incoming.tweets[j]);
                     k++;
-                    break
+                    break;
                 }
                 if (merged.tweets[i].__ref == incoming.tweets[j].__ref) {
                     merged.tweets[i] = incoming.tweets[j];
-                    k++;        
+                    k++;
                     break;
                 }
             }
-        }  
+        }
         if (i == merged.tweets.length) i--;
-        for (j=k; j < incoming.tweets.length; j++) {
+        for (j = k; j < incoming.tweets.length; j++) {
             merged.tweets[++i] = incoming.tweets[j];
         }
         merged.tweets.slice(0, i + 1);
@@ -71,7 +74,8 @@ const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
 
 const createPaginationAndCombineUsersElements = (keyArgs: any[]) => ({
     merge(existing: any, incoming: any) {
-        if (incoming.__typename == "BanOrIgnoreUser") {
+        console.log("incoming data", incoming);
+        if (incoming?.__typename && (incoming?.__typename == "BanOrIgnoreUser" || incoming?.__typename == "ReportUser")) {
             return incoming;
         }
         const merged = existing
@@ -84,14 +88,14 @@ const createPaginationAndCombineUsersElements = (keyArgs: any[]) => ({
         for (i = 0; i < merged.users.length; i++) {
             for (j = k; j < incoming.users.length; j++) {
                 if (merged.users[i].__ref == incoming.users[j].__ref) {
-                    merged.users[i] = incoming.users[j]
-                    k++
+                    merged.users[i] = incoming.users[j];
+                    k++;
                     break;
                 }
             }
         }
         if (i == merged.users.length) i--;
-        for (j=k; j < incoming.users.length; j++) {
+        for (j = k; j < incoming.users.length; j++) {
             merged.users[++i] = incoming.users[j];
         }
         merged.users.slice(0, i + 1);
@@ -137,15 +141,14 @@ export const cache: InMemoryCache = new InMemoryCache({
                 users: createPaginationAndCombineUsersElements(["search"]),
                 reportedTweets: createPaginationAndCombineTweetsElements([]),
                 reportedUsers: createPaginationAndCombineUsersElements([]),
-                NSFWTweets: createPaginationAndCombineTweetsElements([])
+                NSFWTweets: createPaginationAndCombineTweetsElements([]),
             },
         },
     },
 });
 
-export const searchBarVar: ReactiveVar<searchBarValue> = makeVar<searchBarValue>(
-    { value: "" }
-);
+export const searchBarVar: ReactiveVar<searchBarValue> =
+    makeVar<searchBarValue>({ value: "" });
 
 export const EditProfileImageVal: ReactiveVar<{
     Image: object | false;

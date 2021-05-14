@@ -5,13 +5,15 @@ import deleteTweetMutation from '../../common/queries/deleteTweet'
 import IgnoreReportedTweet from "../../common/queries/ignoreReportedTweet"
 import BanUser from "../../common/queries/banUser"
 import UnbanUser from "../../common/queries/unbanUser"
+import ReportTweet from "../../common/queries/reportTweet"
+import ReportUser from "../../common/queries/reportUser"
 import {DeleteMedia} from '../../common/queries/DeleteMedia'
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useMutation } from "@apollo/client"
 import {CustomDialog} from 'react-st-modal'
 import DangerConfirmationDialog from "../../UI/Dialogs/DangerConfirmationDialog"
 import ErrorDialog from "../../UI/Dialogs/ErroDialog"
-import {updateTweetsCacheForDeleteTweet, updateTweetsCacheForIgnoreReportedTweet, updateUsersCacheForBanUser, updateUsersCacheForUnBanUser} from "../../common/utils/writeCache"
+import {updateTweetsCacheForDeleteTweet, updateTweetsCacheForIgnoreReportedTweet, updateUsersCacheForBanUser, updateUsersCacheForUnBanUser, updateTweetsCacheForReportTweet, updateUsersCacheForReportUser} from "../../common/utils/writeCache"
 
 export interface TweetData {
   user?: {
@@ -38,6 +40,11 @@ function Tweet_Info(props: any) {
       updateUsersCacheForBanUser(cache, tweet.user)
     }
   })
+  const [reportUser] = useMutation(ReportUser, {
+    update(cache) {
+      updateUsersCacheForReportUser(cache, tweet.user)
+    }
+  })
   const [unbanUser] = useMutation(UnbanUser, {
     update(cache) {
       updateUsersCacheForUnBanUser(cache, tweet.user)
@@ -57,6 +64,11 @@ function Tweet_Info(props: any) {
   const [ignoreTweet] = useMutation(IgnoreReportedTweet, {
     update(cache) {
       updateTweetsCacheForIgnoreReportedTweet(cache, tweet)
+    }
+  })
+  const [reportTweet] = useMutation(ReportTweet, {
+    update(cache) {
+      updateTweetsCacheForReportTweet(cache, tweet)
     }
   })
 
@@ -126,6 +138,13 @@ function Tweet_Info(props: any) {
   const handleUnbanButton = (e: any) => {
     handleToolBoxButtons(e, unbanUser, "Are you sure you want to unban this user?", "Confirm Unban")
   }
+  const handleReportTweetButton = (e: any) => {
+    handleToolBoxButtons(e, reportTweet, "Are you sure you want to report this tweet?", "Confirm Report")
+  }
+
+  const handleReportUserButton = (e: any) => {
+    handleToolBoxButtons(e, reportUser, "Are you sure you want to report this user?", "Confirm Report")
+  }
   return (
 
     <div className="tweet-data py-1">
@@ -148,10 +167,10 @@ function Tweet_Info(props: any) {
           " >Delete</button>: null}
           {props?.loggedUser?.isAdmin &&  location.pathname.includes("/admin/reported-tweets") ? <button onClick={handleIgnoreButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           " >Ignore</button>: null}
-            <a href="/profile" className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
-          hover:text-gray-900" >block</a>
-            <a className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
-          hover:text-gray-900" >mute</a>
+           {props?.loggedUser?.id != tweet?.user?.id? <button onClick={handleReportTweetButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
+          " >Report Tweet</button>: null}
+          {props?.loggedUser?.id != tweet?.user?.id && !tweet?.user?.isBanned? <button onClick={handleReportUserButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
+          " >Report User</button>: null}
 
           </ul>
         </ToolBox>

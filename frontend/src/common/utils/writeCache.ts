@@ -269,6 +269,41 @@ export const updateUsersCacheForIgnoreReportedUser = (cache: any, user: any) => 
     removeUserFromReportedUsers(cache, user);
 };
 
+export const updateUsersCacheForReportUser = (cache: any, user: any) => {
+    let reportedUsers: any = cache.readQuery({
+        query: ReportedUsers,
+    });
+    console.log("reportedUsers", reportedUsers)
+    reportedUsers &&
+        cache.writeQuery({
+            query: ReportedUsers,
+            data: {
+                reportedUsers: {
+                    __typename:"ReportUser",
+                    users: [user, ...reportedUsers?.reportedUsers?.users],
+                    totalCount: reportedUsers?.reportedUsers?.totalCount + 1,
+                },
+            },
+        });
+}
+
+export const updateTweetsCacheForReportTweet = (cache: any, tweet: any) => {
+    let reportedTweets: any = cache.readQuery({
+        query: ReportedTweets,
+    });
+    reportedTweets &&
+        cache.writeQuery({
+            query: ReportedTweets,
+            data: {
+                reportedTweets: {
+                    __typename:"ReportTweet",
+                    tweets: [tweet, ...reportedTweets?.reportedTweets?.tweets],
+                    totalCount: reportedTweets?.reportedTweets?.totalCount + 1,
+                },
+            },
+        });
+}
+
 export const updateUsersCacheForBanUser = (cache: any, user: any) => {
     removeUserFromReportedUsers(cache, user) &&
         cache.modify({

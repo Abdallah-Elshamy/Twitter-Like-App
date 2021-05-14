@@ -9,8 +9,9 @@ import { parseJwt } from '../../../../common/decode';
 import { useHistory, useLocation } from 'react-router';
 import BanUser from "../../../../common/queries/banUser"
 import UnbanUser from "../../../../common/queries/unbanUser"
+import ReportUser from "../../../../common/queries/reportUser"
 import IgnoreReportedUser from "../../../../common/queries/ignoreReportedUser"
-import {updateUsersCacheForBanUser, updateUsersCacheForIgnoreReportedUser, updateUsersCacheForUnBanUser} from "../../../../common/utils/writeCache"
+import {updateUsersCacheForBanUser, updateUsersCacheForIgnoreReportedUser, updateUsersCacheForUnBanUser, updateUsersCacheForReportUser} from "../../../../common/utils/writeCache"
 import {CustomDialog} from 'react-st-modal'
 import DangerConfirmationDialog from "../../../../UI/Dialogs/DangerConfirmationDialog"
 import ErrorDialog from "../../../../UI/Dialogs/ErroDialog"
@@ -27,6 +28,11 @@ const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, usernam
   const [unbanUser] = useMutation(UnbanUser, {
     update(cache) {
       updateUsersCacheForUnBanUser(cache, user)
+    }
+  })
+  const [reportUser] = useMutation(ReportUser, {
+    update(cache) {
+      updateUsersCacheForReportUser(cache, user)
     }
   })
   const [ignoreReportedUser] = useMutation(IgnoreReportedUser, {
@@ -72,6 +78,9 @@ const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, usernam
   const handleUnbanButton = (e: any) => {
     handleToolBoxButtons(e, unbanUser, "Are you sure you want to unban this user?", "Confirm Unban")
   }
+  const handleReportUserButton = (e: any) => {
+    handleToolBoxButtons(e, reportUser, "Are you sure you want to report this user?", "Confirm Report")
+  }
   const profilePicture = (imageURI === undefined || imageURI === null) ?
     <svg className="w-full h-full" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clipRule="evenodd" /></svg> :
     <img className="rounded-full w-full" src={imageURI} alt="user" />;
@@ -103,10 +112,8 @@ const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, usernam
           " >Unban</button>: null}
           {loggedUser?.isAdmin && location.pathname.includes("/admin") ? <button onClick={handleIgnoreButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           " >Ignore</button>:null}
-            <a href="/profile" className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
-          hover:text-gray-900" >block</a>
-            <a className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
-          hover:text-gray-900" >mute</a>
+          {loggedUser?.id != id && !user.isBanned? <button onClick={handleReportUserButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
+          " >Report</button>: null}
 
           </ul>
         </ToolBox>

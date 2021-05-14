@@ -3,6 +3,7 @@ import { FeedTweets } from "../queries/Feedtweets";
 import { LoggedUser } from "../queries/Userqery";
 import { parseJwt } from "../decode";
 import { apolloClient } from "../apolloClient";
+import ReportedTweets from "../queries/reportedTweets"
 
 const writeTweetsFeedData = async (
     isSFW: boolean,
@@ -221,4 +222,25 @@ export const updateTweetsCacheForDeleteTweet = (
         decrementTweetsProfileData(true, cache, profile.id, "likes");
         decrementTweetsProfileData(false, cache, profile.id, "likes");
     }
+};
+
+export const updateTweetsCacheForIgnoreReportedTweet = (
+    cache: any,
+    tweet: any,
+) => {
+    let reportedTweets: any = cache.readQuery({
+        query: ReportedTweets,
+    });
+    console.log("reported Tweets", reportedTweets)
+    reportedTweets &&
+        cache.writeQuery({
+            query: ReportedTweets,
+            data: {
+                reportedTweets: {
+                    __typename: "IgnoreReportedTweet",
+                    tweets: reportedTweets?.reportedTweets?.tweets?.filter((existingTweet: any) => existingTweet?.id != tweet?.id),
+                    totalCount: reportedTweets?.reportedTweets?.totalCount - 1,
+                },
+            },
+        });
 };

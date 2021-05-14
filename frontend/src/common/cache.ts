@@ -32,6 +32,9 @@ const createPaginationAndCombine = (keyArgs: any[]) => ({
 });
 const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
     merge(existing: any, incoming: any) {
+        if (incoming?.__typename == "IgnoreReportedTweet"){
+            return incoming
+        }
         const merged = existing
             ? { totalCount: existing.totalCount, tweets: [...existing.tweets] }
             : { totalCount: 0, tweets: [] };

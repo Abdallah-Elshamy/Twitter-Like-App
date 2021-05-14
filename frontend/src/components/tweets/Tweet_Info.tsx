@@ -2,13 +2,14 @@ import './tweet.css';
 import { timeConverter } from '../../common/utils/timestamp';
 import { ToolBox } from '../sideBar/toolbox/toolbox';
 import deleteTweetMutation from '../../common/queries/deleteTweet'
+import IgnoreReportedTweet from "../../common/queries/ignoreReportedTweet"
 import {DeleteMedia} from '../../common/queries/DeleteMedia'
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useMutation } from "@apollo/client"
 import {CustomDialog} from 'react-st-modal'
 import DangerConfirmationDialog from "../../UI/Dialogs/DangerConfirmationDialog"
 import ErrorDialog from "../../UI/Dialogs/ErroDialog"
-import {updateTweetsCacheForDeleteTweet} from "../../common/utils/writeCache"
+import {updateTweetsCacheForDeleteTweet, updateTweetsCacheForIgnoreReportedTweet} from "../../common/utils/writeCache"
 
 export interface TweetData {
   user?: {
@@ -41,6 +42,11 @@ function Tweet_Info(props: any) {
       updateTweetsCacheForDeleteTweet(cache, tweet)
     }
   }})
+  const [ignoreTweet] = useMutation(IgnoreReportedTweet, {
+    update(cache) {
+      updateTweetsCacheForIgnoreReportedTweet(cache, tweet)
+    }
+  })
 
   const goToProfile = () => {
     history.push({
@@ -75,6 +81,27 @@ function Tweet_Info(props: any) {
       });
     }
   }
+  const handleIgnoreButton = async() => {
+    try {
+      const result = await CustomDialog(<DangerConfirmationDialog message="Are you sure you want to ignore this tweet?"/>, {
+        title: 'Confirm Ignore',
+        showCloseIcon: false,
+      });
+      if (result) {
+        await ignoreTweet({
+          variables: {
+            id: props.tweetId
+          }
+        })
+      }  
+    }
+    catch (e) {
+      const error = await CustomDialog(<ErrorDialog message={e.message} />, {
+        title: 'Error!',
+        showCloseIcon: false,
+      });
+    }
+  }
   return (
 
     <div className="tweet-data py-1">
@@ -92,7 +119,7 @@ function Tweet_Info(props: any) {
           <ul className=" bg-gray-100 mb-40 right-8 absolute bg-gray-100 z-10 cursor-pointer" >
           {props?.loggedUser?.id == props?.tweet?.user?.id || props?.loggedUser?.isAdmin ? <button onClick={handleDeleteButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
           " >Delete</button>: null}
-          {props?.loggedUser?.isAdmin &&  location.pathname.includes("/admin/reported-tweets") ? <button onClick={handleDeleteButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
+          {props?.loggedUser?.isAdmin &&  location.pathname.includes("/admin/reported-tweets") ? <button onClick={handleIgnoreButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           " >Ignore</button>: null}
             <a href="/profile" className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" >block</a>

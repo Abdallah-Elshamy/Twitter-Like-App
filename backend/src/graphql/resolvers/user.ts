@@ -544,8 +544,16 @@ export default {
                 error.statusCode = 403;
                 throw error;
             }
-            userToBeBanned.isBanned = true;
-            await userToBeBanned.save();
+
+            await db.transaction(async (transaction) => {
+                userToBeBanned.isBanned = true;
+                await userToBeBanned.save({ transaction });
+                await ReportedUser.destroy({
+                    where: { reportedId: userId },
+                    transaction,
+                });
+            });
+
             return true;
         },
         reportUser: async (

@@ -10,6 +10,7 @@ query reportedTweets ($page:Int){
           imageURL
           name
           userName
+          isBanned
         }
         id
         text 

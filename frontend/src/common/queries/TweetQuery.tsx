@@ -10,6 +10,7 @@ query tweets ($userId:ID! $filter:String $page:Int $isSFW:Boolean){
           imageURL
           name
           userName
+          isBanned
         }
         id
         text 

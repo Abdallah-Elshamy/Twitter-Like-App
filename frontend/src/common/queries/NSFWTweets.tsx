@@ -10,6 +10,7 @@ query NSFWTweets ($page:Int){
           imageURL
           name
           userName
+          isBanned
         }
         id
         text 

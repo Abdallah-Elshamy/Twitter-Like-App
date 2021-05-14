@@ -3,7 +3,8 @@ import { FeedTweets } from "../queries/Feedtweets";
 import { LoggedUser } from "../queries/Userqery";
 import { parseJwt } from "../decode";
 import { apolloClient } from "../apolloClient";
-import ReportedTweets from "../queries/reportedTweets"
+import ReportedTweets from "../queries/reportedTweets";
+import ReportedUsers from "../queries/reportedUsers";
 
 const writeTweetsFeedData = async (
     isSFW: boolean,
@@ -200,10 +201,7 @@ export const updateTweetsCacheForCreateTweet = async (
     incrementTweetsCount(cache, profile.id);
 };
 
-export const updateTweetsCacheForDeleteTweet = (
-    cache: any,
-    tweet: any,
-) => {
+export const updateTweetsCacheForDeleteTweet = (cache: any, tweet: any) => {
     const profile = parseJwt(localStorage.getItem("token"));
     if (tweet?.user?.id == profile?.id) {
         decrementTweetsCount(cache, profile.id);
@@ -226,21 +224,61 @@ export const updateTweetsCacheForDeleteTweet = (
 
 export const updateTweetsCacheForIgnoreReportedTweet = (
     cache: any,
-    tweet: any,
+    tweet: any
 ) => {
     let reportedTweets: any = cache.readQuery({
         query: ReportedTweets,
     });
-    console.log("reported Tweets", reportedTweets)
+    console.log("reported Tweets", reportedTweets);
     reportedTweets &&
         cache.writeQuery({
             query: ReportedTweets,
             data: {
                 reportedTweets: {
                     __typename: "IgnoreReportedTweet",
-                    tweets: reportedTweets?.reportedTweets?.tweets?.filter((existingTweet: any) => existingTweet?.id != tweet?.id),
+                    tweets: reportedTweets?.reportedTweets?.tweets?.filter(
+                        (existingTweet: any) => existingTweet?.id != tweet?.id
+                    ),
                     totalCount: reportedTweets?.reportedTweets?.totalCount - 1,
                 },
             },
         });
+};
+
+export const updateUsersCacheForBanUser = (cache: any, user: any) => {
+    let reportedUsers: any = cache.readQuery({
+        query: ReportedUsers,
+    });
+    reportedUsers &&
+        cache.writeQuery({
+            query: ReportedUsers,
+            data: {
+                reportedUsers: {
+                    __typename: "BanUser",
+                    users: reportedUsers?.reportedUsers?.users?.filter(
+                        (existingUser: any) => existingUser?.id != user?.id
+                    ),
+                    totalCount: reportedUsers?.reportedUsers?.totalCount - 1,
+                },
+            },
+        }) &&
+        cache.modify({
+            id: `User:${user.id}`,
+            fields: {
+                isBanned(prevTweets: any) {
+                    return true;
+                },
+            },
+        });
+};
+
+export const updateUsersCacheForUnBanUser = (cache: any, user: any) => {
+    cache.modify({
+        id: `User:${user.id}`,
+        fields: {
+            isBanned(prevTweets: any) {
+                return false;
+            },
+        },
+    });
 };

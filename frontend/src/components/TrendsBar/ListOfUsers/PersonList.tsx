@@ -7,6 +7,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import PersonItem from "./PersonItem/PersonItem";
 import Loading from '../../../UI/Loading';
 import ReportedUsers from "../../../common/queries/reportedUsers"
+import {parseJwt} from "../../../common/utils/jwtDecoder"
 
 interface PersonListProps {
     queryName: string;
@@ -16,6 +17,10 @@ interface PersonListProps {
 }
 
 const PersonList: React.FC<PersonListProps> = (props) => {
+    let loggedUser: any;
+    if (localStorage.getItem("token")) {
+        loggedUser = parseJwt(localStorage?.getItem("token")!)
+    }
     const {page, setPage, searchQ} = props
     PersonList.defaultProps= {
         queryName: "Get_Search_Result"
@@ -72,6 +77,8 @@ const PersonList: React.FC<PersonListProps> = (props) => {
                         imageURI={person.imageURI}
                         isFollowing={person.isFollowing}
                         bio={person.bio}
+                        loggedUser={loggedUser}
+                        user={person}
                     />
                 );
             })}

@@ -1,16 +1,29 @@
 import React from 'react';
 import {ToolBox} from "../../../sideBar/toolbox/toolbox"
 import { PersonEntity } from '../../../../common/TypesAndInterfaces';
-
+import {useMutation} from "@apollo/client"
 import './PersonItem.css'
 import '../../../profile/profile.css'
 import FollowButton from '../../../FollowButton/FollowButton';
 import { parseJwt } from '../../../../common/decode';
 import { useHistory } from 'react-router';
+import BanUser from "../../../../common/queries/banUser"
+import {updateUsersCacheForBanUser} from "../../../../common/utils/writeCache"
+import {CustomDialog} from 'react-st-modal'
+import DangerConfirmationDialog from "../../../../UI/Dialogs/DangerConfirmationDialog"
+import ErrorDialog from "../../../../UI/Dialogs/ErroDialog"
 
 
-const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, username, followed = false, imageURI, numberOfFollowers }) => {
+const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, username, followed = false, imageURI, numberOfFollowers, loggedUser, user }) => {
   const history = useHistory();
+  const [banUser] = useMutation(BanUser, {
+    variables:{
+      userId:id 
+    },
+    update(cache) {
+      updateUsersCacheForBanUser(cache, user)
+    }
+  })
 
   const goToProfile = () => {
     history.push({
@@ -18,11 +31,31 @@ const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, usernam
     })
 
   }
-
+  const handleBanButton = async(e:any) => {
+    e.stopPropagation();
+    try {
+      const result = await CustomDialog(<DangerConfirmationDialog message="Are you sure you want to ban this user?"/>, {
+        title: 'Confirm Ban',
+        showCloseIcon: false,
+      });
+      if (result) {
+        await banUser({
+          variables: {
+            userId: id
+          }
+        })
+      }  
+    }
+    catch (e) {
+      const error = await CustomDialog(<ErrorDialog message={e.message} />, {
+        title: 'Error!',
+        showCloseIcon: false,
+      });
+    }
+  }
   const profilePicture = (imageURI === undefined || imageURI === null) ?
     <svg className="w-full h-full" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clipRule="evenodd" /></svg> :
     <img className="rounded-full w-full" src={imageURI} alt="user" />;
-
   return (
 
     <div className=" person-item flex  justify-between items-start p-3 hover:bg-gray-100 relative cursor-pointer" onClick={goToProfile}>
@@ -46,8 +79,9 @@ const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, usernam
           }
         >
           <ul className=" bg-gray-100 mb-40 right-8 absolute bg-gray-100 z-10 cursor-pointer " >
-          {/* {props?.loggedUser?.id == props?.tweet?.user?.id ? <button onClick={handleDeleteButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
-          " >Delete</button>: null} */}
+          {loggedUser?.isAdmin && loggedUser.id != id && !user?.isBanned ? <button onClick={handleBanButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
+          " >Ban</button>: loggedUser?.isAdmin && user?.isBanned ? <button onClick={handleBanButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
+          " >Unban</button>: null}
             <a href="/profile" className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" >block</a>
             <a className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200

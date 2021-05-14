@@ -71,6 +71,9 @@ const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
 
 const createPaginationAndCombineUsersElements = (keyArgs: any[]) => ({
     merge(existing: any, incoming: any) {
+        if (incoming.__typename == "BanUser") {
+            return incoming;
+        }
         const merged = existing
             ? { totalCount: existing.totalCount, users: [...existing.users] }
             : { totalCount: 0, users: [] };

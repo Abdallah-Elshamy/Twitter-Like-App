@@ -10,6 +10,7 @@ export const ReportedUsers = gql`
                 username: userName
                 imageURI: imageURL
                 bio
+                isBanned
             }
             totalCount
         }

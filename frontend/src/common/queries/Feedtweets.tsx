@@ -9,6 +9,7 @@ query feed_tweets($isSFW:Boolean, $page: Int){
             imageURL
             name
             userName
+            isBanned
           }
           id
           text 

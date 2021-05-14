@@ -9,6 +9,7 @@ mutation EditUser ($userInput:UserUpdateInput!) {
    name,
    birthDate,
    bio
+   isBanned
  }
 }
 `;

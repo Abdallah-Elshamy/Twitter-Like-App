@@ -3,13 +3,14 @@ import { timeConverter } from '../../common/utils/timestamp';
 import { ToolBox } from '../sideBar/toolbox/toolbox';
 import deleteTweetMutation from '../../common/queries/deleteTweet'
 import IgnoreReportedTweet from "../../common/queries/ignoreReportedTweet"
+import BanUser from "../../common/queries/banUser"
 import {DeleteMedia} from '../../common/queries/DeleteMedia'
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useMutation } from "@apollo/client"
 import {CustomDialog} from 'react-st-modal'
 import DangerConfirmationDialog from "../../UI/Dialogs/DangerConfirmationDialog"
 import ErrorDialog from "../../UI/Dialogs/ErroDialog"
-import {updateTweetsCacheForDeleteTweet, updateTweetsCacheForIgnoreReportedTweet} from "../../common/utils/writeCache"
+import {updateTweetsCacheForDeleteTweet, updateTweetsCacheForIgnoreReportedTweet, updateUsersCacheForBanUser} from "../../common/utils/writeCache"
 
 export interface TweetData {
   user?: {
@@ -31,6 +32,11 @@ function Tweet_Info(props: any) {
   console.log("admin path", location.pathname.includes("/admin"))
   const {tweet} = props
   const [deleteMedia] = useMutation(DeleteMedia)
+  const [banUser] = useMutation(BanUser, {
+    update(cache) {
+      updateUsersCacheForBanUser(cache, tweet.user)
+    }
+  })
   const [deleteTweet] = useMutation(deleteTweetMutation, {
     update(cache) {
       const normalizedId = cache.identify({
@@ -81,16 +87,17 @@ function Tweet_Info(props: any) {
       });
     }
   }
-  const handleIgnoreButton = async() => {
+  const handleToolBoxButtons = async(e: any, func:any, message:any, title:any) => {
     try {
-      const result = await CustomDialog(<DangerConfirmationDialog message="Are you sure you want to ignore this tweet?"/>, {
-        title: 'Confirm Ignore',
+      const result = await CustomDialog(<DangerConfirmationDialog message={message}/>, {
+        title,
         showCloseIcon: false,
       });
       if (result) {
-        await ignoreTweet({
+        await func({
           variables: {
-            id: props.tweetId
+            userId: tweet?.user?.id,
+            id: tweet?.id
           }
         })
       }  
@@ -101,6 +108,13 @@ function Tweet_Info(props: any) {
         showCloseIcon: false,
       });
     }
+  }
+  const handleIgnoreButton = (e: any) => {
+    handleToolBoxButtons(e, ignoreTweet, "Are you sure you want to ignore this reported tweet?", "Confirm Ignore")
+  }
+
+  const handleBanButton = (e:any) => {
+    handleToolBoxButtons(e, banUser, "Are you sure you want to ban this user?", "Confirm Ban")
   }
   return (
 
@@ -116,7 +130,10 @@ function Tweet_Info(props: any) {
             <i className="fas fa-ellipsis-h hover:bg-gray-400 p-1 px-2 rounded-full cursor-pointer"></i>
           }
         >
-          <ul className=" bg-gray-100 mb-40 right-8 absolute bg-gray-100 z-10 cursor-pointer" >
+          <ul className=" bg-gray-100 mb-40 right-8 absolute z-10 cursor-pointer" >
+          {props?.loggedUser?.isAdmin && props?.loggedUser?.id != tweet?.user?.id && !tweet?.user?.isBanned ? <button onClick={handleBanButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
+          " >Ban</button>: props?.loggedUser?.isAdmin && tweet?.user?.isBanned ? <button onClick={handleBanButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
+          " >Unban</button>: null}
           {props?.loggedUser?.id == props?.tweet?.user?.id || props?.loggedUser?.isAdmin ? <button onClick={handleDeleteButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
           " >Delete</button>: null}
           {props?.loggedUser?.isAdmin &&  location.pathname.includes("/admin/reported-tweets") ? <button onClick={handleIgnoreButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200

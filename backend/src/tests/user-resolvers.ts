@@ -33,6 +33,7 @@ import {
     createTweet,
     login,
     banUser,
+    unbanUser,
     reportUser,
     reportUserWithReason,
     reportedUsers,
@@ -348,8 +349,7 @@ describe("user-resolvers", (): void => {
                 id: "5",
                 userName: "strawhat",
                 name: "Monkey D. Luffy",
-                bio:
-                    "But a hero is a guy who gives out the meat to everyone else. I want to eat the damn meat!",
+                bio: "But a hero is a guy who gives out the meat to everyone else. I want to eat the damn meat!",
                 imageURL: "https://picsum.photos/200/300",
                 coverImageURL: "https://picsum.photos/200/300",
                 birthDate: "1970-01-01",
@@ -1136,6 +1136,83 @@ describe("user-resolvers", (): void => {
 
         it("fail to ban a non existing user", async () => {
             const response = await banUser(100, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No user was found with this id!",
+            });
+        });
+    });
+
+    describe("unbanUser resolver", () => {
+        let authToken: string;
+        let authTokenAdmin: string;
+        before(async () => {
+            await db.sync({ force: true });
+
+            await db.sync({ force: true });
+            await createUser("omarabdo997", "Omar Ali");
+            const group = await Group.create({
+                name: "admin",
+            });
+            const user = await User.findByPk(1);
+            user!.$add("groups", group);
+            const response = await login("omarabdo997", "myPrecious");
+            authTokenAdmin = response.body.data.login.token;
+
+            await createUserWithBio("bilbo11", "bilbo the wise");
+            const user2 = await User.findByPk(2);
+            const response2 = await login("bilbo11", "myPrecious");
+            authToken = response2.body.data.login.token;
+            
+            await User.create({
+                name: "omar ali",
+                userName: "omarali997",
+                email: "omarali@gmail.com",
+                hashedPassword: "12345678910",
+                birthDate: "1970-01-01",
+                isBanned: true,
+            });
+        });
+
+        it("succeeds in unbanning a user", async () => {
+            let user = await User.findByPk(3);
+            expect(user?.isBanned).to.be.true;
+            const response = await unbanUser(3, authTokenAdmin);
+            expect(response.body.data.unbanUser).to.be.true;
+            user = await User.findByPk(3);
+            expect(user?.isBanned).to.be.false;
+        });
+
+        it("fails to  unban user with no authorization header", async () => {
+            const response = await unbanUser(3);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+                message: "Invalid Token!",
+            });
+        });
+
+        it("fails to unban if user is not admin", async () => {
+            const response = await unbanUser(3, authToken);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 403,
+                message: "Only admins can unban users!",
+            });
+        });
+
+        it("fails to unban a non banned user", async () => {
+            const response = await unbanUser(2, authTokenAdmin);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "This user is not banned!",
+            });
+        });
+
+        it("fails to ban a non existing user", async () => {
+            const response = await unbanUser(0, authTokenAdmin);
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 404,

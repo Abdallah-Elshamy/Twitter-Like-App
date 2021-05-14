@@ -556,6 +556,47 @@ export default {
 
             return true;
         },
+        unbanUser: async (
+            parent: any,
+            args: { userId: number },
+            context: { req: CustomeRequest },
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            const { userId } = args;
+            if (authError) {
+                throw authError;
+            }
+            if (!user?.isAdmin) {
+                const error: CustomeError = new Error(
+                    "Only admins can unban users!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            const userToBeUnbanned = await User.findByPk(userId);
+            if (!userToBeUnbanned) {
+                const error: CustomeError = new Error(
+                    "No user was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+            if (!userToBeUnbanned?.isBanned) {
+                const error: CustomeError = new Error(
+                    "This user is not banned!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            await db.transaction(async (transaction) => {
+                userToBeUnbanned.isBanned = false;
+                await userToBeUnbanned.save({ transaction });
+            });
+
+            return true;
+        },
         reportUser: async (
             parent: any,
             args: { userId: number; reason: string },

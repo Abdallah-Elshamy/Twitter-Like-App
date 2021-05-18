@@ -25,6 +25,11 @@ export default gql`
         reportTweet(id: ID!, reason: String): Boolean!
         ignoreReportedTweet(id: ID!): Boolean!
     }
+
+    extend type Subscription {
+        liveFeed: NewFeedUpdates!
+    }
+
     type Tweet {
         id: ID!
         user: User!
@@ -57,5 +62,10 @@ export default gql`
     input TweetCreateInput {
         text: String!
         mediaURLs: [String]
+    }
+
+    type NewFeedUpdates {
+        tweet: Tweet!
+        followers: [ID]!
     }
 `;

@@ -6,6 +6,9 @@ import { Request } from "express";
 import fetch from "node-fetch";
 import { backOff } from "exponential-backoff";
 import { fn, col } from "sequelize";
+import pubsub from "../../messaging";
+import { withFilter } from "apollo-server-express";
+
 
 const PAGE_SIZE = 10;
 
@@ -610,6 +613,19 @@ export default {
 
                 return tweet;
             });
+
+            if (!process.env.TEST_ENVIROMENT) {
+                const followers = await user!.$get("followers", {
+                    attributes: ["id"],
+                });
+                const followersIds = followers.map((f) => f.id);
+                pubsub.publish("LIVE_FEED", {
+                    liveFeed: {
+                        tweet: tweet,
+                        followers: followersIds,
+                    },
+                });
+            }
             return tweet;
         },
 
@@ -888,6 +904,18 @@ export default {
                 });
             });
             return true;
+        },
+    },
+    Subscription: {
+        liveFeed: {
+            subscribe: withFilter(
+                () => pubsub.asyncIterator(["LIVE_FEED"]),
+                (payload: any, args: any, context: any) => {
+                    return payload.liveFeed.followers.includes(
+                        context.connection.context.id
+                    );
+                }
+            ),
         },
     },
     Tweet: {

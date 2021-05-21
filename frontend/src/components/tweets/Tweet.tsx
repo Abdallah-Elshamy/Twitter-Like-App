@@ -7,7 +7,7 @@ import { useHistory } from 'react-router';
 import Tweet_info from './Tweet_Info';
 import Tweet_img from './Tweet_img';
 import Tweet_toolbarIcons from './Tweet_toolbarIcons';
-import QuotedTweet from './quotedTweet';
+import QuotedTweet from './QoutedTweet';
 
 export interface TweetData {
   user?: {
@@ -45,14 +45,14 @@ function Tweet(props: any) {
   }
 
   return (
-    <div >
+    <div  >
 
 
       {/* the design of tweet */}
-      <div className="tweet-box mt-2" onClick={goToTweet} >
-        <Tweet_img imageURL={props.user.imageURL} id={props.user?.id} className="tweet-icon" />
+      <div className="flex  p-2" onClick={goToTweet} >
+        <Tweet_img imageURL={props.user.imageURL} id={props.user?.id} className="tweet-icon " />
 
-        <div className="tweet-aside">
+        <div className="w-full">
           <Tweet_info
             userName={props.user?.userName}
             createdAt={props.createdAt}
@@ -61,14 +61,12 @@ function Tweet(props: any) {
           />
 
           {/* the text/media of the original tweet */}
-          <div className="tweet-content">
+          <div className="tweet-content ml-2">
             <span>
               {props.text} {props.state}
             </span>
             {(props.state) === 'Q' ?
-              <QuotedTweet id={'id'}
-                text={'tweet.text'} /> : null
-
+              <QuotedTweet OTweet={props.originalTweet} /> : null
             }
             <Tweet_toolbarIcons
               repliesCount={props.repliesCount}

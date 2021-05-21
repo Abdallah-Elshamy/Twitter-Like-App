@@ -28,11 +28,12 @@ function TweetInfo(props: any) {
   }
   return (
 
-    <div className={`tweet-data py-1 ml-2 ${props.className}`}>
+    <div className={`flex flex-row my-1 px-2 w-full   ${props.className}`}>
+      <div></div>
       <a onClick={(e) => { goToProfile(); e.stopPropagation() }} className="font-bold mr-1 hover:underline">{props.name}</a>
       <p className="p--light-color"> @{props.userName}. </p>
       <p className="p--light-color px-1 hover:underline"> {props.createdAt ? timeConverter(Number(props.createdAt)) : null}</p>
-      <span className="tweet-ellipsis p--light-color z-10 ">
+      <span className="tweet-ellipsis p--light-color z-10 inline-block float-right">
 
 
         <ToolBox

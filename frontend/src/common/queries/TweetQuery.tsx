@@ -26,6 +26,7 @@ query tweets ($userId:ID! $filter:String $page:Int $isSFW:Boolean){
             name
             imageURL
           }
+          originalTweet{id}
         }
         id
         text 

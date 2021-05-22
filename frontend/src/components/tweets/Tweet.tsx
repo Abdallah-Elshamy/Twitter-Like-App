@@ -65,7 +65,7 @@ function Tweet(props: any) {
             <span>
               {props.text} {props.state}
             </span>
-            {(props.state) === 'Q' ?
+            {(props.state) === 'R' ?
               <QuotedTweet OTweet={props.originalTweet} /> : null
             }
             <Tweet_toolbarIcons

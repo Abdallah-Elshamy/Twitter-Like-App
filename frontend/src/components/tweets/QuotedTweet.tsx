@@ -45,6 +45,7 @@ function QuotedTweet({ OTweet }: any) {
           userName={OTweet.user?.userName}
           createdAt={OTweet.createdAt}
           name={OTweet.user?.name}
+          type={"Q"}
         />
 
         {/* the text/media of the original tweet */}

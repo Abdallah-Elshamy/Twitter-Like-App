@@ -26,7 +26,9 @@ query feed_tweets($isSFW:Boolean, $page: Int){
             name
             imageURL
           }
-          originalTweet{id}
+          originalTweet{id
+          
+          }
           mediaURLs
         }
         id

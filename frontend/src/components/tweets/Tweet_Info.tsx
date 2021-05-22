@@ -83,22 +83,22 @@ function TweetInfo(props: any) {
       <p className="p--light-color px-1 hover:underline"> {props.createdAt ? timeConverter(Number(props.createdAt)) : null}</p>
       <span className="tweet-ellipsis p--light-color z-10 inline-block float-right">
 
-
-        <ToolBox
-          design={
-            <i className="fas fa-ellipsis-h"></i>
-          }
-        >
-          <ul className=" bg-gray-100 mb-40 right-4 absolute bg-gray-100 " >
-            {props?.loggedUser?.id == props?.tweet?.user?.id ? <button onClick={handleDeleteButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
+        {props.type === 'Q' ? null :
+          <ToolBox
+            design={
+              <i className="fas fa-ellipsis-h"></i>
+            }
+          >
+            <ul className=" bg-gray-100 mb-40 right-4 absolute bg-gray-100 " >
+              {props?.loggedUser?.id == props?.tweet?.user?.id ? <button onClick={handleDeleteButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
           " >Delete</button> : null}
-            <a href="/profile" className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
+              <a href="/profile" className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" >block</a>
-            <a className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
+              <a className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" >mute</a>
 
-          </ul>
-        </ToolBox>
+            </ul>
+          </ToolBox>}
 
       </span>
     </div>

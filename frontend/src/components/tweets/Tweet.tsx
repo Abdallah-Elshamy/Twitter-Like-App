@@ -1,13 +1,11 @@
 //design of tweet with retweet
-
-import React from 'react'
 import './tweet.css';
 
 import { useHistory } from 'react-router';
 import Tweet_info from './Tweet_Info';
 import Tweet_img from './Tweet_img';
 import Tweet_toolbarIcons from './Tweet_toolbarIcons';
-import QuotedTweet from './QoutedTweet';
+import QuotedTweet from './QuotedTweet';
 
 export interface TweetData {
   user?: {
@@ -44,10 +42,9 @@ function Tweet(props: any) {
     })
   }
 
+
   return (
     <div  >
-
-
       {/* the design of tweet */}
       <div className="flex  p-2" onClick={goToTweet} >
         <Tweet_img imageURL={props.user.imageURL} id={props.user?.id} className="tweet-icon " />
@@ -58,6 +55,11 @@ function Tweet(props: any) {
             createdAt={props.createdAt}
             name={props.user?.name}
             id={props.user.id}
+            userId={props.user.id}
+            tweetMediaUrls={props.mediaUrls}
+            tweet={props.tweet}
+            tweetId={props.id}
+            loggedUser={props.loggedUser}
           />
 
           {/* the text/media of the original tweet */}
@@ -65,7 +67,7 @@ function Tweet(props: any) {
             <span>
               {props.text} {props.state}
             </span>
-            {(props.state) === 'R' ?
+            {(props.state) === 'Q' ?
               <QuotedTweet OTweet={props.originalTweet} /> : null
             }
             <Tweet_toolbarIcons

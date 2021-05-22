@@ -2,7 +2,7 @@ import { expect } from "chai";
 
 import { serverPromise } from "../app";
 import db from "../db";
-import { User, Tweet } from "../models";
+import { User, Tweet, Group } from "../models";
 import {
     getUser,
     createUser,
@@ -32,9 +32,53 @@ import {
     unlike,
     createTweet,
     login,
+    banUser,
+    unbanUser,
+    reportUser,
+    reportUserWithReason,
+    reportedUsers,
+    getUserWithOwnReports,
+    getUserWithReportedBy,
+    ignoreReportedUser,
+    muteUser,
+    unmuteUser,
 } from "./requests/user-resolvers";
 
 let server: any;
+
+const createUsers = async (it: number = 30) => {
+    const users = [];
+    for (let i = 0; i < it; i++) {
+        users.push(
+            await User.create({
+                name: `Test${i}`,
+                userName: `test${i}`,
+                email: `test${i}@gmail.com`,
+                hashedPassword: `123456789`,
+                birthDate: "1970-01-01",
+            })
+        );
+    }
+    return users;
+};
+
+const createTweets = async (
+    userId: number = 3,
+    state: string = "C",
+    it: number = 24
+) => {
+    const tweets = [];
+    for (let i = 0; i < it; i++) {
+        tweets.push(
+            await Tweet.create({
+                text: `tweet${i}`,
+                state,
+                userId,
+            })
+        );
+    }
+    return tweets;
+};
 
 describe("user-resolvers", (): void => {
     before(async () => {
@@ -80,6 +124,7 @@ describe("user-resolvers", (): void => {
                 followingCount: 16,
                 followersCount: 16,
                 birthDate: "1970-01-01",
+                isBanned: false,
             });
             // check that the followers of the followers of the user
             // are retrieved correctly
@@ -304,8 +349,7 @@ describe("user-resolvers", (): void => {
                 id: "5",
                 userName: "strawhat",
                 name: "Monkey D. Luffy",
-                bio:
-                    "But a hero is a guy who gives out the meat to everyone else. I want to eat the damn meat!",
+                bio: "But a hero is a guy who gives out the meat to everyone else. I want to eat the damn meat!",
                 imageURL: "https://picsum.photos/200/300",
                 coverImageURL: "https://picsum.photos/200/300",
                 birthDate: "1970-01-01",
@@ -1019,6 +1063,607 @@ describe("user-resolvers", (): void => {
         });
         after(async () => {
             await db.sync({ force: true });
+        });
+    });
+
+    describe("banUser resolver", () => {
+        let token: string;
+        before(async () => {
+            await db.sync({ force: true });
+            await createUser("omarabdo997", "omar ali");
+            const response = await login("omarabdo997", "myPrecious");
+            token = response.body.data.login.token;
+            await User.create({
+                name: "omar ali",
+                userName: "omarali997",
+                email: "omarali@gmail.com",
+                hashedPassword: "12345678910",
+                birthDate: "1970-01-01",
+            });
+        });
+
+        it("fail ban user authorization", async () => {
+            const response = await banUser(2);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+                message: "Invalid Token!",
+            });
+        });
+
+        it("fail ban if user is not admin", async () => {
+            const response = await banUser(2, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 403,
+                message: "Only admins can ban users!",
+            });
+            const group = await Group.create({
+                name: "admin",
+            });
+            const user = await User.findByPk(1);
+            user?.$add("groups", group);
+            const response2 = await login("omarabdo997", "myPrecious");
+            token = response2.body.data.login.token;
+        });
+
+        it("fail ban if trying to ban an admin user", async () => {
+            const response = await banUser(1, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 403,
+                message: "Admin user can not be banned!",
+            });
+        });
+
+        it("succeed in user ban", async () => {
+            let user = await User.findByPk(2);
+            expect(user?.isBanned).to.be.false;
+            const response = await banUser(2, token);
+            expect(response.body.data.banUser).to.be.true;
+            user = await User.findByPk(2);
+            expect(user?.isBanned).to.be.true;
+        });
+
+        it("fail to ban a banned user", async () => {
+            const response = await banUser(2, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "This user is already banned!",
+            });
+        });
+
+        it("fail to ban a non existing user", async () => {
+            const response = await banUser(100, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No user was found with this id!",
+            });
+        });
+    });
+
+    describe("unbanUser resolver", () => {
+        let authToken: string;
+        let authTokenAdmin: string;
+        before(async () => {
+            await db.sync({ force: true });
+
+            await db.sync({ force: true });
+            await createUser("omarabdo997", "Omar Ali");
+            const group = await Group.create({
+                name: "admin",
+            });
+            const user = await User.findByPk(1);
+            user!.$add("groups", group);
+            const response = await login("omarabdo997", "myPrecious");
+            authTokenAdmin = response.body.data.login.token;
+
+            await createUserWithBio("bilbo11", "bilbo the wise");
+            const user2 = await User.findByPk(2);
+            const response2 = await login("bilbo11", "myPrecious");
+            authToken = response2.body.data.login.token;
+            
+            await User.create({
+                name: "omar ali",
+                userName: "omarali997",
+                email: "omarali@gmail.com",
+                hashedPassword: "12345678910",
+                birthDate: "1970-01-01",
+                isBanned: true,
+            });
+        });
+
+        it("succeeds in unbanning a user", async () => {
+            let user = await User.findByPk(3);
+            expect(user?.isBanned).to.be.true;
+            const response = await unbanUser(3, authTokenAdmin);
+            expect(response.body.data.unbanUser).to.be.true;
+            user = await User.findByPk(3);
+            expect(user?.isBanned).to.be.false;
+        });
+
+        it("fails to  unban user with no authorization header", async () => {
+            const response = await unbanUser(3);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+                message: "Invalid Token!",
+            });
+        });
+
+        it("fails to unban if user is not admin", async () => {
+            const response = await unbanUser(3, authToken);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 403,
+                message: "Only admins can unban users!",
+            });
+        });
+
+        it("fails to unban a non banned user", async () => {
+            const response = await unbanUser(2, authTokenAdmin);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "This user is not banned!",
+            });
+        });
+
+        it("fails to ban a non existing user", async () => {
+            const response = await unbanUser(0, authTokenAdmin);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No user was found with this id!",
+            });
+        });
+    });
+
+    describe("reportUser resolver", () => {
+        let token: string;
+        before(async () => {
+            await db.sync({ force: true });
+            await createUser("Bilbo11", "Bilbo the great");
+            const response = await login("Bilbo11", "myPrecious");
+            token = response.body.data.login.token;
+            for (let i = 0; i < 2; i++) {
+                await User.create({
+                    name: "omar ali",
+                    userName: `omar112${i}`,
+                    email: `omarali${i}@gmail.com`,
+                    hashedPassword: "12345678910",
+                    birthDate: "1970-01-01",
+                });
+            }
+        });
+        it("fails to report another user if user is not authenticated", async () => {
+            const response = await reportUser(2);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+                message: "Invalid Token!",
+            });
+        });
+
+        it("fails to report a non existent user", async () => {
+            const response = await reportUser(0, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No user was found with this id!",
+            });
+        });
+
+        it("fails to report the user himself", async () => {
+            const response = await reportUser(1, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "User cannot report himself!",
+            });
+        });
+
+        it("succeeds in reporting another user", async () => {
+            const response = await reportUser(2, token);
+            expect(response.body.data).to.include({
+                reportUser: true,
+            });
+            const reportedUser = await User.findByPk(2);
+            const reporterUser = await User.findByPk(1);
+            const isReported = await reporterUser!.$has(
+                "reported",
+                reportedUser!
+            );
+            expect(isReported).to.be.true;
+        });
+
+        it("succeeds in reporting another user with a reason", async () => {
+            const response = await reportUserWithReason(3, token);
+            expect(response.body.data).to.include({
+                reportUser: true,
+            });
+            const reportedUser = await User.findByPk(3);
+            const reporterUser = await User.findByPk(1);
+            const isReported = await reporterUser!.$has(
+                "reported",
+                reportedUser!
+            );
+            expect(isReported).to.be.true;
+        });
+
+        it("fails to report another user which is already reported", async () => {
+            const response = await reportUser(2, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "You have already reported this user!",
+            });
+        });
+    });
+
+    describe("ignoreReportedUser resolver", async () => {
+        let authToken: string;
+        let authTokenAdmin: string;
+        before(async () => {
+            await db.sync({ force: true });
+            await createUser("Bilbo11", "Bilbo the great");
+            const group = await Group.create({
+                name: "admin",
+            });
+            const user = await User.findByPk(1);
+            user!.$add("groups", group);
+            const response = await login("Bilbo11", "myPrecious");
+            authTokenAdmin = response.body.data.login.token;
+            await createUserWithBio("bilbo11", "bilbo the wise");
+            const response2 = await login("bilbo11", "myPrecious");
+            authToken = response2.body.data.login.token;
+            const users = await createUsers(3);
+            for (let i = 0; i < 3; i++) {
+                for (let j = 2; j >= i; j--) {
+                    await users[i].$add("reported", users[j]);
+                }
+            }
+        });
+
+        it("succeeds in ignoring a reported user", async () => {
+            const response = await ignoreReportedUser(4, authTokenAdmin);
+            expect(response.body.data).to.include({
+                ignoreReportedUser: true,
+            });
+        });
+
+        it("fails to ignore reported user if not authenticated", async () => {
+            const response = await ignoreReportedUser(4);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+                message: "Invalid Token!",
+            });
+        });
+
+        it("fails to ignore reported user if not admin", async () => {
+            const response = await ignoreReportedUser(4, authToken);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 403,
+                message: "Only admins can ignore reported users!",
+            });
+        });
+
+        it("fails to ignore report of a non existent user", async () => {
+            const response = await ignoreReportedUser(0, authTokenAdmin);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No user was found with this id!",
+            });
+        });
+
+        it("fails to ignore a non reported user", async () => {
+            const response = await ignoreReportedUser(2, authTokenAdmin);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "This user is not reported!",
+            });
+        });
+    });
+
+    describe("reportedUsers", async () => {
+        let authToken: string;
+        before(async () => {
+            await db.sync({ force: true });
+            let response = await createUser("omarabdo997", "Omar Ali");
+            response = await login("omarabdo997", "myPrecious");
+            authToken = response.body.data.login.token;
+            const users = await createUsers(10);
+            for (let i = 0; i < 10; i++) {
+                for (let j = 9; j >= i; j--) {
+                    await users[i].$add("reported", users[j]);
+                }
+            }
+        });
+
+        it("fails to get reportedUsers if not authenticated", async () => {
+            const response = await reportedUsers(1);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+                message: "Invalid Token!",
+            });
+        });
+
+        it("fails to get reportedUsers  if user is not admin", async () => {
+            const response = await reportedUsers(1, authToken);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 403,
+                message: "User must be an admin to get the reported users!",
+            });
+            const group = await Group.create({
+                name: "admin",
+            });
+            const user = await User.findByPk(1);
+            user?.$add("groups", group);
+            const response2 = await login("omarabdo997", "myPrecious");
+            authToken = response2.body.data.login.token;
+        });
+
+        it("succeeds in getting reportedUsers", async () => {
+            const response = await reportedUsers(1, authToken);
+            expect(response.body.data.reportedUsers).to.include({
+                totalCount: 10,
+            });
+            expect(response.body.data.reportedUsers.users).to.has.length(10);
+            expect(response.body.data.reportedUsers.users[0]).to.include({
+                id: "11",
+            });
+            expect(response.body.data.reportedUsers.users[1]).to.include({
+                id: "10",
+            });
+            expect(response.body.data.reportedUsers.users[2]).to.include({
+                id: "9",
+            });
+        });
+    });
+    describe("get reported, reportedBy users and reportedTweets from user", async () => {
+        let authToken: string;
+        let authTokenAdmin: string;
+        before(async () => {
+            await db.sync({ force: true });
+            await createUser("omarabdo997", "Omar Ali");
+            const group = await Group.create({
+                name: "admin",
+            });
+            const user = await User.findByPk(1);
+            user?.$add("groups", group);
+            const response = await login("omarabdo997", "myPrecious");
+            authTokenAdmin = response.body.data.login.token;
+
+            await createUserWithBio("bilbo11", "bilbo the wise");
+            const user2 = await User.findByPk(2);
+            const response2 = await login("bilbo11", "myPrecious");
+            authToken = response2.body.data.login.token;
+
+            const users = await createUsers(2);
+            users.push(user2!);
+            const tweets = await createTweets(1, "O", 3);
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    await users[i].$add("reportedTweets", tweets[j]);
+                }
+            }
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (i !== j) {
+                        await users[i].$add("reported", users[j]);
+                    }
+                }
+            }
+        });
+
+        it("fails to get reporters reportedTweets from user without authorization", async () => {
+            const response = await getUserWithOwnReports(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+                message: "Invalid Token!",
+            });
+        });
+
+        it("fails to get reportedBy from user if user is not admin", async () => {
+            const response = await getUserWithReportedBy(2, authToken);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 403,
+                message:
+                    "User must be an admin to get the users reporting this user!",
+            });
+        });
+
+        it("fails to get reported users and reportedTweets from a user if other user is loggedIn", async () => {
+            const response = await getUserWithOwnReports(3, authToken);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 403,
+                message:
+                    "User cannot see the tweets which other users have reported!",
+            });
+
+            expect(response.body.errors[1]).to.include({
+                statusCode: 403,
+                message: "User cannot see what other users have reported!",
+            });
+        });
+
+        it("succeeds in getting reportedBy from user if loggedIn user is admin", async () => {
+            const response = await getUserWithReportedBy(3, authTokenAdmin);
+            expect(response.body.data.user).to.include({
+                name: "Test0",
+            });
+            expect(response.body.data.user.reportedBy).to.include({
+                totalCount: 2,
+            });
+            expect(response.body.data.user.reportedBy.users[0]).to.include({
+                userName: "test1",
+            });
+            expect(response.body.data.user.reportedBy.users[1]).to.include({
+                userName: "bilbo11",
+            });
+        });
+
+        it("succeeds in getting reported users and reportedTweets from user if the same user is loggedIn", async () => {
+            const response = await getUserWithOwnReports(2, authToken);
+            expect(response.body.data.user).to.include({
+                name: "bilbo the wise",
+            });
+            expect(response.body.data.user.reportedTweets).to.include({
+                totalCount: 3,
+            });
+            expect(response.body.data.user.reportedTweets.tweets[0]).to.include(
+                {
+                    text: "tweet0",
+                }
+            );
+            expect(response.body.data.user.reported).to.include({
+                totalCount: 2,
+            });
+            expect(response.body.data.user.reported.users[0]).to.include({
+                userName: "test0",
+            });
+        });
+    });
+
+    describe("muteUser resolver", () => {
+        let token: string;
+        before(async () => {
+            await db.sync({ force: true });
+            await createUser("Bilbo11", "Bilbo the great");
+            const response = await login("Bilbo11", "myPrecious");
+            token = response.body.data.login.token;
+            for (let i = 0; i < 2; i++) {
+                await User.create({
+                    name: "omar ali",
+                    userName: `omar112${i}`,
+                    email: `omarali${i}@gmail.com`,
+                    hashedPassword: "12345678910",
+                    birthDate: "1970-01-01",
+                });
+            }
+        });
+        it("fails to mute other user if user is not authenticated", async () => {
+            const response = await muteUser(2);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+                message: "Invalid Token!",
+            });
+        });
+
+        it("fails to mute a non existent user", async () => {
+            const response = await muteUser(0, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No user was found with this id!",
+            });
+        });
+
+        it("fails to mute the user himself", async () => {
+            const response = await muteUser(1, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "User cannot mute himself!",
+            });
+        });
+
+        it("succeeds in muting another user", async () => {
+            const response = await muteUser(2, token);
+            expect(response.body.data).to.include({
+                muteUser: true,
+            });
+            const mutedUser = await User.findByPk(2);
+            const muterUser = await User.findByPk(1);
+            const isMuted = await muterUser!.$has("muted", mutedUser!);
+            expect(isMuted).to.be.true;
+        });
+
+        it("fails to mute other user which is already muted", async () => {
+            const response = await muteUser(2, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "You have already muted this user!",
+            });
+        });
+    });
+
+    describe("unmuteUser resolver", () => {
+        let token: string;
+        before(async () => {
+            await db.sync({ force: true });
+            await createUser("Bilbo11", "Bilbo the great");
+            const response = await login("Bilbo11", "myPrecious");
+            token = response.body.data.login.token;
+            const users = [];
+            for (let i = 0; i < 2; i++) {
+                let user = await User.create({
+                    name: "omar ali",
+                    userName: `omar112${i}`,
+                    email: `omarali${i}@gmail.com`,
+                    hashedPassword: "12345678910",
+                    birthDate: "1970-01-01",
+                });
+                users.push(user);
+            }
+            const user = await User.findByPk(1);
+            await user!.$add("muted", users[0]);
+        });
+        it("fails to unmute other user if user is not authenticated", async () => {
+            const response = await unmuteUser(2);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+                message: "Invalid Token!",
+            });
+        });
+
+        it("fails to mute a non existent user", async () => {
+            const response = await unmuteUser(0, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No user was found with this id!",
+            });
+        });
+
+        it("fails to mute the user himself", async () => {
+            const response = await unmuteUser(1, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "User cannot unmute himself!",
+            });
+        });
+
+        it("succeeds in unmuting another user", async () => {
+            const response = await unmuteUser(2, token);
+            expect(response.body.data).to.include({
+                unmuteUser: true,
+            });
+            const mutedUser = await User.findByPk(2);
+            const muterUser = await User.findByPk(1);
+            const isMuted = await muterUser!.$has("muted", mutedUser!);
+            expect(isMuted).to.be.false;
+        });
+
+        it("fails to mute other user which is already muted", async () => {
+            const response = await unmuteUser(2, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "This user is not muted!",
+            });
         });
     });
 

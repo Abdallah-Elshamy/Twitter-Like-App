@@ -10,6 +10,8 @@ export default gql`
             isSFW: Boolean
         ): PaginatedTweets!
         getFeed(page: Int, isSFW: Boolean): PaginatedTweets
+        reportedTweets(page: Int): PaginatedTweets!
+        NSFWTweets(page: Int): PaginatedTweets!
     }
     extend type Mutation {
         createTweet(tweet: TweetCreateInput!): Tweet!
@@ -20,7 +22,14 @@ export default gql`
             tweet: TweetCreateInput!
         ): Tweet!
         deleteTweet(id: ID!): Boolean!
+        reportTweet(id: ID!, reason: String): Boolean!
+        ignoreReportedTweet(id: ID!): Boolean!
     }
+
+    extend type Subscription {
+        liveFeed: NewFeedUpdates!
+    }
+
     type Tweet {
         id: ID!
         user: User!
@@ -37,6 +46,7 @@ export default gql`
         hashtags(page: Int): PaginatedHashtags!
         repliedToTweet: Tweet
         isLiked: Boolean
+        reportedBy(page: Int): PaginatedUsers!
         retweetsCount: Int!
         quotedRetweetsCount: Int!
         createdAt: String!
@@ -52,5 +62,10 @@ export default gql`
     input TweetCreateInput {
         text: String!
         mediaURLs: [String]
+    }
+
+    type NewFeedUpdates {
+        tweet: Tweet!
+        followers: [ID]!
     }
 `;

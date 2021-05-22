@@ -1,3 +1,4 @@
 *.vscode
 *.eslintcache
 frontend/.eslintcache
+*.eslintcache

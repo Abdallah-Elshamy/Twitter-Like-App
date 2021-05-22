@@ -1,10 +1,14 @@
-import { Tweet, Likes, User, Hashtag } from "../../models";
+import { Tweet, Likes, User, Hashtag, ReportedTweet } from "../../models";
 import { tweetValidator } from "../../validators";
 import db from "../../db";
 import { Transaction, Op } from "sequelize";
 import { Request } from "express";
 import fetch from "node-fetch";
 import { backOff } from "exponential-backoff";
+import { fn, col } from "sequelize";
+import pubsub from "../../messaging";
+import { withFilter } from "apollo-server-express";
+
 
 const PAGE_SIZE = 10;
 
@@ -13,8 +17,12 @@ interface CustomeError extends Error {
     validators?: { message: string; value: string }[];
 }
 
+interface CustomUser extends User {
+    isAdmin: boolean;
+}
+
 interface CustomeRequest extends Request {
-    user?: User;
+    user?: CustomUser;
     authError?: CustomeError;
 }
 
@@ -30,6 +38,11 @@ export const SFWRegularCheck = async () => {
 };
 
 const SFWService = async (tweet: Tweet) => {
+    // Disable SFW checking in the test environment
+    if (process.env.TEST_ENVIROMENT) {
+        return;
+    }
+
     const serviceUrl: string = process.env.SFW_SERVICE!;
     try {
         const serverRes = await backOff(() => fetch(serviceUrl), {
@@ -107,7 +120,20 @@ const addTweetInDataBase = async (
     );
     tweet.originalTweetId = originalTweetId ? originalTweetId : tweet.id;
     await tweet.save({ transaction });
-    SFWService(tweet);
+    if (state === "R") {
+        const originalTweet = await Tweet.findOne({
+            attributes: ["isChecked", "isSFW"],
+            where: {
+                id: originalTweetId,
+            },
+        });
+        tweet.isChecked = originalTweet!.isChecked;
+        tweet.isSFW = originalTweet!.isSFW;
+        await tweet.save({ transaction });
+    } else {
+        SFWService(tweet);
+    }
+
     return tweet;
 };
 
@@ -241,6 +267,9 @@ export default {
                                 offset: ((page || 1) - 1) * PAGE_SIZE,
                                 limit: PAGE_SIZE,
                             });
+                            if (!tweets) {
+                                return [];
+                            }
                             return tweets.map((tweet: any) => {
                                 tweet.mode = mode;
                                 return tweet;
@@ -252,6 +281,9 @@ export default {
                                 offset: ((page || 1) - 1) * PAGE_SIZE,
                                 limit: PAGE_SIZE,
                             });
+                            if (!tweets) {
+                                return [];
+                            }
                             return tweets.map((tweet: any) => {
                                 tweet.mode = mode;
                                 return tweet;
@@ -263,6 +295,9 @@ export default {
                                 offset: ((page || 1) - 1) * PAGE_SIZE,
                                 limit: PAGE_SIZE,
                             });
+                            if (!tweets) {
+                                return [];
+                            }
                             return tweets.map((tweet: any) => {
                                 tweet.mode = mode;
                                 return tweet;
@@ -279,6 +314,9 @@ export default {
                                 offset: ((page || 1) - 1) * PAGE_SIZE,
                                 limit: PAGE_SIZE,
                             });
+                            if (!tweets) {
+                                return [];
+                            }
                             return tweets.map((tweet: any) => {
                                 tweet.mode = mode;
                                 return tweet;
@@ -326,7 +364,6 @@ export default {
                 totalCount: async () => {
                     if (mode === "SFW") {
                         // Safe for work
-
                         if (!filter) {
                             return await user.$count("tweets", {
                                 where: {
@@ -396,9 +433,19 @@ export default {
             }
 
             const { page, isSFW } = args;
+            const mutedUsers = await user!.$get("muted", {
+                attributes: ["id"],
+            });
+
+            const mutedUsersIds = mutedUsers.map((user: any) => user.id);
 
             const followingUsers = await user!.$get("following", {
                 attributes: ["id"],
+                where: {
+                    id: {
+                        [Op.notIn]: mutedUsersIds,
+                    },
+                },
             });
             const followingUsersIds = followingUsers.map((user) => user.id);
 
@@ -452,6 +499,87 @@ export default {
                 },
             };
         },
+        reportedTweets: async (
+            parent: any,
+            args: { page: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            const { page } = args;
+            if (authError) {
+                throw authError;
+            }
+            if (!user?.isAdmin) {
+                const error: CustomeError = new Error(
+                    "User must be an admin to get the reported tweets!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            return {
+                tweets: async () => {
+                    const reportedTweets = await ReportedTweet.findAll({
+                        attributes: ["tweetId"],
+                        order: [[fn("count", col("reporterId")), "DESC"]],
+                        group: "tweetId",
+                        offset: ((page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                    });
+                    const sortedTweetsIds = reportedTweets.map(
+                        (reportedTweet) => reportedTweet.tweetId
+                    );
+                    const unsortedTweets = await Tweet.findAll({
+                        where: { id: sortedTweetsIds },
+                    });
+                    const sortedTweets: Tweet[] = [];
+                    for (let tweetId of sortedTweetsIds) {
+                        let tweet = unsortedTweets.find(
+                            (tweet) => tweet.id == tweetId
+                        );
+                        sortedTweets.push(tweet!);
+                    }
+                    return sortedTweets;
+                },
+                totalCount: async () => {
+                    return ReportedTweet.count({
+                        distinct: true,
+                        col: "tweetId",
+                    });
+                },
+            };
+        },
+        NSFWTweets: async (
+            parent: any,
+            args: { page: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            if (!user!.isAdmin) {
+                const error: CustomeError = new Error(
+                    "User must be an admin to get only NSFW tweets!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            return {
+                tweets: await Tweet.findAll({
+                    where: {
+                        isSFW: false,
+                    },
+                    offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                    limit: PAGE_SIZE,
+                    order: [["createdAt", "DESC"]],
+                }),
+                totalCount: await Tweet.count({
+                    where: {
+                        isSFW: false,
+                    },
+                }),
+            };
+        },
     },
     Mutation: {
         createTweet: async (
@@ -485,6 +613,19 @@ export default {
 
                 return tweet;
             });
+
+            if (!process.env.TEST_ENVIROMENT) {
+                const followers = await user!.$get("followers", {
+                    attributes: ["id"],
+                });
+                const followersIds = followers.map((f) => f.id);
+                pubsub.publish("LIVE_FEED", {
+                    liveFeed: {
+                        tweet: tweet,
+                        followers: followersIds,
+                    },
+                });
+            }
             return tweet;
         },
 
@@ -654,7 +795,7 @@ export default {
                 throw error;
             }
             const userHasTweet = tweet.userId === user!.id;
-            if (!userHasTweet) {
+            if (!(userHasTweet || user!.isAdmin)) {
                 const error: CustomeError = new Error(
                     "You don't own this tweet!"
                 );
@@ -663,6 +804,118 @@ export default {
             }
             await tweet.destroy();
             return true;
+        },
+        reportTweet: async (
+            parent: any,
+            args: { id: number; reason: string },
+            context: { req: CustomeRequest },
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+
+            const tweet = await Tweet.findByPk(+args.id);
+            if (!tweet) {
+                const error: CustomeError = new Error(
+                    "No tweet was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+
+            const isOwned = await user!.$has("tweets", tweet);
+            if (isOwned) {
+                const error: CustomeError = new Error(
+                    "User cannot report his own tweet!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            const isReported = await user!.$has("reportedTweets", tweet);
+            if (isReported) {
+                const error: CustomeError = new Error(
+                    "You have already reported this tweet!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            await db.transaction(async (transaction) => {
+                await ReportedTweet.create(
+                    {
+                        reporterId: user!.id,
+                        tweetId: args.id,
+                        reason: args.reason ? args.reason : null,
+                    },
+                    {
+                        transaction,
+                    }
+                );
+            });
+            return true;
+        },
+        ignoreReportedTweet: async (
+            parent: any,
+            args: { id: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+
+            if (!user?.isAdmin) {
+                const error: CustomeError = new Error(
+                    "Only admins can ignore reported tweets!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            const tweet = await Tweet.findByPk(+args.id);
+            if (!tweet) {
+                const error: CustomeError = new Error(
+                    "No tweet was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+
+            const toBeIgnored = await ReportedTweet.findAll({
+                where: {
+                    tweetId: args.id,
+                },
+            });
+            if (toBeIgnored.length === 0) {
+                const error: CustomeError = new Error(
+                    "This tweet is not reported!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+            await db.transaction(async (transaction) => {
+                await ReportedTweet.destroy({
+                    where: {
+                        tweetId: args.id,
+                    },
+                    transaction,
+                });
+            });
+            return true;
+        },
+    },
+    Subscription: {
+        liveFeed: {
+            subscribe: withFilter(
+                () => pubsub.asyncIterator(["LIVE_FEED"]),
+                (payload: any, args: any, context: any) => {
+                    return payload.liveFeed.followers.includes(
+                        context.connection.context.id
+                    );
+                }
+            ),
         },
     },
     Tweet: {
@@ -677,7 +930,7 @@ export default {
                         isSFW: isSFW,
                     },
                 });
-                tweet.mode = "SFW";
+                tweet && (tweet.mode = "SFW");
                 return tweet;
             } else return await parent.$get("originalTweet");
         },
@@ -710,7 +963,7 @@ export default {
                             order: [["createdAt", "ASC"]],
                         });
                         return tweets.map((tweet: any) => {
-                            tweet.mode = "SFW";
+                            tweet && (tweet.mode = "SFW");
                             return tweet;
                         });
                     },
@@ -749,7 +1002,7 @@ export default {
                 const tweet: any = await parent.$get("thread", {
                     where: { isSFW: true },
                 });
-                tweet.mode = "SFW";
+                tweet && (tweet.mode = "SFW");
                 return tweet;
             } else return await parent.$get("thread");
         },
@@ -772,7 +1025,7 @@ export default {
                 const tweet: any = await parent.$get("repliedTo", {
                     where: { isSFW: true },
                 });
-                tweet.mode = "SFW";
+                tweet && (tweet.mode = "SFW");
                 return tweet;
             } else return await parent.$get("repliedTo");
         },
@@ -816,6 +1069,34 @@ export default {
                     },
                 });
             }
+        },
+        reportedBy: async (
+            parent: Tweet,
+            args: { page: number },
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            if (!user?.isAdmin) {
+                const error: CustomeError = new Error(
+                    "User must be an admin to get the users reporting the tweet!"
+                );
+                error.statusCode = 403;
+                throw error;
+            }
+            return {
+                users: async () => {
+                    return await parent.$get("reportedBy", {
+                        offset: ((args.page || 1) - 1) * PAGE_SIZE,
+                        limit: PAGE_SIZE,
+                    });
+                },
+                totalCount: async () => {
+                    return await parent.$count("reportedBy");
+                },
+            };
         },
     },
 };

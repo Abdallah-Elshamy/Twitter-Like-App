@@ -37,6 +37,7 @@ query tweets ($userId:ID! $filter:String $page:Int $isSFW:Boolean){
         state
         createdAt
         isLiked
+        mediaURLs
       }
     }}
 `

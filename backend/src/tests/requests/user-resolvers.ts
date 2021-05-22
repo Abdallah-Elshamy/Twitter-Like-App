@@ -548,6 +548,7 @@ export const getUser = async (id: number) => {
                     name,
                     imageURL,
                     bio,
+                    isBanned,
                     birthDate,
                     coverImageURL,
                     following(page: 1) {
@@ -623,5 +624,190 @@ export const getUsersWithPage = async (search: string, page: number) => {
                     }
                 }
             }`,
+        });
+};
+
+export const banUser = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                banUser(userId: "${userId}")
+            }
+            `,
+        });
+};
+
+export const unbanUser = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                unbanUser(userId: "${userId}")
+            }
+            `,
+        });
+};
+
+export const reportUser = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                reportUser(userId: "${userId}")
+            }
+            `,
+        });
+};
+
+export const reportUserWithReason = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                reportUser(userId: "${userId}", reason: "Offensive language")
+            }
+            `,
+        });
+};
+
+export const reportedUsers = async (
+    page: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            query {
+                reportedUsers(page: ${page}){
+                    totalCount
+                    users{id}
+                }
+            }
+            `,
+        });
+};
+
+export const getUserWithOwnReports = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            query {
+                user(id: ${userId}){
+                   name
+                   reportedTweets {
+                       tweets {
+                           text
+                       }
+                       totalCount
+                   }
+                   reported {
+                       users {
+                           userName
+                       }
+                       totalCount
+                   }
+                }
+            }
+            `,
+        });
+};
+
+export const getUserWithReportedBy = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            query {
+                user(id: ${userId}){
+                   name
+                   reportedBy {
+                       users {
+                           userName
+                       }
+                       totalCount
+                   }
+                }
+            }
+            `,
+        });
+};
+
+export const ignoreReportedUser = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                ignoreReportedUser(userId: ${userId})
+            }
+            `,
+        });
+};
+
+export const muteUser = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                muteUser(userId: "${userId}")
+            }
+            `,
+        });
+};
+
+export const unmuteUser = async (
+    userId: number,
+    authToken: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+            query: `
+            mutation {
+                unmuteUser(userId: ${userId})
+            }
+            `,
         });
 };

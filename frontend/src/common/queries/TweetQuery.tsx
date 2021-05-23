@@ -30,6 +30,7 @@ query tweets ($userId:ID! $filter:String $page:Int $isSFW:Boolean){
            repliedToTweet{
         id
         user{userName}
+        mediaURLs
       }
                     
       repliedToTweet{

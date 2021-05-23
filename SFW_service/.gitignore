@@ -1,7 +1,11 @@
 *env
 *env3
+<<<<<<< HEAD
 *env2
 env*
+=======
+env
+>>>>>>> ab7caec9e078d6bde5e7038ee6af8b80a7a00ed6
 media_files/*
 !media_files/.gitkeep
 .vscode

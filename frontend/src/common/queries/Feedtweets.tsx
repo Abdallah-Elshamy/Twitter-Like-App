@@ -30,6 +30,7 @@ query feed_tweets($isSFW:Boolean, $page: Int){
              repliedToTweet{
           id
           user{userName}
+          mediaURLs
         }
                       
         repliedToTweet{

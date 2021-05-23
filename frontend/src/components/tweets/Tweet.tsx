@@ -32,7 +32,13 @@ function Tweet(props: any) {
               createdAt={props.createdAt}
               name={props.user?.name}
               id={props.user.id}
+              userId={props.user.id}
+              tweetId={props.id}
+              loggedUser={props.loggedUser}
+              tweetMediaUrls = {props.mediaUrls}
+              tweet = {props.tweet}
             />
+
             <div className="tweet-content">
               <span>
                 {props.text}

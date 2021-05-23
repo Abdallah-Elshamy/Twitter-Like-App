@@ -44,10 +44,10 @@ const SearchResult: React.FC = () => {
         <InfiniteScroll
             dataLength={list?.length || 0}
             next={() => {
-                setPage(((list?.length || 10) / 10) + 1);
+                setPage(Math.floor((list?.length || 10)/10) + 1);
                 return fetchMore({
                     variables: {
-                        page: ((list?.length || 10) / 10) + 1,
+                        page: Math.floor((list?.length || 10)/10) + 1,
                         name: searchQ,
                     },
                 });

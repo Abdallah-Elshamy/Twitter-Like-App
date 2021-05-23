@@ -15,11 +15,11 @@ function QuotedTweet({ OTweet }: any) {
 
   switch (OTweet.state) {
 
-//     {/* the added design of Reply design  */}
-//     <div className="space-x-2 -mt-3 -ml-12"> 
-// <p className=" p--light-color mt-2 ml-12 inline-block"> Repling to  </p>
-// <a className ="text-blue-500 inline-block hover:underline"> @{OTweet.repliedToTweet.user.userName}</a>
-// </div>
+    //     {/* the added design of Reply design  */}
+    //     <div className="space-x-2 -mt-3 -ml-12"> 
+    // <p className=" p--light-color mt-2 ml-12 inline-block"> Repling to  </p>
+    // <a className ="text-blue-500 inline-block hover:underline"> @{OTweet.repliedToTweet.user.userName}</a>
+    // </div>
     case "C":
       return <div>
 
@@ -35,13 +35,14 @@ function QuotedTweet({ OTweet }: any) {
                 userName={OTweet.user?.userName}
                 createdAt={OTweet.createdAt}
                 name={OTweet.user?.name}
+                type="Q"
               />
 
               {/* the added design of Reply design  */}
               <div className="space-x-2 -mt-2 -ml-10">
                 <p className=" p--light-color ml-12 inline-block"> Repling to  </p>
                 <Link onClick={e => { e.stopPropagation() }}
-                  to={"/tweet/" + OTweet.repliedToTweet.id}
+                  to={"/" + OTweet.repliedToTweet.id}
                   className="text-blue-500 inline-block hover:underline">
                   @{OTweet.repliedToTweet.user?.userName}</Link>
               </div>
@@ -76,6 +77,7 @@ function QuotedTweet({ OTweet }: any) {
               userName={OTweet.user?.userName}
               createdAt={OTweet.createdAt}
               name={OTweet.user?.name}
+              type="Q"
             />
 
             {/* the text/media of the original tweet */}

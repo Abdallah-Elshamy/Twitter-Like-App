@@ -35,8 +35,8 @@ function Tweet(props: any) {
               userId={props.user.id}
               tweetId={props.id}
               loggedUser={props.loggedUser}
-              tweetMediaUrls = {props.mediaUrls}
-              tweet = {props.tweet}
+              tweetMediaUrls={props.mediaUrls}
+              tweet={props.tweet}
             />
 
             <div className="tweet-content">
@@ -55,7 +55,7 @@ function Tweet(props: any) {
           </div>
         </div>
 
-        <hr/>
+        <hr />
       </div>
 
     case "C":
@@ -75,7 +75,7 @@ function Tweet(props: any) {
             <div className="space-x-2 -mt-2 ">
               <p className=" p--light-color inline-block"> Repling to </p>
               <Link onClick={e => { e.stopPropagation() }}
-                to={ props.repliedToTweet.user.id}
+                to={'/' + props.repliedToTweet.user.id}
                 className="text-blue-500 inline-block hover:underline">
                 @{props.repliedToTweet.user?.userName}</Link>
             </div>
@@ -86,14 +86,14 @@ function Tweet(props: any) {
                 {props.text}
               </span>
               <TweetToolbarIcons
-            repliesCount={props.repliesCount}
-            likesCount={props.likesCount}
-            quotedRetweetsCount={props.quotedRetweetsCount}
-            retweetsCount={props.retweetsCount}
-          />
+                repliesCount={props.repliesCount}
+                likesCount={props.likesCount}
+                quotedRetweetsCount={props.quotedRetweetsCount}
+                retweetsCount={props.retweetsCount}
+              />
 
             </div>
-          </div>   
+          </div>
         </div>
 
 
@@ -139,10 +139,10 @@ function Tweet(props: any) {
     default:
       return <div>
         <a onClick={e => { goToTweet(); e.stopPropagation() }} >
-        unhaundled case "{props.state}"
+          unhaundled case "{props.state}"
         </a>
-        <hr/>
- </div>   
+        <hr />
+      </div>
   }
 
 }

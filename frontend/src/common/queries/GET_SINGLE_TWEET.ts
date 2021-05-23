@@ -25,7 +25,9 @@ query tweet ($tweetId:ID!  $isSFW:Boolean){
           name
           imageURL
         }
-        originalTweet{id}
+        originalTweet{id
+        user{id}
+        }
          repliedToTweet{
           id
           user{userName}

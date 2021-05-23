@@ -19,15 +19,18 @@ interface Post {
 }
 
 const PostTweet = () => {
-  const inputRef: any = useRef()
-  const upload: any = useRef()
+  const inputRef: any = useRef("")
+  const heightRef: any = useRef("")
+  const uploadImg: any = useRef()
+  const uploadVid: any = useRef()
   const [media, setmedia] = useState(false)
   const [mediaURL, setmediaURL] = useState("")
   const [mediaURLs, setmediaURLs] = useState<any>([])
   const [medias, setmedias] = useState<any>([])
   const [apis, setAPIs] = useState<any>([])
-  const [visible, setVisible] = React.useState(false);
-  let img: any = []
+  const [ visible, setVisible ] = React.useState(false);
+  const   [type, setType] = useState ("")
+  let img:any =[]
   const initialValues: Post = {
     text: ""
   }
@@ -52,35 +55,50 @@ const PostTweet = () => {
           'Content-Type': media.type
         }
       })
-      // console.log ("url", url.config.url.split('?')[0])
+      console.log ("url", url.config.url.split('?')[0])
       return url.config.url.split('?')[0]
     })
     return await Promise.all(urlsData)
   }
 
   const handleFile = (e: any) => {
-    setmedia(e.target.files[0])
-    setmedias([...medias, e.target.files[0]])
-    setmediaURLs([...mediaURLs, URL.createObjectURL(e.target.files[0])])
+    setmedia( e.target.files[0])
+    setType(e.target.files[0].type)
+    setmedias ([...medias, e.target.files[0]]) 
+    setmediaURLs( [...mediaURLs, URL.createObjectURL(e.target.files[0])])
     refetch()
     console.log(media, mediaURL)
 
   }
+  const handleDisable =(valid:boolean, value:string) =>{
+    if (!valid) return true
+    if (medias.length > 4) return true
+    if (value.length == 0 && medias.length == 0) return true
 
-  const displayUploadedFiles = (urls: string[]) => {
-    img = urls.map((url) => { return { src: url } })
-    return urls.map((url, i) =>
-      <Fragment>
-        {/* <ReactPlayer url={url} height="300px" width="300" controls={true}/> */}
+  }
 
-        <img className="object-cover w-full cursor-pointer " key={i} src={url} onClick={() => { setVisible(true); }} />
-        <Viewer
-          visible={visible}
-          onClose={() => { setVisible(false); }}
-          images={img}
-        />
-      </Fragment>
-    );
+  const displayUploadedFiles=(urls:string[])=> {
+    if (type.includes("video")) {
+      return <div style={{height:"300px"}} ref={heightRef} >
+        <ReactPlayer url={urls[0]} height="300px" width="500px"  controls={true}/>
+         
+            </div>
+          
+    }
+    if (type.includes("image")){
+    img = urls.map ((url)=> {return {src:url}})
+    return urls.map((url, i) => 
+    <Fragment>
+      {/* <ReactPlayer url={url} height="300px" width="300" controls={true}/> */}
+
+      <img className="object-cover w-full cursor-pointer " key={i} src={url} onClick={() => { setVisible(true);}}/>
+      <Viewer
+                  visible={visible}
+                  onClose={() => { setVisible(false); } }
+                  images={img}
+                  />
+    </Fragment>
+    );}
   }
 
   function setInputHight(element: React.ChangeEvent<HTMLElement>) {
@@ -91,8 +109,6 @@ const PostTweet = () => {
 
   const validationSchema = Yup.object({
     text: Yup.string()
-      .required()
-      .min(1, "Must be more than 1 character")
       .max(256, "Must be less than 257 characters")
   })
 
@@ -110,21 +126,31 @@ const PostTweet = () => {
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={({ text }, { setSubmitting, resetForm }) => {
-            if (media) {
-              handleUpload().then((urls) => {
-                createTweet({
-                  variables: { tweetInput: { text, mediaURLs: urls } }
-                });
+          onSubmit={({ text }, {resetForm}) => {
+            if(media) {handleUpload().then ( (urls)=> {
+              createTweet({
+                variables: { tweetInput: {text, mediaURLs:urls }}
+              });
+            })}
+            else {
+              createTweet({
+                variables: { tweetInput: {text}}
               })
             }
-            setSubmitting(true);
-            setmedia(false)
-            setmediaURLs([])
-            setSubmitting(false);
-            resetForm();
+            
+            setmedia (false)
+            setmediaURLs ([])
+            setmedias ([])
+            setAPIs([])
+            resetForm()
+
+            heightRef.current.style.height = "0px"
+            
+
           }}
         >
+          {({ values, setFieldValue, isValid }) => (
+            
           <Form >
             <div ref={inputRef} className="w-full mb-2 tweet-text flex h-16">
               <Field
@@ -140,27 +166,46 @@ const PostTweet = () => {
             <div className="gg-box ">
               {displayUploadedFiles(mediaURLs)}
 
-            </div>
-            <hr className="my-2" />
-            <div className="flex justify-between items-center mb-2">
-              <button className="hover:bg-blue-100 rounded-full py-2 px-3 transition focus:outline-none" onClick={() => upload.current.click()}>
-                <svg
-                  className="h-8 w-8 text-blue-400 "
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
+              </div>
+              <hr className="my-2" />
+              <div className="flex justify-between items-center mb-2">
+                <button disabled={medias.length == 4? true: false} type="button" className="hover:bg-blue-100 rounded-full py-2 px-3 transition focus:outline-none" onClick={()=>uploadImg.current.click()}>
+                  <svg 
+                    className={ medias.length == 4? "h-8 w-8 text-gray-400  ":"h-8 w-8 text-blue-400"}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth="2" 
                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <input className="file-upload  hidden focus:outline-none" type="file" accept="image/*, video/*" ref={upload} onChange={(e) => handleFile(e)} />
-              </button>
-              <ErrorMessage name="text" render={msg => <div className="text-red-500">{msg}</div>} />
-              <TweetButton name="Tweet" type="submit" className=" rounded-full py-3 px-6" />
-            </div>
+                  </svg>
+                  <input className="file-upload  hidden focus:outline-none" type="file"  accept="image/*" ref={uploadImg} onChange={(e)=> handleFile(e)} />
+                </button>
+                <button disabled={medias.length == 4? true: false} type="button" className="hover:bg-blue-100 rounded-full py-2 px-3 transition focus:outline-none" onClick={()=>uploadVid.current.click()}>
+                  <svg 
+                    className={ medias.length == 4? "h-8 w-8 text-gray-400  ":"h-8 w-8 text-blue-400"}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth="2" 
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <input className="file-upload  hidden focus:outline-none" type="file"  accept="video/*" ref={uploadVid} onChange={(e)=> handleFile(e)} />
+                </button>
+                
 
-          </Form>
+                
+                <ErrorMessage name="text"  render={msg => <div className="text-red-500">{msg}</div>} /> 
+                <div>
+                <p className="inline-block text-xs mr-2 text-blue-500">{(values.text == null) ? "0" : values.text?.length}/{257}</p>
+                <TweetButton disabled={handleDisable(isValid, values.text)}  name="Tweet" type="submit" className=" rounded-full py-3 px-6"/>
+                </div>
+            </div>
+              
+            </Form> )}
         </Formik>
       </div>
     </div>

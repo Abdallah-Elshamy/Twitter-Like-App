@@ -55,7 +55,7 @@ function HomeTweets() {
                         isLiked={tweet.isLiked}
                         user={tweet.user}
                         likesCount={tweet.likesCount}
-                        key={tweet.id}
+                        id={tweet.id}
                     />
                 );
             })}

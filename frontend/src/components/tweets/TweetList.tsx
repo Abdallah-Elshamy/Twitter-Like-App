@@ -75,7 +75,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
                         isLiked={tweet.isLiked}
                         user={tweet.user}
                         likesCount={tweet.likesCount}
-                        key={tweet.id}
+                        id={tweet.id}
                     />
                 );
             })}

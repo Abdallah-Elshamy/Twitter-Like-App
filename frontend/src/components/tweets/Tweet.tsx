@@ -49,7 +49,7 @@ function Tweet(props: any) {
           </div>
         </div>
 
-        <hr />
+        <hr/>
       </div>
 
     case "C":

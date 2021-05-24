@@ -21,6 +21,12 @@ function Tweet(props: any) {
     })
   }
 
+  const goToProfile = () => {
+    history.replace({
+      pathname: '/' + props.user.id,
+
+    })
+  }
   switch (props.state) {
 
     case "O":
@@ -28,7 +34,7 @@ function Tweet(props: any) {
         <div className="tweet-box mt-2" onClick={e => { goToTweet(); e.stopPropagation() }} >
           <TweetImg imageURL={props.user.imageURL} id={props.user?.id} className="tweet-icon " />
 
-          <div className="tweet-aside -ml-2">
+          <div className="tweet-aside ">
             <TweetInfo
               userName={props.user?.userName}
               createdAt={props.createdAt}
@@ -41,7 +47,7 @@ function Tweet(props: any) {
               tweet={props.tweet}
             />
 
-            <div className="tweet-content">
+            <div className="tweet-content ml-2">
               <span>
                 {props.text}
               </span>
@@ -51,8 +57,8 @@ function Tweet(props: any) {
                 likesCount={props.likesCount}
                 quotedRetweetsCount={props.quotedRetweetsCount}
                 retweetsCount={props.retweetsCount}
+                tweetId={props.id}
               />
-
             </div>
           </div>
         </div>
@@ -64,8 +70,8 @@ function Tweet(props: any) {
       return <div>
 
         <div className="tweet-box mt-2 flex w-full p-2" onClick={e => { goToTweet(); e.stopPropagation() }} >
-          <TweetImg imageURL={props.user.imageURL} className="tweet-icon" />
-          <div className="tweet-aside -ml-2">
+          <TweetImg imageURL={props.user.imageURL} className="tweet-icon block " />
+          <div className="tweet-aside ">
             <TweetInfo
               userName={props.user?.userName}
               createdAt={props.createdAt}
@@ -76,11 +82,10 @@ function Tweet(props: any) {
               loggedUser={props.loggedUser}
               tweetMediaUrls={props.mediaUrls}
               tweet={props.tweet}
-
             />
             {/* the added design of Reply design  */}
-            <div className="space-x-2 -mt-2 ">
-              <p className=" p--light-color inline-block"> Repling to </p>
+            <div className="-mt-2 ">
+              <p className=" p--light-color inline-block ml-2"> Repling to </p>
               <Link onClick={e => { e.stopPropagation() }}
                 to={'/' + props.repliedToTweet.user.id}
                 className="text-blue-500 inline-block hover:underline">
@@ -88,7 +93,7 @@ function Tweet(props: any) {
             </div>
 
             {/* the text/media of the original tweet */}
-            <div className="tweet-content ml-2 pb-4 pt-2">
+            <div className="tweet-content ml-2 pb-4">
               <span>
                 {props.text}
               </span>
@@ -97,6 +102,7 @@ function Tweet(props: any) {
                 likesCount={props.likesCount}
                 quotedRetweetsCount={props.quotedRetweetsCount}
                 retweetsCount={props.retweetsCount}
+                tweetId={props.id}
               />
 
             </div>
@@ -133,6 +139,7 @@ function Tweet(props: any) {
                 {props.text}
               </span>
               <QuotedTweet OTweet={props.originalTweet} repliedToTweet={props.repliedToTweet} />
+
               <TweetToolbarIcons
                 repliesCount={props.repliesCount}
                 likesCount={props.likesCount}
@@ -160,7 +167,7 @@ function Tweet(props: any) {
                   7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 
                   13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
                   clipRule="evenodd" /></svg></span>
-                <span> {props.user.name} retweeted </span>
+                <span onClick={goToProfile} className="hover:pointer" > {props.user.name} retweeted </span>
               </p>
               <Retweet id={props.originalTweet.id} />
             </Fragment>

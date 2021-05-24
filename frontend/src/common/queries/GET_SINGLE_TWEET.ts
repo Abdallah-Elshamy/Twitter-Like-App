@@ -47,6 +47,7 @@ query tweet ($tweetId:ID!  $isSFW:Boolean){
         text
         likesCount
         retweetsCount
+        quotedRetweetsCount
         repliesCount
         state
         createdAt

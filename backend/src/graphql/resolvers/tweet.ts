@@ -9,7 +9,6 @@ import { fn, col } from "sequelize";
 import pubsub from "../../messaging";
 import { withFilter } from "apollo-server-express";
 
-
 const PAGE_SIZE = 10;
 
 interface CustomeError extends Error {
@@ -708,6 +707,21 @@ export default {
             if (originalTweet.state === "R") {
                 const error: CustomeError = new Error(
                     "Can't retweet a retweeted tweet!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+            const isRetweeted = await Tweet.findOne({
+                attributes: ["id"],
+                where: {
+                    userId: user!.id,
+                    state: "R",
+                    originalTweetId: originalTweetId,
+                },
+            });
+            if (isRetweeted) {
+                const error: CustomeError = new Error(
+                    "This tweet is already retweeted by the user!"
                 );
                 error.statusCode = 422;
                 throw error;

@@ -6,6 +6,12 @@ import PostTweet from './PostTweet';
 import Tweet_info from './Tweet_Info';
 import Tweet_img from './Tweet_img';
 import Tweet_Info from './Tweet_Info';
+import {cache} from "../../common/cache"
+import {useMutation} from "@apollo/client"
+import {CustomDialog} from 'react-st-modal'
+import LikeTweet from "../../common/queries/likeTweet"
+import UnlikeTweet from "../../common/queries/unlikeTweet"
+import ErrorDialog from "../../UI/Dialogs/ErroDialog"
 
 export interface TweetData {
   user?: {
@@ -25,6 +31,74 @@ export interface TweetData {
 function Tweet(props: any) {
   const [edit, setEdit] = useState<boolean>(false);
   const modalClosed = () => setEdit(false);
+  const [likeTweet] = useMutation(LikeTweet)
+  const [unlikeTweet] = useMutation(UnlikeTweet)
+
+  const handleLikeButton = async(e: any) => {
+    try {
+      if(!props.isLiked) {
+        cache.modify({
+          id: `Tweet:${props.id}`,
+          fields: {
+              isLiked() {
+                  return true;
+              },
+              likesCount(cachedLikesCount: any){
+                  return cachedLikesCount + 1
+              }
+          },  
+        });
+        await likeTweet({
+          variables: {
+            tweetId: props.id
+          }
+        })
+      } else {
+        cache.modify({
+          id: `Tweet:${props.id}`,
+          fields: {
+              isLiked() {
+                  return false;
+              },
+              likesCount(cachedLikesCount: any){
+                return cachedLikesCount - 1
+            }
+          },  
+        });
+        await unlikeTweet({
+          variables: {
+            tweetId: props.id
+          }
+        })
+      }
+      
+    } catch (e) {
+      let unliked: any
+      cache.modify({
+        id: `Tweet:${props.id}`,
+        fields: {
+            isLiked(cachedIsLiked: any) {
+                unliked = cachedIsLiked
+                return !unliked;
+            },
+            likesCount(cachedLikesCount: any){
+                if (unliked) {
+                  return cachedLikesCount + 1
+                }
+                else {
+                  return cachedLikesCount - 1
+                }
+            }
+        },  
+      });
+      const error = await CustomDialog(<ErrorDialog message={"Something went wrong please try again!"} />, {
+        title: 'Error!',
+        showCloseIcon: false,
+      });
+      }
+    }
+   
+  
 
   return (
 
@@ -118,10 +192,10 @@ function Tweet(props: any) {
               </ToolBox>
             </a>
 
-            <a href="/">
-              <i className="far fa-heart text-base font-sm"></i>
+            <button className="outline-none focus:outline-none" onClick={handleLikeButton}>
+              <i className={"text-base font-sm rounded-3xl transform hover:scale-110 "+(props.isLiked?"fas fa-heart text-red-600":"far fa-heart")}></i>
               <span>{props.likesCount}</span>
-            </a>
+            </button>
 
           </div>
         </div>

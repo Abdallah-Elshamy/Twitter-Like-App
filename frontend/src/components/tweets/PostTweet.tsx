@@ -56,7 +56,7 @@ const PostTweet = () => {
           'Content-Type': media.type
         }
       })
-      console.log ("url", url.config.url.split('?')[0])
+      // console.log ("url", url.config.url.split('?')[0])
       return url.config.url.split('?')[0]
     })
     return await Promise.all(urlsData)
@@ -71,11 +71,17 @@ const PostTweet = () => {
     console.log(media, mediaURL)
 
   }
-  const handleDisable =(valid:boolean, value:string) =>{
+  const submitDisable =(valid:boolean, value:string) =>{
     if (!valid) return true
     if (medias.length > 4) return true
     if (value.length == 0 && medias.length == 0) return true
 
+  }
+  const fileDisable =()=>{
+    if (medias.length>0){
+      if (type.includes("video") && medias.length ==1) return true 
+      if (type.includes("image")) return true
+    }
   }
 
   const displayUploadedFiles=(urls:string[])=> {
@@ -170,9 +176,10 @@ const PostTweet = () => {
               </div>
               <hr className="my-2" />
               <div className="flex justify-between items-center mb-2">
-                <button disabled={medias.length == 4? true: false} type="button" className="hover:bg-blue-100 rounded-full py-2 px-3 transition focus:outline-none" onClick={()=>uploadImg.current.click()}>
+                <div>
+                <button disabled={(medias.length == 4 || type.includes("video"))? true: false} type="button" className="hover:bg-blue-100 rounded-full py-2 px-3 transition focus:outline-none" onClick={()=>uploadImg.current.click()}>
                   <svg 
-                    className={ medias.length == 4? "h-8 w-8 text-gray-400  ":"h-8 w-8 text-blue-400"}
+                    className={ (medias.length == 4|| type.includes("video"))? "h-8 w-8 text-gray-400  ":"h-8 w-8 text-blue-400"}
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path 
@@ -183,26 +190,21 @@ const PostTweet = () => {
                   </svg>
                   <input className="file-upload  hidden focus:outline-none" type="file"  accept="image/*" ref={uploadImg} onChange={(e)=> handleFile(e)} />
                 </button>
-                <button disabled={medias.length == 4? true: false} type="button" className="hover:bg-blue-100 rounded-full py-2 px-3 transition focus:outline-none" onClick={()=>uploadVid.current.click()}>
-                  <svg 
-                    className={ medias.length == 4? "h-8 w-8 text-gray-400  ":"h-8 w-8 text-blue-400"}
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth="2" 
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <button disabled={fileDisable()} type="button" className="hover:bg-blue-100 rounded-full py-2 px-3 transition focus:outline-none" onClick={()=>uploadVid.current.click()}>
+                  <svg className={ fileDisable()? "h-8 w-8 text-gray-400  ":"h-8 w-8 text-blue-400"}
+                    xmlns="http://www.w3.org/2000/svg"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                   </svg>
                   <input className="file-upload  hidden focus:outline-none" type="file"  accept="video/*" ref={uploadVid} onChange={(e)=> handleFile(e)} />
                 </button>
-                
+
+                </div>
 
                 
                 <ErrorMessage name="text"  render={msg => <div className="text-red-500">{msg}</div>} /> 
                 <div>
                 <p className="inline-block text-xs mr-2 text-blue-500">{(values.text == null) ? "0" : values.text?.length}/{257}</p>
-                <TweetButton disabled={handleDisable(isValid, values.text)}  name="Tweet" type="submit" className=" rounded-full py-3 px-6"/>
+                <TweetButton disabled={submitDisable(isValid, values.text)}  name="Tweet" type="submit" className=" rounded-full py-3 px-6"/>
                 </div>
             </div>
               

@@ -19,22 +19,18 @@ const ExtendedTweet: React.FC = () => {
   const location = useLocation()
   let urlId = location.pathname.substr(7)
 
-  console.log(urlId)
   const { data, loading, error } = useQuery(GET_SINGLE_TWEET, {
     variables: {
       tweetId: urlId,
       isSFW: sfw.SFW.value,
     }
   })
-  console.log("%c%o", "color:red", error?.extraInfo)
   if (loading) return (<div className="mt-8" ><Loading /></div>)
   if (error) return <FoF
     msg="This tweet doesn’t exist"
   />
-  console.log(data)
 
   const tweet: TweetData = data.tweet
-  console.log(tweet)
   return (
     <Fragment>
 
@@ -62,6 +58,7 @@ const ExtendedTweet: React.FC = () => {
             repliesCount={tweet.repliesCount}
             createdAt={tweet.createdAt}
             isLiked={tweet.isLiked}
+            isRetweeted={tweet.isRetweeted}
             user={tweet.user}
             likesCount={tweet.likesCount}
             quotedRetweetsCount={tweet.quotedRetweetsCount}

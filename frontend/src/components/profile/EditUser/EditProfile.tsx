@@ -123,7 +123,6 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
 
           let lastIndex = Number(user.coverImageURL?.lastIndexOf('/')) + 1
           let id = user.coverImageURL?.substr(lastIndex || 0)
-          console.log(id)
           deleteMedia({
             variables: {
               id: id
@@ -179,7 +178,6 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
 
   const handleBgPreview = (e: any) => {
 
-    console.log("After change")
     EditProfileBgVal({
       BgImage: e.target.files[0],
       BgImageURL: URL.createObjectURL(e.target.files[0])
@@ -272,7 +270,6 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
           <Formik initialValues={initialValues}
             validationSchema={validationSchema}
             innerRef={formRef} onSubmit={(values, actions) => {
-              console.log({ values, actions });
 
             }}>
             {({ values, setFieldValue, errors, touched }) => (<form>

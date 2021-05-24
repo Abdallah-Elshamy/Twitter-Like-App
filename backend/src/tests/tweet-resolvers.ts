@@ -412,6 +412,15 @@ describe("tweet-resolvers", (): void => {
             ).to.be.equal("1");
         });
 
+        it("fail to retweet a tweet that is previously retweeted by the user", async () => {
+            const response = await createRetweet(1, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "This tweet is already retweeted by the user!",
+            });
+        })
+
         it("fail createRetweet to non existing tweet", async () => {
             const response = await createRetweet(20, token);
             expect(response.body.errors).to.has.length(1);

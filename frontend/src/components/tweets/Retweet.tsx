@@ -39,6 +39,7 @@ const Retweet: React.FC<any> = (props: any) => {
         likesCount={tweet.likesCount}
         quotedRetweetsCount={tweet.quotedRetweetsCount}
         retweetsCount={tweet.retweetsCount}
+        isRetweeted={tweet.isRetweeted}
         state={tweet.state}
         originalTweet={tweet.originalTweet}
         repliedToTweet={tweet.repliedToTweet}

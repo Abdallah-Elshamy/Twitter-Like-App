@@ -9,7 +9,6 @@ import { fn, col } from "sequelize";
 import pubsub from "../../messaging";
 import { withFilter } from "apollo-server-express";
 
-
 const PAGE_SIZE = 10;
 
 interface CustomeError extends Error {
@@ -672,9 +671,9 @@ export default {
                     transaction,
                     repliedToTweet.id,
                     repliedToTweet.threadTweet ||
-                        (repliedToTweet.state === "O"
-                            ? repliedToTweet.id
-                            : undefined)
+                    (repliedToTweet.state === "O"
+                        ? repliedToTweet.id
+                        : undefined)
                 );
                 const hashtags = await Hashtag.bulkCreate(hashtags_mapped, {
                     transaction,
@@ -708,6 +707,21 @@ export default {
             if (originalTweet.state === "R") {
                 const error: CustomeError = new Error(
                     "Can't retweet a retweeted tweet!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+            const isRetweeted = await Tweet.findOne({
+                attributes: ["id"],
+                where: {
+                    userId: user!.id,
+                    state: "R",
+                    originalTweetId: originalTweetId,
+                },
+            });
+            if (isRetweeted) {
+                const error: CustomeError = new Error(
+                    "This tweet is already retweeted by the user!"
                 );
                 error.statusCode = 422;
                 throw error;
@@ -1052,6 +1066,25 @@ export default {
                     state: "R",
                 },
             });
+        },
+        isRetweeted: async (
+            parent: Tweet,
+            args: any,
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                return false;
+            }
+            const tweet = await Tweet.findOne({
+                attributes: ["id"],
+                where: {
+                    userId: user!.id,
+                    state: "R",
+                    originalTweetId: parent.id,
+                },
+            });
+            return tweet !== null;
         },
         quotedRetweetsCount: async (parent: any) => {
             const isSFW = parent.mode === "SFW" ? true : false;

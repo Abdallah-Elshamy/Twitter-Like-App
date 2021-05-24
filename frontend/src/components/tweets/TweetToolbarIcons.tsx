@@ -15,9 +15,7 @@ function TweetToolbarIcons(props: any) {
 
   const handleRetweet = async () => {
     try {
-      await retweet({ variables: { tweetId: props.tweetId } }).then(data => {
-        alert(data.data)
-      })
+      await retweet({ variables: { tweetId: props.tweetId } })
     }
     catch (e) {
       await CustomDialog(<ErrorDialog message={e.message} />, {
@@ -25,11 +23,9 @@ function TweetToolbarIcons(props: any) {
         showCloseIcon: false,
       });
     }
-    console.log(rtData);
 
   }
   const [retweet, rtData] = useMutation(RETWEET)
-  console.log(rtData)
   return (
 
     <div className="tweet-toolbar p--light-color" >
@@ -55,18 +51,24 @@ function TweetToolbarIcons(props: any) {
         <ToolBox
           design={
             <div className="border-0">
-              <i className="fas fa-retweet text-base font-sm"></i>
+              <i className={`fas fa-retweet text-base font-sm  ${props.isRetweeted ? "text-green-500" : ""}`}></i>
               <span>{props.retweetsCount + props.quotedRetweetsCount} </span>
             </div>
           }
         >
           <ul className="mb-40 absolute ml-12 bg-gray-100">
 
-            <button onClick={(e) => {
-              handleRetweet();
-            }} className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
+            {!props.isRetweeted ?
+              <button onClick={() => {
+                handleRetweet();
+              }} className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" disabled={rtData && rtData.loading} >Retweet</button>
-
+              :
+              <button onClick={() => {
+                /*To DO*/ alert("delete");
+              }} className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
+          hover:text-gray-900" disabled={rtData && rtData.loading} >Undo retweet</button>
+            }
             <a className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" onClick={(e) => { setEdit(true); e.stopPropagation() }}>quote Retweet</a>
 

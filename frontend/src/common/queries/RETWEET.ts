@@ -4,7 +4,13 @@ export const RETWEET = gql`
     mutation retweet($tweetId: ID!){
   createRetweet(originalTweetId: $tweetId) {
     id
-    originalTweet{ id }
+    originalTweet
+    { 
+      id
+      isRetweeted
+      retweetsCount
+      quotedRetweetsCount
+    }
   }
 }
 `;

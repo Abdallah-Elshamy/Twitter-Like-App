@@ -6,7 +6,7 @@ import { Tweets } from '../../common/queries/TweetQuery'
 import { FeedTweets } from '../../common/queries/Feedtweets'
 import { Post_Tweet } from '../../common/queries/createTweet'
 import { useMutation } from "@apollo/client"
-import {updateTweetsCacheForCreateTweet} from "../../common/utils/writeCache"
+import { updateTweetsCacheForCreateTweet } from "../../common/utils/writeCache"
 import './tweet.css';
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 import { parseJwt } from '../../common/decode';
@@ -18,7 +18,6 @@ const PostTweet = () => {
   if (localStorage.getItem('token') !== "LOGOUT") {
     profile = parseJwt(localStorage.getItem('token'))
   }
-  console.log(profile.id)
   // const userData = useQuery (Get_Logged_user)
   // const user:User = userData.data.logUser.user
   // console.log (user.imageURL)
@@ -28,7 +27,6 @@ const PostTweet = () => {
   const [createTweet, { data }] = useMutation(Post_Tweet, {
     update: updateTweetsCacheForCreateTweet
   });
-  console.log(`this ${inputRef.current}`)
 
   const initialValues: Post = {
     text: ""
@@ -38,9 +36,7 @@ const PostTweet = () => {
     element.target.style.height = "60px"
     element.target.style.height = (element.target.scrollHeight) + "px"
     inputRef.current.style.height = (element.target.scrollHeight) + "px"
-    console.log(`in ${element.target.style.height}`)
-    console.log(`out ${inputRef.current.style.height}`)
-    console.log(`scroll ${element.target.scrollHeight}`)
+
   }
   const validationSchema = Yup.object({
     text: Yup.string()
@@ -52,18 +48,16 @@ const PostTweet = () => {
     <div className="mb-3 p-3 w-full shadow bg-white flex">
       {/* this should be dynamic */}
       <div className="tweet-icon">
-      <img src={profile.imageURL || avatar } alt="avatar" />
+        <img src={profile.imageURL || avatar} alt="avatar" />
       </div>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={({ text }, { setSubmitting, resetForm }) => {
           setSubmitting(true);
-          console.log(text);
           createTweet({
             variables: { tweetInput: { text } },
           });
-          console.log(`this ${data}`)
           setSubmitting(false);
           resetForm();
         }}

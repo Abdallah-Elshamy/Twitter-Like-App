@@ -7,7 +7,7 @@ import { FeedTweets } from "../../common/queries/Feedtweets";
 import Loading from "../../UI/Loading";
 import { Get_SFW } from "../../common/queries/GET_SFW";
 import InfiniteScroll from "react-infinite-scroll-component";
-import {parseJwt} from '../../common/utils/jwtDecoder'
+import { parseJwt } from '../../common/utils/jwtDecoder'
 
 function HomeTweets() {
     let [page, setPage] = useState(1);
@@ -18,7 +18,7 @@ function HomeTweets() {
             isSFW: sfw.SFW.value,
         },
     });
-    if(!loading && data && data?.getFeed?.tweets?.length == 10 && data?.getFeed?.totalCount > 10){
+    if (!loading && data && data?.getFeed?.tweets?.length == 10 && data?.getFeed?.totalCount > 10) {
         fetchMore({
             variables: {
                 isSFW: sfw.SFW.value,
@@ -28,16 +28,17 @@ function HomeTweets() {
     }
     if (loading) return <Loading />;
     if (error) return <p>`Error! this is the one ${error.message}`</p>;
+    console.log(data?.getFeed?.tweets)
 
     return (
         <InfiniteScroll
             dataLength={data?.getFeed?.tweets?.length || 0}
             next={() => {
-                setPage(Math.floor((data?.getFeed?.tweets?.length || 10)/10) +1 );
+                setPage(Math.floor((data?.getFeed?.tweets?.length || 10) / 10) + 1);
                 return fetchMore({
                     variables: {
                         isSFW: sfw.SFW.value,
-                        page: Math.floor((data?.getFeed?.tweets?.length || 10)/10) +1 ,
+                        page: Math.floor((data?.getFeed?.tweets?.length || 10) / 10) + 1,
                     },
                 });
             }}
@@ -55,16 +56,17 @@ function HomeTweets() {
                         repliesCount={tweet.repliesCount}
                         createdAt={tweet.createdAt}
                         isLiked={tweet.isLiked}
+                        isRetweeted={tweet.isRetweeted}
                         user={tweet.user}
                         loggedUser={loggedUser}
                         tweet={tweet}
                         likesCount={tweet.likesCount}
                         key={tweet.id}
-                        quotedRetweetsCount = {tweet. quotedRetweetsCount}
-                        retweetsCount = { tweet.retweetsCount}
-                        state= {tweet.state}
-                        originalTweet = { tweet.originalTweet}
-                        repliedToTweet = { tweet.repliedToTweet}
+                        quotedRetweetsCount={tweet.quotedRetweetsCount}
+                        retweetsCount={tweet.retweetsCount}
+                        state={tweet.state}
+                        originalTweet={tweet.originalTweet}
+                        repliedToTweet={tweet.repliedToTweet}
                     />
                 );
             })}

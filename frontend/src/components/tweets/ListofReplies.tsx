@@ -24,14 +24,12 @@ const Replies: React.FC<any> = (props: any) => {
   })
   if (loading) return (<div className="mt-8" ><Loading /></div>)
   if (error) {
-    console.log(error)
 
     return <FoF
       msg="Something wo'nt wrong"
     />
   }
   const tweet: any = data.tweet
-  console.log(tweet)
   return (
     <Fragment>
       {tweet.replies.tweets.map((tweet: any) => {

@@ -24,7 +24,6 @@ function Tweet(props: any) {
   const goToProfile = () => {
     history.replace({
       pathname: '/' + props.user.id,
-
     })
   }
   switch (props.state) {
@@ -58,6 +57,8 @@ function Tweet(props: any) {
                 quotedRetweetsCount={props.quotedRetweetsCount}
                 retweetsCount={props.retweetsCount}
                 tweetId={props.id}
+                isRetweeted={props.isRetweeted}
+
               />
             </div>
           </div>
@@ -103,6 +104,7 @@ function Tweet(props: any) {
                 quotedRetweetsCount={props.quotedRetweetsCount}
                 retweetsCount={props.retweetsCount}
                 tweetId={props.id}
+                isRetweeted={props.isRetweeted}
               />
 
             </div>
@@ -145,6 +147,8 @@ function Tweet(props: any) {
                 likesCount={props.likesCount}
                 quotedRetweetsCount={props.quotedRetweetsCount}
                 retweetsCount={props.retweetsCount}
+                tweetId={props.id}
+                isRetweeted={props.isRetweeted}
               />
 
             </div>
@@ -156,6 +160,7 @@ function Tweet(props: any) {
         <hr />
       </div>
     case "R":
+
       return <div>
         {
           (props.originalTweet.state === "R") ? <FoF /> :

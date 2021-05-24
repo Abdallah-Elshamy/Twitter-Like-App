@@ -52,6 +52,7 @@ query tweet ($tweetId:ID!  $isSFW:Boolean){
         state
         createdAt
         isLiked
+        isRetweeted
         mode
         
     }

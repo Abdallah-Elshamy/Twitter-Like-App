@@ -12,8 +12,7 @@ import { useQuery, gql, useMutation } from '@apollo/client';
 import Viewer from 'react-viewer';
 import { LoggedUser } from '../../common/queries/Userqery';
 import ReactPlayer from 'react-player'
-import FoF from "../../UI/FoF/FoF"
-import Loading from "../../UI/Loading"
+import {getUploadURL} from '../../common/queries/getUploadurl'
 interface Post {
   text: string
 }
@@ -31,6 +30,7 @@ const PostTweet = () => {
   const [ visible, setVisible ] = React.useState(false);
   const   [type, setType] = useState ("")
   let img:any =[]
+ 
   const initialValues: Post = {
     text: ""
   }
@@ -39,7 +39,7 @@ const PostTweet = () => {
   const [createTweet, { data }] = useMutation(Post_Tweet, {
     update: updateTweetsCacheForCreateTweet
   });
-  const { data: APIENDPOINT, loading, refetch } = useQuery(gql`query{getUploadURL}`)
+  const { data: APIENDPOINT, loading, refetch } = useQuery(getUploadURL, {variables:{isVideo:(type.includes("video"))?true:false}})
 
   if (!loading && APIENDPOINT) {
     if (APIENDPOINT.getUploadURL !== apis[apis.length - 1]) {

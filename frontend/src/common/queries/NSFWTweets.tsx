@@ -19,6 +19,7 @@ query NSFWTweets ($page:Int){
         createdAt
         isLiked
         mediaURLs
+        isSFW
       }
     }}
 `

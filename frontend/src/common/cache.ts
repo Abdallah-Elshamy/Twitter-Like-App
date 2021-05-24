@@ -32,7 +32,13 @@ const createPaginationAndCombine = (keyArgs: any[]) => ({
 });
 const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
     merge(existing: any, incoming: any) {
-        if (incoming?.__typename && (incoming?.__typename == "IgnoreReportedTweet" || incoming?.__typename == "ReportTweet")) {
+        if (
+            incoming?.__typename &&
+            (incoming?.__typename == "IgnoreReportedTweet" ||
+                incoming?.__typename == "ReportTweet" ||
+                incoming?.__typename == "LikeTweet" ||
+                incoming?.__typename == "UnlikeTweet")
+        ) {
             return incoming;
         }
         const merged = existing
@@ -74,8 +80,11 @@ const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
 
 const createPaginationAndCombineUsersElements = (keyArgs: any[]) => ({
     merge(existing: any, incoming: any) {
-        console.log("incoming data", incoming);
-        if (incoming?.__typename && (incoming?.__typename == "BanOrIgnoreUser" || incoming?.__typename == "ReportUser")) {
+        if (
+            incoming?.__typename &&
+            (incoming?.__typename == "BanOrIgnoreUser" ||
+                incoming?.__typename == "ReportUser")
+        ) {
             return incoming;
         }
         const merged = existing

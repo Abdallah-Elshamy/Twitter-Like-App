@@ -7,11 +7,13 @@ import Tweet_info from './Tweet_Info';
 import Tweet_img from './Tweet_img';
 import Tweet_Info from './Tweet_Info';
 import {cache} from "../../common/cache"
-import {useMutation} from "@apollo/client"
+import {Get_SFW} from "../../common/queries/GET_SFW"
+import {useMutation, useQuery} from "@apollo/client"
 import {CustomDialog} from 'react-st-modal'
 import LikeTweet from "../../common/queries/likeTweet"
 import UnlikeTweet from "../../common/queries/unlikeTweet"
 import ErrorDialog from "../../UI/Dialogs/ErroDialog"
+import {updateTweetsCacheForLikeTweet, updateTweetsCacheForUnlikeTweet} from "../../common/utils/writeCache"
 
 export interface TweetData {
   user?: {
@@ -29,10 +31,21 @@ export interface TweetData {
 }
 
 function Tweet(props: any) {
+  const sfw = useQuery(Get_SFW).data;
   const [edit, setEdit] = useState<boolean>(false);
   const modalClosed = () => setEdit(false);
-  const [likeTweet] = useMutation(LikeTweet)
-  const [unlikeTweet] = useMutation(UnlikeTweet)
+  const [likeTweet] = useMutation(LikeTweet, {
+    update(cache) {
+      updateTweetsCacheForLikeTweet(cache, props.tweet.id, props.loggedUser.id, false)
+      updateTweetsCacheForLikeTweet(cache, props.tweet.id, props.loggedUser.id, true)
+    }
+  })
+  const [unlikeTweet] = useMutation(UnlikeTweet, {
+    update(cache) {
+      updateTweetsCacheForUnlikeTweet(cache, props.tweet.id, props.loggedUser.id, false)
+      updateTweetsCacheForUnlikeTweet(cache, props.tweet.id, props.loggedUser.id, true)
+    }
+  })
 
   const handleLikeButton = async(e: any) => {
     try {

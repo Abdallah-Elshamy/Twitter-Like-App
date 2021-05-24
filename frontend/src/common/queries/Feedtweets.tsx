@@ -18,6 +18,7 @@ query feed_tweets($isSFW:Boolean, $page: Int){
           createdAt
           isLiked
           mediaURLs
+          isSFW
         }
         totalCount
           

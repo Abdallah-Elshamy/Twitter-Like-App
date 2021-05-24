@@ -19,6 +19,7 @@ query tweets ($userId:ID! $filter:String $page:Int $isSFW:Boolean){
         createdAt
         isLiked
         mediaURLs
+        isSFW
       }
     }}
 `

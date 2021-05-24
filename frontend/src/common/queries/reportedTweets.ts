@@ -19,6 +19,7 @@ query reportedTweets ($page:Int){
         createdAt
         isLiked
         mediaURLs
+        isSFW
       }
     }}
 `

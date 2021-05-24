@@ -17,6 +17,7 @@ export const Post_Tweet = gql`
             createdAt
             isLiked
             mediaURLs
+            isSFW
         }
     }
 `;

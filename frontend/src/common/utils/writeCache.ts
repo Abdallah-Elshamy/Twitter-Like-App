@@ -5,6 +5,7 @@ import { parseJwt } from "../decode";
 import { apolloClient } from "../apolloClient";
 import ReportedTweets from "../queries/reportedTweets";
 import ReportedUsers from "../queries/reportedUsers";
+import { gql } from "@apollo/client";
 
 const writeTweetsFeedData = async (
     isSFW: boolean,
@@ -229,7 +230,6 @@ export const updateTweetsCacheForIgnoreReportedTweet = (
     let reportedTweets: any = cache.readQuery({
         query: ReportedTweets,
     });
-    console.log("reported Tweets", reportedTweets);
     reportedTweets &&
         cache.writeQuery({
             query: ReportedTweets,
@@ -265,7 +265,10 @@ const removeUserFromReportedUsers = (cache: any, user: any) => {
     return reportedUsers;
 };
 
-export const updateUsersCacheForIgnoreReportedUser = (cache: any, user: any) => {
+export const updateUsersCacheForIgnoreReportedUser = (
+    cache: any,
+    user: any
+) => {
     removeUserFromReportedUsers(cache, user);
 };
 
@@ -273,19 +276,18 @@ export const updateUsersCacheForReportUser = (cache: any, user: any) => {
     let reportedUsers: any = cache.readQuery({
         query: ReportedUsers,
     });
-    console.log("reportedUsers", reportedUsers)
     reportedUsers &&
         cache.writeQuery({
             query: ReportedUsers,
             data: {
                 reportedUsers: {
-                    __typename:"ReportUser",
+                    __typename: "ReportUser",
                     users: [user, ...reportedUsers?.reportedUsers?.users],
                     totalCount: reportedUsers?.reportedUsers?.totalCount + 1,
                 },
             },
         });
-}
+};
 
 export const updateTweetsCacheForReportTweet = (cache: any, tweet: any) => {
     let reportedTweets: any = cache.readQuery({
@@ -296,13 +298,123 @@ export const updateTweetsCacheForReportTweet = (cache: any, tweet: any) => {
             query: ReportedTweets,
             data: {
                 reportedTweets: {
-                    __typename:"ReportTweet",
+                    __typename: "ReportTweet",
                     tweets: [tweet, ...reportedTweets?.reportedTweets?.tweets],
                     totalCount: reportedTweets?.reportedTweets?.totalCount + 1,
                 },
             },
         });
-}
+};
+
+export const updateTweetsCacheForLikeTweet = (
+    cache: any,
+    tweetId: any,
+    userId: any,
+    isSFW: any
+) => {
+    let likedTweets: any = cache.readQuery({
+        query: Tweets,
+        variables: {
+            filter: "likes",
+            userId,
+            isSFW,
+        },
+    });
+    const tweet = cache.readFragment({
+        id: `Tweet:${tweetId}`,
+        fragment: gql`
+            fragment myTweet on Tweet {
+                user {
+                    id
+                    imageURL
+                    name
+                    userName
+                    isBanned
+                }
+                id
+                text
+                likesCount
+                repliesCount
+                createdAt
+                isLiked
+                mediaURLs
+                isSFW
+            }
+        `,
+    });
+    likedTweets &&
+        cache.writeQuery({
+            query: Tweets,
+            variables: {
+                filter: "likes",
+                userId,
+                isSFW,
+            },
+            data: {
+                tweets: {
+                    __typename: "LikeTweet",
+                    tweets: [tweet, ...likedTweets?.tweets?.tweets],
+                    totalCount: likedTweets?.tweets?.totalCount + 1,
+                },
+            },
+        });
+};
+
+export const updateTweetsCacheForUnlikeTweet = (
+    cache: any,
+    tweetId: any,
+    userId: any,
+    isSFW: any
+) => {
+    let likedTweets: any = cache.readQuery({
+        query: Tweets,
+        variables: {
+            filter: "likes",
+            userId,
+            isSFW,
+        },
+    });
+    const tweet = cache.readFragment({
+        id: `Tweet:${tweetId}`,
+        fragment: gql`
+            fragment myTweet on Tweet {
+                user {
+                    id
+                    imageURL
+                    name
+                    userName
+                    isBanned
+                }
+                id
+                text
+                likesCount
+                repliesCount
+                createdAt
+                isLiked
+                mediaURLs
+                isSFW
+            }
+        `,
+    });
+    likedTweets &&
+        cache.writeQuery({
+            query: Tweets,
+            variables: {
+                filter: "likes",
+                userId,
+                isSFW,
+            },
+            data: {
+                tweets: {
+                    __typename: "UnlikeTweet",
+                    tweets: likedTweets?.tweets?.tweets?.filter(
+                        (existingTweet: any) => existingTweet?.id != tweet?.id
+                    ),
+                    totalCount: likedTweets?.tweets?.totalCount - 1,
+                },
+            },
+        });
+};
 
 export const updateUsersCacheForBanUser = (cache: any, user: any) => {
     removeUserFromReportedUsers(cache, user) &&

@@ -161,9 +161,12 @@ function Tweet(props: any) {
       </div>
     case "R":
 
-      return <div>
+      return <Fragment>
         {
-          (props.originalTweet.state === "R") ? <FoF /> :
+
+          (!props.originalTweet || props.originalTweet.state === "R" ||
+            ((history.location.pathname === '/')
+              && props.loggedUser.id == props.user.id)) ? null :
 
             <Fragment>
               <p className="font-bold px-4 text-gray-600">
@@ -175,10 +178,11 @@ function Tweet(props: any) {
                 <span onClick={goToProfile} className="hover:pointer" > {props.user.name} retweeted </span>
               </p>
               <Retweet id={props.originalTweet.id} />
+              <hr />
             </Fragment>
         }
-        <hr />
-      </div>
+
+      </Fragment>
 
     default:
       return <FoF />

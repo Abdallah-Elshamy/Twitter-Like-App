@@ -1,5 +1,6 @@
 export interface TweetData {
-  user?: {
+  user: {
+    id: string
     imageURL?: string
     name?: string
     userName?: string

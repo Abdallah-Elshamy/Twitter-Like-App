@@ -48,6 +48,8 @@ export default gql`
         isLiked: Boolean
         reportedBy(page: Int): PaginatedUsers!
         retweetsCount: Int!
+        "Check if the tweet is Retweeted by the loggedIn user"
+        isRetweeted: Boolean!
         quotedRetweetsCount: Int!
         createdAt: String!
         updatedAt: String!

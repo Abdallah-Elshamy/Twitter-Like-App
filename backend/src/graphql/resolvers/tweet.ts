@@ -1067,6 +1067,25 @@ export default {
                 },
             });
         },
+        isRetweeted: async (
+            parent: Tweet,
+            args: any,
+            context: { req: CustomeRequest }
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                return false;
+            }
+            const tweet = await Tweet.findOne({
+                attributes: ["id"],
+                where: {
+                    userId: user!.id,
+                    state: "R",
+                    originalTweetId: parent.id,
+                },
+            });
+            return tweet !== null;
+        },
         quotedRetweetsCount: async (parent: any) => {
             const isSFW = parent.mode === "SFW" ? true : false;
             if (isSFW) {

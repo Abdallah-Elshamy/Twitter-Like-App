@@ -103,5 +103,5 @@ function QuotedTweet({ OTweet }: any) {
 
 }
 
-}
+
 export default QuotedTweet;

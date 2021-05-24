@@ -9,7 +9,8 @@ import ImageSlideshow from 'material-ui/svg-icons/image/slideshow';
 import {LIKE, UNLIKE} from '../../common/queries/like'
 import { useMutation } from '@apollo/react-hoc';
 import Tweet_Info from './Tweet_Info';
-
+import { url } from 'inspector';
+import ReactPlayer from 'react-player'
 export interface TweetData {
   user?: {
     id?: string
@@ -35,6 +36,13 @@ function Tweet(props: any) {
 
 
   const displayUploadedFiles=(urls:string[])=> {
+    if (props.mediaURLs.length > 0){ 
+    if (urls[0].includes(".com/videos/")){
+      return <div style={{height:"300px"}} >
+      <ReactPlayer url={urls[0]} height="300px" width="500px"  controls={true}/>
+      </div>
+    }
+    else {
     const check = (urls.length == 3)? true : false
     img = urls.map ((url)=> {return {src:url}})
     return urls.map((url, i) => 
@@ -50,7 +58,7 @@ function Tweet(props: any) {
     images={img}
     />
     </Fragment>
-    )
+    )}}
 
   }
 

@@ -36,7 +36,7 @@ export default gql`
         text: String!
         mediaURLs: [String]!
         state: String!
-        originalTweet: Tweet!
+        originalTweet: Tweet
         isSFW: Boolean!
         likes(page: Int): PaginatedUsers!
         likesCount: Int!

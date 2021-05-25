@@ -2,8 +2,8 @@ import { ErrorMessage, Field, Form, Formik } from "formik"
 import React, { Fragment, useRef, useState } from "react"
 import * as Yup from "yup"
 import { TweetButton } from '../sideBar/tweetButton/tweetButton'
-import { Post_Tweet } from '../../common/queries/createTweet'
-import { updateTweetsCacheForCreateTweet } from "../../common/utils/writeCache"
+import { Post_Tweet, Post_QRetweet, Post_Reply } from '../../common/queries/createTweet'
+import {updateTweetsCacheForCreateTweet} from "../../common/utils/writeCache"
 import './tweet.css';
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 import { parseJwt } from '../../common/decode';
@@ -17,8 +17,12 @@ import Loading from "../../UI/Loading";
 interface Post {
   text: string
 }
+interface Arg {
+  originalId?:string,
+  postType?: string
+}
+const PostTweet = ({originalId = '', postType = 'tweet'}: Arg)  => {
 
-const PostTweet = () => {
   const inputRef: any = useRef("")
   const heightRef: any = useRef("")
   const uploadImg: any = useRef()
@@ -40,6 +44,9 @@ const PostTweet = () => {
   const [createTweet, { data }] = useMutation(Post_Tweet, {
     update: updateTweetsCacheForCreateTweet
   });
+  const [createReply] = useMutation(Post_Reply)
+  const [createQTweet] = useMutation(Post_QRetweet)
+
   const { data: APIENDPOINT, loading, refetch } = useQuery(getUploadURL, {variables:{isVideo:(type.includes("video"))?true:false}})
 
   if (!loading && APIENDPOINT) {
@@ -141,14 +148,36 @@ const PostTweet = () => {
           validationSchema={validationSchema}
           onSubmit={({ text }, {resetForm}) => {
             if(media) {handleUpload().then ( (urls)=> {
+            if (postType == "tweet"){
               createTweet({
                 variables: { tweetInput: {text, mediaURLs:urls }}
-              });
+              });}
+            if (postType == "reply"){
+              createReply ({
+                variables:{tweetInput: {text, mediaURLs:urls }, repliedToTweet:originalId}
+              })
+            }
+            if (postType == "Qretweet") {
+              createQTweet ({
+                variables:{originalTweetId: originalId ,tweetInput: {text, mediaURLs:urls }}
+              })
+            }
             })}
             else {
-              createTweet({
-                variables: { tweetInput: {text}}
-              })
+              if (postType == "tweet"){
+                createTweet({
+                  variables: { tweetInput: {text}}
+                });}
+              if (postType == "reply"){
+                createReply ({
+                  variables:{tweetInput: {text}, repliedToTweet:originalId}
+                })
+              }
+              if (postType == "Qretweet") {
+                createQTweet ({
+                  variables:{originalTweetId: originalId ,tweetInput: {text}}
+                })
+              }
             }
             
             setmedia (false)

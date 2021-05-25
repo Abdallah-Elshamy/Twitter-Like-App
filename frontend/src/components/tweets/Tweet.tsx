@@ -43,17 +43,17 @@ function Tweet(props: any) {
         <PostTweet />
       </Modal>
 
-  <Tweet_img imageURL = {props.imageURL} /> 
+      <Tweet_img imageURL={props.user.imageURL} />
 
-       <div className="tweet-aside">
+      <div className="tweet-aside">
 
-<Tweet_info 
- userName = { props.user?.userName } 
- createdAt  = {props.createdAt}
- name = {props.user?.name}
- />
+        <Tweet_info
+          userName={props.user?.userName}
+          createdAt={props.createdAt}
+          name={props.user?.name}
+        />
 
-      {/*  <div className="tweet-data py-1">
+        {/*  <div className="tweet-data py-1">
           <p className="font-bold mr-1">{props.user?.name}</p>
           <p className="p--light-color"> @{props.user?.userName} . </p>
           <p className="p--light-color px-1"> {props.createdAt ? timeConverter(Number(props.createdAt)) : null}</p>
@@ -118,8 +118,8 @@ function Tweet(props: any) {
           </div>
         </div>
       </div>
-      </div>
-   
+    </div>
+
   )
 }
 

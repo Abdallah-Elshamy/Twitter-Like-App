@@ -74,7 +74,7 @@ svg {
 .gg-box {
   display: grid;
   width: 100%;
-  max-height: 300px;
+  max-height: 320px;
   grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
   /* grid-template-rows: repeat(auto-fit, minmax(10rem, 1fr)); */
   grid-auto-flow: row;
@@ -90,10 +90,12 @@ svg {
 .third {
   grid-row: span 2;
 }
-.gg-box img {
-  object-fit: cover;
+.gg-box .Img {
   cursor: pointer;
+  object-fit: cover;
   width: 100%;
+  height: 150px;
+  /* min-height: 100%; */
   /* min-height: 150px; */
   /* border-radius: 10px; */
 }

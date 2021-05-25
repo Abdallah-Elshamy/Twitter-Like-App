@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useQuery } from "@apollo/client";
 // import Tweet from '../Tweet';
@@ -14,6 +14,7 @@ export interface TweetFilter {
     filter: string;
     page: number;
     setPage: any;
+    id: string;
 }
 
 const TweetList: React.FC<TweetFilter> = (props) => {
@@ -25,7 +26,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
     const sfw = useQuery(Get_SFW).data;
     const { loading, error, data, fetchMore } = useQuery(Tweets, {
         variables: {
-            userId: profile.id,
+            userId: props.id,
             filter: filter,
             isSFW: sfw.SFW.value,
         },
@@ -34,14 +35,14 @@ const TweetList: React.FC<TweetFilter> = (props) => {
         setPage(page + 1);
         fetchMore({
             variables: {
-                userId: profile.id,
+                userId: props.id,
                 isSFW: sfw.SFW.value,
                 page: page + 1,
                 filter: filter
             },
         })
     }
-    if (loading) return <Loading />;
+    if (loading) return <Fragment><br /> <br /> <Loading size={30} /></Fragment>;
     if (error) return <p>`Error! ${error.message}`</p>;
 
     return (
@@ -51,7 +52,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
                 setPage(page + 1);
                 return fetchMore({
                     variables: {
-                        userId: profile.id,
+                        userId: props.id,
                         isSFW: sfw.SFW.value,
                         page: page + 1,
                         filter: filter

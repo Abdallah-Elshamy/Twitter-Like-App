@@ -69,6 +69,9 @@ export const Routing = () => {
           <Profile />
         </PrivateRoute>
 
+        <Route path='/:id'>
+          <Profile />
+        </Route>
 
       </Switch>
 

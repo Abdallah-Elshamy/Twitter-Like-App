@@ -10,9 +10,10 @@ import { timeConverter } from '../../common/utils/timestamp';
 import { EditProfileBgVal, EditProfileImageVal } from '../../common/cache';
 import { Link } from 'react-router-dom';
 import Viewer from 'react-viewer';
+import FollowButton from '../FollowButton/FollowButton';
 
 
-function ProfileInfo() {
+const ProfileInfo: React.FC<{ user: User, self: boolean }> = ({ user, self }) => {
 
   //EDIT PROFILE MODAL
   const [edit, setEdit] = useState<boolean>(false)
@@ -36,14 +37,7 @@ function ProfileInfo() {
     setEdit(false)
   }
 
-  if (localStorage.getItem('token') !== null) {
-    var profile = parseJwt(localStorage.getItem('token'))
-  }
 
-  const {data} = useQuery(LoggedUser, { variables: { id: profile.id } });
-
-
-  const user: User = data.user;
   return (
 
     <Fragment>
@@ -103,15 +97,17 @@ function ProfileInfo() {
 
         <div className="pf--info">
           <div className="pf--flw-btn-div p-3 h-12">
-            < button onClick={() => setEdit(true)} className={"pf--follow-btn rounded-full px-3 font-semibold text-xm  py-2.5 mt-3 "}>
+            {self ? < button onClick={() => setEdit(true)} className={"pf--follow-btn rounded-full px-3 font-semibold text-xm  py-2 mt-3 "}>
               Edit Profile
-            </button >
+            </button > :
+              <FollowButton id={user.id} following={user.isFollowing} py="py-2" px="px-4" />
+            }
 
 
           </div>
           <div className="mx-2 ">
             <p className="font-extrabold text-lg pb-1 mt-1.5">{user.name} </p>
-            <p className="p--light-color block pb-1">@{user.userName}</p>
+            <p className="p--light-color block pb-1">@{user.userName} {!self && user.isFollower && <span className=" text-gray-600 bg-gray-200 rounded font-light p-0.5 ml-1">follows you</span>}</p>
             <p className="whitespace-pre-wrap ">{user.bio}</p>
             <div className="p--light-color pb-1">
               <span className="pr-2"><i className="fa fa-map-marker" aria-hidden="true"></i> Egypt ... cairo</span>

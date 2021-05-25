@@ -14,6 +14,8 @@ export const LoggedUser = gql`
             followingCount
             followersCount
             birthDate
+            isFollowing
+            isFollower
             tweets {
               totalCount
             }   

@@ -54,6 +54,7 @@
   height: 55px;
   color: var(--dark-grey);
   border-bottom: solid 0.5px var(--extra-light);
+ 
 }
 .pf--nav-link {
   flex-grow: 1;

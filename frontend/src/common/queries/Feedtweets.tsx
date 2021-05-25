@@ -5,6 +5,7 @@ query feed_tweets($isSFW:Boolean, $page: Int){
     getFeed (page: $page isSFW:$isSFW) { 
        
           user {
+            id
             imageURL
             name
             userName

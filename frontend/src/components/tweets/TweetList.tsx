@@ -83,23 +83,6 @@ const TweetList: React.FC<TweetFilter> = (props) => {
     );
 };
 
-  return (
-
-    <Fragment>
-      {console.log(data.tweets.tweets)}
-      {
-        data.tweets.tweets.map((tweet: TweetData) => {
-          return <Tweet text={tweet.text}
-            repliesCount={tweet.repliesCount}
-            createdAt={tweet.createdAt}
-            isLiked={tweet.isLiked}
-            user={tweet.user}
-            likesCount={tweet.likesCount}
-            key={tweet.id} />
-        })}
-    </Fragment>
-  )
-}
-
+ 
 
 export default TweetList;

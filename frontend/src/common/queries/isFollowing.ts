@@ -5,6 +5,7 @@ query isFollowing($id:ID!){
   user(id:$id){
     name
     isFollowing 
+    isBanned
   }
 }
 

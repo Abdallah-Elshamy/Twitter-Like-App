@@ -45,6 +45,7 @@ function HomeTweets() {
             style={{
                 overflow: "hidden"
             }}
+            className="pb-20"
         >
             {data?.getFeed?.tweets?.map((tweet: TweetData) => {
                 return (

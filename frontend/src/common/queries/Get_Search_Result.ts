@@ -13,6 +13,7 @@ query search (
        username:userName 
        imageURI: imageURL 
       bio
+      isBanned
     }
     totalCount
   }

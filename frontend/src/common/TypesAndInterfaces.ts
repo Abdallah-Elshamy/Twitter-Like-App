@@ -14,6 +14,8 @@ export interface PersonEntity {
   imageURI?: string,
   bio?: string,
   isFollowing?: Boolean
+  loggedUser?: any 
+  user?: any
 }
 
 export interface User {

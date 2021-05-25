@@ -7,10 +7,18 @@ import Tweet_img from './Tweet_img';
 import Viewer from 'react-viewer';
 import ImageSlideshow from 'material-ui/svg-icons/image/slideshow';
 import {LIKE, UNLIKE} from '../../common/queries/like'
-import { useMutation } from '@apollo/react-hoc';
 import Tweet_Info from './Tweet_Info';
 import { url } from 'inspector';
 import ReactPlayer from 'react-player'
+import {cache} from "../../common/cache"
+import {Get_SFW} from "../../common/queries/GET_SFW"
+import {useMutation, useQuery} from "@apollo/client"
+import {CustomDialog} from 'react-st-modal'
+import LikeTweet from "../../common/queries/likeTweet"
+import UnlikeTweet from "../../common/queries/unlikeTweet"
+import ErrorDialog from "../../UI/Dialogs/ErroDialog"
+import {updateTweetsCacheForLikeTweet, updateTweetsCacheForUnlikeTweet} from "../../common/utils/writeCache"
+
 export interface TweetData {
   user?: {
     id?: string
@@ -32,7 +40,18 @@ function Tweet(props: any) {
   const [edit, setEdit] = useState<boolean>(false);
   const modalClosed = () => setEdit(false);
   const [ visible, setVisible ] = React.useState(false);
-
+  const [likeTweet] = useMutation(LikeTweet, {
+    update(cache) {
+      updateTweetsCacheForLikeTweet(cache, props.tweet.id, props.loggedUser.id, false)
+      updateTweetsCacheForLikeTweet(cache, props.tweet.id, props.loggedUser.id, true)
+    }
+  })
+  const [unlikeTweet] = useMutation(UnlikeTweet, {
+    update(cache) {
+      updateTweetsCacheForUnlikeTweet(cache, props.tweet.id, props.loggedUser.id, false)
+      updateTweetsCacheForUnlikeTweet(cache, props.tweet.id, props.loggedUser.id, true)
+    }
+  })
 
 
   const displayUploadedFiles=(urls:string[])=> {
@@ -64,6 +83,74 @@ function Tweet(props: any) {
     )}}
 
   }
+  const sfw = useQuery(Get_SFW).data;
+  
+
+  const handleLikeButton = async(e: any) => {
+    try {
+      if(!props.isLiked) {
+        cache.modify({
+          id: `Tweet:${props.id}`,
+          fields: {
+              isLiked() {
+                  return true;
+              },
+              likesCount(cachedLikesCount: any){
+                  return cachedLikesCount + 1
+              }
+          },  
+        });
+        await likeTweet({
+          variables: {
+            tweetId: props.id
+          }
+        })
+      } else {
+        cache.modify({
+          id: `Tweet:${props.id}`,
+          fields: {
+              isLiked() {
+                  return false;
+              },
+              likesCount(cachedLikesCount: any){
+                return cachedLikesCount - 1
+            }
+          },  
+        });
+        await unlikeTweet({
+          variables: {
+            tweetId: props.id
+          }
+        })
+      }
+      
+    } catch (e) {
+      let unliked: any
+      cache.modify({
+        id: `Tweet:${props.id}`,
+        fields: {
+            isLiked(cachedIsLiked: any) {
+                unliked = cachedIsLiked
+                return !unliked;
+            },
+            likesCount(cachedLikesCount: any){
+                if (unliked) {
+                  return cachedLikesCount + 1
+                }
+                else {
+                  return cachedLikesCount - 1
+                }
+            }
+        },  
+      });
+      const error = await CustomDialog(<ErrorDialog message={"Something went wrong please try again!"} />, {
+        title: 'Error!',
+        showCloseIcon: false,
+      });
+      }
+    }
+   
+  
 
   return (
 
@@ -162,8 +249,8 @@ function Tweet(props: any) {
               </ToolBox>
             </a>
 
-            <button  className="focus:outline-none hover:bg-red-100 hover:text-red-500 rounded-full py-2 px-2">
-              <i className="far fa-heart text-base font-sm"></i>
+            <button className="outline-none focus:outline-none" onClick={handleLikeButton}>
+              <i className={"text-base font-sm rounded-3xl transform hover:scale-110 "+(props.isLiked?"fas fa-heart text-red-600":"far fa-heart")}></i>
               <span>{props.likesCount}</span>
             </button>
 

@@ -12,6 +12,7 @@ query Feed ($id:ID! , $page:Int){
         followingCount
         followersCount
         birthDate
+        isBanned
         tweets (page :$page){
           totalCount
         }   

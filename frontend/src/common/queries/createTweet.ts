@@ -8,6 +8,7 @@ export const Post_Tweet = gql`
                 imageURL
                 name
                 userName
+                isBanned
             }
             id
             text 
@@ -16,6 +17,7 @@ export const Post_Tweet = gql`
             createdAt
             isLiked
             mediaURLs
+            isSFW
         }
     }
 `;

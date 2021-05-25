@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { Link } from "react-router-dom";
 import '../../App.css';
-
+import {parseJwt} from "../../common/utils/jwtDecoder"
 import { SideBarItem } from './sideBarItem/sideBarItem'
 import { TweetButton } from './tweetButton/tweetButton'
 import { FlootProfile } from './flootProfile/flootProfile'
@@ -10,7 +10,10 @@ import Modal from '../../UI/Modal/Modal';
 import PostTweet from '../tweets/PostTweet';
 
 export function SideBar() {
-
+  let loggedUser;
+  if (localStorage.getItem("token")) {
+    loggedUser = parseJwt(localStorage.getItem("token")!)
+  }
   const [edit, setEdit] = useState<boolean>(false);
   const modalClosed = () => setEdit(false);
 
@@ -58,6 +61,11 @@ export function SideBar() {
       <Link to='/setting'>
         <SideBarItem item_name='Setting' icon_name="fas fa-cog" />
       </Link>
+
+      {loggedUser?.isAdmin ? <Link to='/admin'>
+        <SideBarItem item_name='Admin' icon_name="fas fa-user-lock" />
+      </Link>: null}
+      
 
 
       <TweetButton name="Tweet" className="w-56 h-12 mt-8" onClick={() => setEdit(true)} />

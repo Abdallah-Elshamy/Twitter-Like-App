@@ -816,7 +816,17 @@ export default {
                 error.statusCode = 403;
                 throw error;
             }
-            await tweet.destroy();
+            await db.transaction(async (transaction) => {
+                await Tweet.destroy({
+                    where: {
+                        state: "R",
+                        originalTweetId: id,
+                    },
+                    transaction,
+                });
+                await tweet.destroy({ transaction });
+            });
+
             return true;
         },
         unRetweet: async (

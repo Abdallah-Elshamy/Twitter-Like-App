@@ -30,7 +30,10 @@ function ProfileWall() {
   if (lastIndex !== 0) urlId = urlId.substr(0, lastIndex - 1)
   console.log(urlId)
   if (urlId === 'profile' ||
-    (profile && urlId === profile.id)) { ID = profile.id; self = true }
+    (profile && urlId == profile.id)) {
+    ID = profile.id; self = true;
+    console.log(typeof urlId, typeof profile.id)
+  }
   else ID = urlId
 
 

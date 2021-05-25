@@ -1,9 +1,6 @@
-import { useQuery } from '@apollo/client';
 import React, { Fragment, useState } from 'react';
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
-import { parseJwt } from '../../common/decode';
 import { User } from '../../common/TypesAndInterfaces'
-import { LoggedUser } from '../../common/queries/Userqery';
 import Modal from '../../UI/Modal/Modal';
 import EditProfile from './EditUser/EditProfile';
 import { timeConverter } from '../../common/utils/timestamp';

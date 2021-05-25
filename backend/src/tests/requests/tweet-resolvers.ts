@@ -461,3 +461,19 @@ export const NSFWTweetsWithPagination = async (
             `,
         });
 };
+
+export const unRetweet = async (
+    id: number,
+    token: string | undefined = undefined
+) => {
+    return await request(app)
+        .post("/graphql")
+        .set("Authorization", `Bearer ${token}`)
+        .send({
+            query: `
+                mutation {
+                    unRetweet(id: ${id})
+                }
+            `,
+        });
+};

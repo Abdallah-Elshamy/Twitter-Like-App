@@ -819,6 +819,45 @@ export default {
             await tweet.destroy();
             return true;
         },
+        unRetweet: async (
+            parent: any,
+            args: { id: number },
+            context: { req: CustomeRequest },
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const originalTweet = await Tweet.findByPk(args.id);
+            if (!originalTweet) {
+                const error: CustomeError = new Error(
+                    "No tweet was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+            const Retweet = await Tweet.findOne({
+                attributes: ["id"],
+                where: {
+                    userId: user!.id,
+                    state: "R",
+                    originalTweetId: args.id,
+                },
+            });
+            if (!Retweet) {
+                const error: CustomeError = new Error(
+                    "This tweet is not retweeted by the user!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            await db.transaction(async (transaction) => {
+                await Retweet.destroy({ transaction });
+            });
+            return true;
+        },
         reportTweet: async (
             parent: any,
             args: { id: number; reason: string },

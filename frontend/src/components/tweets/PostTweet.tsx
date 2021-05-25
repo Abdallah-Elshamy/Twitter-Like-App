@@ -14,6 +14,7 @@ import { LoggedUser } from '../../common/queries/Userqery';
 import ReactPlayer from 'react-player'
 import {getUploadURL} from '../../common/queries/getUploadurl'
 import Loading from "../../UI/Loading";
+
 interface Post {
   text: string
 }
@@ -185,6 +186,7 @@ const PostTweet = ({originalId = '', postType = 'tweet'}: Arg)  => {
             setmedias ([])
             setAPIs([])
             resetForm()
+            setType ("")
 
             heightRef.current.style.height = "0px"
             
@@ -228,7 +230,7 @@ const PostTweet = ({originalId = '', postType = 'tweet'}: Arg)  => {
                 <button disabled={fileDisable()} type="button" className="hover:bg-blue-100 rounded-full py-2 px-3 transition focus:outline-none" onClick={()=>uploadVid.current.click()}>
                   <svg className={ fileDisable()? "h-8 w-8 text-gray-400  ":"h-8 w-8 text-blue-400"}
                     xmlns="http://www.w3.org/2000/svg"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                   </svg>
                   <input className="file-upload  hidden focus:outline-none" type="file"  accept="video/*" ref={uploadVid} onChange={(e)=> handleFile(e)} />
                 </button>

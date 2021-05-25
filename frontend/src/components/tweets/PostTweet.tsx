@@ -13,6 +13,7 @@ import Viewer from 'react-viewer';
 import { LoggedUser } from '../../common/queries/Userqery';
 import ReactPlayer from 'react-player'
 import {getUploadURL} from '../../common/queries/getUploadurl'
+import Loading from "../../UI/Loading";
 interface Post {
   text: string
 }

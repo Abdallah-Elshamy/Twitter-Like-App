@@ -13,7 +13,8 @@ import Viewer from 'react-viewer';
 import { LoggedUser } from '../../common/queries/Userqery';
 import ReactPlayer from 'react-player'
 import {getUploadURL} from '../../common/queries/getUploadurl'
-import Loading from "../../UI/Loading";
+import { HashLoader } from 'react-spinners';
+import Loading from "../../UI/Loading"
 
 interface Post {
   text: string
@@ -78,6 +79,7 @@ const PostTweet = ({originalId = '', postType = 'tweet'}: Arg)  => {
     setmediaURLs( [...mediaURLs, URL.createObjectURL(e.target.files[0])])
     refetch()
     console.log(media, mediaURL)
+    e.currentTarget.value =null
 
   }
   const submitDisable =(valid:boolean, value:string) =>{
@@ -171,7 +173,7 @@ const PostTweet = ({originalId = '', postType = 'tweet'}: Arg)  => {
               }
 
             } catch(e) {
-              
+              console.log("the error message", e)
               
             }
             setmedia (false)
@@ -268,7 +270,7 @@ const PostTweet = ({originalId = '', postType = 'tweet'}: Arg)  => {
 
                 </div>
 
-                
+                {postTweetLoading && <HashLoader color={'#ccc'} loading={true} size={25} />}
                 <ErrorMessage name="text"  render={msg => <div className="text-red-500">{msg}</div>} /> 
                 <div>
                 <p className="inline-block text-xs mr-2 text-blue-500">{(values.text == null) ? "0" : values.text?.length}/{257}</p>

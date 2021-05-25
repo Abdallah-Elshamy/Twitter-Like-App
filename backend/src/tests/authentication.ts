@@ -49,11 +49,8 @@ describe("authentication", (): void => {
             expect(user.id).to.be.equal(1);
             expect(user.imageURL).to.be.null;
             expect(user.coverImageURL).to.be.null;
-            expect(user.birthDate).to.be.equal("1970-01-01")
-            expect(user).to.include.keys([
-                "createdAt",
-                "updatedAt"
-            ])
+            expect(user.birthDate).to.be.equal("1970-01-01");
+            expect(user).to.include.keys(["createdAt", "updatedAt"]);
         });
 
         it("succeed login with userName", async () => {
@@ -66,11 +63,8 @@ describe("authentication", (): void => {
             expect(user.id).to.be.equal(1);
             expect(user.imageURL).to.be.null;
             expect(user.coverImageURL).to.be.null;
-            expect(user.birthDate).to.be.equal("1970-01-01")
-            expect(user).to.include.keys([
-                "createdAt",
-                "updatedAt"
-            ])
+            expect(user.birthDate).to.be.equal("1970-01-01");
+            expect(user).to.include.keys(["createdAt", "updatedAt"]);
         });
 
         it("fail login with wrong password", async () => {
@@ -90,6 +84,18 @@ describe("authentication", (): void => {
                 "No user was found with this user name or email!"
             );
         });
+
+        it("fail login if user is banned", async () => {
+            let user = await User.findByPk(1);
+            user!.isBanned = true;
+            await user!.save();
+            const response = await login("omarabdo997", "myPrecious");
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0].statusCode).to.be.equal(403);
+            expect(response.body.errors[0].message).to.be.equal(
+                "User is banned and can no longer access the website!"
+            );
+        });
     });
 
     describe("auth middleware", () => {
@@ -106,8 +112,8 @@ describe("authentication", (): void => {
 
         it("succeed auth", async () => {
             req = {
-                get: () => `Bearer ${token}`
-            }
+                get: () => `Bearer ${token}`,
+            };
             await auth(req, res, next);
             expect(req.user).to.include({
                 id: 1,
@@ -122,8 +128,8 @@ describe("authentication", (): void => {
 
         it("succeed auth with lowercase bearer", async () => {
             req = {
-                get: () => `bearer ${token}`
-            }
+                get: () => `bearer ${token}`,
+            };
             await auth(req, res, next);
             expect(req.user).to.include({
                 id: 1,
@@ -138,8 +144,8 @@ describe("authentication", (): void => {
 
         it("fail auth if no authorization header supplied", async () => {
             req = {
-                get: () => undefined
-            }
+                get: () => undefined,
+            };
             await auth(req, res, next);
             expect(req.authError).to.include({
                 message: "No Authorization Header was supplied!",
@@ -150,8 +156,8 @@ describe("authentication", (): void => {
 
         it("fail auth if token is not bearer", async () => {
             req = {
-                get: () => `token ${token}`
-            }
+                get: () => `token ${token}`,
+            };
             await auth(req, res, next);
             expect(req.authError).to.include({
                 message: "Token must be a Bearer token!",
@@ -162,8 +168,8 @@ describe("authentication", (): void => {
 
         it("fail auth if token is not of any type", async () => {
             req = {
-                get: () => `${token}`
-            }
+                get: () => `${token}`,
+            };
             await auth(req, res, next);
             expect(req.authError).to.include({
                 message: "Token must be a Bearer token!",
@@ -174,12 +180,27 @@ describe("authentication", (): void => {
 
         it("fail auth if token is invalid", async () => {
             req = {
-                get: () => `Bearer lsafjlsajflsajsafds`
-            }
+                get: () => `Bearer lsafjlsajflsajsafds`,
+            };
             await auth(req, res, next);
             expect(req.authError).to.include({
                 message: "Invalid Token!",
                 statusCode: 401,
+            });
+            expect(req.user).to.be.undefined;
+        });
+
+        it("fail auth if user is banned", async () => {
+            let user = await User.findByPk(1);
+            user!.isBanned = true;
+            await user!.save();
+            req = {
+                get: () => `Bearer ${token}`,
+            };
+            await auth(req, res, next);
+            expect(req.authError).to.include({
+                message: "User is banned and can no longer access the website!",
+                statusCode: 403,
             });
             expect(req.user).to.be.undefined;
         });

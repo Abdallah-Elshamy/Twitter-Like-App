@@ -6,21 +6,22 @@ import { TweetData } from "./Tweet";
 import { FeedTweets } from "../../common/queries/Feedtweets";
 import Loading from "../../UI/Loading";
 import { Get_SFW } from "../../common/queries/GET_SFW";
+import {parseJwt} from '../../common/utils/jwtDecoder'
 
 function HomeTweets() {
     let [page, setPage] = useState(1);
     const sfw = useQuery(Get_SFW).data;
+    const loggedUser = parseJwt(localStorage.getItem('token')!)
     const { loading, error, data, fetchMore } = useQuery(FeedTweets, {
         variables: {
             isSFW: sfw.SFW.value,
         },
     });
-    if(!loading && data && data?.getFeed?.tweets?.length == 10 && page == 1){
-        setPage(page + 1);
+    if(!loading && data && data?.getFeed?.tweets?.length == 10 && data?.getFeed?.totalCount > 10){
         fetchMore({
             variables: {
                 isSFW: sfw.SFW.value,
-                page: page + 1,
+                page: 2,
             },
         })
     }
@@ -31,11 +32,11 @@ function HomeTweets() {
         <InfiniteScroll
             dataLength={data?.getFeed?.tweets?.length || 0}
             next={() => {
-                setPage(((data?.getFeed?.tweets?.length || 10)/10) +1 );
+                setPage(Math.floor((data?.getFeed?.tweets?.length || 10)/10) +1 );
                 return fetchMore({
                     variables: {
                         isSFW: sfw.SFW.value,
-                        page: ((data?.getFeed?.tweets?.length || 10)/10) +1 ,
+                        page: Math.floor((data?.getFeed?.tweets?.length || 10)/10) +1 ,
                     },
                 });
             }}
@@ -54,8 +55,11 @@ function HomeTweets() {
                         createdAt={tweet.createdAt}
                         isLiked={tweet.isLiked}
                         user={tweet.user}
-                        likesCount={tweet.likesCount}
+                        loggedUser={loggedUser}
+                        tweet={tweet}
                         id={tweet.id}
+                        likesCount={tweet.likesCount}
+
                     />
                 );
             })}

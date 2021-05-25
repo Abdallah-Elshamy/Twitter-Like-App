@@ -1,5 +1,3 @@
-import auth from "./auth";
+import { auth, authWebSocket } from "./auth";
 
-export {
-    auth
-}
+export { auth, authWebSocket };

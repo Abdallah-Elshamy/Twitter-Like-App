@@ -54,7 +54,7 @@ state = {
     render() {
       return (
         <Fragment>
-        <div className="flex-initial"  ref={this.toggleContainer}>
+        <div className="flex-initial relative"  ref={this.toggleContainer}>
          {this.state.isOpen && (
           <div>
            { this.props.children}

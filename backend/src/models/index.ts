@@ -8,6 +8,10 @@ import HasPermission from "./hasPermission";
 import UserBelongsToGroup from "./userBelongsToGroup";
 import Likes from "./likes";
 import HasHashtag from "./hasHashtag";
+import ReportedTweet from "./reportedTweet";
+import ReportedUser from "./reportedUser";
+import ChatMessage from "./chatMessage";
+import MutedUser from "./mutedUser";
 
 export {
     Tweet,
@@ -20,4 +24,8 @@ export {
     UserBelongsToGroup,
     Likes,
     HasHashtag,
+    ReportedTweet,
+    ReportedUser,
+    ChatMessage,
+    MutedUser,
 };

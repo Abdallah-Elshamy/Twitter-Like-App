@@ -18,12 +18,10 @@ export interface TweetFilter {
 }
 
 const TweetList: React.FC<TweetFilter> = (props) => {
-    let profile: any;
-    if (localStorage.getItem("token") !== null) {
-        profile = parseJwt(localStorage.getItem("token"));
-    }
-    const {filter, page, setPage} = props;
+
+    const { filter, page, setPage } = props;
     const sfw = useQuery(Get_SFW).data;
+    const loggedUser = parseJwt(localStorage.getItem('token')!)
     const { loading, error, data, fetchMore } = useQuery(Tweets, {
         variables: {
             userId: props.id,
@@ -31,13 +29,12 @@ const TweetList: React.FC<TweetFilter> = (props) => {
             isSFW: sfw.SFW.value,
         },
     });
-    if (!loading && data && data?.tweets?.tweets?.length == 10 && page == 1) {
-        setPage(page + 1);
+    if (!loading && data && data?.tweets?.tweets?.length == 10 && data?.tweets?.totalCount > 10) {
         fetchMore({
             variables: {
                 userId: props.id,
                 isSFW: sfw.SFW.value,
-                page: page + 1,
+                page: 2,
                 filter: filter
             },
         })
@@ -49,12 +46,12 @@ const TweetList: React.FC<TweetFilter> = (props) => {
         <InfiniteScroll
             dataLength={data?.tweets?.tweets?.length || 0}
             next={() => {
-                setPage(((data?.tweets?.tweets?.length || 10)/10) +1);
+                setPage(Math.floor((data?.tweets?.tweets?.length || 10)/10) +1);
                 return fetchMore({
                     variables: {
                         userId: props.id,
                         isSFW: sfw.SFW.value,
-                        page: ((data?.tweets?.tweets?.length || 10)/10) +1,
+                        page: Math.floor((data?.tweets?.tweets?.length || 10)/10) +1,
                         filter: filter
                     },
                 });
@@ -74,8 +71,10 @@ const TweetList: React.FC<TweetFilter> = (props) => {
                         createdAt={tweet.createdAt}
                         isLiked={tweet.isLiked}
                         user={tweet.user}
-                        likesCount={tweet.likesCount}
+                        loggedUser={loggedUser}
+                        tweet={tweet}
                         id={tweet.id}
+                        likesCount={tweet.likesCount}
                     />
                 );
             })}

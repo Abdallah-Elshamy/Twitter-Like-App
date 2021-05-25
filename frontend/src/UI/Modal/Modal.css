@@ -3,7 +3,7 @@
    top:50px;
 
     position: absolute;
-    z-index: 1500;
+    z-index: 1000;
     background-color: white;
     width: 680px;
     box-shadow: 2px 2px 2px rgba(0,0,0,0.8);

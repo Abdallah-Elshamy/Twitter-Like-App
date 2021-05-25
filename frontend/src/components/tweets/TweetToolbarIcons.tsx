@@ -8,7 +8,7 @@ import { useMutation } from '@apollo/client';
 import { RETWEET } from '../../common/queries/RETWEET';
 import ErrorDialog from '../../UI/Dialogs/ErroDialog';
 import { CustomDialog } from 'react-st-modal';
-import DeleteConfirmationDialog from '../../UI/Dialogs/DeleteConfirmationDialog';
+import DangerConfirmationDialog from '../../UI/Dialogs/DangerConfirmationDialog';
 import UNRETWEET from '../../common/queries/UNRETWEET';
 
 function TweetToolbarIcons(props: any) {
@@ -36,7 +36,7 @@ function TweetToolbarIcons(props: any) {
   }
   const handleDeleteButton = async () => {
     try {
-      const result = await CustomDialog(<DeleteConfirmationDialog />, {
+      const result = await CustomDialog(<DangerConfirmationDialog message={"Are you sure you want to unretweet!"} />, {
         title: 'Confirm unretweet',
         showCloseIcon: false,
       });

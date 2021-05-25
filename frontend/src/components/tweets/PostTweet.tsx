@@ -4,6 +4,8 @@ import * as Yup from "yup"
 import { TweetButton } from '../sideBar/tweetButton/tweetButton'
 import { Post_Tweet, Post_QRetweet, Post_Reply } from '../../common/queries/createTweet'
 import {updateTweetsCacheForCreateTweet} from "../../common/utils/writeCache"
+import { Tweets } from '../../common/queries/TweetQuery'
+import { FeedTweets } from '../../common/queries/Feedtweets'
 import './tweet.css';
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 import { parseJwt } from '../../common/decode';

@@ -7,10 +7,10 @@ import BanUser from "../../common/queries/banUser"
 import UnbanUser from "../../common/queries/unbanUser"
 import ReportTweet from "../../common/queries/reportTweet"
 import ReportUser from "../../common/queries/reportUser"
-import {DeleteMedia} from '../../common/queries/DeleteMedia'
+import { DeleteMedia } from '../../common/queries/DeleteMedia'
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useMutation } from "@apollo/client"
-import {CustomDialog} from 'react-st-modal'
+import { CustomDialog } from 'react-st-modal'
 import DangerConfirmationDialog from "../../UI/Dialogs/DangerConfirmationDialog"
 import ErrorDialog from "../../UI/Dialogs/ErroDialog"
 import {updateTweetsCacheForDeleteTweet, updateTweetsCacheForIgnoreReportedTweet, updateUsersCacheForBanUser, updateUsersCacheForUnBanUser, updateTweetsCacheForReportTweet, updateUsersCacheForReportUser} from "../../common/utils/writeCache"
@@ -29,11 +29,10 @@ export interface TweetData {
   isLiked?: boolean
 }
 
-function Tweet_Info(props: any) {
+function TweetInfo(props: any) {
   const history = useHistory();
   const location = useLocation()
-  console.log("admin path", location.pathname.includes("/admin"))
-  const {tweet} = props
+  const { tweet } = props
   const [deleteMedia] = useMutation(DeleteMedia)
   const [banUser] = useMutation(BanUser, {
     update(cache) {
@@ -73,8 +72,9 @@ function Tweet_Info(props: any) {
   })
 
   const goToProfile = () => {
-    history.push({
+    history.replace({
       pathname: '/' + props.id,
+
     })
   }
   const handleDeleteButton = async() => {
@@ -147,19 +147,18 @@ function Tweet_Info(props: any) {
   }
   return (
 
-    <div className="tweet-data py-1">
-      <a onClick={(e) => { goToProfile(); e.stopPropagation() }} className="font-bold mr-1">{props.name}</a>
+    <div className={`flex flex-row my-1 ml-2  w-full ${props.className}`}>
+      <a onClick={(e) => { goToProfile(); e.stopPropagation() }} className="font-bold mr-1 hover:underline">{props.name}</a>
       <p className="p--light-color"> @{props.userName}. </p>
-      <a href="/tweet_route" className="p--light-color px-1"> {props.createdAt ? timeConverter(Number(props.createdAt)) : null}</a>
-      <span className="tweet-ellipsis p--light-color z-10 ">
+      <p className="p--light-color px-1 hover:underline"> {props.createdAt ? timeConverter(Number(props.createdAt)) : null}</p>
+      <span onClick={(e) => e.stopPropagation()} className="tweet-ellipsis p--light-color z-10 inline-block float-right">
 
-
-        <ToolBox
-          design={
-            <i className="fas fa-ellipsis-h hover:bg-gray-400 p-1 px-2 rounded-full cursor-pointer"></i>
-          }
-        >
-          <ul className=" bg-gray-100 mb-40 right-8 absolute z-10 cursor-pointer" >
+        {/*Don't display settings in qouted tweet*/}
+        {(props.type === 'Q') ? null :
+          <ToolBox
+            design={<i className="fas fa-ellipsis-h"></i>}
+          >
+            <ul className=" bg-gray-100 mb-40 right-8 absolute z-10 cursor-pointer" >
           {props?.loggedUser?.isAdmin && props?.loggedUser?.id != tweet?.user?.id && !tweet?.user?.isBanned ? <button onClick={handleBanButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
           " >Ban</button>: props?.loggedUser?.isAdmin && tweet?.user?.isBanned ? <button onClick={handleUnbanButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           " >Unban</button>: null}
@@ -173,7 +172,7 @@ function Tweet_Info(props: any) {
           " >Report User</button>: null}
 
           </ul>
-        </ToolBox>
+          </ToolBox>}
 
       </span>
     </div>
@@ -182,4 +181,4 @@ function Tweet_Info(props: any) {
   )
 }
 
-export default Tweet_Info;
+export default TweetInfo;

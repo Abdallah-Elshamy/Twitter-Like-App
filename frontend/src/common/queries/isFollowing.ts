@@ -8,5 +8,4 @@ query isFollowing($id:ID!){
     isBanned
   }
 }
-
 `

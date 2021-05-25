@@ -6,6 +6,7 @@ import EditProfile from './EditUser/EditProfile';
 import { timeConverter } from '../../common/utils/timestamp';
 import { EditProfileBgVal, EditProfileImageVal } from '../../common/cache';
 import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router';
 import Viewer from 'react-viewer';
 import FollowButton from '../FollowButton/FollowButton';
 
@@ -34,6 +35,18 @@ const ProfileInfo: React.FC<{ user: User, self: boolean }> = ({ user, self }) =>
     setEdit(false)
   }
 
+const location = useHistory();
+const handlePathFollowing = () => {
+  location.push({
+    pathname: location.location.pathname + "/following"
+  })
+  }
+  
+const handlePathFollower = () => {
+  location.push({
+    pathname: location.location.pathname + "/follower"
+  })
+  }
 
   return (
 
@@ -111,10 +124,10 @@ const ProfileInfo: React.FC<{ user: User, self: boolean }> = ({ user, self }) =>
               <span className="px-2" ><i className="fa fa-gift" aria-hidden="true"></i> Born {user.birthDate} </span>
               <span className="px-2"><i className="fa fa-calendar" aria-hidden="true"></i> Joined {user.createdAt ? timeConverter(Number(user.createdAt), false) : null}</span>
             </div>
-            <div className="font-bold pb-1">
-              {/* featch followers count  */}
-              <a href="/"> {Number(user.followingCount) - 1} <span className="p--light-color mr-4 ">Following</span> </a>
-              <a href="/">{Number(user.followersCount) - 1} <span className="p--light-color mr-4">Follower</span> </a>
+            <div className="font-bold pb-1 space-x-2 ">
+              {/* fetch followers count  */}
+              <a onClick={ handlePathFollowing } className ="hover:underline"> {Number(user.followingCount) - 1} <span className="p--light-color mr-4 hover:underline">Following</span> </a>
+              <a onClick={ handlePathFollower }  className="hover:underline "> {Number(user.followersCount) - 1} <span className="p--light-color mr-4">Follower</span> </a>
             </div>
           </div>
         </div>

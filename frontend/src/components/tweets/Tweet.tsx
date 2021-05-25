@@ -1,44 +1,27 @@
 import React, { Fragment, useState } from 'react'
 import './tweet.css';
-import { ToolBox } from '../sideBar/toolbox/toolbox';
-import Modal from '../../UI/Modal/Modal';
-import PostTweet from './PostTweet';
-import Tweet_img from './Tweet_img';
+import { useHistory } from 'react-router';
+import TweetInfo from './TweetInfo';
+import TweetImg from './TweetImg';
 import Viewer from 'react-viewer';
-import ImageSlideshow from 'material-ui/svg-icons/image/slideshow';
-import {LIKE, UNLIKE} from '../../common/queries/like'
-import Tweet_Info from './Tweet_Info';
-import { url } from 'inspector';
 import ReactPlayer from 'react-player'
 import {cache} from "../../common/cache"
-import {Get_SFW} from "../../common/queries/GET_SFW"
-import {useMutation, useQuery} from "@apollo/client"
+import {useMutation} from "@apollo/client"
 import {CustomDialog} from 'react-st-modal'
 import LikeTweet from "../../common/queries/likeTweet"
 import UnlikeTweet from "../../common/queries/unlikeTweet"
 import ErrorDialog from "../../UI/Dialogs/ErroDialog"
 import {updateTweetsCacheForLikeTweet, updateTweetsCacheForUnlikeTweet} from "../../common/utils/writeCache"
+import TweetToolbarIcons from './TweetToolbarIcons';
+import QuotedTweet from './QoutedTweet';
+import { Link } from 'react-router-dom';
+import FoF from '../../UI/FoF/FoF';
+import Retweet from './Retweet';
 
-export interface TweetData {
-  user?: {
-    id?: string
-    imageURL?: string
-    name?: string
-    userName?: string
-  }
-  id?: string
-  text: string
-  likesCount?: number
-  repliesCount?: number
-  createdAt?: number
-  isLiked?: boolean
-  mediaURLs?:string[]
-}
 
 function Tweet(props: any) {
   let img:any =[]
-  const [edit, setEdit] = useState<boolean>(false);
-  const modalClosed = () => setEdit(false);
+  const history = useHistory();
   const [ visible, setVisible ] = React.useState(false);
   const [likeTweet] = useMutation(LikeTweet, {
     update(cache) {
@@ -52,10 +35,8 @@ function Tweet(props: any) {
       updateTweetsCacheForUnlikeTweet(cache, props.tweet.id, props.loggedUser.id, true)
     }
   })
-
-
   const displayUploadedFiles=(urls:string[])=> {
-    if (props.mediaURLs.length > 0){ 
+    if (urls.length > 0){ 
     if (urls[0].includes(".com/videos/")){
       return <div style={{height:"300px"}} >
       <ReactPlayer url={urls[0]} height="300px" width="500px"  controls={true}/>
@@ -83,9 +64,6 @@ function Tweet(props: any) {
     )}}
 
   }
-  const sfw = useQuery(Get_SFW).data;
-  
-
   const handleLikeButton = async(e: any) => {
     try {
       if(!props.isLiked) {
@@ -149,117 +127,206 @@ function Tweet(props: any) {
       });
       }
     }
-   
-  
+  const goToTweet = () => {
+    history.push({
+      pathname: '/tweet/' + props.id,
+    })
+  }
 
-  return (
+  const goToProfile = () => {
+    history.replace({
+      pathname: '/' + props.user.id,
+    })
+  }
+  switch (props.state) {
 
+    case "O":
+      return <div>
+        <div className="tweet-box mt-2" onClick={e => { goToTweet(); e.stopPropagation() }} >
+          <TweetImg imageURL={props.user.imageURL} id={props.user?.id} className="tweet-icon " />
 
-    <div className="tweet-box ">
+          <div className="tweet-aside ">
+            <TweetInfo
+              userName={props.user?.userName}
+              createdAt={props.createdAt}
+              name={props.user?.name}
+              id={props.user.id}
+              userId={props.user.id}
+              tweetId={props.id}
+              loggedUser={props.loggedUser}
+              tweetMediaUrls={props.mediaUrls}
+              tweet={props.tweet}
+            />
 
-      <Modal show={edit} modalClosed={modalClosed} className="pb-4" >
-        <header className="flex justify-between items-center px-3 h-8 w-full border-b border-gray-200 pb-6 pt-2">
-
-          <div onClick={modalClosed} className=" p-1 rounded-full">
-            <svg className="h-8 w-5 pt-2 mt-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </div>
-
-        </header>
-        <PostTweet />
-      </Modal>
-
-      <Tweet_img imageURL={props.user?.imageURL} id={props.user?.id} />
-
-      <div className="tweet-aside">
-
-        <Tweet_Info
-          userName={props.user?.userName}
-          createdAt={props.createdAt}
-          name={props.user?.name}
-          id={props.user.id}
-          userId={props.user.id}
-          tweetMediaUrls = {props.mediaUrls}
-          tweet = {props.tweet}
-          tweetId={props.id}
-          loggedUser={props.loggedUser}
-
-        />
-
-        {/*  <div className="tweet-data py-1">
-          <p className="font-bold mr-1">{props.user?.name}</p>
-          <p className="p--light-color"> @{props.user?.userName} . </p>
-          <p className="p--light-color px-1"> {props.createdAt ? timeConverter(Number(props.createdAt)) : null}</p>
-          <span className="tweet-ellipsis p--light-color z-10 ">
-
-
-            <ToolBox
-              design={
-                <i className="fas fa-ellipsis-h"></i>
-              }
-            >
-
-              <ul className=" mb-40 ml-4 absolute bg-gray-100 " >
-
-                <a href="/profile" className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
-          hover:text-gray-900" >block</a>
-                <a className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
-          hover:text-gray-900" >mute</a>
-
-              </ul>
-            </ToolBox>
-
-          </span>
-        </div> */}
-
-
-        <div className="tweet-content">
-          <span>
-            {props.text}
-          </span>
-          {(props.mediaURLs) && 
+            <div className="tweet-content ml-2">
+              <span>
+                {props.text}
+              </span>
+              {(props.mediaURLs) && 
                 <div className="gg-box">
 
                 { displayUploadedFiles(props.mediaURLs) }
 
               </div>}
-          <div className="tweet-toolbar p--light-color">
-            <a onClick={() => setEdit(true)}>
-              <i className="fas fa-reply text-base font-sm "></i>
-              <span>{props.repliesCount}</span>
-            </a>
+              <TweetToolbarIcons
+                tweetId={props.id}
+                state={props.state}
+                repliesCount={props.repliesCount}
+                likesCount={props.likesCount}
+                isLiked={props.isLiked}
+                handleLikeButton = {handleLikeButton}
+                quotedRetweetsCount={props.quotedRetweetsCount}
+                retweetsCount={props.retweetsCount}
+                isRetweeted={props.isRetweeted}
 
-            <a>
-              <ToolBox
-                design={
-                  <div className="border-0">
-                    <i className="fas fa-retweet text-base font-sm"></i>
-                    <span>{props.quotedRetweetsCount}</span>
-                  </div>
-                }
-              >
-                <ul className="mb-40 absolute ml-12 bg-gray-100" >
-                  <a href="/profile" className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
-          hover:text-gray-900" >Retweet</a>
-                  <a className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
-          hover:text-gray-900" onClick={() => setEdit(true)}>quote Retweet</a>
-
-                </ul>
-              </ToolBox>
-            </a>
-
-            <button className="outline-none focus:outline-none" onClick={handleLikeButton}>
-              <i className={"text-base font-sm rounded-3xl transform hover:scale-110 "+(props.isLiked?"fas fa-heart text-red-600":"far fa-heart")}></i>
-              <span>{props.likesCount}</span>
-            </button>
-
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
-  )
+        <hr />
+      </div>
+
+    case "C":
+      return <div>
+
+        <div className="tweet-box mt-2 flex w-full p-2" onClick={e => { goToTweet(); e.stopPropagation() }} >
+          <TweetImg imageURL={props.user.imageURL} className="tweet-icon block " />
+          <div className="tweet-aside ">
+            <TweetInfo
+              userName={props.user?.userName}
+              createdAt={props.createdAt}
+              name={props.user?.name}
+              id={props.user.id}
+              userId={props.user.id}
+              tweetId={props.id}
+              handleLikeButton = {handleLikeButton}
+              loggedUser={props.loggedUser}
+              tweetMediaUrls={props.mediaUrls}
+              tweet={props.tweet}
+
+            />
+
+            {/* the added design of Reply design  */}
+            <div className="-mt-2 ">
+              <p className=" p--light-color inline-block ml-2"> Repling to </p>
+              <Link onClick={e => { e.stopPropagation() }}
+                to={'/' + props.repliedToTweet.user.id}
+                className="text-blue-500 inline-block hover:underline">
+                @{props.repliedToTweet.user?.userName}</Link>
+            </div>
+
+            {/* the text/media of the original tweet */}
+            <div className="tweet-content ml-2 pb-4">
+              <span>
+                {props.text}
+              </span>
+              {(props.mediaURLs) && 
+                <div className="gg-box">
+
+                { displayUploadedFiles(props.mediaURLs) }
+
+              </div>}
+              <TweetToolbarIcons
+                tweetId={props.id}
+                state={props.state}
+                isLiked={props.isLiked}
+                handleLikeButton = {handleLikeButton}
+                repliesCount={props.repliesCount}
+                likesCount={props.likesCount}
+                quotedRetweetsCount={props.quotedRetweetsCount}
+                retweetsCount={props.retweetsCount}
+                isRetweeted={props.isRetweeted}
+              />
+
+            </div>
+          </div>
+        </div>
+        <hr />
+      </div>
+
+    case "Q":
+      return <div>
+        {/* the design of tweet */}
+        <div className="flex p-2" onClick={goToTweet} >
+          <TweetImg imageURL={props.user.imageURL} id={props.user?.id} className="tweet-icon " />
+
+          <div className="w-full">
+            <TweetInfo
+              userName={props.user?.userName}
+              createdAt={props.createdAt}
+              name={props.user?.name}
+              id={props.user.id}
+              userId={props.user.id}
+              tweetId={props.id}
+              loggedUser={props.loggedUser}
+              tweetMediaUrls={props.mediaUrls}
+              tweet={props.tweet}
+            />
+
+            {/* the text/media of the original tweet */}
+            <div className="tweet-content ml-2">
+              <span>
+                {props.text}
+              </span>
+              {(props.mediaURLs) && 
+                <div className="gg-box">
+
+                { displayUploadedFiles(props.mediaURLs) }
+
+              </div>}
+              <QuotedTweet OTweet={props.originalTweet} repliedToTweet={props.repliedToTweet} />
+              
+              <TweetToolbarIcons
+                tweetId={props.id}
+                state = {props.state}
+                repliesCount={props.repliesCount}
+                likesCount={props.likesCount}
+                quotedRetweetsCount={props.quotedRetweetsCount}
+                handleLikeButton = {handleLikeButton}
+                isLiked={props.isLiked}
+                retweetsCount={props.retweetsCount}
+                isRetweeted={props.isRetweeted}
+
+              />
+
+            </div>
+          </div>
+        </div>
+        {/* the end of tweet */}
+
+
+        <hr />
+      </div>
+    case "R":
+
+      return <Fragment>
+        {
+
+          (!props.originalTweet || props.originalTweet.state === "R" ||
+            ((history.location.pathname === '/')
+              && props.loggedUser.id == props.user.id)) ? null :
+
+            <Fragment>
+              <p className="font-bold px-4 text-gray-600">
+                <span><svg className="w-4 h-4 text-gray-600 inline" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd"
+                  d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 
+                  7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 
+                  13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                  clipRule="evenodd" /></svg></span>
+                <span onClick={goToProfile} className="hover:pointer" > {props.user.name} retweeted </span>
+              </p>
+              <Retweet id={props.originalTweet.id} />
+              <hr />
+            </Fragment>
+        }
+
+      </Fragment>
+
+    default:
+      return <FoF />
+  }
+
 }
 
 export default Tweet;

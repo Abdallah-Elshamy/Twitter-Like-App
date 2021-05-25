@@ -10,14 +10,12 @@ import Explore from './Explore';
 import Profile from '../components/profile/Profile';
 import AdminDashBoard from "../components/Admin/AdminDashBoard"
 import Home from "../components/Home";
-import { useQuery } from '@apollo/client';
-import { GET_ISAUTH } from '../common/queries/Get_isAuth';
-import React from "react";
 import { Login } from "../components/Register/login_form/login";
 import {parseJwt} from '../common/utils/jwtDecoder'
+import ExtendedTweet from "../components/tweets/ExtendedTweet/ExtendedTweet";
+import FollowWall from "../components/profile/FollowWall";
 
 export const Routing = () => {
-
   return (
     <div>
 
@@ -33,6 +31,22 @@ export const Routing = () => {
         <PrivateRoute path="/setting">
           <Setting />
         </PrivateRoute>
+
+        <PrivateRoute path="/profile/following">
+          <FollowWall   FollowType = "following" />
+        </PrivateRoute>
+
+        <PrivateRoute path="/profile/follower">
+        <FollowWall FollowType ='follower' />
+        </PrivateRoute>
+
+        <Route path='/:id/following'>
+        <FollowWall   FollowType = "following" />
+        </Route>
+
+        <Route path='/:id/follower'>
+        <FollowWall FollowType ='follower' />
+        </Route>
 
         <Route path="/error">
           <NotFoundPage />
@@ -68,6 +82,10 @@ export const Routing = () => {
           <Home />
         </PrivateRoute>
 
+
+        <PrivateRoute path="/tweet/:id">
+          <ExtendedTweet />
+        </PrivateRoute>
 
         <PrivateRoute path="/profile">
           <Profile />

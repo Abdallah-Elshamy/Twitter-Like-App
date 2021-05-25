@@ -19,27 +19,26 @@ export function SideBar() {
 
   return (
 
-    <div className="px-2" >
+    <div className="px-2 fixed top-0">
       <Modal show={edit} modalClosed={modalClosed} className="pb-4">
 
         <header className="flex justify-between items-center px-3 h-8 w-full border-b border-gray-200 pb-6 pt-2">
-
           <div onClick={modalClosed} className=" p-1 rounded-full">
             <svg className="h-8 w-5 pt-2 mt-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </div>
-
         </header>
+
         <PostTweet />
       </Modal>
 
       <Link to="/">
-        <SideBarItem item_name='    ' icon_name="fab fa-twitter" />
+        <SideBarItem item_name='   ' icon_name="fab fa-twitter"/>
       </Link>
 
       <Link to="/">
-        <SideBarItem item_name='Home' icon_name="	fas fa-home" />
+        <SideBarItem item_name='Home' icon_name="	fas fa-home"/>
       </Link>
 
       <Link to="/explore">

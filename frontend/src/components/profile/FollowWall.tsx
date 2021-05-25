@@ -1,28 +1,31 @@
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import { SideBar } from "../sideBar/sideBar";
 import '../../App.css';
 import './profile.css';
 import TrendsBar from '../TrendsBar/TrendsBar';
 import '../../styles/layout.css'
-import ProfileWall from './ProfileWall';
+import FollowList from './FollowList';
 
 
-function Profile() {
-
+export interface FollowType {
+  FollowType: string,
+}
+  const FollowWall: React.FC <FollowType> = ({ FollowType:FollowType }) => {
   return (
     <Fragment>
 
       <main className="main-container">
         <aside className="sb-left">< SideBar /></aside>
         <article className="wall">
-          <ProfileWall/>
+         
+          <FollowList FollowType={FollowType} /> 
+          
           </article>
         <aside className="sb-right">< TrendsBar /></aside>
-
       </main>
    
     </Fragment>
   );
 }
 
-export default Profile;
+export default FollowWall; 

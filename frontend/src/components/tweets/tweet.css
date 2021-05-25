@@ -6,48 +6,61 @@
 }
 
 .tweet-box {
+  cursor: pointer;
   font-size: 17px;
   font-weight: 400;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
+  Arial, sans-serif;
   padding: 0px 15px 0px 15px;
   display: grid;
   grid-template-columns: 0.1fr 0.9fr;
-  cursor: pointer;
-  border-bottom: solid 0.5px var(--extra-light);
-  min-height: 90px;
-  padding-top: 10px;
 }
-.tweet-icon {
+
+.tweet-icon{
   width: 50px;
   height: 50px;
+   border-radius: 50%;
+  object-fit:cover;
+   flex-shrink:0
 }
+
+.tweet-small-icon{
+  width: 30px;
+  height: 30px;
+   border-radius: 50%;
+  object-fit:cover;
+   flex-shrink:0
+}
+
+.tweet-small-icon img,
+svg {
+  width: 30px;
+  height: 30px;
+}
+
 .tweet-icon img,
 svg {
-  width: 100%;
-  height: 100%;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   object-fit: cover;
 }
+
 .tweet-aside {
   height: 100%;
 }
-/* .tweet-icon {
-} */
 
 .tweet-content {
-  padding: 4px;
+  padding: 2px;
   font-weight: 400;
 }
+
 /* slove word without space pb */
 .tweet-content > p {
   word-break: break-word;
 }
 
-.tweet-data {
-  display: flex;
-  flex-direction: row;
-}
+
 .tweet-ellipsis {
   cursor: pointer;
   margin-left: auto;
@@ -56,7 +69,7 @@ svg {
 .tweet-toolbar {
   /* height: 30%; */
   /* font-size: 18px; */
-  margin: 5px 50px 5px 0px;
+  margin: 0px 30px 0px 0px;
   display: flex;
   justify-content: space-between;
 }

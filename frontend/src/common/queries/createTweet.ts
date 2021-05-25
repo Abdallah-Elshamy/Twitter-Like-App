@@ -10,6 +10,39 @@ export const Post_Tweet = gql`
                 userName
                 isBanned
             }
+            originalTweet{
+                id 
+                text
+                likesCount
+                retweetsCount
+                repliesCount
+                state
+                createdAt
+                isLiked
+                mediaURLs
+                user{
+                  id
+                  userName
+                  name
+                  imageURL
+                         }
+                  originalTweet{id}
+                   repliedToTweet{
+          id
+          user{userName}
+        }
+                            }
+              repliedToTweet{
+                id 
+                state
+                mediaURLs
+                user{
+                  id
+                  userName
+                  name
+                  imageURL 
+                         }
+                             }
             id
             text 
             likesCount
@@ -38,6 +71,7 @@ export const Post_Reply = gql`
           repliesCount
           state
           createdAt
+          mediaURLs
           isLiked
           user{
             id
@@ -56,6 +90,7 @@ export const Post_Reply = gql`
         state
         createdAt
         isLiked
+        mediaURLs
         
       }
     }
@@ -79,6 +114,7 @@ export const Post_QRetweet = gql`
           state
           createdAt
           isLiked
+          mediaURLs
           user{
             id
             userName
@@ -96,6 +132,7 @@ export const Post_QRetweet = gql`
         state
         createdAt
         isLiked
+        mediaURLs
         
       }
     }       

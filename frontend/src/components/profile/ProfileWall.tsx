@@ -27,17 +27,6 @@ function ProfileWall() {
   const lastIndex = location.pathname.lastIndexOf('/')
   let urlId = path
 
-  // const location = useLocation()
-  // const path = location.pathname.substr(1)
-//   if (location.pathname.substr(1) !== " "){
-// ID = location.pathname.substr(1)
-//   }
-// else {
-//   ID = profile.id
-// }
-
-
-
 
   if (lastIndex !== 0) urlId = urlId.substr(0, lastIndex - 1)
   if (urlId === 'profile' ||

@@ -4,8 +4,8 @@ import '../../App.css';
 import './profile.css';
 import TrendsBar from '../TrendsBar/TrendsBar';
 import '../../styles/layout.css'
-import FollowingList from './FollowingList';
-import FollowerList from './followerList';
+import FollowList from './FollowList';
+
 
 export interface FollowType {
   FollowType: string,
@@ -17,9 +17,8 @@ export interface FollowType {
       <main className="main-container">
         <aside className="sb-left">< SideBar /></aside>
         <article className="wall">
-
-        {( FollowType == "follower" ) ?
-       <FollowerList/>  : <FollowingList/> }
+         
+          <FollowList FollowType={FollowType} /> 
           
           </article>
         <aside className="sb-right">< TrendsBar /></aside>

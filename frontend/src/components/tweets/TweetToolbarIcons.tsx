@@ -73,8 +73,7 @@ function TweetToolbarIcons(props: any) {
           </div>
 
         </header>
-        <h1 > for quoted to {props.tweetId} which {props.state} </h1>
-        <PostTweet />
+        <PostTweet originalId={props.tweetId} postType="Qretweet"/>
       </Modal>
 
       <Modal show={replyEdit} modalClosed={replyModalClosed} className="pb-4" >
@@ -87,8 +86,7 @@ function TweetToolbarIcons(props: any) {
           </div>
 
         </header>
-        <h1 > for reply to {props.tweetId} which {props.state} </h1>
-        <PostTweet />
+        <PostTweet originalId={props.tweetId} postType="reply"/>
       </Modal>
 
 
@@ -127,7 +125,7 @@ function TweetToolbarIcons(props: any) {
         </ToolBox>
       </a>
 
-      <button onClick={(e) => {props.handleLikeButton; e.stopPropagation()}}>
+      <button onClick={(e) => {props.handleLikeButton(); e.stopPropagation()}}>
       <i className={"text-base font-sm rounded-3xl transform hover:scale-110 "+(props.isLiked?"fas fa-heart text-red-600":"far fa-heart")}></i>
         <span>{props.likesCount}</span>
       </button>

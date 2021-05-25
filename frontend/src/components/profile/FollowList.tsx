@@ -11,7 +11,7 @@ export interface FollowType {
   FollowType: string,
 }
   const FollowList: React.FC <FollowType> = ({ FollowType:FollowType }) => {
-var profile;
+var profile:any;
 let ID ;
 
  if (localStorage.getItem('token')) {
@@ -62,6 +62,7 @@ return(
                imageURI={person.imageURL}
                isFollowing={person.isFollowing}
                bio={person.bio}
+               user={profile}
                />:null
 
             }
@@ -100,6 +101,7 @@ return(
                imageURI={person.imageURL}
                isFollowing={person.isFollowing}
                bio={person.bio}
+               user={profile}
                />:null
 
             }

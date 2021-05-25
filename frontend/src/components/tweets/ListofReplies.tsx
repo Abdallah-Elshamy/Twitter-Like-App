@@ -35,21 +35,23 @@ const Replies: React.FC<any> = (props: any) => {
       {tweet.replies.tweets.map((tweet: any) => {
         return (
           <Tweet
-            id={tweet.id}
-            text={tweet.text}
-            repliesCount={tweet.repliesCount}
-            createdAt={tweet.createdAt}
-            isLiked={tweet.isLiked}
-            user={tweet.user}
-            loggedUser={loggedUser}
-            tweet={tweet}
-            likesCount={tweet.likesCount}
-            key={tweet.id}
-            quotedRetweetsCount={tweet.quotedRetweetsCount}
-            retweetsCount={tweet.retweetsCount}
-            state={tweet.state}
-            originalTweet={tweet.originalTweet}
-            repliedToTweet={tweet.repliedToTweet}
+          mediaURLs={tweet.mediaURLs}
+          id={tweet.id}
+          text={tweet.text}
+          repliesCount={tweet.repliesCount}
+          createdAt={tweet.createdAt}
+          isLiked={tweet.isLiked}
+          isRetweeted={tweet.isRetweeted}
+          user={tweet.user}
+          loggedUser={loggedUser}
+          tweet={tweet}
+          likesCount={tweet.likesCount}
+          key={tweet.id}
+          quotedRetweetsCount={tweet.quotedRetweetsCount}
+          retweetsCount={tweet.retweetsCount}
+          state={tweet.state}
+          originalTweet={tweet.originalTweet}
+          repliedToTweet={tweet.repliedToTweet}
           />
         );
       })}

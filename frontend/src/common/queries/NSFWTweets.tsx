@@ -1,30 +1,6 @@
 import { gql } from '@apollo/client';
 
 export const NSFWTweets = gql`
-query NSFWTweets ($page:Int){
-  NSFWTweets(page:$page) { 
-      totalCount
-      tweets{
-        user {
-          id
-          imageURL
-          name
-          userName
-          isBanned
-        }
-        id
-        text 
-        likesCount
-        repliesCount
-        createdAt
-        isLiked
-        mediaURLs
-        isSFW
-      }
-    }}
-`
-
-export const NSFWTweets = gql`
     query NSFWTweets($page: Int) {
         NSFWTweets(page: $page) {
             totalCount

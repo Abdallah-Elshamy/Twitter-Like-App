@@ -12,10 +12,13 @@ import Loading from '../../../UI/Loading';
 import FoF from '../../../UI/FoF/FoF';
 import { Link } from 'react-router-dom';
 import Replies from '../ListofReplies';
+import { parseJwt } from "../../../common/decode";
+
 
 const ExtendedTweet: React.FC = () => {
 
   const sfw = useQuery(Get_SFW).data;
+  const loggedUser = parseJwt(localStorage.getItem('token')!)
   const location = useLocation()
   let urlId = location.pathname.substr(7)
 
@@ -29,7 +32,7 @@ const ExtendedTweet: React.FC = () => {
   if (error) return <FoF
     msg="This tweet doesn’t exist"
   />
-
+  data && console.log("tweet data", data)
   const tweet: TweetData = data.tweet
   return (
     <Fragment>
@@ -53,6 +56,7 @@ const ExtendedTweet: React.FC = () => {
           </header>
 
           <Tweet
+            mediaURLs={tweet.mediaURLs}
             id={tweet.id}
             text={tweet.text}
             repliesCount={tweet.repliesCount}
@@ -60,9 +64,12 @@ const ExtendedTweet: React.FC = () => {
             isLiked={tweet.isLiked}
             isRetweeted={tweet.isRetweeted}
             user={tweet.user}
+            loggedUser={loggedUser}
+            tweet={tweet}
             likesCount={tweet.likesCount}
+            key={tweet.id}
             quotedRetweetsCount={tweet.quotedRetweetsCount}
-            retweetsCount = {tweet.retweetsCount}
+            retweetsCount={tweet.retweetsCount}
             state={tweet.state}
             originalTweet={tweet.originalTweet}
             repliedToTweet={tweet.repliedToTweet}

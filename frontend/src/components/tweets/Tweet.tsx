@@ -138,6 +138,7 @@ function Tweet(props: any) {
       pathname: '/' + props.user.id,
     })
   }
+  console.log("urls are", props.mediaUrls)
   switch (props.state) {
 
     case "O":

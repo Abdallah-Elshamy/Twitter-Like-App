@@ -28,6 +28,7 @@ const PostTweet = ({originalId = '', postType = 'tweet'}: Arg)  => {
   const heightRef: any = useRef("")
   const uploadImg: any = useRef()
   const uploadVid: any = useRef()
+  const [postTweetLoading, setPostTweetLoading] = useState(false)
   const [media, setmedia] = useState(false)
   const [mediaURL, setmediaURL] = useState("")
   const [mediaURLs, setmediaURLs] = useState<any>([])
@@ -147,51 +148,81 @@ const PostTweet = ({originalId = '', postType = 'tweet'}: Arg)  => {
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={({ text }, {resetForm}) => {
-            if(media) {handleUpload().then ( (urls)=> {
-            if (postType == "tweet"){
-              createTweet({
-                variables: { tweetInput: {text, mediaURLs:urls }}
-              });}
-            if (postType == "reply"){
-              createReply ({
-                variables:{tweetInput: {text, mediaURLs:urls }, repliedToTweet:originalId}
-              })
-            }
-            if (postType == "Qretweet") {
-              createQTweet ({
-                variables:{originalTweetId: originalId ,tweetInput: {text, mediaURLs:urls }}
-              })
-            }
-            })}
-            else {
+          onSubmit={async({ text }, {resetForm}) => {
+            setPostTweetLoading(true)
+            try {
+              let urls: any = []
+              if (media) {
+                urls = await handleUpload()
+              }
               if (postType == "tweet"){
-                createTweet({
-                  variables: { tweetInput: {text}}
+                await createTweet({
+                  variables: { tweetInput: {text, mediaURLs:urls }}
                 });}
               if (postType == "reply"){
-                createReply ({
-                  variables:{tweetInput: {text}, repliedToTweet:originalId}
+                await createReply ({
+                  variables:{tweetInput: {text, mediaURLs:urls }, repliedToTweet:originalId}
                 })
               }
               if (postType == "Qretweet") {
-                createQTweet ({
-                  variables:{originalTweetId: originalId ,tweetInput: {text}}
+                await createQTweet ({
+                  variables:{originalTweetId: originalId ,tweetInput: {text, mediaURLs:urls }}
                 })
               }
+
+            } catch(e) {
+              
+              
             }
-            
             setmedia (false)
             setmediaURLs ([])
             setmedias ([])
             setAPIs([])
             resetForm()
             setType ("")
-
+            setPostTweetLoading(false)
             heightRef.current.style.height = "0px"
+          }}
+            
+          //   if(media) {handleUpload().then ( (urls)=> {
+          //   if (postType == "tweet"){
+          //     createTweet({
+          //       variables: { tweetInput: {text, mediaURLs:urls }}
+          //     });}
+          //   if (postType == "reply"){
+          //     createReply ({
+          //       variables:{tweetInput: {text, mediaURLs:urls }, repliedToTweet:originalId}
+          //     })
+          //   }
+          //   if (postType == "Qretweet") {
+          //     createQTweet ({
+          //       variables:{originalTweetId: originalId ,tweetInput: {text, mediaURLs:urls }}
+          //     })
+          //   }
+          //   })
+          // }
+          //   else {
+          //     if (postType == "tweet"){
+          //       createTweet({
+          //         variables: { tweetInput: {text}}
+          //       });}
+          //     if (postType == "reply"){
+          //       createReply ({
+          //         variables:{tweetInput: {text}, repliedToTweet:originalId}
+          //       })
+          //     }
+          //     if (postType == "Qretweet") {
+          //       createQTweet ({
+          //         variables:{originalTweetId: originalId ,tweetInput: {text}}
+          //       })
+          //     }
+
+          //   }
+            
+            
             
 
-          }}
+          
         >
           {({ values, setFieldValue, isValid }) => (
             
@@ -241,7 +272,7 @@ const PostTweet = ({originalId = '', postType = 'tweet'}: Arg)  => {
                 <ErrorMessage name="text"  render={msg => <div className="text-red-500">{msg}</div>} /> 
                 <div>
                 <p className="inline-block text-xs mr-2 text-blue-500">{(values.text == null) ? "0" : values.text?.length}/{257}</p>
-                <TweetButton disabled={submitDisable(isValid, values.text)}  name="Tweet" type="submit" className=" rounded-full py-3 px-6"/>
+                <TweetButton disabled={submitDisable(isValid, values.text) || postTweetLoading}  name="Tweet" type="submit" className=" rounded-full py-3 px-6"/>
                 </div>
             </div>
               

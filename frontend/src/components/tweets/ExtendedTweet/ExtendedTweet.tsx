@@ -62,7 +62,7 @@ const ExtendedTweet: React.FC = () => {
             user={tweet.user}
             likesCount={tweet.likesCount}
             quotedRetweetsCount={tweet.quotedRetweetsCount}
-            retweetsCount={tweet.retweetsCount}
+            retweetsCount = {tweet.retweetsCount}
             state={tweet.state}
             originalTweet={tweet.originalTweet}
             repliedToTweet={tweet.repliedToTweet}
@@ -77,4 +77,4 @@ const ExtendedTweet: React.FC = () => {
   );
 }
 
-export default ExtendedTweet;
+export default ExtendedTweet ;

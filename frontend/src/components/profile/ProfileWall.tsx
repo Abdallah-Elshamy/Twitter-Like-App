@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import { Fragment, useState } from 'react';
 import '../../App.css';
 import './profile.css';
 import ProfileInfo from "./ProfileInfo";
@@ -21,6 +21,7 @@ function ProfileWall() {
   }
 
   const location = useLocation()
+  console.log(location.pathname.substr(1))
   const match = useRouteMatch();
   const path = location.pathname.substr(1)
   const lastIndex = location.pathname.lastIndexOf('/')
@@ -49,6 +50,7 @@ function ProfileWall() {
   return (
     < Fragment >
       <ProfileInfo user={data.user} self={self} />
+
       <nav >
         <ul className="pf--nav-ul ">
           <NavLink exact activeClassName="active" className="pf--nav-link" to={match.url}>

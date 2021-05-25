@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import './tweet.css';
 import { ToolBox } from '../sideBar/toolbox/toolbox';
 import Modal from '../../UI/Modal/Modal';
@@ -9,12 +9,15 @@ import { RETWEET } from '../../common/queries/RETWEET';
 import ErrorDialog from '../../UI/Dialogs/ErroDialog';
 import { CustomDialog } from 'react-st-modal';
 import DeleteConfirmationDialog from '../../UI/Dialogs/DeleteConfirmationDialog';
+import UNRETWEET from '../../common/queries/UNRETWEET';
 
 function TweetToolbarIcons(props: any) {
 
   const [edit, setEdit] = useState<boolean>(false);
   const modalClosed = () => setEdit(false);
-  const [deleteTweet] = useMutation(deleteTweetMutation)
+  const [unretweet] = useMutation(UNRETWEET)
+  const [retweet, rtData] = useMutation(RETWEET)
+
 
   const handleRetweet = async () => {
     try {
@@ -30,13 +33,13 @@ function TweetToolbarIcons(props: any) {
   const handleDeleteButton = async () => {
     try {
       const result = await CustomDialog(<DeleteConfirmationDialog />, {
-        title: 'Confirm Delete',
+        title: 'Confirm unretweet',
         showCloseIcon: false,
       });
       if (result) {
-        await deleteTweet({
+        await unretweet({
           variables: {
-            id: props.rtId
+            tweetId: props.tweetId
           }
         })
 
@@ -50,7 +53,6 @@ function TweetToolbarIcons(props: any) {
     }
   }
 
-  const [retweet, rtData] = useMutation(RETWEET)
   return (
 
     <div className="tweet-toolbar p--light-color" >
@@ -77,7 +79,7 @@ function TweetToolbarIcons(props: any) {
           design={
             <div className="border-0">
               <i className={`fas fa-retweet text-base font-sm  ${props.isRetweeted ? "text-green-500" : ""}`}></i>
-              <span>{props.retweetsCount + props.quotedRetweetsCount} </span>
+              <span>{Number(props.quotedRetweetsCount + props.retweetsCount)} </span>
             </div>
           }
         >
@@ -89,7 +91,7 @@ function TweetToolbarIcons(props: any) {
               }} className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" disabled={rtData && rtData.loading} >Retweet</button>
               :
-              props.rtId && <button onClick={() => {
+              <button onClick={() => {
                 handleDeleteButton()
               }} className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" disabled={rtData && rtData.loading} >Undo retweet</button>

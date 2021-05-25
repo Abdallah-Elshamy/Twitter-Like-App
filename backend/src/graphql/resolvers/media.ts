@@ -6,11 +6,12 @@ export default {
     Query: {
         getUploadURL: async (
             parent: any,
-            args: any,
+            args: { isVideo: boolean },
             context: any,
             info: any
         ) => {
-            const url: string = await getUploadUrl(v4());
+            const folder = args.isVideo ? "videos/": "images/" 
+            const url: string = await getUploadUrl(folder + v4());
             if (!validator.isURL(url)) {
                 const error: any = new Error(
                     "An error happened while getting the URL!"

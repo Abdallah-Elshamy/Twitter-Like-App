@@ -2,6 +2,7 @@ import './tweet.css';
 import TweetImg from './TweetImg';
 import { Link, useHistory } from 'react-router-dom';
 import TweetInfo from './TweetInfo';
+import FoF from '../../UI/FoF/FoF';
 function QuotedTweet({ OTweet }: any) {
 
   const history = useHistory();
@@ -58,7 +59,8 @@ function QuotedTweet({ OTweet }: any) {
       </div>
 
 
-    default:
+    case "O":
+    case "Q":
       return <div>
         <div className="flex  w-full flex-row border 
     hover:bg-gray-100 border-gray-200 rounded-md p-2"
@@ -89,7 +91,12 @@ function QuotedTweet({ OTweet }: any) {
           </div>
         </div>
       </div>
+
+    default:
+      return <FoF fof={false} msg="This tweet may be deleted by it's author" />
   }
 
 }
+
+
 export default QuotedTweet;

@@ -66,6 +66,8 @@ query feed_tweets($isSFW:Boolean, $page: Int){
         state
         createdAt
         isLiked
+        isRetweeted
+
                     } 
         }}
 `

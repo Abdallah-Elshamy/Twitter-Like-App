@@ -36,7 +36,7 @@ export default gql`
         text: String!
         mediaURLs: [String]!
         state: String!
-        originalTweet: Tweet!
+        originalTweet: Tweet
         isSFW: Boolean!
         likes(page: Int): PaginatedUsers!
         likesCount: Int!
@@ -48,6 +48,8 @@ export default gql`
         isLiked: Boolean
         reportedBy(page: Int): PaginatedUsers!
         retweetsCount: Int!
+        "Check if the tweet is Retweeted by the loggedIn user"
+        isRetweeted: Boolean!
         quotedRetweetsCount: Int!
         createdAt: String!
         updatedAt: String!

@@ -27,11 +27,10 @@ const SearchResult: React.FC = () => {
     return <h1 className="text-lg text-center pt-4">Try searching for people, names, usernames
 </h1>
   }
-  if(!loading && data && data?.users?.users?.length === 10 && page === 1){
-    setPage(page + 1);
+  if(!loading && data && data?.users?.users?.length === 10 && data?.users?.totalCount > 10){
     fetchMore({
         variables: {
-            page: page + 1,
+            page: 2,
             name: searchQ,
         },
     })
@@ -46,15 +45,15 @@ const SearchResult: React.FC = () => {
     <InfiniteScroll
             dataLength={list?.length || 0}
             next={() => {
-                setPage(page + 1);
+                setPage(((list?.length || 10)/10) + 1);
                 return fetchMore({
                     variables: {
-                        page: page + 1,
+                        page: ((list?.length || 10)/10) + 1,
                         name: searchQ,
                     },
                 });
             }}
-            hasMore={list?.length >= page * 10 || false}
+            hasMore={data?.users?.totalCount >= page * 10 || false}
             loader={<Loading />}
         >
             {list.map((person) => {

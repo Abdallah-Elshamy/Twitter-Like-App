@@ -2,16 +2,19 @@ import React, { useState } from 'react'
 import './tweet.css';
 import { ToolBox } from '../sideBar/toolbox/toolbox';
 import Modal from '../../UI/Modal/Modal';
+import deleteTweetMutation from '../../common/queries/deleteTweet'
 import PostTweet from './PostTweet';
 import { useMutation } from '@apollo/client';
 import { RETWEET } from '../../common/queries/RETWEET';
 import ErrorDialog from '../../UI/Dialogs/ErroDialog';
 import { CustomDialog } from 'react-st-modal';
+import DeleteConfirmationDialog from '../../UI/Dialogs/DeleteConfirmationDialog';
 
 function TweetToolbarIcons(props: any) {
 
   const [edit, setEdit] = useState<boolean>(false);
   const modalClosed = () => setEdit(false);
+  const [deleteTweet] = useMutation(deleteTweetMutation)
 
   const handleRetweet = async () => {
     try {
@@ -23,8 +26,30 @@ function TweetToolbarIcons(props: any) {
         showCloseIcon: false,
       });
     }
-
   }
+  const handleDeleteButton = async () => {
+    try {
+      const result = await CustomDialog(<DeleteConfirmationDialog />, {
+        title: 'Confirm Delete',
+        showCloseIcon: false,
+      });
+      if (result) {
+        await deleteTweet({
+          variables: {
+            id: props.rtId
+          }
+        })
+
+      }
+    }
+    catch (e) {
+      await CustomDialog(<ErrorDialog message={e.message} />, {
+        title: 'Error!',
+        showCloseIcon: false,
+      });
+    }
+  }
+
   const [retweet, rtData] = useMutation(RETWEET)
   return (
 
@@ -64,8 +89,8 @@ function TweetToolbarIcons(props: any) {
               }} className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" disabled={rtData && rtData.loading} >Retweet</button>
               :
-              <button onClick={() => {
-                /*To DO*/ alert("delete");
+              props.rtId && <button onClick={() => {
+                handleDeleteButton()
               }} className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" disabled={rtData && rtData.loading} >Undo retweet</button>
             }

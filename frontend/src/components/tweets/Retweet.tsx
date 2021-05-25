@@ -43,6 +43,7 @@ const Retweet: React.FC<any> = (props: any) => {
         state={tweet.state}
         originalTweet={tweet.originalTweet}
         repliedToTweet={tweet.repliedToTweet}
+        rtId={props.rtTweet}
       />
     </Fragment>
   );

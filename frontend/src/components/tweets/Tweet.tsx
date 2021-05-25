@@ -58,6 +58,7 @@ function Tweet(props: any) {
                 retweetsCount={props.retweetsCount}
                 tweetId={props.id}
                 isRetweeted={props.isRetweeted}
+                rtId={props.rtId}
 
               />
             </div>
@@ -83,6 +84,7 @@ function Tweet(props: any) {
               loggedUser={props.loggedUser}
               tweetMediaUrls={props.mediaUrls}
               tweet={props.tweet}
+
             />
             {/* the added design of Reply design  */}
             <div className="-mt-2 ">
@@ -105,6 +107,7 @@ function Tweet(props: any) {
                 retweetsCount={props.retweetsCount}
                 tweetId={props.id}
                 isRetweeted={props.isRetweeted}
+                rtId={props.rtId}
               />
 
             </div>
@@ -149,6 +152,8 @@ function Tweet(props: any) {
                 retweetsCount={props.retweetsCount}
                 tweetId={props.id}
                 isRetweeted={props.isRetweeted}
+                rtId={props.rtId}
+
               />
 
             </div>
@@ -177,7 +182,7 @@ function Tweet(props: any) {
                   clipRule="evenodd" /></svg></span>
                 <span onClick={goToProfile} className="hover:pointer" > {props.user.name} retweeted </span>
               </p>
-              <Retweet id={props.originalTweet.id} />
+              <Retweet id={props.originalTweet.id} rtTweet={props.id} />
               <hr />
             </Fragment>
         }

@@ -71,7 +71,7 @@ function Tweet(props: any) {
         <PostTweet />
       </Modal>
 
-      <Tweet_img imageURL={props.user.imageURL} />
+      <Tweet_img imageURL={props.user?.imageURL} />
 
       <div className="tweet-aside">
 

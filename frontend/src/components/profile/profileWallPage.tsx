@@ -5,6 +5,7 @@ import { parseJwt } from '../../common/decode';
 import { InMemoryCache } from "@apollo/client";
 import Feed from "./feed";
 import { Get_SFW } from "../../common/queries/GET_SFW";
+import Loading from "../../UI/Loading";
 
 
 export interface TweetFilter {
@@ -12,11 +13,11 @@ export interface TweetFilter {
 }
 // var limit = 0 ;
 
-const  Profilewallpage: React.FC<TweetFilter> = (props) => {
+const Profilewallpage: React.FC<TweetFilter> = (props) => {
   var profile;
   var Page = 1;
 
-  const sfw = useQuery (Get_SFW).data
+  const sfw = useQuery(Get_SFW).data
 
   if (localStorage.getItem('token') !== "LOGOUT") {
     profile = parseJwt(localStorage.getItem('token'))
@@ -31,52 +32,52 @@ const  Profilewallpage: React.FC<TweetFilter> = (props) => {
             //   return existing && existing ;
             // },
             merge(existing = [], incoming) {
-              return {...existing, ...incoming};
+              return { ...existing, ...incoming };
             }
-            },
+          },
         },
       },
     },
   });
 
-  const { loading, data , fetchMore } = useQuery(Tweets,
+  const { loading, data, fetchMore } = useQuery(Tweets,
     {
       variables: {
         userId: profile.id,
-        filter: props.filter ,
-        page : Page ,
-        isSFW:sfw.SFW.value
+        filter: props.filter,
+        page: Page,
+        isSFW: sfw.SFW.value
       }
     });
 
-  if (loading) return <p>'Loading .. '</p>
+  if (loading) return <Loading />
 
   return (
-    
+
     < Feed
-      tweet = {data.tweets.tweets || []}
-      onLoadMore = {()=>
+      tweet={data.tweets.tweets || []}
+      onLoadMore={() =>
         fetchMore({
           variables: {
-            page : Page+1
-          } , 
+            page: Page + 1
+          },
           // updateQuery: (prev = [], { fetchMoreResult }) => fetchMoreResult
- 
-          updateQuery: (prev:any , { fetchMoreResult }) => {
+
+          updateQuery: (prev: any, { fetchMoreResult }) => {
             if (!fetchMoreResult) return prev;
-            else{
-          console.log("updateQuary")
-          //  return Object.assign( prev , fetchMoreResult  );       
-           return {...prev , ...fetchMoreResult }  ;
+            else {
+              console.log("updateQuary")
+              //  return Object.assign( prev , fetchMoreResult  );       
+              return { ...prev, ...fetchMoreResult };
             }
- 
+
           }
-          
+
         })
-        
-      }  
+
+      }
     />
-      
+
   );
 }
 

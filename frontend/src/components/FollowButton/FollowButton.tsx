@@ -13,9 +13,6 @@ const FollowButton: React.FC<Props> = ({ id, py = "py-0.5", following = false })
   const [follow, resFlw] = useMutation(FOLLOW)
   const [unfollow, resUnflw] = useMutation(UNFOLLOW)
 
-
-
-
   const handleFollow = () => {
     if (!resFlw.loading && !resUnflw.loading) {
 

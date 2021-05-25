@@ -44,3 +44,4 @@ const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, usernam
   )
 }
 export default TrendItem;
+

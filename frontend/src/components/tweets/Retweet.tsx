@@ -5,10 +5,9 @@ import { TweetData } from './TweetData_interface'
 import { useQuery } from '@apollo/client';
 import { GET_SINGLE_TWEET } from './../../common/queries/GET_SINGLE_TWEET';
 import { Get_SFW } from './../../common/queries/GET_SFW';
-import { useLocation } from 'react-router';
 import Loading from './../../UI/Loading';
 import FoF from './../../UI/FoF/FoF';
-import { Link } from 'react-router-dom';
+
 
 const Retweet: React.FC<any> = (props: any) => {
 
@@ -28,7 +27,6 @@ const Retweet: React.FC<any> = (props: any) => {
   const tweet: TweetData = data.tweet
   return (
     <Fragment>
-
       <Tweet
         id={tweet.id}
         text={tweet.text}

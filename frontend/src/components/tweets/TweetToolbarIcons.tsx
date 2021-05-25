@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import './tweet.css';
 import { ToolBox } from '../sideBar/toolbox/toolbox';
 import Modal from '../../UI/Modal/Modal';
@@ -34,12 +34,11 @@ function TweetToolbarIcons(props: any) {
           design={
             <div className="border-0">
               <i className="fas fa-retweet text-base font-sm"></i>
-              <span>{props.retweetsCount + props.quotedRetweetsCount} </span>
+              <span>{ Number(props.quotedRetweetsCount + props.retweetsCount)} </span>
             </div>
           }
         >
           <ul className="mb-40 absolute ml-12 bg-gray-100">
-
             <a href="/profile" className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" >Retweet</a>
             <a className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200

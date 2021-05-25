@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import { Fragment } from 'react'
 import './tweet.css';
 
 import { useHistory } from 'react-router';
@@ -47,6 +47,9 @@ function Tweet(props: any) {
               </span>
 
               <TweetToolbarIcons
+                tweetId={props.id}
+                state = {props.state}
+
                 repliesCount={props.repliesCount}
                 likesCount={props.likesCount}
                 quotedRetweetsCount={props.quotedRetweetsCount}
@@ -76,8 +79,8 @@ function Tweet(props: any) {
               loggedUser={props.loggedUser}
               tweetMediaUrls={props.mediaUrls}
               tweet={props.tweet}
-
             />
+
             {/* the added design of Reply design  */}
             <div className="space-x-2 -mt-2 ">
               <p className=" p--light-color inline-block"> Repling to </p>
@@ -93,6 +96,9 @@ function Tweet(props: any) {
                 {props.text}
               </span>
               <TweetToolbarIcons
+                tweetId={props.id}
+                state = {props.state}
+
                 repliesCount={props.repliesCount}
                 likesCount={props.likesCount}
                 quotedRetweetsCount={props.quotedRetweetsCount}
@@ -102,11 +108,8 @@ function Tweet(props: any) {
             </div>
           </div>
         </div>
-
-
         <hr />
       </div>
-
 
     case "Q":
       return <div>
@@ -169,7 +172,7 @@ function Tweet(props: any) {
       </div>
 
     default:
-      return <FoF />
+      return <FoF/>
   }
 
 }

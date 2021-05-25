@@ -23,8 +23,7 @@ const SearchResult: React.FC = () => {
     const [page, setPage] = useState<any>(1)
     const { data, loading, error, fetchMore } = useQuery(Get_Search_Result, { variables: { name: searchQ } })
     if (searchQ === "") {
-        return <h1 className="text-lg text-center pt-4">Try searching for people, names, usernames
-</h1>
+        return <h1 className="text-lg text-center pt-4">Try searching for people, names, usernames </h1>
     }
     if (!loading && data && data?.users?.users?.length === 10 && data?.users?.totalCount > 10) {
         fetchMore({

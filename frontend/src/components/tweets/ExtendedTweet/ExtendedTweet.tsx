@@ -64,13 +64,15 @@ const ExtendedTweet: React.FC = () => {
             user={tweet.user}
             likesCount={tweet.likesCount}
             quotedRetweetsCount={tweet.quotedRetweetsCount}
-            retweetsCount={tweet.retweetsCount}
+            retweetsCount = {tweet.retweetsCount}
             state={tweet.state}
             originalTweet={tweet.originalTweet}
             repliedToTweet={tweet.repliedToTweet}
-
           />
 
+            <p className="font-bold px-4 text-gray-600 m-3"> 
+            {tweet.retweetsCount} <a className = "font-light text-gray-500 "> Retweeted </a> .  {tweet.quotedRetweetsCount} <a className = "font-light text-gray-500 "> Quoted Tweets </a> . { tweet.likesCount} <a className = "font-light text-gray-500 "> likes </a>
+            </p>
           <div>
             <pre className="p-4 bg-gray-900 text-blue-200" ><span className="text-green-500 block">{"//TODO: fetch tweet replies"}</span>
               <span className="text-blue-400">const</span> replies <span className="text-white">=</span> fetch(<span className="text-blue-400">replies</span>);
@@ -84,4 +86,4 @@ const ExtendedTweet: React.FC = () => {
   );
 }
 
-export default ExtendedTweet;
+export default ExtendedTweet ;

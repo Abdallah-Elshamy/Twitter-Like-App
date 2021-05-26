@@ -59,7 +59,7 @@ function QuotedTweet({ OTweet }: any) {
       </div>
 
 
-    case "O":
+    // case "O":
     case "Q":
       return <div>
         <div className="flex  w-full flex-row border 

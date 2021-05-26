@@ -11,7 +11,11 @@ import { CustomDialog } from 'react-st-modal';
 function TweetToolbarIcons(props: any) {
 
   const [edit, setEdit] = useState<boolean>(false);
+  const [replyEdit, replySetEdit] = useState<boolean>(false);
+
+
   const modalClosed = () => setEdit(false);
+  const replyModalClosed = () => replySetEdit(false);
 
   const handleRetweet = async () => {
     try {
@@ -29,20 +33,40 @@ function TweetToolbarIcons(props: any) {
   return (
 
     <div className="tweet-toolbar p--light-color" >
+
+
       <Modal show={edit} modalClosed={modalClosed} className="pb-4" >
 
         <header className="flex justify-between items-center px-3 h-8 w-full border-b border-gray-200 pb-6 pt-2">
 
-          <div onClick={modalClosed} className=" p-1 rounded-full">
+          <div onClick={(e) => {modalClosed(); e.stopPropagation() }} className=" p-1 rounded-full">
             <svg className="h-8 w-5 pt-2 mt-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </div>
 
         </header>
+        <h1> for quoted to {props.tweetId} which {props.state} </h1>
         <PostTweet />
       </Modal>
-      <a onClick={(e) => { setEdit(true); e.stopPropagation() }}>
+
+      <Modal show={replyEdit} modalClosed={replyModalClosed} className="pb-4" >
+        <header className="flex justify-between items-center px-3 h-8 w-full border-b border-gray-200 pb-6 pt-2">
+
+          <div onClick={(e) => {replyModalClosed(); e.stopPropagation() }} className=" p-1 rounded-full">
+            <svg className="h-8 w-5 pt-2 mt-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+
+        </header>
+        <h1> for reply to {props.tweetId} which {props.state} </h1>
+        <PostTweet />
+      </Modal>
+
+
+
+      <a onClick={(e) => { replySetEdit(true); e.stopPropagation() }}>
         <i className="fas fa-reply text-base font-sm " ></i>
         <span>{props.repliesCount}</span>
       </a>

@@ -1,6 +1,5 @@
 import { Fragment } from 'react'
 import './tweet.css';
-
 import { useHistory } from 'react-router';
 import TweetInfo from './TweetInfo';
 import TweetImg from './TweetImg';
@@ -144,11 +143,12 @@ function Tweet(props: any) {
               <QuotedTweet OTweet={props.originalTweet} repliedToTweet={props.repliedToTweet} />
 
               <TweetToolbarIcons
+                tweetId={props.id}
+                state = {props.state}
                 repliesCount={props.repliesCount}
                 likesCount={props.likesCount}
                 quotedRetweetsCount={props.quotedRetweetsCount}
                 retweetsCount={props.retweetsCount}
-                tweetId={props.id}
                 isRetweeted={props.isRetweeted}
               />
 

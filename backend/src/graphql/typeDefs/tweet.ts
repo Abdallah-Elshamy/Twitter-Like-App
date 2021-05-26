@@ -22,6 +22,7 @@ export default gql`
             tweet: TweetCreateInput!
         ): Tweet!
         deleteTweet(id: ID!): Boolean!
+        unRetweet(id: ID!): Boolean!
         reportTweet(id: ID!, reason: String): Boolean!
         ignoreReportedTweet(id: ID!): Boolean!
     }

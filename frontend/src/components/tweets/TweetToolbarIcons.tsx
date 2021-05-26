@@ -46,7 +46,7 @@ function TweetToolbarIcons(props: any) {
           </div>
 
         </header>
-        <h1> for quoted to {props.tweetId} which {props.state} </h1>
+        <h1 > for quoted to {props.tweetId} which {props.state} </h1>
         <PostTweet />
       </Modal>
 
@@ -60,7 +60,7 @@ function TweetToolbarIcons(props: any) {
           </div>
 
         </header>
-        <h1> for reply to {props.tweetId} which {props.state} </h1>
+        <h1 > for reply to {props.tweetId} which {props.state} </h1>
         <PostTweet />
       </Modal>
 

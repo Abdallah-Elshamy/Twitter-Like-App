@@ -52,7 +52,7 @@ function Tweet(props: any) {
 
               <TweetToolbarIcons
                 tweetId={props.id}
-                state = {props.state}
+                state={props.state}
                 repliesCount={props.repliesCount}
                 likesCount={props.likesCount}
                 quotedRetweetsCount={props.quotedRetweetsCount}
@@ -83,6 +83,7 @@ function Tweet(props: any) {
               loggedUser={props.loggedUser}
               tweetMediaUrls={props.mediaUrls}
               tweet={props.tweet}
+
             />
 
             {/* the added design of Reply design  */}
@@ -101,7 +102,7 @@ function Tweet(props: any) {
               </span>
               <TweetToolbarIcons
                 tweetId={props.id}
-                state = {props.state}
+                state={props.state}
 
                 repliesCount={props.repliesCount}
                 likesCount={props.likesCount}
@@ -150,6 +151,7 @@ function Tweet(props: any) {
                 quotedRetweetsCount={props.quotedRetweetsCount}
                 retweetsCount={props.retweetsCount}
                 isRetweeted={props.isRetweeted}
+
               />
 
             </div>
@@ -186,7 +188,7 @@ function Tweet(props: any) {
       </Fragment>
 
     default:
-      return <FoF/>
+      return <FoF />
   }
 
 }

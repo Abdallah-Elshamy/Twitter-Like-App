@@ -13,6 +13,9 @@ function QuotedTweet({ OTweet }: any) {
     })
   }
 
+if (!OTweet ){
+  return <FoF fof={false} secMsg = "This tweet may be deleted by it's author" />
+}
 
   switch (OTweet.state) {
 
@@ -59,7 +62,7 @@ function QuotedTweet({ OTweet }: any) {
       </div>
 
 
-    // case "O":
+    case "O":
     case "Q":
       return <div>
         <div className="flex  w-full flex-row border 

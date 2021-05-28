@@ -18,6 +18,8 @@ const writeTweetsFeedData = async (
             isSFW,
         },
     });
+    console.log("feed data",feedData)
+    console.log("new tweet",newTweet)
     if (!feedData) {
         feedData = await apolloClient.query({
             query: FeedTweets,
@@ -35,6 +37,41 @@ const writeTweetsFeedData = async (
             data: {
                 getFeed: {
                     tweets: [newTweet, ...(feedData?.getFeed?.tweets || [])],
+                    totalCount: feedData?.getFeed?.totalCount + 1,
+                },
+            },
+        });
+};
+const writeTweetsFeedDataFromEnd = async (
+    isSFW: boolean,
+    cache: any,
+    newTweet: any
+) => {
+    let feedData: any = cache.readQuery({
+        query: FeedTweets,
+        variables: {
+            isSFW,
+        },
+    });
+    if (!feedData) {
+        feedData = await apolloClient.query({
+            query: FeedTweets,
+            variables: {
+                isSFW,
+            },
+        });
+    }
+    feedData &&
+        cache.writeQuery({
+            query: FeedTweets,
+            variables: {
+                isSFW,
+            },
+            data: {
+
+                getFeed: {
+                    __typename: "QuoteRetweet",
+                    tweets: [...(feedData?.getFeed?.tweets || []), newTweet],
                     totalCount: feedData?.getFeed?.totalCount + 1,
                 },
             },
@@ -188,6 +225,35 @@ export const updateTweetsCacheForCreateTweet = async (
     writeTweetsProfileData(true, cache, profile.id, "", newTweet);
     writeTweetsProfileData(false, cache, profile.id, "", newTweet);
     writeTweetsProfileData(true, cache, profile.id, "replies&tweets", newTweet);
+    writeTweetsProfileData(
+        false,
+        cache,
+        profile.id,
+        "replies&tweets",
+        newTweet
+    );
+    if (newTweet.mediaURLs.length > 0) {
+        writeTweetsProfileData(true, cache, profile.id, "media", newTweet);
+        writeTweetsProfileData(false, cache, profile.id, "media", newTweet);
+    }
+    incrementTweetsCount(cache, profile.id);
+};
+
+export const updateTweetsCacheForCreateQuotedRetweet = async (
+    cache: any,
+    { data }: any
+) => {
+    const profile = parseJwt(localStorage.getItem("token"));
+    const newTweet = data.createQuotedRetweet;
+    writeTweetsFeedDataFromEnd(true, cache, newTweet);
+    writeTweetsFeedDataFromEnd(false, cache, newTweet);
+    console.log("here no prob")
+    writeTweetsProfileData(true, cache, profile.id, "", newTweet);
+    console.log("here prob 1")
+    writeTweetsProfileData(false, cache, profile.id, "", newTweet);
+    console.log("here prob 2")
+    writeTweetsProfileData(true, cache, profile.id, "replies&tweets", newTweet);
+    console.log("here prob 3")
     writeTweetsProfileData(
         false,
         cache,

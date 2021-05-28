@@ -58,7 +58,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
     }
     if (loading) return <Fragment><br /> <br /> <Loading size={30} /></Fragment>;
     if (error) return <p>`Error! ${error.message}`</p>;
-
+    console.log("Tweets data", data)
     return (
         <InfiniteScroll
             dataLength={data?.tweets?.tweets?.length || 0}
@@ -77,7 +77,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
                 overflow: "hidden"
             }}
             className="pb-20"
-            hasMore={data?.tweets?.totalCount > page * 10 || false}
+            hasMore={data?.tweets?.totalCount > (data?.tweets?.tweets?.length || 10) || false}
             loader={<Loading />}
         >
             {data.tweets.tweets.map((tweet: TweetData) => {

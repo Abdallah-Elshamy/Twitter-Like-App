@@ -28,7 +28,7 @@ function HomeTweets() {
     }
     if (loading) return <Loading />;
     if (error) return <p>`Error! this is the one ${error.message}`</p>;
-    console.log(data?.getFeed?.tweets)
+    console.log("all tweets", data?.getFeed?.tweets)
 
     return (
         <InfiniteScroll
@@ -42,7 +42,7 @@ function HomeTweets() {
                     },
                 });
             }}
-            hasMore={data?.getFeed?.totalCount >= page * 10 || false}
+            hasMore={data?.getFeed?.totalCount >= Math.floor((data?.getFeed?.tweets?.length || 10) / 10) * 10 || false}
             loader={<Loading />}
             style={{
                 overflow: "hidden"

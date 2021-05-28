@@ -160,11 +160,11 @@ function Tweet(props: any) {
             />
 
             <div className="tweet-content ml-2">
-              <span>
+              <span onClick={(e) => e.stopPropagation()}>
                 {props.text}
               </span>
               {(props.mediaURLs) && 
-                <div className="gg-box">
+                <div className="gg-box" onClick={(e) => e.stopPropagation()}>
 
                 { displayUploadedFiles(props.mediaURLs) }
 
@@ -219,11 +219,11 @@ function Tweet(props: any) {
 
             {/* the text/media of the original tweet */}
             <div className="tweet-content ml-2 pb-4">
-              <span>
+              <span onClick={(e) => e.stopPropagation()}>
                 {props.text}
               </span>
               {(props.mediaURLs) && 
-                <div className="gg-box">
+                <div className="gg-box" onClick={(e) => e.stopPropagation()}>
 
                 { displayUploadedFiles(props.mediaURLs) }
 
@@ -266,12 +266,12 @@ function Tweet(props: any) {
             />
 
             {/* the text/media of the original tweet */}
-            <div className="tweet-content ml-2">
-              <span>
+            <div className="tweet-content ml-2" >
+              <span onClick={(e) => e.stopPropagation()}>
                 {props.text}
               </span>
               {(props.mediaURLs) && 
-                <div className="gg-box">
+                <div className="gg-box" onClick={(e) => e.stopPropagation()}>
 
                 { displayUploadedFiles(props.mediaURLs) }
 

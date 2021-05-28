@@ -37,7 +37,8 @@ const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
             (incoming?.__typename == "IgnoreReportedTweet" ||
                 incoming?.__typename == "ReportTweet" ||
                 incoming?.__typename == "LikeTweet" ||
-                incoming?.__typename == "UnlikeTweet")
+                incoming?.__typename == "UnlikeTweet" ||
+                incoming?.__typename == "QuoteRetweet")
         ) {
             return incoming;
         }
@@ -45,6 +46,7 @@ const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
             ? { totalCount: existing.totalCount, tweets: [...existing.tweets] }
             : { totalCount: 0, tweets: [] };
         merged.totalCount = incoming.totalCount;
+        console.log("incoming", incoming)
         let i = 0;
         let j = 0;
         let k = 0;

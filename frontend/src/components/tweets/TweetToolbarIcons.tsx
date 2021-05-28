@@ -73,7 +73,7 @@ function TweetToolbarIcons(props: any) {
           </div>
 
         </header>
-        <PostTweet originalId={props.tweetId} postType="Qretweet"/>
+        <PostTweet originalId={props.tweetId} postType="Qretweet" />
       </Modal>
 
       <Modal show={replyEdit} modalClosed={replyModalClosed} className="pb-4" >

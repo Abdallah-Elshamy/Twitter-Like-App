@@ -3,7 +3,7 @@ import React, { Fragment, useRef, useState } from "react"
 import * as Yup from "yup"
 import { TweetButton } from '../sideBar/tweetButton/tweetButton'
 import { Post_Tweet, Post_QRetweet, Post_Reply } from '../../common/queries/createTweet'
-import {updateTweetsCacheForCreateTweet} from "../../common/utils/writeCache"
+import {updateTweetsCacheForCreateTweet, updateTweetsCacheForCreateQuotedRetweet} from "../../common/utils/writeCache"
 import { Tweets } from '../../common/queries/TweetQuery'
 import { FeedTweets } from '../../common/queries/Feedtweets'
 import './tweet.css';
@@ -50,7 +50,9 @@ const PostTweet = ({originalId = '', postType = 'tweet'}: Arg)  => {
     update: updateTweetsCacheForCreateTweet
   });
   const [createReply] = useMutation(Post_Reply)
-  const [createQTweet] = useMutation(Post_QRetweet)
+  const [createQTweet] = useMutation(Post_QRetweet, {
+    update: updateTweetsCacheForCreateQuotedRetweet
+  })
 
   const { data: APIENDPOINT, loading, refetch } = useQuery(getUploadURL, {variables:{isVideo:(type.includes("video"))?true:false}})
 

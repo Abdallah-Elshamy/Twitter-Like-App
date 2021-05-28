@@ -304,9 +304,8 @@ function Tweet(props: any) {
       return <Fragment>
         {
 
-          (!props.originalTweet || props.originalTweet.state === "R" ||
-            ((history.location.pathname === '/')
-              && props.loggedUser.id == props.user.id)) ? null :
+          (!props.originalTweet || props.originalTweet.state === "R")
+             ? null :
 
             <Fragment>
               <p className="font-bold px-4 text-gray-600">

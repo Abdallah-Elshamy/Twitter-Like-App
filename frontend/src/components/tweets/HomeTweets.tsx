@@ -50,33 +50,29 @@ function HomeTweets() {
             className="pb-20"
         >
             {data?.getFeed?.tweets?.map((tweet: TweetData) => {
-                if ((tweet.state !== 'R') ||
-                    (tweet.state === 'R' && (loggedUser.id !== tweet.user.id)))
-                    return (
-                        <Tweet
-                            id={tweet.id}
-                            text={tweet.text}
-                            mediaURLs={tweet.mediaURLs}
-                            repliesCount={tweet.repliesCount}
-                            createdAt={tweet.createdAt}
-                            isLiked={tweet.isLiked}
-                            isRetweeted={tweet.isRetweeted}
-                            user={tweet.user}
-                            loggedUser={loggedUser}
-                            tweet={tweet}
-                            likesCount={tweet.likesCount}
-                            key={tweet.id}
-                            quotedRetweetsCount={tweet.quotedRetweetsCount}
-                            retweetsCount={tweet.retweetsCount}
-                            state={tweet.state}
-                            originalTweet={tweet.originalTweet}
-                            repliedToTweet={tweet.repliedToTweet}
-                        />
+                return (
+                    <Tweet
+                        id={tweet.id}
+                        text={tweet.text}
+                        mediaURLs={tweet.mediaURLs}
+                        repliesCount={tweet.repliesCount}
+                        createdAt={tweet.createdAt}
+                        isLiked={tweet.isLiked}
+                        isRetweeted={tweet.isRetweeted}
+                        user={tweet.user}
+                        loggedUser={loggedUser}
+                        tweet={tweet}
+                        likesCount={tweet.likesCount}
+                        key={tweet.id}
+                        quotedRetweetsCount={tweet.quotedRetweetsCount}
+                        retweetsCount={tweet.retweetsCount}
+                        state={tweet.state}
+                        originalTweet={tweet.originalTweet}
+                        repliedToTweet={tweet.repliedToTweet}
+                    />
 
 
-                    );
-                return null;
-
+                );
             })}
         </InfiniteScroll>
     );

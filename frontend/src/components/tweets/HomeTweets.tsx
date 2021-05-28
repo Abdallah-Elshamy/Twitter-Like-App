@@ -42,7 +42,7 @@ function HomeTweets() {
                     },
                 });
             }}
-            hasMore={data?.getFeed?.totalCount >= Math.floor((data?.getFeed?.tweets?.length || 10) / 10) * 10 || false}
+            hasMore={data?.getFeed?.totalCount > data?.getFeed?.tweets?.length || false}
             loader={<Loading />}
             style={{
                 overflow: "hidden"

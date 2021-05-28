@@ -77,7 +77,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
                 overflow: "hidden"
             }}
             className="pb-20"
-            hasMore={data?.tweets?.totalCount > (data?.tweets?.tweets?.length || 10) || false}
+            hasMore={data?.tweets?.totalCount > data?.tweets?.tweets?.length || false}
             loader={<Loading />}
         >
             {data.tweets.tweets.map((tweet: TweetData) => {

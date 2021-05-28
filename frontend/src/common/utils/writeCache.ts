@@ -18,8 +18,6 @@ const writeTweetsFeedData = async (
             isSFW,
         },
     });
-    console.log("feed data",feedData)
-    console.log("new tweet",newTweet)
     if (!feedData) {
         feedData = await apolloClient.query({
             query: FeedTweets,
@@ -68,7 +66,6 @@ const writeTweetsFeedDataFromEnd = async (
                 isSFW,
             },
             data: {
-
                 getFeed: {
                     __typename: "QuoteRetweet",
                     tweets: [...(feedData?.getFeed?.tweets || []), newTweet],
@@ -245,15 +242,51 @@ export const updateTweetsCacheForCreateQuotedRetweet = async (
 ) => {
     const profile = parseJwt(localStorage.getItem("token"));
     const newTweet = data.createQuotedRetweet;
+    console.log("original", newTweet.originalTweet);
+    cache.modify({
+        id: `Tweet:${newTweet.originalTweet.id}`,
+        fields: {
+            quotedRetweetsCount(prevCount: any) {
+                return prevCount + 1;
+            },
+        },
+    });
     writeTweetsFeedDataFromEnd(true, cache, newTweet);
     writeTweetsFeedDataFromEnd(false, cache, newTweet);
-    console.log("here no prob")
     writeTweetsProfileData(true, cache, profile.id, "", newTweet);
-    console.log("here prob 1")
     writeTweetsProfileData(false, cache, profile.id, "", newTweet);
-    console.log("here prob 2")
     writeTweetsProfileData(true, cache, profile.id, "replies&tweets", newTweet);
-    console.log("here prob 3")
+    writeTweetsProfileData(
+        false,
+        cache,
+        profile.id,
+        "replies&tweets",
+        newTweet
+    );
+    if (newTweet.mediaURLs.length > 0) {
+        writeTweetsProfileData(true, cache, profile.id, "media", newTweet);
+        writeTweetsProfileData(false, cache, profile.id, "media", newTweet);
+    }
+    incrementTweetsCount(cache, profile.id);
+};
+
+export const updateTweetsCacheForCreateReply = async (
+    cache: any,
+    { data }: any
+) => {
+    const profile = parseJwt(localStorage.getItem("token"));
+    const newTweet = data.createReply;
+    cache.modify({
+        id: `Tweet:${newTweet.repliedToTweet.id}`,
+        fields: {
+            repliesCount(prevCount: any) {
+                return prevCount + 1;
+            },
+        },
+    });
+    writeTweetsFeedDataFromEnd(true, cache, newTweet);
+    writeTweetsFeedDataFromEnd(false, cache, newTweet);
+    writeTweetsProfileData(true, cache, profile.id, "replies&tweets", newTweet);
     writeTweetsProfileData(
         false,
         cache,
@@ -329,7 +362,6 @@ const removeUserFromReportedUsers = (cache: any, user: any) => {
             },
         });
 
-    console.log("reported users", reportedUsers)
     return reportedUsers;
 };
 
@@ -399,14 +431,57 @@ export const updateTweetsCacheForLikeTweet = (
                     userName
                     isBanned
                 }
+                originalTweet {
+                    id
+                    text
+                    likesCount
+                    retweetsCount
+                    repliesCount
+                    state
+                    createdAt
+                    isLiked
+                    mediaURLs
+                    user {
+                        id
+                        userName
+                        name
+                        imageURL
+                    }
+                    originalTweet {
+                        id
+                    }
+                    repliedToTweet {
+                        id
+                        user {
+                            id
+                            userName
+                        }
+                    }
+                }
+
+                repliedToTweet {
+                    id
+                    state
+                    mode
+                    mediaURLs
+                    user {
+                        id
+                        userName
+                        name
+                        imageURL
+                    }
+                }
                 id
                 text
                 likesCount
+                retweetsCount
+                quotedRetweetsCount
+                mediaURLs
                 repliesCount
+                state
                 createdAt
                 isLiked
-                mediaURLs
-                isSFW
+                isRetweeted
             }
         `,
     });
@@ -453,14 +528,57 @@ export const updateTweetsCacheForUnlikeTweet = (
                     userName
                     isBanned
                 }
+                originalTweet {
+                    id
+                    text
+                    likesCount
+                    retweetsCount
+                    repliesCount
+                    state
+                    createdAt
+                    isLiked
+                    mediaURLs
+                    user {
+                        id
+                        userName
+                        name
+                        imageURL
+                    }
+                    originalTweet {
+                        id
+                    }
+                    repliedToTweet {
+                        id
+                        user {
+                            id
+                            userName
+                        }
+                    }
+                }
+
+                repliedToTweet {
+                    id
+                    state
+                    mode
+                    mediaURLs
+                    user {
+                        id
+                        userName
+                        name
+                        imageURL
+                    }
+                }
                 id
                 text
                 likesCount
+                retweetsCount
+                quotedRetweetsCount
+                mediaURLs
                 repliesCount
+                state
                 createdAt
                 isLiked
-                mediaURLs
-                isSFW
+                isRetweeted
             }
         `,
     });
@@ -485,16 +603,14 @@ export const updateTweetsCacheForUnlikeTweet = (
 };
 
 export const updateUsersCacheForBanUser = (cache: any, user: any) => {
-    console.log("user is", user)
-    
-        cache.modify({
-            id: `User:${user.id}`,
-            fields: {
-                isBanned(prevTweets: any) {
-                    return true;
-                },
+    cache.modify({
+        id: `User:${user.id}`,
+        fields: {
+            isBanned(prevTweets: any) {
+                return true;
             },
-        }) && removeUserFromReportedUsers(cache, user)
+        },
+    }) && removeUserFromReportedUsers(cache, user);
 };
 
 export const updateUsersCacheForUnBanUser = (cache: any, user: any) => {

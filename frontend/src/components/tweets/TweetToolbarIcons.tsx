@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import {gql} from '@apollo/client'
 import './tweet.css';
 import { ToolBox } from '../sideBar/toolbox/toolbox';
 import Modal from '../../UI/Modal/Modal';
@@ -10,19 +11,111 @@ import ErrorDialog from '../../UI/Dialogs/ErroDialog';
 import { CustomDialog } from 'react-st-modal';
 import DangerConfirmationDialog from '../../UI/Dialogs/DangerConfirmationDialog';
 import UNRETWEET from '../../common/queries/UNRETWEET';
+import {cache} from "../../common/cache"
+import {updateTweetsCacheForRetweet, updateTweetsCacheForUnretweet} from "../../common/utils/writeCache"
+import { parseJwt } from "../../common/decode";
+import { boolean } from 'yup';
+
 
 function TweetToolbarIcons(props: any) {
 
   const [edit, setEdit] = useState<boolean>(false);
   const [replyEdit, replySetEdit] = useState<boolean>(false);
-
-
   const modalClosed = () => setEdit(false);
   const replyModalClosed = () => replySetEdit(false);
-  const [unretweet] = useMutation(UNRETWEET)
-  const [retweet, rtData] = useMutation(RETWEET)
+  const [unretweet] = useMutation(UNRETWEET, {
+    update(cache) {
+    const loggedUser = parseJwt(localStorage.getItem('token')!)
+    const serializedState = cache.extract()
+    const allTweetsInCache = Object.values(serializedState).filter((item:any) => item.__typename === 'Tweet')
+    const retweetedTweet: any = allTweetsInCache.filter((tweet: any) => {
+      return tweet?.originalTweet?.__ref === `Tweet:${props.tweetId}` && tweet?.user?.__ref === `User:${loggedUser.id}` && tweet?.state === "R"
+    })[0]
+    console.log("retweetedTweet", retweetedTweet)
+    if (retweetedTweet){
+      const normalizedId = cache.identify({
+        id: retweetedTweet.id,
+        __typename: "Tweet",
+      });
+      if (normalizedId) {
+        cache.evict({ id: normalizedId });
+      }
+    }
+    updateTweetsCacheForUnretweet(cache)
+    
+  }})
+  const [retweet, rtData] = useMutation(RETWEET, {
+    update: updateTweetsCacheForRetweet
+  })
 
-
+  const handleRetweetButton = async(e: any) => {
+    let tryingToRetweet: boolean;
+    try {
+      if(!props.isRetweeted) {
+        tryingToRetweet = true;
+        cache.modify({
+          id: `Tweet:${props.tweetId}`,
+          fields: {
+              isRetweeted() {
+                  return true;
+              },
+              retweetsCount(cachedRetweetsCount: any){
+                  return cachedRetweetsCount + 1
+              }
+          },  
+        });
+        await retweet({
+          variables: {
+            tweetId: props.tweetId
+          }
+        })
+      } else {
+        tryingToRetweet = false;
+        cache.modify({
+          id: `Tweet:${props.tweetId}`,
+          fields: {
+            isRetweeted() {
+                  return false;
+              },
+            retweetsCount(cachedRetweetsCount: any){
+                return cachedRetweetsCount - 1
+            }
+          },  
+        });
+        await unretweet({
+          variables: {
+            tweetId: props.tweetId
+          }
+        })
+      }
+      
+    } catch (e) {
+      console.log("error", e)
+      let unretweeted: any
+      cache.modify({
+        id: `Tweet:${props.tweetId}`,
+        fields: {
+            isRetweeted(cachedIsRetweeted: any) {
+                unretweeted = cachedIsRetweeted
+                return !unretweeted;
+            },
+            retweetsCount(cachedRetweetsCount: any){
+                if (tryingToRetweet) {
+                  return cachedRetweetsCount - 1
+                }
+                else {
+                  return cachedRetweetsCount + 1
+                }
+            }
+        },  
+      });
+  
+      const error = await CustomDialog(<ErrorDialog message={"Something went wrong please try again!"} />, {
+        title: 'Error!',
+        showCloseIcon: false,
+      });
+      }
+  }    
   const handleRetweet = async () => {
     try {
       await retweet({ variables: { tweetId: props.tweetId } })
@@ -108,18 +201,18 @@ function TweetToolbarIcons(props: any) {
           <ul className="mb-40 absolute ml-12 bg-gray-100">
 
             {!props.isRetweeted ?
-              <button onClick={() => {
-                handleRetweet();
+              <button onClick={(e) => {
+                handleRetweetButton(e);
               }} className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" disabled={rtData && rtData.loading} >Retweet</button>
               :
-              <button onClick={() => {
-                handleDeleteButton()
+              <button onClick={(e) => {
+                handleRetweetButton(e)
               }} className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" disabled={rtData && rtData.loading} >Undo retweet</button>
             }
             <a className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
-          hover:text-gray-900" onClick={(e) => { setEdit(true); e.stopPropagation() }}>quote Retweet</a>
+          hover:text-gray-900" onClick={(e) => { setEdit(true); e.stopPropagation() }}>Quote Retweet</a>
 
           </ul>
         </ToolBox>

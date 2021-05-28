@@ -59,7 +59,9 @@ const writeTweetsFeedDataFromEnd = async (
             },
         });
     }
-    feedData &&
+    console.log("feed data is", feedData)
+    // await Promise.all(feedData)
+    feedData?.getFeed &&
         cache.writeQuery({
             query: FeedTweets,
             variables: {
@@ -68,7 +70,7 @@ const writeTweetsFeedDataFromEnd = async (
             data: {
                 getFeed: {
                     __typename: "QuoteRetweet",
-                    tweets: [...(feedData?.getFeed?.tweets || []), newTweet],
+                    tweets: [...(feedData?.getFeed?.tweets), newTweet],
                     totalCount: feedData?.getFeed?.totalCount + 1,
                 },
             },
@@ -270,6 +272,27 @@ export const updateTweetsCacheForCreateQuotedRetweet = async (
     incrementTweetsCount(cache, profile.id);
 };
 
+export const updateTweetsCacheForRetweet = async (
+    cache: any,
+    { data }: any
+) => {
+    const profile = parseJwt(localStorage.getItem("token"));
+    const newTweet = data.createRetweet;
+    writeTweetsFeedDataFromEnd(true, cache, newTweet);
+    writeTweetsFeedDataFromEnd(false, cache, newTweet);
+    writeTweetsProfileData(true, cache, profile.id, "", newTweet);
+    writeTweetsProfileData(false, cache, profile.id, "", newTweet);
+    writeTweetsProfileData(true, cache, profile.id, "replies&tweets", newTweet);
+    writeTweetsProfileData(
+        false,
+        cache,
+        profile.id,
+        "replies&tweets",
+        newTweet
+    );
+    incrementTweetsCount(cache, profile.id);
+};
+
 export const updateTweetsCacheForCreateReply = async (
     cache: any,
     { data }: any
@@ -320,6 +343,17 @@ export const updateTweetsCacheForDeleteTweet = (cache: any, tweet: any) => {
         decrementTweetsProfileData(true, cache, profile.id, "likes");
         decrementTweetsProfileData(false, cache, profile.id, "likes");
     }
+};
+
+export const updateTweetsCacheForUnretweet = (cache: any) => {
+    const profile = parseJwt(localStorage.getItem("token"));
+    decrementTweetsCount(cache, profile.id);
+    decrementTweetsFeedData(true, cache);
+    decrementTweetsFeedData(false, cache);
+    decrementTweetsProfileData(true, cache, profile.id, "");
+    decrementTweetsProfileData(false, cache, profile.id, "");
+    decrementTweetsProfileData(true, cache, profile.id, "replies&tweets");
+    decrementTweetsProfileData(false, cache, profile.id, "replies&tweets");
 };
 
 export const updateTweetsCacheForIgnoreReportedTweet = (

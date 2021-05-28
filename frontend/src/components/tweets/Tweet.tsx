@@ -65,8 +65,10 @@ function Tweet(props: any) {
 
   }
   const handleLikeButton = async(e: any) => {
+    let tryingToLike: boolean;
     try {
       if(!props.isLiked) {
+        tryingToLike = true;
         cache.modify({
           id: `Tweet:${props.id}`,
           fields: {
@@ -84,6 +86,7 @@ function Tweet(props: any) {
           }
         })
       } else {
+        tryingToLike = false;
         cache.modify({
           id: `Tweet:${props.id}`,
           fields: {
@@ -112,11 +115,11 @@ function Tweet(props: any) {
                 return !unliked;
             },
             likesCount(cachedLikesCount: any){
-                if (unliked) {
-                  return cachedLikesCount + 1
+                if (tryingToLike) {
+                  return cachedLikesCount - 1
                 }
                 else {
-                  return cachedLikesCount - 1
+                  return cachedLikesCount + 1
                 }
             }
         },  
@@ -175,6 +178,7 @@ function Tweet(props: any) {
                 repliesCount={props.repliesCount}
                 likesCount={props.likesCount}
                 isLiked={props.isLiked}
+                tweet={props.tweet}
                 handleLikeButton = {handleLikeButton}
                 quotedRetweetsCount={props.quotedRetweetsCount}
                 retweetsCount={props.retweetsCount}
@@ -238,6 +242,7 @@ function Tweet(props: any) {
                 quotedRetweetsCount={props.quotedRetweetsCount}
                 retweetsCount={props.retweetsCount}
                 isRetweeted={props.isRetweeted}
+                tweet={props.tweet}
               />
 
             </div>
@@ -288,7 +293,7 @@ function Tweet(props: any) {
                 isLiked={props.isLiked}
                 retweetsCount={props.retweetsCount}
                 isRetweeted={props.isRetweeted}
-
+                tweet={props.tweet}
               />
 
             </div>

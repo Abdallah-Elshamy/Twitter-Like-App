@@ -262,6 +262,8 @@ const removeUserFromReportedUsers = (cache: any, user: any) => {
                 },
             },
         });
+
+    console.log("reported users", reportedUsers)
     return reportedUsers;
 };
 
@@ -417,7 +419,8 @@ export const updateTweetsCacheForUnlikeTweet = (
 };
 
 export const updateUsersCacheForBanUser = (cache: any, user: any) => {
-    removeUserFromReportedUsers(cache, user) &&
+    console.log("user is", user)
+    
         cache.modify({
             id: `User:${user.id}`,
             fields: {
@@ -425,7 +428,7 @@ export const updateUsersCacheForBanUser = (cache: any, user: any) => {
                     return true;
                 },
             },
-        });
+        }) && removeUserFromReportedUsers(cache, user)
 };
 
 export const updateUsersCacheForUnBanUser = (cache: any, user: any) => {

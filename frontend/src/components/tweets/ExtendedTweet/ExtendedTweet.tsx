@@ -49,9 +49,7 @@ const ExtendedTweet: React.FC = () => {
 
             </span>
             <div>
-              <p className="font-extrabold text-lg ">{tweet.user?.name}'s awosome Tweet</p>
-              {/* featch front tweet */}
-
+              <p className="font-extrabold text-lg ">{tweet.user?.name} </p>
             </div>
           </header>
 

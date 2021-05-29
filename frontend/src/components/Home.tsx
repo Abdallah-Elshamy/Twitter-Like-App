@@ -7,6 +7,7 @@ import TrendsBar from './TrendsBar/TrendsBar';
 import './../styles/layout.css'
 import HomeTweets from './tweets/HomeTweets';
 import PostTweet from './tweets/PostTweet'
+import { Chatpage } from './chat/chat';
 
 function Home() {
   return (
@@ -18,9 +19,11 @@ function Home() {
             <div className="font-bold text-lg">
               Home
         </div>
+
           </header>
           <PostTweet />
           <HomeTweets />
+          {/* <Chatpage/> */}
         </article>
         <aside className="sb-right"><TrendsBar /></aside>
 

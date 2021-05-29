@@ -14,6 +14,10 @@ import { Login } from "../components/Register/login_form/login";
 import {parseJwt} from '../common/utils/jwtDecoder'
 import ExtendedTweet from "../components/tweets/ExtendedTweet/ExtendedTweet";
 import FollowWall from "../components/profile/FollowWall";
+import { Chatpage } from "../components/chat/chat";
+import { MessagesComponent } from "../components/chat/Messages";
+
+
 
 export const Routing = () => {
   return (
@@ -30,6 +34,10 @@ export const Routing = () => {
 
         <PrivateRoute path="/setting">
           <Setting />
+        </PrivateRoute>
+
+        <PrivateRoute path="/chat">
+          <Chatpage />
         </PrivateRoute>
 
         <PrivateRoute path="/profile/following">
@@ -62,7 +70,7 @@ export const Routing = () => {
         </Route>
 
         <PrivateRoute path="/messages">
-          <Messages />
+        <MessagesComponent/>
         </PrivateRoute>
 
 

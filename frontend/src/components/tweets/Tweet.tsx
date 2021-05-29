@@ -65,8 +65,10 @@ function Tweet(props: any) {
 
   }
   const handleLikeButton = async(e: any) => {
+    let tryingToLike: boolean;
     try {
       if(!props.isLiked) {
+        tryingToLike = true;
         cache.modify({
           id: `Tweet:${props.id}`,
           fields: {
@@ -84,6 +86,7 @@ function Tweet(props: any) {
           }
         })
       } else {
+        tryingToLike = false;
         cache.modify({
           id: `Tweet:${props.id}`,
           fields: {
@@ -112,11 +115,11 @@ function Tweet(props: any) {
                 return !unliked;
             },
             likesCount(cachedLikesCount: any){
-                if (unliked) {
-                  return cachedLikesCount + 1
+                if (tryingToLike) {
+                  return cachedLikesCount - 1
                 }
                 else {
-                  return cachedLikesCount - 1
+                  return cachedLikesCount + 1
                 }
             }
         },  
@@ -160,11 +163,11 @@ function Tweet(props: any) {
             />
 
             <div className="tweet-content ml-2">
-              <span>
+              <span onClick={(e) => e.stopPropagation()}>
                 {props.text}
               </span>
               {(props.mediaURLs) && 
-                <div className="gg-box">
+                <div className="gg-box" onClick={(e) => e.stopPropagation()}>
 
                 { displayUploadedFiles(props.mediaURLs) }
 
@@ -175,6 +178,7 @@ function Tweet(props: any) {
                 repliesCount={props.repliesCount}
                 likesCount={props.likesCount}
                 isLiked={props.isLiked}
+                tweet={props.tweet}
                 handleLikeButton = {handleLikeButton}
                 quotedRetweetsCount={props.quotedRetweetsCount}
                 retweetsCount={props.retweetsCount}
@@ -212,18 +216,18 @@ function Tweet(props: any) {
             <div className="-mt-2 ">
               <p className=" p--light-color inline-block ml-2"> Repling to </p>
               <Link onClick={e => { e.stopPropagation() }}
-                to={'/' + props.repliedToTweet.user.id}
+                to={'/' + props?.repliedToTweet?.user?.id}
                 className="text-blue-500 inline-block hover:underline">
-                @{props.repliedToTweet.user?.userName}</Link>
+                @{props?.repliedToTweet?.user?.userName || "unkown"}</Link>
             </div>
 
             {/* the text/media of the original tweet */}
             <div className="tweet-content ml-2 pb-4">
-              <span>
+              <span onClick={(e) => e.stopPropagation()}>
                 {props.text}
               </span>
               {(props.mediaURLs) && 
-                <div className="gg-box">
+                <div className="gg-box" onClick={(e) => e.stopPropagation()}>
 
                 { displayUploadedFiles(props.mediaURLs) }
 
@@ -238,6 +242,7 @@ function Tweet(props: any) {
                 quotedRetweetsCount={props.quotedRetweetsCount}
                 retweetsCount={props.retweetsCount}
                 isRetweeted={props.isRetweeted}
+                tweet={props.tweet}
               />
 
             </div>
@@ -266,12 +271,12 @@ function Tweet(props: any) {
             />
 
             {/* the text/media of the original tweet */}
-            <div className="tweet-content ml-2">
-              <span>
+            <div className="tweet-content ml-2" >
+              <span onClick={(e) => e.stopPropagation()}>
                 {props.text}
               </span>
               {(props.mediaURLs) && 
-                <div className="gg-box">
+                <div className="gg-box" onClick={(e) => e.stopPropagation()}>
 
                 { displayUploadedFiles(props.mediaURLs) }
 
@@ -288,7 +293,7 @@ function Tweet(props: any) {
                 isLiked={props.isLiked}
                 retweetsCount={props.retweetsCount}
                 isRetweeted={props.isRetweeted}
-
+                tweet={props.tweet}
               />
 
             </div>
@@ -304,9 +309,8 @@ function Tweet(props: any) {
       return <Fragment>
         {
 
-          (!props.originalTweet || props.originalTweet.state === "R" ||
-            ((history.location.pathname === '/')
-              && props.loggedUser.id == props.user.id)) ? null :
+          (!props.originalTweet || props.originalTweet.state === "R")
+             ? null :
 
             <Fragment>
               <p className="font-bold px-4 text-gray-600">

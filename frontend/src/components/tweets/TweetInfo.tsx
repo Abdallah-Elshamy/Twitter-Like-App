@@ -148,9 +148,9 @@ function TweetInfo(props: any) {
   return (
 
     <div className={`flex flex-row my-1 ml-2  w-full ${props.className}`}>
-      <a onClick={(e) => { goToProfile(); e.stopPropagation() }} className="font-bold mr-1 hover:underline">{props.name}</a>
-      <p className="p--light-color"> @{props.userName}. </p>
-      <p className="p--light-color px-1 hover:underline"> {props.createdAt ? timeConverter(Number(props.createdAt)) : null}</p>
+      <a onClick={(e) => { goToProfile(); e.stopPropagation() }} className="font-bold mr-1 hover:underline cursor-pointer">{props.name}</a>
+      <p className="p--light-color" onClick={(e) => e.stopPropagation()}> @{props.userName}. </p>
+      <p className="p--light-color px-1 hover:underline" onClick={(e) => e.stopPropagation()}> {props.createdAt ? timeConverter(Number(props.createdAt)) : null}</p>
       <span onClick={(e) => e.stopPropagation()} className="tweet-ellipsis p--light-color z-10 inline-block float-right">
 
         {/*Don't display settings in qouted tweet*/}

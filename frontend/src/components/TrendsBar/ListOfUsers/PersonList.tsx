@@ -45,6 +45,7 @@ const PersonList: React.FC<PersonListProps> = (props) => {
   if (error) return <h1 className="text-lg text-center pt-4 text-gray-500">Something went wrong :( </h1>
 
   const list: PersonEntity[] = data.users.users
+  console.log("person list", list)
   if (list.length === 0)
         return <h1 className="text-lg text-center pt-4">No Results</h1>;
   return (
@@ -59,7 +60,7 @@ const PersonList: React.FC<PersonListProps> = (props) => {
                     },
                 });
             }}
-            hasMore={data?.users?.totalCount >= page * 10 || false}
+            hasMore={data?.users?.totalCount > list?.length || false}
             loader={<Loading />}
             style={{
                 overflow: "hidden"

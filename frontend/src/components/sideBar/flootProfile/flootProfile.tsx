@@ -15,7 +15,9 @@ export function FlootProfile () {
       if (localStorage.getItem('token') !== null) {
         profile = parseJwt(localStorage.getItem('token'))
       }
-      const [sfw, setsfw] = useState(true)
+      const sfw_initial = localStorage.getItem("SFW") ? JSON.parse(localStorage.getItem("SFW")!): true;
+      console.log("initial sfw", sfw_initial)
+      const [sfw, setsfw] = useState(sfw_initial)
       const {error, loading ,data} = useQuery(LoggedUser, { variables: { id: profile.id } });
 
       const handleSFW =()=>{

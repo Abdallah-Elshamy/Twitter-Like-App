@@ -9,7 +9,7 @@ type Props = {
 const Modal: React.FC<Props> = ({ children , show, modalClosed , className }: any) => {
 
   return (
-    <Fragment >
+    <Fragment>
       <Backdrop show={show} clicked={modalClosed} />
       <div className = {`Modal ${className}`}
         style={{
@@ -21,6 +21,7 @@ const Modal: React.FC<Props> = ({ children , show, modalClosed , className }: an
         {children}
       </div>
     </Fragment>
+    
   )
 }
 

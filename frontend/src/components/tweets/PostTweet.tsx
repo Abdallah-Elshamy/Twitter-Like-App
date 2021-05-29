@@ -23,9 +23,10 @@ interface Post {
 }
 interface Arg {
   originalId?:string,
-  postType?: string
+  postType?: string,
+  closeModal?: any,
 }
-const PostTweet = ({originalId = '', postType = 'tweet'}: Arg)  => {
+const PostTweet = ({originalId = '', postType = 'tweet', closeModal}: Arg)  => {
 
   const inputRef: any = useRef("")
   const heightRef: any = useRef("")
@@ -182,6 +183,10 @@ const PostTweet = ({originalId = '', postType = 'tweet'}: Arg)  => {
               console.log("the error message", e)
               
             }
+            if (postType === "reply" || postType === "Qretweet") {
+              console.log("called modal close")
+              closeModal()
+            }
             setmedia (false)
             setmediaURLs ([])
             setmedias ([])
@@ -190,6 +195,7 @@ const PostTweet = ({originalId = '', postType = 'tweet'}: Arg)  => {
             setType ("")
             setPostTweetLoading(false)
             heightRef.current.style.height = "0px"
+            
           }}
             
           //   if(media) {handleUpload().then ( (urls)=> {

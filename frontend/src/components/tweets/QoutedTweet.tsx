@@ -3,8 +3,15 @@ import TweetImg from './TweetImg';
 import { Link, useHistory } from 'react-router-dom';
 import TweetInfo from './TweetInfo';
 import FoF from '../../UI/FoF/FoF';
-function QuotedTweet({ OTweet }: any) {
+import ReactPlayer from 'react-player'
+import React, { Fragment, useState } from 'react'
+import Viewer from 'react-viewer';
 
+
+
+function QuotedTweet({ OTweet }: any) {
+  let img:any =[]
+  const [ visible, setVisible ] = useState(false);
   const history = useHistory();
   //redirect to tweet
   const goToTweet = () => {
@@ -15,6 +22,35 @@ function QuotedTweet({ OTweet }: any) {
 
 if (!OTweet ){
   return <FoF fof={false} secMsg = "This tweet may be deleted by it's author" />
+}
+const displayUploadedFiles=(urls:string[])=> {
+  if (urls.length > 0){ 
+  if (urls[0].includes(".com/videos/")){
+    return <div style={{height:"300px"}} >
+    <ReactPlayer url={urls[0]} height="300px" width="500px"  controls={true}/>
+    </div>
+  }
+  else {
+  const check = (urls.length == 3)? true : false
+  img = urls.map ((url)=> {return {src:url}})
+  return urls.map((url, i) => 
+  <Fragment>
+  <img 
+  className="Img"
+  style={{gridRow:(check && (i==1))?" 1/3":"",
+  gridColumn: (check && (i==1))?" 2/3":"", 
+  height: ((check && (i==1)) || (urls.length == 1 && i == 0) || (urls.length ==2) )?"300px":"", 
+  objectFit: "cover"}} 
+  key={i}  src={url} onClick={() => { setVisible(true); }}  alt="tweet"/>
+
+  <Viewer
+  visible={visible}
+  onClose={() => { setVisible(false); } }
+  images={img}
+  />
+  </Fragment>
+  )}}
+
 }
 
   switch (OTweet.state) {
@@ -51,6 +87,12 @@ if (!OTweet ){
                 <span>
                   {OTweet.text}
                 </span>
+                {(OTweet.mediaURLs) && 
+                <div className="gg-box" onClick={(e) => e.stopPropagation()}>
+
+                { displayUploadedFiles(OTweet.mediaURLs) }
+
+              </div>}
 
               </div>
             </div>
@@ -90,6 +132,12 @@ if (!OTweet ){
                     className="block text-blue-400 hover:undeline hover:text-blue-500"
                     to={`/tweet/${OTweet.originalTweet.id}`}>{`domain.com/tweet/${OTweet.originalTweet.id}`}</Link> : null}
               </span>
+              {(OTweet.mediaURLs) && 
+                <div className="gg-box" onClick={(e) => e.stopPropagation()}>
+
+                { displayUploadedFiles(OTweet.mediaURLs) }
+
+              </div>}
             </div>
           </div>
         </div>

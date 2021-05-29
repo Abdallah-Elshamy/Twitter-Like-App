@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useMemo, useRef } from "react";
 
 import { useQuery } from "@apollo/client";
 // import Tweet from '../Tweet';
@@ -43,6 +43,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
             tweetId: props.id,
         },
     });
+    const oldData = useRef()
     if(data?.reportedTweets) {
         data = {tweets: data.reportedTweets}
     }
@@ -51,7 +52,6 @@ const TweetList: React.FC<TweetFilter> = (props) => {
     }
     if(data?.tweet?.replies) {
         data = {tweets: data.tweet.replies}
-        // fetchMore = refetch
     }
     if (!loading && data && data?.tweets?.tweets?.length == 10 && data?.tweets?.totalCount > 10) {
         fetchMore({
@@ -65,13 +65,14 @@ const TweetList: React.FC<TweetFilter> = (props) => {
         })
     }
     if (loading) return <Fragment><br /> <br /> <Loading size={30} /></Fragment>;
-    if (error) return <p>`Error! ${error.message}`</p>;
-    console.log("Tweets data", data)
-    console.log("page", Math.floor((data?.tweets?.tweets?.length || 10) / 10) + 1)
+    if (error) return <p>Something went wrong :(</p>;
+    console.log("Tweets data", oldData)
+    console.log("data is", data)
     return (
         <InfiniteScroll
             dataLength={data?.tweets?.tweets?.length || 0}
             next={() => {
+
                 setPage(Math.floor((data?.tweets?.tweets?.length || 10) / 10) + 1);
                 return fetchMore({
                     variables: {
@@ -90,7 +91,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
             hasMore={data?.tweets?.totalCount > data?.tweets?.tweets?.length || false}
             loader={<Loading />}
         >
-            {data.tweets.tweets.map((tweet: TweetData) => {
+            {data?.tweets?.tweets?.map((tweet: TweetData) => {
                 return (
                     <Tweet
                         mediaURLs={tweet.mediaURLs}

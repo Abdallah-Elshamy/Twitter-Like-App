@@ -746,3 +746,51 @@ export const updateTweetQuery  = (prevResult: any, {fetchMoreResult: newTweet}: 
     return newResult;
 
 }
+
+export const updateUserQuery = (prevResult: any, {fetchMoreResult: newUser}: any) => {
+    console.log("prev result", prevResult)
+    console.log("new result", newUser)
+    let newResult = {...newUser}
+    newResult.user = {...newUser.user}
+    newResult.user.following = {...newUser.user.following}
+    newResult.user.followers = {...newUser.user.followers}
+    newResult.user.following.users = [...prevResult.user.following.users]
+    newResult.user.followers.users = [...prevResult.user.followers.users]
+    let i = 0;
+    let j = 0;
+    let k = 0;
+    for( i = 0 ; i< newResult.user.following.users.length; i++){
+        for(j = 0; j< newUser.user.following.users.length; j++){
+            if(newResult.user.following.users[i].id === newUser.user.following.users[j].id) {
+                newResult.user.following.users[i] = newUser.user.following.users[j]
+                k++;
+                break;
+            }
+        }
+    }
+    if (i == newResult.user.following.users.length) i--;
+    for (j = k; j < newUser.user.following.users.length; j++) {
+        newResult.user.following.users[++i] = newUser.user.following.users[j]
+    }
+    newResult.user.following.users.slice(0, i + 1);
+
+    i = 0;
+    j = 0;
+    k = 0;
+    for( i = 0 ; i< newResult.user.followers.users.length; i++){
+        for(j = 0; j< newUser.user.followers.users.length; j++){
+            if(newResult.user.followers.users[i].id === newUser.user.followers.users[j].id) {
+                newResult.user.followers.users[i] = newUser.user.followers.users[j]
+                k++;
+                break;
+            }
+        }
+    }
+    if (i == newResult.user.followers.users.length) i--;
+    for (j = k; j < newUser.user.followers.users.length; j++) {
+        newResult.user.followers.users[++i] = newUser.user.followers.users[j]
+    }
+    newResult.user.followers.users.slice(0, i + 1);
+
+    return newResult;
+}

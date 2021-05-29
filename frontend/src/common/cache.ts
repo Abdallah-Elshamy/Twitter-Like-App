@@ -42,12 +42,12 @@ const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
         ) {
             return incoming;
         }
+        console.log("existing is", existing)
         console.log("incoming is", incoming)
         const merged = existing
             ? { totalCount: existing.totalCount, tweets: [...existing.tweets] }
             : { totalCount: 0, tweets: [] };
         merged.totalCount = incoming.totalCount;
-        console.log("incoming", incoming)
         let i = 0;
         let j = 0;
         let k = 0;
@@ -73,6 +73,8 @@ const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
             merged.tweets[++i] = incoming.tweets[j];
         }
         merged.tweets.slice(0, i + 1);
+        console.log("merged is", merged)
+
         return merged;
     },
     read(existing: any) {

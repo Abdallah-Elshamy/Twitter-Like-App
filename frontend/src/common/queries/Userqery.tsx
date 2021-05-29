@@ -18,6 +18,7 @@ export const LoggedUser = gql`
             isFollower
             isBanned
             following(page:$page){
+              totalCount
               users{
               id
               name
@@ -26,9 +27,11 @@ export const LoggedUser = gql`
               bio
               isFollowing
               isFollower
+              isBanned
               } 
               }
             followers(page:$page){
+                totalCount
                 users{
                 id
                 name
@@ -37,6 +40,7 @@ export const LoggedUser = gql`
                 bio
                 isFollowing
                 isFollower
+                isBanned
                 } 
                 }
             tweets {

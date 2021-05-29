@@ -348,10 +348,34 @@ export const updateTweetsCacheForDeleteTweet = (cache: any, tweet: any) => {
             decrementTweetsProfileData(true, cache, profile.id, "media");
             decrementTweetsProfileData(false, cache, profile.id, "media");
         }
+        const serializedState = cache.extract()
+        const allTweetsInCache = Object.values(serializedState).filter((item:any) => item.__typename === 'Tweet')
+        const retweetedTweets: any = allTweetsInCache.filter((tweetf: any) => {
+        return tweetf?.originalTweet?.__ref === `Tweet:${tweet?.id}` && tweetf?.state === "R"
+        })
+        for (let retweetedTweet of retweetedTweets) {
+            const normalizedId = cache.identify({
+                id: retweetedTweet.id,
+                __typename: "Tweet",
+            });
+            if (normalizedId) {
+                cache.evict({ id: normalizedId });
+            }
+            if (retweetedTweet?.user?.__ref.split(":")[1] === profile?.id?.toString()) {
+                decrementTweetsCount(cache, profile.id);
+                decrementTweetsProfileData(true, cache, profile.id, "");
+                decrementTweetsProfileData(false, cache, profile.id, "");
+                decrementTweetsProfileData(true, cache, profile.id, "replies&tweets");
+                decrementTweetsProfileData(false, cache, profile.id, "replies&tweets");
+
+            }
+            decrementTweetsFeedData(true, cache);
+            decrementTweetsFeedData(false, cache);
+        }
         if (tweet.state === "C") {
             console.log("retweet is ", tweet)
             cache.modify({
-                id: `Tweet:${tweet.repliedToTweet.id}`,
+                id: `Tweet:${tweet?.repliedToTweet?.id}`,
                 fields: {
                     repliesCount(prevCount: any) {
                         return prevCount - 1;
@@ -363,6 +387,16 @@ export const updateTweetsCacheForDeleteTweet = (cache: any, tweet: any) => {
                             totalCount: prevReplies.totalCount - 1
                         }
                     }
+                }
+            })
+        }
+        if (tweet.state === "Q") {
+            cache.modify({
+                id: `Tweet:${tweet?.originalTweet?.id}`,
+                fields: {
+                    quotedRetweetsCount(prevCount: any) {
+                        return prevCount - 1;
+                    },
                 }
             })
         }

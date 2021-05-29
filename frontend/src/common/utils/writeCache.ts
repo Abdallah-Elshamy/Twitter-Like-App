@@ -305,6 +305,16 @@ export const updateTweetsCacheForCreateReply = async (
             repliesCount(prevCount: any) {
                 return prevCount + 1;
             },
+            replies(prevReplies: any) {
+                let newReplies: any = [...prevReplies.tweets];
+                if (prevReplies.totalCount === prevReplies.tweets.length){
+                    newReplies = [...prevReplies.tweets, newTweet]
+                }
+                return {
+                    tweets: newReplies,
+                    totalCount: prevReplies.totalCount + 1
+                }
+            }
         },
     });
     writeTweetsFeedDataFromEnd(true, cache, newTweet);
@@ -337,6 +347,24 @@ export const updateTweetsCacheForDeleteTweet = (cache: any, tweet: any) => {
         if (tweet?.mediaURLs?.length > 0) {
             decrementTweetsProfileData(true, cache, profile.id, "media");
             decrementTweetsProfileData(false, cache, profile.id, "media");
+        }
+        if (tweet.state === "C") {
+            console.log("retweet is ", tweet)
+            cache.modify({
+                id: `Tweet:${tweet.repliedToTweet.id}`,
+                fields: {
+                    repliesCount(prevCount: any) {
+                        return prevCount - 1;
+                    },
+                    replies(prevReplies: any) {
+                        let newReplies: any = [...prevReplies.tweets];
+                        return {
+                            tweets: newReplies,
+                            totalCount: prevReplies.totalCount - 1
+                        }
+                    }
+                }
+            })
         }
     }
     if (tweet?.isLiked) {
@@ -657,3 +685,30 @@ export const updateUsersCacheForUnBanUser = (cache: any, user: any) => {
         },
     });
 };
+
+export const updateTweetQuery  = (prevResult: any, {fetchMoreResult: newTweet}: any) => {
+    let newResult = {...newTweet}
+    newResult.tweet = {...newTweet.tweet}
+    newResult.tweet.replies = {...newTweet.tweet.replies}
+    newResult.tweet.replies.tweets = [...prevResult.tweet.replies.tweets]
+    let i = 0;
+    let j = 0;
+    let k = 0;
+    for( i = 0 ; i< newResult.tweet.replies.tweets.length; i++){
+        for(j = 0; j< newTweet.tweet.replies.tweets.length; j++){
+            if(newResult.tweet.replies.tweets[i].id === newTweet.tweet.replies.tweets[j].id) {
+                newResult.tweet.replies.tweets[i] = newTweet.tweet.replies.tweets[j]
+                k++;
+                break;
+            }
+        }
+    }
+    if (i == newResult.tweet.replies.tweets.length) i--;
+    for (j = k; j < newTweet.tweet.replies.tweets.length; j++) {
+        newResult.tweet.replies.tweets[++i] = newTweet.tweet.replies.tweets[j]
+    }
+    newResult.tweet.replies.tweets.slice(0, i + 1);
+
+    return newResult;
+
+}

@@ -216,9 +216,9 @@ function Tweet(props: any) {
             <div className="-mt-2 ">
               <p className=" p--light-color inline-block ml-2"> Repling to </p>
               <Link onClick={e => { e.stopPropagation() }}
-                to={'/' + props.repliedToTweet.user.id}
+                to={'/' + props?.repliedToTweet?.user?.id}
                 className="text-blue-500 inline-block hover:underline">
-                @{props.repliedToTweet.user?.userName}</Link>
+                @{props?.repliedToTweet?.user?.userName || "unkown"}</Link>
             </div>
 
             {/* the text/media of the original tweet */}

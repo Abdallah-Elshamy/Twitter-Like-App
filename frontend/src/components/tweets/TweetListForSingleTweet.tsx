@@ -1,21 +1,17 @@
 import React, { Fragment } from "react";
-
 import { useQuery } from "@apollo/client";
-// import Tweet from '../Tweet';
 import Tweet from "./Tweet";
-import { Tweets } from "../../common/queries/TweetQuery";
 import { TweetData } from "./TweetData_interface";
 import { Get_SFW } from "../../common/queries/GET_SFW";
 import Loading from "../../UI/Loading";
 import './tweet.css';
-import ReportedTweets from "../../common/queries/reportedTweets"
-import NSFWTweets from "../../common/queries/NSFWTweets"
 import InfiniteScroll from "react-infinite-scroll-component";
 import { parseJwt } from "../../common/decode";
 import {GET_TWEET_REPLIES} from "../../common/queries/GET_TWEET_REPLIES"
+import {updateTweetQuery, updateTweetsCacheForUnretweet} from "../../common/utils/writeCache"
+
 
 export interface TweetFilter {
-    filter?: string;
     page: number;
     setPage: any;
     id?: any;
@@ -23,35 +19,20 @@ export interface TweetFilter {
 }
 
 const TweetList: React.FC<TweetFilter> = (props) => {
-    TweetList.defaultProps= {
-        queryName: "Tweets"
-    }
     const queryName: any = {
-        NSFWTweets,
-        ReportedTweets,
-        Tweets,
         GET_TWEET_REPLIES
     }
-    const { filter, page, setPage } = props;
+    const {  page, setPage } = props;
     const sfw = useQuery(Get_SFW).data;
     const loggedUser = parseJwt(localStorage.getItem('token')!)
-    let { loading, error, data, fetchMore } = useQuery<any>(queryName[props.queryName!] ? queryName[props.queryName!] : Tweets, {
+    let { loading, error, data, fetchMore } = useQuery<any>(queryName[props.queryName!], {
         variables: {
-            userId: props.id,
-            filter: filter,
             isSFW: sfw.SFW.value,
             tweetId: props.id,
         },
     });
-    if(data?.reportedTweets) {
-        data = {tweets: data.reportedTweets}
-    }
-    if(data?.NSFWTweets) {
-        data = {tweets: data.NSFWTweets}
-    }
     if(data?.tweet?.replies) {
         data = {tweets: data.tweet.replies}
-        // fetchMore = refetch
     }
     if (!loading && data && data?.tweets?.tweets?.length == 10 && data?.tweets?.totalCount > 10) {
         fetchMore({
@@ -59,29 +40,27 @@ const TweetList: React.FC<TweetFilter> = (props) => {
                 userId: props.id,
                 isSFW: sfw.SFW.value,
                 page: 2,
-                filter: filter,
                 tweetId: props.id
             },
+            updateQuery: updateTweetQuery
         })
     }
     if (loading) return <Fragment><br /> <br /> <Loading size={30} /></Fragment>;
     if (error) return <p>`Error! ${error.message}`</p>;
-    console.log("Tweets data", data)
-    console.log("page", Math.floor((data?.tweets?.tweets?.length || 10) / 10) + 1)
     return (
         <InfiniteScroll
             dataLength={data?.tweets?.tweets?.length || 0}
             next={() => {
                 setPage(Math.floor((data?.tweets?.tweets?.length || 10) / 10) + 1);
-                return fetchMore({
+                fetchMore({
                     variables: {
                         userId: props.id,
                         isSFW: sfw.SFW.value,
                         page: Math.floor((data?.tweets?.tweets?.length || 10) / 10) + 1,
-                        filter: filter,
                         tweetId: props.id
                     },
-                });
+                    updateQuery: updateTweetQuery
+                })
             }}
             style={{
                 overflow: "hidden"

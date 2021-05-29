@@ -60,7 +60,7 @@ const PersonList: React.FC<PersonListProps> = (props) => {
                     },
                 });
             }}
-            hasMore={data?.users?.totalCount >= page * 10 || false}
+            hasMore={data?.users?.totalCount > list?.length || false}
             loader={<Loading />}
             style={{
                 overflow: "hidden"

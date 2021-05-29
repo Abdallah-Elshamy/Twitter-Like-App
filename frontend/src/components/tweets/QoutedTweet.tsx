@@ -33,23 +33,25 @@ const displayUploadedFiles=(urls:string[])=> {
   else {
   const check = (urls.length == 3)? true : false
   img = urls.map ((url)=> {return {src:url}})
-  return urls.map((url, i) => 
-  <Fragment>
-  <img 
-  className="Img"
-  style={{gridRow:(check && (i==1))?" 1/3":"",
-  gridColumn: (check && (i==1))?" 2/3":"", 
-  height: ((check && (i==1)) || (urls.length == 1 && i == 0) || (urls.length ==2) )?"300px":"", 
-  objectFit: "cover"}} 
-  key={i}  src={url} onClick={() => { setVisible(true); }}  alt="tweet"/>
-
-  <Viewer
-  visible={visible}
-  onClose={() => { setVisible(false); } }
-  images={img}
-  />
-  </Fragment>
-  )}}
+  return  (
+    <Fragment>
+      {urls.map((url, i) =>
+    <img 
+    className="Img"
+    style={{gridRow:(check && (i==1))?" 1/3":"",
+    gridColumn: (check && (i==1))?" 2/3":"", 
+    height: ((check && (i==1)) || (urls.length == 1 && i == 0) || (urls.length ==2) )?"300px":"", 
+    objectFit: "cover"}} 
+    key={i}  src={url} onClick={(e) => {e.stopPropagation(); setVisible(true); }}  alt="tweet"/>
+    )}
+    <Viewer
+    visible={visible}
+    onClose={() => { setVisible(false); } }
+    images={img}
+    drag={false}
+    />
+    </Fragment>
+    )}}
 
 }
 
@@ -88,7 +90,7 @@ const displayUploadedFiles=(urls:string[])=> {
                   {OTweet.text}
                 </span>
                 {(OTweet.mediaURLs) && 
-                <div className="gg-box" onClick={(e) => e.stopPropagation()}>
+                <div className="gg-box-small" onClick={(e) => e.stopPropagation()}>
 
                 { displayUploadedFiles(OTweet.mediaURLs) }
 
@@ -126,18 +128,20 @@ const displayUploadedFiles=(urls:string[])=> {
             <div className="tweet-content mx-2 pb-4 pt-2">
               <span>
                 {OTweet.text}
+                {(OTweet.mediaURLs) && 
+                <div className="gg-box-small" onClick={(e) => e.stopPropagation()}>
+
+                { displayUploadedFiles(OTweet.mediaURLs) }
+
+              </div>}
 
                 {(OTweet.state === 'Q' && OTweet && OTweet.originalTweet) ?
                   <Link onClick={e => e.stopPropagation()}
                     className="block text-blue-400 hover:undeline hover:text-blue-500"
                     to={`/tweet/${OTweet.originalTweet.id}`}>{`domain.com/tweet/${OTweet.originalTweet.id}`}</Link> : null}
               </span>
-              {(OTweet.mediaURLs) && 
-                <div className="gg-box" onClick={(e) => e.stopPropagation()}>
-
-                { displayUploadedFiles(OTweet.mediaURLs) }
-
-              </div>}
+              
+              
             </div>
           </div>
         </div>

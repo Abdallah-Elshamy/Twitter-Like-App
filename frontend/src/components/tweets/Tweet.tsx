@@ -45,23 +45,25 @@ function Tweet(props: any) {
     else {
     const check = (urls.length == 3)? true : false
     img = urls.map ((url)=> {return {src:url}})
-    return urls.map((url, i) => 
-    <Fragment>
-    <img 
-    className="Img"
-    style={{gridRow:(check && (i==1))?" 1/3":"",
-    gridColumn: (check && (i==1))?" 2/3":"", 
-    height: ((check && (i==1)) || (urls.length == 1 && i == 0) || (urls.length ==2) )?"300px":"", 
-    objectFit: "cover"}} 
-    key={i}  src={url} onClick={() => { setVisible(true); }}  alt="tweet"/>
-
-    <Viewer
-    visible={visible}
-    onClose={() => { setVisible(false); } }
-    images={img}
-    />
-    </Fragment>
-    )}}
+    return  (
+      <Fragment>
+        {urls.map((url, i) =>
+      <img 
+      className="Img"
+      style={{gridRow:(check && (i==1))?" 1/3":"",
+      gridColumn: (check && (i==1))?" 2/3":"", 
+      height: ((check && (i==1)) || (urls.length == 1 && i == 0) || (urls.length ==2) )?"300px":"", 
+      objectFit: "cover"}} 
+      key={i}  src={url} onClick={(e) => {e.stopPropagation(); setVisible(true); }}  alt="tweet"/>
+      )}
+      <Viewer
+      visible={visible}
+      onClose={() => { setVisible(false); } }
+      images={img}
+      drag={false}
+      />
+      </Fragment>
+      )}}
 
   }
   const handleLikeButton = async(e: any) => {

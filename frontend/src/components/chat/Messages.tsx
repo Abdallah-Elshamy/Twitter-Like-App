@@ -9,7 +9,6 @@ export const MessagesComponent: React.FC = () =>  (
       <main className="main-container">
         <aside className="sb-left"><SideBar /></aside>
         <article className="wall">
-
           <Chatpage/>
         </article>
         <aside className="sb-right"><ChatList/></aside>

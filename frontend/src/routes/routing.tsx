@@ -14,6 +14,7 @@ import { Login } from "../components/Register/login_form/login";
 import {parseJwt} from '../common/utils/jwtDecoder'
 import ExtendedTweet from "../components/tweets/ExtendedTweet/ExtendedTweet";
 import FollowWall from "../components/profile/FollowWall";
+import Chat from "../components/chat/Chat"
 
 export const Routing = () => {
   return (
@@ -62,7 +63,7 @@ export const Routing = () => {
         </Route>
 
         <PrivateRoute path="/messages">
-          <Messages />
+          <Chat />
         </PrivateRoute>
 
 

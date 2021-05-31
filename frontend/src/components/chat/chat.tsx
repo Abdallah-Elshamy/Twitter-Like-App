@@ -1,6 +1,6 @@
 import React from 'react';
 import { StreamChat } from 'stream-chat';
-import { Chat, Channel, ChannelHeader, MessageInput, MessageList, Thread, Window } from 'stream-chat-react';
+import { Chat, Channel, ChannelHeader, MessageInput, MessageList, Thread, Window, ChannelList } from 'stream-chat-react';
 
 import 'stream-chat-react/dist/css/index.css';
 
@@ -23,8 +23,8 @@ const channel = chatClient.channel('messaging', 'orange-mountain-4', {
   members: ['orange-mountain-4'],
 });
 
-export const Chatpage: React.FC = () =>  (
-    <Chat client={chatClient} theme='messaging dark'>
+export const Chatpage: React.FC = () => (
+  <Chat client={chatClient} theme='messaging dark'>
     <Channel channel={channel}>
       <Window>
         <ChannelHeader />
@@ -32,6 +32,8 @@ export const Chatpage: React.FC = () =>  (
         <MessageInput />
       </Window>
       <Thread />
+      <ChannelList showChannelSearch options={{ limit: 10, watch: true }} />
+
     </Channel>
   </Chat>
 

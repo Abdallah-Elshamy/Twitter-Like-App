@@ -12,12 +12,13 @@ import './Chat.css';
 
 // let socket;
 
-const Chat = () => {
-  const [name, setName] = useState('');
+const ChatWindow = () => {
+  const [name, setName] = useState('name');
   const [room, setRoom] = useState <string>('room');
-  const [users, setUsers] = useState('');
-  const [message, setMessage] = useState('message');
-  const [messages, setMessages] = useState([{message:{text:"hi", user:"toka"}}]);
+  const [users, setUsers] = useState('Aya');
+  const [message, setMessage] = useState({message:{text:"hiM", user:"tokaM" } ,name: "Aya"});
+
+  const [messages, setMessages] = useState([{message:{text:"hi", user:"toka"} ,name: "Aya"} , {message:{text:"hi", user:"toka"} ,name: "Aya"}]);
 
 //   useEffect(() => {
 //     const { name, room } = queryString.parse(location.search);
@@ -57,11 +58,14 @@ const Chat = () => {
       <div className="container">
           <InfoBar room={room} />
           {/* <Messages messages={messages} name={name} /> */}
-          <Messages />
-          <Input message={message} setMessage={setMessage} sendMessage={sendMessage} />
+          {/* <Messages /> */}
+          <Messages messages={messages} name={name}/>
+
+
+          <Input message={message.message.text} setMessage={setMessage} sendMessage={sendMessage} />
       </div>
     </div>
   );
 }
 
-export default Chat;
+export default ChatWindow;

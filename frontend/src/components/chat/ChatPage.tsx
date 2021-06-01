@@ -1,8 +1,10 @@
 import React, { Fragment } from 'react';
+import { FlootProfile } from '../sideBar/flootProfile/flootProfile';
 import { SideBar } from '../sideBar/sideBar';
 import TrendsBar from '../TrendsBar/TrendsBar';
 import ChatWindow from './Chat';
 import { ChatList } from './ChatList';
+import avatar from "../../routes/mjv-d5z8_400x400.jpg"
 
 export const ChatPage : React.FC = () =>  (
     <Fragment>
@@ -14,9 +16,20 @@ export const ChatPage : React.FC = () =>  (
         </aside>
 
         <article className="wall">
-        <header className="top-bar px-3 py-2">
-            <div className="font-bold text-lg">
-              Name
+        <header className="top-bar px-3 py-2 space-y-0 -mt-2">
+            <div>
+            <div className="flex">
+
+                <div className=" w-7 h-7 rounded-full mr-2">
+                  <img src={avatar}
+                    alt="avatar" />
+                </div>
+
+                <div className="space-y-0 ">
+                  <h3  className="text-lg font-bold ">aya</h3>
+                  {/* <p><span className="text-xs font-thin">@</span>aya</p> */}
+                </div>
+                </div>
             </div>
           </header>
           <ChatWindow/>

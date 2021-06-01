@@ -14,10 +14,20 @@ const ChatWindow = () => {
   const [message, setMessage] = useState({text: "hiM" , user: "tokaM", name: "AyaM"});
 
 
-  const [messages, setMessages] = useState([{ message: {text: "hiM" , user: "tokaM"}, name: "AyaM"},
-                                            { message: {text: "hiM" , user: "tokaM"}, name: "AyaM"}, 
-                                            { message: {text: "hiM" , user: "toka" }, name: "toka"},
-                                            { message: {text: "hiM" , user: "toka" }, name: "toka"},
+  const [messages, setMessages] = useState([{ message: {text: "hi" , user: "tokaM"}, name: "AyaM"},
+                                            { message: {text: "hi" , user: "tokaM"}, name: "AyaM"}, 
+                                            { message: {text: "hi" , user: "toka" }, name: "toka"},
+                                            { message: {text: "hi" , user: "toka" }, name: "toka"},
+                                            { message: {text: "hi" , user: "tokaM"}, name: "AyaM"},
+                                            { message: {text: "Winning doesn’t always mean being first. Winning means you’re doing better than you’vedone before" , user: "tokaM"}, name: "AyaM"}, 
+                                            { message: {text: "Winning doesn’t always mean being first. Winning means you’re doing better than you’vedone before" , user: "toka" }, name: "toka"},
+                                            { message: {text: "hi" , user: "toka" }, name: "toka"},
+                                            { message: {text: "hi" , user: "toka" }, name: "toka"},
+                                            { message: {text: "hi" , user: "tokaM"}, name: "AyaM"},
+                                            { message: {text: "Winning doesn’t always mean being first. Winning means you’re doing better than you’vedone before" , user: "tokaM"}, name: "AyaM"}, 
+                                            { message: {text: "Winning doesn’t always mean being first. Winning means you’re doing better than you’vedone before" , user: "toka" }, name: "toka"},
+                                            { message: {text: "hi" , user: "toka" }, name: "toka"},
+                                            
                                             
 ]);
 
@@ -28,11 +38,9 @@ const ChatWindow = () => {
   return (
     <div className="outerContainer">
       <div className="container">
-          <InfoBar room={room} />
-
 {/* here we send all state as prop we can't acess state element out of component so we send it then acess it in Message component */}
           <Messages messages={messages}/>       
-          <Input message={message.text} setMessage={setMessage} sendMessage={sendMessage} />
+          <Input setMessage={setMessage} sendMessage={sendMessage} />
       </div>
     </div>
   );

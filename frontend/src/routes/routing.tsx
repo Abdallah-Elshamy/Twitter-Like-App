@@ -36,7 +36,7 @@ export const Routing = () => {
         </PrivateRoute>
 
         <PrivateRoute path="/profile/following">
-          <FollowWall   FollowType = "following" />
+          <FollowWall FollowType = "following" />
         </PrivateRoute>
 
         <PrivateRoute path="/profile/follower">
@@ -44,7 +44,7 @@ export const Routing = () => {
         </PrivateRoute>
 
         <Route path='/:id/following'>
-        <FollowWall   FollowType = "following" />
+        <FollowWall FollowType = "following" />
         </Route>
 
         <Route path='/:id/follower'>

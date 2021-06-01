@@ -1,4 +1,4 @@
-import './Chat.css';
+import './Chat.css';;
 
  //message take props <Message message ,  name , user  /> 
 const Message = (props:any) => {
@@ -16,9 +16,9 @@ const Message = (props:any) => {
       ? 
       (
         <div className="messageContainer justifyEnd">
-          <p className="sentText pr-10">{ trimmedName } </p>
-          <div className="messageBox backgroundBlue">
-            <p className="messageText colorWhite">
+          {/* <p className="sentText pr-10">{ trimmedName } </p> */}
+          <div className="messageBoxS backgroundBlue">
+            <p className="messageText">
                { props.message } 
               </p>
 
@@ -27,10 +27,9 @@ const Message = (props:any) => {
         )
         : (
           <div className="messageContainer justifyStart">
-            <div className="messageBox backgroundLight">
-              <p className="messageText colorWhite"> {props.message}</p>
+            <div className="messageBoxR backgroundLight">
+              <p className="messageText" style={{color:"black"}}> {props.message}</p>
             </div>
-            <p className="sentText pl-10 ">{ props.user }</p>
           </div>
         )
   );
@@ -39,13 +38,14 @@ const Message = (props:any) => {
 //messages take props 'messages' it is list 
 const Messages = (props:any) => {
  return <div>
-    { props.messages.map((message:any) => {
+    { props.messages.map((message:any , i:any) => {
         return ( 
-      <div  className="messages">
+      <div  className="messages" key = {i}>
          <Message message = {message.message.text} name = {message.name}  user = {message.message.user} /> 
       </div>
       );
     })}
+
   </div>
 };
 

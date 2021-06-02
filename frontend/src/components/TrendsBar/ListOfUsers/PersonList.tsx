@@ -70,12 +70,12 @@ const PersonList: React.FC<PersonListProps> = (props) => {
             {list.map((person) => {
                 return (
                     <PersonItem
-                        key={person.username}
+                        key={person.userName}
                         id={person.id}
                         name={person.name}
-                        username={person.username}
+                        userName={person.userName}
                         followed={person.followed}
-                        imageURI={person.imageURI}
+                        imageURL={person.imageURL}
                         isFollowing={person.isFollowing}
                         bio={person.bio}
                         loggedUser={loggedUser}

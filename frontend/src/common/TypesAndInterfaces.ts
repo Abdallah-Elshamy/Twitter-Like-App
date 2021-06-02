@@ -8,10 +8,10 @@ export interface Trend {
 export interface PersonEntity {
   id: string
   name: string,
-  username: string,
+  userName: string,
   followed: boolean,
   numberOfFollowers?: Number,
-  imageURI?: string,
+  imageURL?: string,
   bio?: string,
   isFollowing?: Boolean
   loggedUser?: any 

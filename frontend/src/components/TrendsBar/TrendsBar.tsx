@@ -21,23 +21,23 @@ const TrendsBar: React.FC<Props> = () => {
     {
       id: "100",
       name: 'Amr',
-      username: 'amrhafez',
+      userName: 'amrhafez',
       followed: false
 
     }, {
       id: "55",
       name: 'Eslam',
-      username: 'eslam_ahmed',
+      userName: 'eslam_ahmed',
       followed: false,
-      imageURI: "https://pbs.twimg.com/profile_images/1290039411317575682/M-Wa8fmE_400x400.jpg"
+      imageURL: "https://pbs.twimg.com/profile_images/1290039411317575682/M-Wa8fmE_400x400.jpg"
 
     }
     , {
       id: "55",
       name: 'John Doe',
-      username: 'jo_doe',
+      userName: 'jo_doe',
       followed: false,
-      imageURI: "https://pbs.twimg.com/profile_images/1333063820311293952/wb0ciEAn_400x400.jpg"
+      imageURL: "https://pbs.twimg.com/profile_images/1333063820311293952/wb0ciEAn_400x400.jpg"
 
     },
 

@@ -794,3 +794,68 @@ export const updateUserQuery = (prevResult: any, {fetchMoreResult: newUser}: any
 
     return newResult;
 }
+
+export const updateLoggedUserQueryForFollow = (cache:any, user:any) => {
+    const profile = parseJwt(localStorage.getItem("token"));
+    let userData: any = cache.readQuery({
+        query: LoggedUser,
+        variables: {
+            id: profile.id,
+        },
+    });
+    userData && cache.modify({
+        id: `User:${profile.id}`,
+        fields: {
+            followingCount(prevCount: any) {
+                console.log("prev count", prevCount)
+                return prevCount + 1;
+            },
+            following(prevFollowing: any) {
+                if (user.id > parseInt(prevFollowing.users[prevFollowing.users.length - 1].__ref.split(":")[1])) {
+                    console.log("here now")
+                    return {
+                        totalCount: prevFollowing.totalCount + 1,
+                        users: [...prevFollowing.users, user]
+                    }
+                }
+                else {
+                    return {
+                        totalCount: prevFollowing.totalCount + 1,
+                        users: [...prevFollowing.users]
+                    }
+                }
+                
+            }
+        },
+    })
+}
+
+export const updateLoggedUserQueryForUnFollow = (cache:any, user:any) => {
+    const profile = parseJwt(localStorage.getItem("token"));
+    let userData: any = cache.readQuery({
+        query: LoggedUser,
+        variables: {
+            id: profile.id,
+        },
+    });
+    console.log("user",  user)
+    userData && cache.modify({
+        id: `User:${profile.id}`,
+        fields: {
+            followingCount(prevCount: any) {
+                console.log("prev count", prevCount)
+                return prevCount - 1;
+            },
+            following(prevFollowing: any) {
+                return {
+                    totalCount: prevFollowing.totalCount - 1,
+                    users: prevFollowing.users.filter((filteredUser:any) => {
+                        console.log("filtered user", filteredUser)
+                        console.log("the user", user)
+                        return filteredUser.__ref !== `User:${user.id}`
+                    })
+                }
+            }
+        },
+    })
+}

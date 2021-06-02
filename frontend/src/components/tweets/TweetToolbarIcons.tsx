@@ -218,7 +218,7 @@ function TweetToolbarIcons(props: any) {
         </ToolBox>
       </a>
 
-      <button onClick={(e) => {props.handleLikeButton(); e.stopPropagation()}}>
+      <button onClick={(e) => {props.handleLikeButton(); e.stopPropagation()}} className="outline-none focus:outline-none">
       <i className={"text-base font-sm rounded-3xl transform hover:scale-110 "+(props.isLiked?"fas fa-heart text-red-600":"far fa-heart")}></i>
         <span>{props.likesCount}</span>
       </button>

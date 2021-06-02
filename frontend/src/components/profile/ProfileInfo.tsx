@@ -110,7 +110,7 @@ const handlePathFollower = () => {
             {self ? < button onClick={() => setEdit(true)} className={"pf--follow-btn rounded-full px-3 font-semibold text-xm  py-2 mt-3 "}>
               Edit Profile
             </button > :
-              <FollowButton id={user.id} following={user.isFollowing} py="py-2" px="px-4" />
+              <FollowButton id={user.id} following={user.isFollowing} user={user} py="py-2" px="px-4" />
             }
 
 

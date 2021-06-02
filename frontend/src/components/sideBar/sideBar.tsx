@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import { Link } from "react-router-dom";
 import '../../App.css';
+import "../../styles/layout.css"
 import {parseJwt} from "../../common/utils/jwtDecoder"
 import { SideBarItem } from './sideBarItem/sideBarItem'
 import { TweetButton } from './tweetButton/tweetButton'
@@ -20,7 +21,8 @@ export function SideBar() {
   return (
 
     <div className="px-2 fixed top-0">
-      <Modal show={edit} modalClosed={modalClosed} className="pb-4">
+      <div className="wall">
+        <Modal show={edit} modalClosed={modalClosed} className="pb-4">
 
         <header className="flex justify-between items-center px-3 h-8 w-full border-b border-gray-200 pb-6 pt-2">
           <div onClick={modalClosed} className=" p-1 rounded-full">
@@ -31,7 +33,9 @@ export function SideBar() {
         </header>
 
         <PostTweet />
-      </Modal>
+        </Modal>
+      </div>
+     
 
       <Link to="/">
         <SideBarItem item_name='   ' icon_name="fab fa-twitter"/>

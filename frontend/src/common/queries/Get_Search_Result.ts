@@ -8,11 +8,12 @@ query search (
   users(search:$name,page:$page) {
     users{
       id
-      isFollowing
-      name 
-       username:userName 
-       imageURI: imageURL 
+      name
+      userName
+      imageURL
       bio
+      isFollowing
+      isFollower
       isBanned
     }
     totalCount

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { useQuery } from "@apollo/client";
+import { useQuery, useSubscription } from "@apollo/client";
 import Tweet from "./Tweet";
 import { TweetData } from "./TweetData_interface";
 import { FeedTweets } from "../../common/queries/Feedtweets";
@@ -8,6 +8,7 @@ import Loading from "../../UI/Loading";
 import { Get_SFW } from "../../common/queries/GET_SFW";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { parseJwt } from '../../common/utils/jwtDecoder'
+import LiveFeed from "../../common/queries/liveFeed"
 
 function HomeTweets() {
     let [page, setPage] = useState(1);
@@ -18,6 +19,13 @@ function HomeTweets() {
             isSFW: sfw.SFW.value,
         },
     });
+    const {data: subFeedData} = useSubscription(LiveFeed, {
+        onSubscriptionData() {
+            console.log("new data arrived")
+            console.log(subFeedData)
+        }
+    })
+    subFeedData && console.log("sub data", subFeedData)
     if (!loading && data && data?.getFeed?.tweets?.length == 10 && data?.getFeed?.totalCount > 10) {
         fetchMore({
             variables: {

@@ -593,7 +593,7 @@ describe("tweet-resolvers", (): void => {
                 name: "admin",
             });
             const user = await User.findByPk(1);
-            user?.$add("groups", group);
+            await user?.$add("groups", group);
             const response = await deleteTweet(2, token);
             expect(response.body.data.deleteTweet).to.be.true;
             const tweet = await Tweet.findByPk(2);

@@ -15,7 +15,7 @@ export const ChatPage : React.FC = () =>  (
         <SideBar/>
         </aside>
 
-        <article className="wall">
+        <article className="wall" style={{height:"100vh", overflow:"hidden"}}>
         <header className="top-bar px-3 py-2 space-y-0 -mt-2">
             <div>
             <div className="flex">
@@ -32,7 +32,10 @@ export const ChatPage : React.FC = () =>  (
                 </div>
             </div>
           </header>
-          <ChatWindow/>
+
+            <ChatWindow/>
+
+
         </article>
 
         <aside className="sb-right">

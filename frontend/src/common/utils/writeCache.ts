@@ -864,8 +864,46 @@ export const updateLoggedUserQueryForUnFollow = (cache:any, user:any) => {
 export const updateLiveFeed = (tweet: any) => {
     const profile = parseJwt(localStorage.getItem("token"));
     if (tweet.user.id === "" + profile.id) return;
-    if (tweet.state === "O") {
-        writeTweetsFeedDataFromEnd(true, cache, tweet);
-        writeTweetsFeedDataFromEnd(false, cache, tweet);
+    if (tweet.state === "R") {
+        cache.modify({
+            id: `Tweet:${tweet.originalTweet.id}`,
+            fields: {
+                retweetsCount(prevValue: any) {
+                    return prevValue + 1;
+                }
+            }
+        })
     }
+    if (tweet.state === "Q") {
+        cache.modify({
+            id: `Tweet:${tweet.originalTweet.id}`,
+            fields: {
+                quotedRetweetsCount(prevValue: any) {
+                    return prevValue + 1;
+                }
+            }
+        })
+    }
+    if (tweet.state === "C") {
+        cache.modify({
+            id: `Tweet:${tweet.repliedToTweet.id}`,
+            fields: {
+                repliesCount(prevCount: any) {
+                    return prevCount + 1;
+                },
+                replies(prevReplies: any) {
+                    let newReplies: any = [...prevReplies.tweets];
+                    if (prevReplies.totalCount === prevReplies.tweets.length){
+                        newReplies = [...prevReplies.tweets, tweet]
+                    }
+                    return {
+                        tweets: newReplies,
+                        totalCount: prevReplies.totalCount + 1
+                    }
+                }
+            },
+        });
+    }
+    writeTweetsFeedDataFromEnd(true, cache, tweet);
+    writeTweetsFeedDataFromEnd(false, cache, tweet);
 }

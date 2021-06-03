@@ -7,8 +7,8 @@ export const ReportedUsers = gql`
                 id
                 isFollowing
                 name
-                username: userName
-                imageURI: imageURL
+                userName
+                imageURL
                 bio
                 isBanned
             }

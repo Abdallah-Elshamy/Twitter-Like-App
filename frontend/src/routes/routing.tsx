@@ -14,6 +14,8 @@ import { Login } from "../components/Register/login_form/login";
 import {parseJwt} from '../common/utils/jwtDecoder'
 import ExtendedTweet from "../components/tweets/ExtendedTweet/ExtendedTweet";
 import FollowWall from "../components/profile/FollowWall";
+import {useSubscription} from "@apollo/client"
+import LiveFeed from "../common/queries/liveFeed"
 
 export const Routing = () => {
   return (
@@ -102,6 +104,12 @@ export const Routing = () => {
 };
 
 const PrivateRoute = ({ children, ...rest }: any) => {
+  const {data: subFeedData} = useSubscription(LiveFeed, {
+    onSubscriptionData() {
+        console.log("new data arrived")
+        console.log("feed", subFeedData)
+    }
+  })
   let auth = localStorage.getItem('token') ? true : false
   return (
     <Route

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useHistory } from "react-router-dom";
 import { useApolloClient } from '@apollo/client'
+import {changeSubscriptionToken} from "../../../common/apolloClient"
 
 
 
@@ -16,6 +17,7 @@ export function Logout() {
 
         localStorage.clear()
         await client.clearStore()
+        changeSubscriptionToken(null)
         console.log("store reseted")
         history.push('/')
     }

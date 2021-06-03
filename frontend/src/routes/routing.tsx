@@ -16,8 +16,11 @@ import ExtendedTweet from "../components/tweets/ExtendedTweet/ExtendedTweet";
 import FollowWall from "../components/profile/FollowWall";
 import {useSubscription} from "@apollo/client"
 import LiveFeed from "../common/queries/liveFeed"
+import {updateLiveFeed} from "../common/utils/writeCache"
+import {useState} from "react"
 
 export const Routing = () => {
+  
   return (
     <div>
 
@@ -104,11 +107,15 @@ export const Routing = () => {
 };
 
 const PrivateRoute = ({ children, ...rest }: any) => {
-  const {data: subFeedData} = useSubscription(LiveFeed, {
+  const [prevData, setData] = useState<any>(undefined)
+  let {data: subFeedData, loading} = useSubscription(LiveFeed, {
     onSubscriptionData() {
-        console.log("new data arrived")
-        console.log("feed", subFeedData)
-    }
+        if (!subFeedData) return;
+        if (prevData && subFeedData.liveFeed.id === prevData.liveFeed.id) return;
+        setData(subFeedData);
+        console.log("subFeed", subFeedData)
+        !loading && subFeedData && updateLiveFeed(subFeedData.liveFeed)
+    },
   })
   let auth = localStorage.getItem('token') ? true : false
   return (

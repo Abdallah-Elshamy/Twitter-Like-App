@@ -6,6 +6,7 @@ import { apolloClient } from "../apolloClient";
 import ReportedTweets from "../queries/reportedTweets";
 import ReportedUsers from "../queries/reportedUsers";
 import { gql } from "@apollo/client";
+import { cache } from "../cache";
 
 const writeTweetsFeedData = async (
     isSFW: boolean,
@@ -858,4 +859,13 @@ export const updateLoggedUserQueryForUnFollow = (cache:any, user:any) => {
             }
         },
     })
+}
+
+export const updateLiveFeed = (tweet: any) => {
+    const profile = parseJwt(localStorage.getItem("token"));
+    if (tweet.user.id === "" + profile.id) return;
+    if (tweet.state === "O") {
+        writeTweetsFeedDataFromEnd(true, cache, tweet);
+        writeTweetsFeedDataFromEnd(false, cache, tweet);
+    }
 }

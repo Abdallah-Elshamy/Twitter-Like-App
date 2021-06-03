@@ -10,7 +10,6 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { parseJwt } from '../../common/utils/jwtDecoder'
 
 function HomeTweets() {
-    let [page, setPage] = useState(1);
     const sfw = useQuery(Get_SFW).data;
     const loggedUser = parseJwt(localStorage.getItem('token')!)
     const { loading, error, data, fetchMore } = useQuery(FeedTweets, {
@@ -18,8 +17,11 @@ function HomeTweets() {
             isSFW: sfw.SFW.value,
         },
     });
+    let [page, setPage] = useState(Math.floor((data?.getFeed?.tweets?.length || 10) / 10));
+
     
-    if (!loading && data && data?.getFeed?.tweets?.length == 10 && data?.getFeed?.totalCount > 10) {
+    if (!loading && data && data?.getFeed?.tweets?.length == 10 && data?.getFeed?.totalCount > 10 && page === 1) {
+        setPage(page + 1)
         fetchMore({
             variables: {
                 isSFW: sfw.SFW.value,
@@ -30,16 +32,17 @@ function HomeTweets() {
     if (loading) return <Loading />;
     if (error) return <p>`Error! this is the one ${error.message}`</p>;
     console.log("all tweets", data?.getFeed?.tweets)
+    console.log("page is", page)
 
     return (
         <InfiniteScroll
             dataLength={data?.getFeed?.tweets?.length || 0}
             next={() => {
-                setPage(Math.floor((data?.getFeed?.tweets?.length || 10) / 10) + 1);
+                setPage(page + 1);
                 return fetchMore({
                     variables: {
                         isSFW: sfw.SFW.value,
-                        page: Math.floor((data?.getFeed?.tweets?.length || 10) / 10) + 1,
+                        page: page + 1,
                     },
                 });
             }}

@@ -13,7 +13,7 @@ const Messages = () => {
 
  return <div>
    
-    { (!loading) && data.getChatHistory.messages.map((message:any) => {
+    { (!loading) && [...data.getChatHistory.messages].reverse().map((message:any) => {
       console.log (message)
         return ( 
       <div  className="messages" key = {message.id}>

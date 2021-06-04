@@ -11,9 +11,6 @@ const ChatWindow = () => {
   const [name, setName] = useState('name');
   const [room, setRoom] = useState <string>('room');
   const [users, setUsers] = useState('Aya');
-  const [message, setMessage] = useState({text: "hiM" , user: "tokaM", name: "AyaM"});
-
-
   const [messages, setMessages] = useState([{ message: {text: "hi" , user: "tokaM"}, name: "AyaM"},
                                             { message: {text: "hi" , user: "tokaM"}, name: "AyaM"}, 
                                             { message: {text: "hi" , user: "toka" }, name: "toka"},
@@ -39,7 +36,7 @@ const ChatWindow = () => {
     <div className="outerContainer" style={{height:"100vh", overflow:"scroll"}}>
       <div className="container">
 {/* here we send all state as prop we can't acess state element out of component so we send it then acess it in Message component */}
-          <Messages messages={messages}/>       
+          <Messages />       
           <Input  />
       </div>
     </div>

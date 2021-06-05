@@ -1,7 +1,5 @@
 import React, { Fragment } from 'react';
-import { FlootProfile } from '../sideBar/flootProfile/flootProfile';
 import { SideBar } from '../sideBar/sideBar';
-import TrendsBar from '../TrendsBar/TrendsBar';
 import ChatWindow from './Chat';
 import { ChatList } from './ChatList';
 import avatar from "../../routes/mjv-d5z8_400x400.jpg"

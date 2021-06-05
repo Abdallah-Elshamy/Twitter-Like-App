@@ -35,7 +35,7 @@ const Input = () => {
           onKeyPress={event => event.key === 'Enter' ? ()=> handleSend(event) : null}
         />
         <button className="sendButton" onClick={ (e) => handleSend(e) }>Send</button>
-    </form>_
+    </form>
   </Fragment>
   )
 }

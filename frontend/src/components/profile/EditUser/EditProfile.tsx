@@ -202,6 +202,7 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
           {loadingSave ? <Loading size={30} /> :
             <h1 className="font-bold font-lg">Edit Profile</h1>
           }
+         
         </div>
 
         <div>

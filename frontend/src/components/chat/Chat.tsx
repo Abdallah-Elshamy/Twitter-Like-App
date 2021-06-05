@@ -35,7 +35,6 @@ const ChatWindow = () => {
   return (
     <div className="outerContainer" style={{height:"100vh", overflow:"scroll"}}>
       <div className="container">
-{/* here we send all state as prop we can't acess state element out of component so we send it then acess it in Message component */}
           <Messages />       
           <Input  />
       </div>

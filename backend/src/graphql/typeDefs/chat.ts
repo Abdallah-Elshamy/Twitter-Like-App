@@ -33,5 +33,6 @@ export default gql`
     extend type Mutation {
         sendMessage(message: SendMessageInput!): ChatMessage!
         setMessageSeen(messageId: ID!): Boolean!
+        setAllMessagesFromUserSeen(userId: ID!): Boolean!
     }
 `;

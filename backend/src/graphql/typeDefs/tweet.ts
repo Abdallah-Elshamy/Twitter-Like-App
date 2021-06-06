@@ -28,7 +28,7 @@ export default gql`
     }
 
     extend type Subscription {
-        liveFeed: NewFeedUpdates!
+        liveFeed: Tweet!
     }
 
     type Tweet {
@@ -65,10 +65,5 @@ export default gql`
     input TweetCreateInput {
         text: String!
         mediaURLs: [String]
-    }
-
-    type NewFeedUpdates {
-        tweet: Tweet!
-        followers: [ID]!
     }
 `;

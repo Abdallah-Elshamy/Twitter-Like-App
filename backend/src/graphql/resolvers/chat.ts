@@ -3,7 +3,8 @@ import { User } from "../../models";
 import pubsub from "../../messaging";
 import db from "../../db";
 import { ChatMessage } from "../../models";
-import { Op } from "sequelize";
+import { Op, QueryTypes } from "sequelize";
+import sequelize from "sequelize";
 
 const PAGE_SIZE = 20;
 
@@ -87,6 +88,90 @@ export default {
           order: [["createdAt", "DESC"]],
         }),
         totalCount: ChatMessage.count(searchConditions),
+      };
+    },
+    getConversationHistory: async (
+      parent: any,
+      args: { page: number },
+      context: any,
+      info: any
+    ) => {
+      const { user, authError } = context.req;
+      if (authError) {
+        throw authError;
+      }
+
+      const { page } = args;
+
+      const pairSearchConditions = {
+        where: {
+          [Op.or]: [
+            {
+              from: user.id,
+            },
+            {
+              to: user.id,
+            },
+          ],
+        },
+      };
+
+      const conversation_pairs = await ChatMessage.findAll({
+        attributes: [
+          "from",
+          "to",
+          [sequelize.fn("max", sequelize.col("createdAt")), "lastMessageTime"],
+        ],
+        group: ["from", "to"],
+        ...pairSearchConditions,
+        offset: ((page || 1) - 1) * PAGE_SIZE,
+        limit: PAGE_SIZE,
+        order: [[sequelize.col("lastMessageTime"), "DESC"]],
+      });
+
+      const countQueryResults = await db.query(
+        `SELECT COUNT(*) FROM
+         (SELECT distinct "from", "to" 
+         FROM "chatMessage" 
+         WHERE "to" = ${user.id} OR "from" = ${user.id}) AS conversations`,
+        { type: QueryTypes.SELECT }
+      );
+
+      const totalCount: number = Object.values(countQueryResults[0])[0];
+
+      return {
+        conversations: conversation_pairs.map(async (pair) => {
+          const otherUserId = user.id === pair.from ? pair.to : pair.from;
+          const conversationSearchConditions = {
+            where: {
+              [Op.or]: [
+                {
+                  to: otherUserId,
+                  from: user.id,
+                },
+                {
+                  from: otherUserId,
+                  to: user.id,
+                },
+              ],
+            },
+          };
+          return {
+            with: await User.findByPk(otherUserId),
+            unseenMessageCount: await ChatMessage.count({
+              where: {
+                from: otherUserId,
+                to: user.id,
+                isSeen: false,
+              },
+            }),
+            lastMessage: await ChatMessage.findOne({
+              ...conversationSearchConditions,
+              order: [["createdAt", "DESC"]],
+            }),
+          };
+        }),
+        totalCount,
       };
     },
   },

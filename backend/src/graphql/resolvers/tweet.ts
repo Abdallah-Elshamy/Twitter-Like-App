@@ -1,4 +1,11 @@
-import { Tweet, Likes, User, Hashtag, ReportedTweet } from "../../models";
+import {
+    Tweet,
+    Likes,
+    User,
+    Hashtag,
+    ReportedTweet,
+    Follows,
+} from "../../models";
 import { tweetValidator } from "../../validators";
 import db from "../../db";
 import { Transaction, Op } from "sequelize";
@@ -614,15 +621,8 @@ export default {
             });
 
             if (!process.env.TEST_ENVIROMENT) {
-                const followers = await user!.$get("followers", {
-                    attributes: ["id"],
-                });
-                const followersIds = followers.map((f) => f.id);
                 pubsub.publish("LIVE_FEED", {
-                    liveFeed: {
-                        tweet: tweet,
-                        followers: followersIds,
-                    },
+                    liveFeed: tweet,
                 });
             }
             return tweet;
@@ -683,6 +683,12 @@ export default {
 
                 return tweet;
             });
+
+            if (!process.env.TEST_ENVIROMENT) {
+                pubsub.publish("LIVE_FEED", {
+                    liveFeed: tweet,
+                });
+            }
             return tweet;
         },
 
@@ -738,6 +744,12 @@ export default {
                     originalTweetId
                 )
             );
+
+            if (!process.env.TEST_ENVIROMENT) {
+                pubsub.publish("LIVE_FEED", {
+                    liveFeed: tweet,
+                });
+            }
             return tweet;
         },
 
@@ -787,6 +799,12 @@ export default {
 
                 return qtweet;
             });
+
+            if (!process.env.TEST_ENVIROMENT) {
+                pubsub.publish("LIVE_FEED", {
+                    liveFeed: qTweet,
+                });
+            }
             return qTweet;
         },
 
@@ -816,7 +834,56 @@ export default {
                 error.statusCode = 403;
                 throw error;
             }
-            await tweet.destroy();
+            await db.transaction(async (transaction) => {
+                await Tweet.destroy({
+                    where: {
+                        state: "R",
+                        originalTweetId: id,
+                    },
+                    transaction,
+                });
+                await tweet.destroy({ transaction });
+            });
+
+            return true;
+        },
+        unRetweet: async (
+            parent: any,
+            args: { id: number },
+            context: { req: CustomeRequest },
+            info: any
+        ) => {
+            const { user, authError } = context.req;
+            if (authError) {
+                throw authError;
+            }
+            const originalTweet = await Tweet.findByPk(args.id);
+            if (!originalTweet) {
+                const error: CustomeError = new Error(
+                    "No tweet was found with this id!"
+                );
+                error.statusCode = 404;
+                throw error;
+            }
+            const Retweet = await Tweet.findOne({
+                attributes: ["id"],
+                where: {
+                    userId: user!.id,
+                    state: "R",
+                    originalTweetId: args.id,
+                },
+            });
+            if (!Retweet) {
+                const error: CustomeError = new Error(
+                    "This tweet is not retweeted by the user!"
+                );
+                error.statusCode = 422;
+                throw error;
+            }
+
+            await db.transaction(async (transaction) => {
+                await Retweet.destroy({ transaction });
+            });
             return true;
         },
         reportTweet: async (
@@ -922,12 +989,19 @@ export default {
     },
     Subscription: {
         liveFeed: {
+            resolve: async (payload: any) => {
+                return await Tweet.findByPk(payload.liveFeed.id);
+            },
             subscribe: withFilter(
                 () => pubsub.asyncIterator(["LIVE_FEED"]),
                 (payload: any, args: any, context: any) => {
-                    return payload.liveFeed.followers.includes(
-                        context.connection.context.id
-                    );
+                    const isFollower = Follows.findOne({
+                        where: {
+                            follower: context.connection.context.id,
+                            following: payload.liveFeed.userId,
+                        },
+                    });
+                    return isFollower !== null;
                 }
             ),
         },

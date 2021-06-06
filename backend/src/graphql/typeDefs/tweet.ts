@@ -22,12 +22,13 @@ export default gql`
             tweet: TweetCreateInput!
         ): Tweet!
         deleteTweet(id: ID!): Boolean!
+        unRetweet(id: ID!): Boolean!
         reportTweet(id: ID!, reason: String): Boolean!
         ignoreReportedTweet(id: ID!): Boolean!
     }
 
     extend type Subscription {
-        liveFeed: NewFeedUpdates!
+        liveFeed: Tweet!
     }
 
     type Tweet {
@@ -64,10 +65,5 @@ export default gql`
     input TweetCreateInput {
         text: String!
         mediaURLs: [String]
-    }
-
-    type NewFeedUpdates {
-        tweet: Tweet!
-        followers: [ID]!
     }
 `;

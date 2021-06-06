@@ -1102,7 +1102,7 @@ describe("user-resolvers", (): void => {
                 name: "admin",
             });
             const user = await User.findByPk(1);
-            user?.$add("groups", group);
+            await user?.$add("groups", group);
             const response2 = await login("omarabdo997", "myPrecious");
             token = response2.body.data.login.token;
         });
@@ -1156,7 +1156,7 @@ describe("user-resolvers", (): void => {
                 name: "admin",
             });
             const user = await User.findByPk(1);
-            user!.$add("groups", group);
+            await user!.$add("groups", group);
             const response = await login("omarabdo997", "myPrecious");
             authTokenAdmin = response.body.data.login.token;
 
@@ -1313,7 +1313,7 @@ describe("user-resolvers", (): void => {
                 name: "admin",
             });
             const user = await User.findByPk(1);
-            user!.$add("groups", group);
+            await user!.$add("groups", group);
             const response = await login("Bilbo11", "myPrecious");
             authTokenAdmin = response.body.data.login.token;
             await createUserWithBio("bilbo11", "bilbo the wise");
@@ -1406,7 +1406,7 @@ describe("user-resolvers", (): void => {
                 name: "admin",
             });
             const user = await User.findByPk(1);
-            user?.$add("groups", group);
+            await user?.$add("groups", group);
             const response2 = await login("omarabdo997", "myPrecious");
             authToken = response2.body.data.login.token;
         });
@@ -1438,7 +1438,7 @@ describe("user-resolvers", (): void => {
                 name: "admin",
             });
             const user = await User.findByPk(1);
-            user?.$add("groups", group);
+            await user?.$add("groups", group);
             const response = await login("omarabdo997", "myPrecious");
             authTokenAdmin = response.body.data.login.token;
 

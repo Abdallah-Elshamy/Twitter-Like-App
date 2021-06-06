@@ -22,7 +22,8 @@ import {
     reportTweetWithReason,
     ignoreReportedTweet,
     NSFWTweets,
-    NSFWTweetsWithPagination
+    NSFWTweetsWithPagination,
+    unRetweet,
 } from "./requests/tweet-resolvers";
 import {
     createUser,
@@ -419,7 +420,7 @@ describe("tweet-resolvers", (): void => {
                 statusCode: 422,
                 message: "This tweet is already retweeted by the user!",
             });
-        })
+        });
 
         it("fail createRetweet to non existing tweet", async () => {
             const response = await createRetweet(20, token);
@@ -597,6 +598,58 @@ describe("tweet-resolvers", (): void => {
             expect(response.body.data.deleteTweet).to.be.true;
             const tweet = await Tweet.findByPk(2);
             expect(tweet).to.be.null;
+        });
+    });
+
+    describe("unRetweet mutation", () => {
+        let token = "";
+        before(async () => {
+            await db.sync({ force: true });
+            await createUser("omarabdo997", "omar ali");
+            let response = await login("omarabdo997", "myPrecious");
+            token = response.body.data.login.token;
+            await createTweets(1, "O", 1);
+            await Tweet.create({
+                text: "",
+                state: "R",
+                originalTweetId: 1,
+                userId: 1,
+            });
+        });
+
+        it("succeeds in unretweeting a tweet", async () => {
+            const response = await unRetweet(1, token);
+            expect(response.body.data).to.include({
+                unRetweet: true,
+            });
+            const retweet = await Tweet.findByPk(3, { attributes: ["id"] });
+            expect(retweet).to.be.null;
+        });
+
+        it("fails to unRetweet if no authorization is supplied", async () => {
+            const response = await unRetweet(1);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 401,
+            });
+        });
+
+        it("fails to unRetweet a non existent tweet", async () => {
+            const response = await unRetweet(0, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 404,
+                message: "No tweet was found with this id!",
+            });
+        });
+
+        it("fails to unRetweet a non Retweeted tweet", async () => {
+            const response = await unRetweet(1, token);
+            expect(response.body.errors).to.has.length(1);
+            expect(response.body.errors[0]).to.include({
+                statusCode: 422,
+                message: "This tweet is not retweeted by the user!",
+            });
         });
     });
 
@@ -1035,14 +1088,14 @@ describe("tweet-resolvers", (): void => {
                 name: "admin",
             });
             const user = await User.findByPk(1);
-            user!.$add("groups", group);
+            await user!.$add("groups", group);
             const response = await login("Bilbo11", "myPrecious");
             authTokenAdmin = response.body.data.login.token;
             await createUserWithBio("bilbo11", "bilbo the wise");
             const response2 = await login("bilbo11", "myPrecious");
             authToken = response2.body.data.login.token;
             // create 12 tweets which are NSFW by default
-            await createTweets(2, "O", 12);  
+            await createTweets(2, "O", 12);
         });
 
         it("succeeds in fetching NSFW tweets", async () => {
@@ -1052,11 +1105,11 @@ describe("tweet-resolvers", (): void => {
             });
             expect(response.body.data.NSFWTweets.tweets).to.has.length(10);
             expect(response.body.data.NSFWTweets.tweets[0]).to.include({
-                text: "tweet11"
-            })
+                text: "tweet11",
+            });
             expect(response.body.data.NSFWTweets.tweets[9]).to.include({
-                text: "tweet2"
-            })
+                text: "tweet2",
+            });
         });
 
         it("succeeds in fetching NSFW tweets with pagination", async () => {
@@ -1066,15 +1119,15 @@ describe("tweet-resolvers", (): void => {
             });
             expect(response.body.data.NSFWTweets.tweets).to.has.length(2);
             expect(response.body.data.NSFWTweets.tweets[0]).to.include({
-                text: "tweet1"
-            })
+                text: "tweet1",
+            });
             expect(response.body.data.NSFWTweets.tweets[1]).to.include({
-                text: "tweet0"
-            })
+                text: "tweet0",
+            });
         });
 
         it("fails to fetch NSFW tweets if not authenticated", async () => {
-            const response = await NSFWTweets()
+            const response = await NSFWTweets();
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 401,
@@ -1083,7 +1136,7 @@ describe("tweet-resolvers", (): void => {
         });
 
         it("fails to fetch NSFW tweets if user is not an admin", async () => {
-            const response = await NSFWTweets(authToken)
+            const response = await NSFWTweets(authToken);
             expect(response.body.errors).to.has.length(1);
             expect(response.body.errors[0]).to.include({
                 statusCode: 403,
@@ -1129,7 +1182,7 @@ describe("tweet-resolvers", (): void => {
                 name: "admin",
             });
             const user = await User.findByPk(1);
-            user?.$add("groups", group);
+            await user?.$add("groups", group);
             const response2 = await login("omarabdo997", "myPrecious");
             authToken = response2.body.data.login.token;
         });
@@ -1188,7 +1241,7 @@ describe("tweet-resolvers", (): void => {
                 name: "admin",
             });
             const user = await User.findByPk(1);
-            user?.$add("groups", group);
+            await user?.$add("groups", group);
             const response2 = await login("omarabdo997", "myPrecious");
             authToken = response2.body.data.login.token;
         });
@@ -1345,7 +1398,7 @@ describe("tweet-resolvers", (): void => {
                 name: "admin",
             });
             const user = await User.findByPk(1);
-            user!.$add("groups", group);
+            await user!.$add("groups", group);
             const response = await login("Bilbo11", "myPrecious");
             authTokenAdmin = response.body.data.login.token;
             await createUserWithBio("bilbo11", "bilbo the wise");

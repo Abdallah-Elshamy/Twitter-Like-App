@@ -66,8 +66,8 @@ export function SideBar() {
       </Link>: null}
       
 
-
-      <TweetButton name="Tweet" className="w-56 h-12 mt-8" onClick={() => setEdit(true)} />
+{/* 
+      <TweetButton name="Tweet" className="w-56 h-12 mt-8" onClick={() => setEdit(true)} /> */}
 
       < FlootProfile />
 

@@ -148,7 +148,7 @@ const PostTweet = ({originalId = '', postType = 'tweet'}: Arg)  => {
        	
 	{(userLoad) &&  <Loading size={10}/> }
 	{(userError) && null}
-	{(!userLoad) && (!userError) &&<img src={userData.user.imageURL || avatar} alt="avatar" />}	
+	{(!userLoad) && (!userError) &&<img src={userData.user.imageURL || avatar} alt="avatar" className="mt-3"/>}	
        
         {/* <img src= {avatar} alt="avatar" /> */ }
       </div>

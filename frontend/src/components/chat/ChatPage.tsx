@@ -25,7 +25,6 @@ export const ChatPage : React.FC = () =>  (
 
                 <div className="space-y-0 ">
                   <h3  className="text-lg font-bold ">aya</h3>
-                  {/* <p><span className="text-xs font-thin">@</span>aya</p> */}
                 </div>
                 </div>
             </div>

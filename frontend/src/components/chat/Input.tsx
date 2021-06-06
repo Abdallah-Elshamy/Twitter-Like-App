@@ -15,7 +15,7 @@ const Input = () => {
     if (message.length > 0) {
       sendMessage({
         variables: {message: {
-          toUserId: "8",
+          toUserId: "3",
         messageBody: message}
         }
       });

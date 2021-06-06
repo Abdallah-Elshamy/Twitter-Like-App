@@ -1,5 +1,7 @@
-import {  from, useQuery } from '@apollo/client';
+import {  from, useQuery, useSubscription } from '@apollo/client';
 import {CHAT_HISTORY} from "../../common/queries/getChatHistory"
+import SEND_MESSAGE_sub from '../../common/queries/getChatSubscription';
+
 import './Chat.css';;
 
  //message take props <Message message ,  name , user  /> 
@@ -7,33 +9,41 @@ import './Chat.css';;
 
 const Messages = () => {
   const {data , loading} =useQuery(CHAT_HISTORY , {
-    variables:{otherUserId: "8"}
+    variables:{otherUserId: "3"}
   })
   if(!loading) console.log(data)
 
- return <div>
+  const {data: subData} = useSubscription (SEND_MESSAGE_sub, {
+    onSubscriptionData() {
+        console.log("arrive Message")
+    }
+})
+subData && console.log("sub data", subData)
+
+ return(
+ 
+ <div>
    
     { (!loading) && [...data.getChatHistory.messages].reverse().map((message:any) => {
-      console.log (message)
         return ( 
-      <div  className="messages" key = {message.id}>
+      <div className="messages" key = {message.id}>
          <Message message = {message.message}   user = {message.from.id} /> 
       </div>
       );
     })
     }
 
-  </div>
-};
+   { (subData ) ? (<div><p> { subData.messageSent.message }</p></div>):null }
+   
+  </div>  
+ )};
 
 
 const Message = (props:any) => {
 
   let otherUser = false;
 
-  const trimmedName = props.name ;
-
-  if(props.user == "8") {
+  if(props.user == "3") {
     otherUser = true;
   }
 
@@ -42,10 +52,9 @@ const Message = (props:any) => {
       ? 
       (
         <div className="messageContainer justifyEnd">
-          {/* <p className="sentText pr-10">{ trimmedName } </p> */}
           <div className="messageBoxS backgroundBlue">
             <p className="messageText">
-               { props.message } 
+               { props.message }
               </p>
 
           </div>

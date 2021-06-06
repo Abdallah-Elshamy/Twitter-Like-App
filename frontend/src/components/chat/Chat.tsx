@@ -9,12 +9,14 @@ const ChatWindow = () => {
   }
 
   return (
-    <div className="outerContainer" style={{height:"100vh", overflow:"scroll"}}>
+
+    <div  style={{height:"100vh", overflow:"scroll"}}>
       <div className="container">
           <Messages />        
-          <Input  />
       </div>
+      <Input/>
     </div>
+
   );
 }
 

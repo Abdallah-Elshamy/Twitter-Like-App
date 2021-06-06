@@ -46,7 +46,6 @@ const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
             ? { totalCount: existing.totalCount, tweets: [...existing.tweets] }
             : { totalCount: 0, tweets: [] };
         merged.totalCount = incoming.totalCount;
-        console.log("incoming", incoming)
         let i = 0;
         let j = 0;
         let k = 0;

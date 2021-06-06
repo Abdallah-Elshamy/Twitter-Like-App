@@ -1,13 +1,10 @@
 /* chat */
-.outerContainer {
-  display: flex;
-}
-
 .container {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   background: #ffffff;
+  margin-bottom: 100px;
 }
 
 /* messages */
@@ -15,22 +12,23 @@
   padding: 2% 0 ;
   overflow: auto;
   flex: auto;
+
 }
 
 .form {
-  display: flex;
   border-top: 1px solid #d3d3d3;
-  position: fixed;
   bottom: 0px;
   width: 41%;
   border-radius: 20px 20px 0px 0px; 
   border-right: none;
+  position: fixed;
 }
 
 .input {
   border: none;
   padding: 2%;
   width: 80%;
+  height: 100%;
   font-size: 1.2em;
   border-radius: 20px 20px 0px 0px; 
 }
@@ -63,6 +61,7 @@ button:focus {outline:0;}
   color: white;
   display: inline-block;
   max-width: 80%;
+
 }
 
 
@@ -73,6 +72,7 @@ button:focus {outline:0;}
   color: white;
   display: inline-block;
   max-width: 80%;
+
 }
 
 .messageText {

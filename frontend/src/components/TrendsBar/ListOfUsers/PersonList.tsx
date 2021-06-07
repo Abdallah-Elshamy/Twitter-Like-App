@@ -47,10 +47,9 @@ const PersonList: React.FC<PersonListProps> = (props) => {
     if (loading) return <Loading />
     if (error) return <h1 className="text-lg text-center pt-4 text-gray-500">Something went wrong :( </h1>
 
-    if (!fromChat)
-        var list: any[] = data.users.users
-    else
-        list = data.users.users
+
+    const list: PersonEntity[] = data.users.users
+
 
     console.log("person list", list)
     if (list.length === 0)
@@ -96,8 +95,6 @@ const PersonList: React.FC<PersonListProps> = (props) => {
                             name={person.name}
                             username={person.username}
                             imageURL={person.imageURI}
-                            lastMessage={person.lastMessage}
-                            numberOfUnseen={person.numberOfUnseen}
                         />
                 );
             })}

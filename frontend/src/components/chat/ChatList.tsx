@@ -4,6 +4,7 @@ import { StreamChat } from 'stream-chat';
 import { ChannelList, Chat } from 'stream-chat-react';
 import { Get_SearchBar_Value } from '../../common/queries/Get_SearchBar_Value';
 import SearchResult from '../SerachResult';
+import ChatConv from '../TrendsBar/ListOfUsers/ChatConv';
 import PersonList from '../TrendsBar/ListOfUsers/PersonList';
 import SearchBar from '../TrendsBar/SearchBar/SearchBar';
 
@@ -12,7 +13,7 @@ export const ChatList: React.FC = () => {
     const searchQ: string = search.data.searchBarValue.value
 
     const [page, setPage] = useState(1)
-
+    const [conPage, setConPage] = useState(1)
 
 
     return <div className="w-full h-full">
@@ -20,14 +21,15 @@ export const ChatList: React.FC = () => {
             <SearchBar />
 
         </div>
-        {searchQ === "zz" ?
-            <div className="w-full h-full bg-black">
+        {searchQ !== "" ?
+            <div className="w-full h-full ">
                 <p>Working</p>
-                <PersonList page={page} queryName="Get_Search_Result" setPage={setPage} fromChat={true} ></PersonList>
+                <PersonList page={page} queryName="Get_Search_Result" searchQ={searchQ} setPage={setPage} fromChat={true} ></PersonList>
             </div>
             :
             <div>
-                <PersonList page={page} queryName="Get_Search_Result" setPage={setPage} fromChat={false} searchQ={searchQ} ></PersonList>
+                <h1>CHAT LIST</h1>
+                <ChatConv setPage={setConPage} page={page}></ChatConv>
             </div>
         }
     </div>

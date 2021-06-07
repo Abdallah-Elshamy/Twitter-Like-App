@@ -97,27 +97,27 @@ const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, usernam
         <p className="person-item-username"><span className="text-xm">@</span>{username}</p>
         <p>{bio}</p>
       </div>
-      {!fromChat && <Fragment>
-        <div className="relative mt-10 left-7">
-          {localStorage.getItem('token') && (id == parseJwt(localStorage.getItem('token')).id) ? null :
-            <FollowButton id={id} following={isFollowing} />}
-        </div>
-        <ToolBox
-          design={
-            <i className="fas fa-ellipsis-h hover:bg-gray-400 p-1 px-2 rounded-full cursor-pointer"></i>
-          }
-        >
-          <ul className=" bg-gray-100 mb-40 right-8 absolute  z-10 cursor-pointer " >
-            {loggedUser?.isAdmin && loggedUser.id != id && !user?.isBanned ? <button onClick={handleBanButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
+
+      <div className="relative mt-10 left-7">
+        {localStorage.getItem('token') && (id == parseJwt(localStorage.getItem('token')).id) ? null :
+          <FollowButton id={id} following={isFollowing} />}
+      </div>
+      <ToolBox
+        design={
+          <i className="fas fa-ellipsis-h hover:bg-gray-400 p-1 px-2 rounded-full cursor-pointer"></i>
+        }
+      >
+        <ul className=" bg-gray-100 mb-40 right-8 absolute  z-10 cursor-pointer " >
+          {loggedUser?.isAdmin && loggedUser.id != id && !user?.isBanned ? <button onClick={handleBanButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
           " >Ban</button> : loggedUser?.isAdmin && user?.isBanned ? <button onClick={handleUnbanButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           " >Unban</button> : null}
-            {loggedUser?.isAdmin && location.pathname.includes("/admin") ? <button onClick={handleIgnoreButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
+          {loggedUser?.isAdmin && location.pathname.includes("/admin") ? <button onClick={handleIgnoreButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           " >Ignore</button> : null}
-            {loggedUser?.id != id && !user.isBanned ? <button onClick={handleReportUserButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
+          {loggedUser?.id != id && !user.isBanned ? <button onClick={handleReportUserButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
           " >Report</button> : null}
 
-          </ul>
-        </ToolBox></Fragment>}
+        </ul>
+      </ToolBox>
     </div>
   )
 }

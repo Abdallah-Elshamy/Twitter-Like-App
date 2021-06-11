@@ -28,7 +28,6 @@ function HomeTweets() {
     }
     if (loading) return <Loading />;
     if (error) return <p>`Error! this is the one ${error.message}`</p>;
-    console.log("all tweets", data?.getFeed?.tweets)
 
     return (
         <InfiniteScroll

@@ -14,8 +14,8 @@ import { Login } from "../components/Register/login_form/login";
 import {parseJwt} from '../common/utils/jwtDecoder'
 import ExtendedTweet from "../components/tweets/ExtendedTweet/ExtendedTweet";
 import FollowWall from "../components/profile/FollowWall";
-import { Chatpage } from "../components/chat/chat";
-import { MessagesComponent } from "../components/chat/Messages";
+import { ChatPage } from "../components/chat/ChatPage";
+// import { MessagesComponent } from "../components/chat/Messages";
 
 
 
@@ -37,11 +37,11 @@ export const Routing = () => {
         </PrivateRoute>
 
         <PrivateRoute path="/chat">
-          <Chatpage />
+          <ChatPage />
         </PrivateRoute>
 
         <PrivateRoute path="/profile/following">
-          <FollowWall   FollowType = "following" />
+          <FollowWall FollowType = "following" />
         </PrivateRoute>
 
         <PrivateRoute path="/profile/follower">
@@ -49,7 +49,7 @@ export const Routing = () => {
         </PrivateRoute>
 
         <Route path='/:id/following'>
-        <FollowWall   FollowType = "following" />
+        <FollowWall FollowType = "following" />
         </Route>
 
         <Route path='/:id/follower'>
@@ -70,7 +70,7 @@ export const Routing = () => {
         </Route>
 
         <PrivateRoute path="/messages">
-        <MessagesComponent/>
+          <ChatPage />
         </PrivateRoute>
 
 
@@ -81,6 +81,7 @@ export const Routing = () => {
         <AdminRoute path="/admin">
           <AdminDashBoard />
         </AdminRoute>
+
         <PrivateRoute path="/Notifications">
           <Notifications />
         </PrivateRoute>

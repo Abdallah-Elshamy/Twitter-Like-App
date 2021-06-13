@@ -6,6 +6,8 @@ import Loading from '../../../UI/Loading';
 import { parseJwt } from "../../../common/utils/jwtDecoder"
 import ChatItem, { ChatItemEntity } from './PersonItem/ChatItem';
 import { GET_CHAT_CONV } from '../../../common/queries/GET_CHAT_CONV';
+import { chatUserVar } from '../../../common/cache';
+import { Active_Chat_User } from '../../../common/queries/Active_Chat_User';
 
 interface PersonListProps {
   page: number;
@@ -13,6 +15,8 @@ interface PersonListProps {
 }
 
 const ChatConv: React.FC<PersonListProps> = (props) => {
+  const user = useQuery(Active_Chat_User)
+  const { id } = user.data.chatUser
   let loggedUser: any;
   if (localStorage.getItem("token")) {
     loggedUser = parseJwt(localStorage?.getItem("token")!)
@@ -36,8 +40,19 @@ const ChatConv: React.FC<PersonListProps> = (props) => {
 
 
   console.log("person list", list)
-  if (list.length === 0)
+  if (list.length === 0) {
+    chatUserVar({ id: "0" })
     return <h1 className="text-lg text-center pt-4">No Results</h1>;
+  }
+  if (id == "-1" || id == "0")
+    chatUserVar({
+      id: list[0].with.id,
+      name: list[0].with.name,
+      username: list[0].with.username,
+      imgURL: list[0].with.imgURL,
+
+    })
+
   return (
     <InfiniteScroll
       dataLength={list?.length || 0}

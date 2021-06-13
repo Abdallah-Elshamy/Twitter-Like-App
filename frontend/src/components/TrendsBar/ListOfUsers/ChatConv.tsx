@@ -15,8 +15,7 @@ interface PersonListProps {
 }
 
 const ChatConv: React.FC<PersonListProps> = (props) => {
-  const user = useQuery(Active_Chat_User)
-  const { id } = user.data.chatUser
+
   let loggedUser: any;
   if (localStorage.getItem("token")) {
     loggedUser = parseJwt(localStorage?.getItem("token")!)
@@ -39,19 +38,8 @@ const ChatConv: React.FC<PersonListProps> = (props) => {
   const list: any[] = data.getConversationHistory.conversations
 
 
-  console.log("person list", list)
-  if (list.length === 0) {
-    chatUserVar({ id: "0" })
-    return <h1 className="text-lg text-center pt-4">No Results</h1>;
-  }
-  if (id == "-1" || id == "0")
-    chatUserVar({
-      id: list[0].with.id,
-      name: list[0].with.name,
-      username: list[0].with.username,
-      imgURL: list[0].with.imgURL,
 
-    })
+  
 
   return (
     <InfiniteScroll

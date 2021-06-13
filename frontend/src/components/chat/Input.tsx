@@ -1,42 +1,44 @@
-import {  useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { send } from 'process';
-import React, { Fragment , useState} from 'react';
-import {SEND_MESSAGE} from "../../common/queries/sendMessage"
+import React, { Fragment, useState } from 'react';
+import { SEND_MESSAGE } from "../../common/queries/sendMessage"
 import './Chat.css';
 
 
 
-const Input = () => {
-  const [sendMessage, {data}] = useMutation(SEND_MESSAGE);
-  const [message, setMessage] =  useState("")
+const Input: React.FC<any> = ({ userID }) => {
+  const [sendMessage, { data }] = useMutation(SEND_MESSAGE);
+  const [message, setMessage] = useState("")
 
-  const handleSend =  (event:any) => {
+  const handleSend = (event: any) => {
     event.preventDefault()
     if (message.length > 0) {
       sendMessage({
-        variables: {message: {
-          toUserId: "3",
-        messageBody: message}
+        variables: {
+          message: {
+            toUserId: userID,
+            messageBody: message
+          }
         }
       });
-       console.log(data)
-      setMessage ("")
+      console.log(data)
+      setMessage("")
     }
   };
-  return(
-  <Fragment>
-    <form className="form ">
+  return (
+    <Fragment>
+      <form className="form ">
         <input
           className="input"
           type="text"
           placeholder="Type a message..."
           value={message}
           onChange={({ target: { value } }) => setMessage(value)}
-          onKeyPress={event => event.key === 'Enter' ? ()=> handleSend(event) : null}
+          onKeyPress={event => event.key === 'Enter' ? () => handleSend(event) : null}
         />
-        <button className="sendButton" onClick={ (e) => handleSend(e) }>Send</button>
-    </form>
-  </Fragment>
+        <button className="sendButton" onClick={(e) => handleSend(e)}>Send</button>
+      </form>
+    </Fragment>
   )
 }
 

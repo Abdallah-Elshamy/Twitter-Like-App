@@ -8,15 +8,12 @@ import './Chat.css';
 
 
 
-const Messages: React.FC<any> = (userID: string) => {
+const Messages: React.FC<any> = ({ userID }) => {
   const { data, loading, error } = useQuery(CHAT_HISTORY, {
     variables: { otherUserId: userID }
   })
-  if (userID == "-1") return <Loading />
-  if (userID == "0") return <FoF fof={false} msg={"You don't have any message"} secMsg={"try searching for some user"} />
 
-  if (!loading) console.log(data)
-
+  console.log(userID)
   const { data: subData } = useSubscription(SEND_MESSAGE_sub, {
     onSubscriptionData() {
       console.log("arrive Message")
@@ -24,11 +21,16 @@ const Messages: React.FC<any> = (userID: string) => {
   })
   subData && console.log("sub data", subData)
 
+  if (userID == "-1" || userID == null) return <Loading />
+  if (userID == "0") return <FoF fof={false} msg={"You don't have any message"} secMsg={"try searching for some user"} />
+
+  if (!loading) console.log(data)
+
   return (
 
     <div>
 
-      { (!loading) && [...data.getChatHistory.messages].reverse().map((message: any) => {
+      { (!loading) && data && [...data.getChatHistory.messages].reverse().map((message: any) => {
         return (
           <div className="messages" key={message.id}>
             <Message message={message.message} user={message.from.id} otherUserId={userID} />

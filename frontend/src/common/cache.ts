@@ -207,10 +207,9 @@ export const SFW: ReactiveVar<{ value: boolean }> = makeVar<any>({
 });
 
 export const chatUserVar: ReactiveVar<any> = makeVar<any>({
-    id: null,
-    name: null,
-    username: null,
-    imgURL: null
-
-})
+    id: undefined,
+    name: undefined,
+    username: undefined,
+    imgURL: undefined
+});
 

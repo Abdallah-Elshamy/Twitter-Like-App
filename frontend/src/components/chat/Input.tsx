@@ -7,6 +7,7 @@ import './Chat.css';
 
 
 const Input: React.FC<any> = ({ userID }) => {
+
   const [sendMessage, { data }] = useMutation(SEND_MESSAGE);
   const [message, setMessage] = useState("")
 
@@ -27,11 +28,11 @@ const Input: React.FC<any> = ({ userID }) => {
   };
   return (
     <Fragment>
-      <form className="form ">
+      <form className="form">
         <input
           className="input"
           type="text"
-          placeholder="Type a message..."
+          placeholder="Type a message...."
           value={message}
           onChange={({ target: { value } }) => setMessage(value)}
           onKeyPress={event => event.key === 'Enter' ? () => handleSend(event) : null}

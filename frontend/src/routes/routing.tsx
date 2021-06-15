@@ -15,8 +15,6 @@ import {parseJwt} from '../common/utils/jwtDecoder'
 import ExtendedTweet from "../components/tweets/ExtendedTweet/ExtendedTweet";
 import FollowWall from "../components/profile/FollowWall";
 import { ChatPage } from "../components/chat/ChatPage";
-// import { MessagesComponent } from "../components/chat/Messages";
-
 
 
 export const Routing = () => {
@@ -198,11 +196,6 @@ function Setting() {
   return <h2>setting</h2>;
 }
 
-
-
-function Messages() {
-  return <h2>Messages</h2>;
-}
 function Notifications() {
   return <h2>Notifications</h2>;
 }

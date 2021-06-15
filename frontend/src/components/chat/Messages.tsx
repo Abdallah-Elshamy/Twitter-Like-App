@@ -6,14 +6,14 @@ import Loading from '../../UI/Loading';
 
 import './Chat.css';
 
-
-
 const Messages: React.FC<any> = ({ userID }) => {
+
   const { data, loading, error } = useQuery(CHAT_HISTORY, {
     variables: { otherUserId: userID }
   })
-
   console.log(userID)
+
+
   const { data: subData } = useSubscription(SEND_MESSAGE_sub, {
     onSubscriptionData() {
       console.log("arrive Message")
@@ -38,7 +38,6 @@ const Messages: React.FC<any> = ({ userID }) => {
         );
       })
       }
-
       { (subData) ? (<div><p> {subData.messageSent.message}</p></div>) : null}
 
     </div>

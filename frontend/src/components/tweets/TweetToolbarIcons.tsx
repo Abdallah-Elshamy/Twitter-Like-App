@@ -1,9 +1,7 @@
 import { useState } from 'react'
-import {gql} from '@apollo/client'
 import './tweet.css';
 import { ToolBox } from '../sideBar/toolbox/toolbox';
 import Modal from '../../UI/Modal/Modal';
-import deleteTweetMutation from '../../common/queries/deleteTweet'
 import PostTweet from './PostTweet';
 import { useMutation } from '@apollo/client';
 import { RETWEET } from '../../common/queries/RETWEET';
@@ -14,7 +12,7 @@ import UNRETWEET from '../../common/queries/UNRETWEET';
 import {cache} from "../../common/cache"
 import {updateTweetsCacheForRetweet, updateTweetsCacheForUnretweet} from "../../common/utils/writeCache"
 import { parseJwt } from "../../common/decode";
-import { boolean } from 'yup';
+
 
 
 function TweetToolbarIcons(props: any) {

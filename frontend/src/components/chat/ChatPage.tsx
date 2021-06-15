@@ -2,7 +2,6 @@ import React, { Fragment } from 'react';
 import { SideBar } from '../sideBar/sideBar';
 import { ChatList } from './ChatList';
 import avatar from "../../routes/mjv-d5z8_400x400.jpg"
-import ChatWindow from './ChatWindow';
 import Messages from './Messages';
 import { Active_Chat_User } from '../../common/queries/Active_Chat_User';
 import { useQuery } from '@apollo/client';

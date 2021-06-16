@@ -1,4 +1,5 @@
-import { useQuery, useSubscription } from '@apollo/client';
+import { useMutation, useQuery, useSubscription } from '@apollo/client';
+import ALL_SEEN from '../../common/queries/ALL_SEEN';
 import { CHAT_HISTORY } from "../../common/queries/getChatHistory"
 import SEND_MESSAGE_sub from '../../common/queries/getChatSubscription';
 import FoF from '../../UI/FoF/FoF';
@@ -12,6 +13,7 @@ const Messages: React.FC<any> = ({ userID }) => {
     variables: { otherUserId: userID }
   })
   console.log(userID)
+  const [setAllSeen] = useMutation(ALL_SEEN)
 
 
   const { data: subData } = useSubscription(SEND_MESSAGE_sub, {
@@ -21,14 +23,23 @@ const Messages: React.FC<any> = ({ userID }) => {
   })
   subData && console.log("sub data", subData)
 
-  if (userID == "-1" || userID == null) return <Loading />
+  if (userID == "-1" || userID == null) return <Loading size="20" />
   if (userID == "0") return <FoF fof={false} msg={"You don't have any message"} secMsg={"try searching for some user"} />
 
-  if (!loading) console.log(data)
+  if (loading) return <Loading></Loading>
 
+  const setSeen = () => {
+    setAllSeen(
+      {
+        variables: {
+          userId: userID
+        }
+      }
+    )
+  }
   return (
 
-    <div>
+    <div onClick={setSeen} onScroll={setSeen}>
 
       { (!loading) && data && [...data.getChatHistory.messages].reverse().map((message: any) => {
         return (

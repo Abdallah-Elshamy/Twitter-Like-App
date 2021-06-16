@@ -14,8 +14,8 @@ export const ChatPage: React.FC = () => {
 
   const { data, loading, error } = useQuery(Active_Chat_User)
   console.log(data)
-  
-  if (loading) return <p>loading </p>
+
+  if (loading) return <p> loading </p>
   console.log("error: " + error)
 
   if (!error) var { id: userID, name, username, imgURL } = data.chatUser
@@ -37,12 +37,12 @@ export const ChatPage: React.FC = () => {
               <div className="flex">
 
                 <div className="person-item-image w-7 h-7  rounded-full  flex-none mr-2">
-                  <img src={ imgURL || avatar}
+                  <img src={imgURL || avatar}
                     alt="avatar" />
                 </div>
 
                 <div className="space-y-0 ">
-                  <h3 className="text-lg font-bold ">{ name ||"eslam"}</h3>
+                  <h3 className="text-lg font-bold ">{name}</h3>
                 </div>
               </div>
             </div>
@@ -51,9 +51,9 @@ export const ChatPage: React.FC = () => {
           <div style={{ height: "100vh", overflow: "scroll" }}>
             <div className="container">
               {/* {error && <p>ERROR</p>} */}
-              <Messages userID={userID || 3} />
+              <Messages userID={userID} />
             </div>
-            <Input  userID={userID || 3}/>
+            <Input userID={userID} />
           </div>
 
         </article>

@@ -1,6 +1,6 @@
 
 import { useQuery } from '@apollo/client';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import InfiniteScroll from "react-infinite-scroll-component";
 import Loading from '../../../UI/Loading';
 import { parseJwt } from "../../../common/utils/jwtDecoder"
@@ -21,7 +21,20 @@ const ChatConv: React.FC<PersonListProps> = (props) => {
     loggedUser = parseJwt(localStorage?.getItem("token")!)
   }
 
+
   let { data, loading, error, fetchMore } = useQuery(GET_CHAT_CONV)
+
+  useEffect(() => {
+    console.log("from useEffect")
+    return chatUserVar({
+      id: list[0].with.id,
+      name: list[0].with.name,
+      username: list[0].with.username,
+      imgURL: list[0].with.imageURL
+    })
+
+  }, [])
+
   console.log(data)
   if (!loading && data && data?.getConversationHistory?.conversations?.length === 10
     && data?.getConversationHistory?.totalCount > 10) {
@@ -37,10 +50,6 @@ const ChatConv: React.FC<PersonListProps> = (props) => {
 
   const list: any[] = data.getConversationHistory.conversations
 
-
-
-  
-
   return (
     <InfiniteScroll
       dataLength={list?.length || 0}
@@ -55,27 +64,25 @@ const ChatConv: React.FC<PersonListProps> = (props) => {
       }}
       hasMore={data?.getConversationHistory?.totalCount > list?.length || false}
       loader={<Loading />}
-      style={{
-        overflow: "hidden"
-      }}
+
       className="pb-20"
     >
-      {list.map((person) => {
-        return (
+      {
 
-          <ChatItem
-            key={person.with.id}
-            id={person.with.id}
-            name={person.with.name}
-            username={person.with.userName}
-            imageURL={person.with.imageURL}
-            numberOfUnseen={person.unseenMessageCount}
-            lastMessage={person.lastMessage.message}
-            createdAt={person.lastMessage.createdAt}
-
-          />
-        );
-      })}
+        list.map((person, i) => {
+          return (
+            <ChatItem
+              key={person.with.id + i}
+              id={person.with.id}
+              name={person.with.name}
+              username={person.with.userName}
+              imageURL={person.with.imageURL}
+              numberOfUnseen={person.unseenMessageCount}
+              lastMessage={person.lastMessage.message}
+              createdAt={person.lastMessage.createdAt}
+            />
+          );
+        })}
     </InfiniteScroll>
 
   )

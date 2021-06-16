@@ -3,8 +3,9 @@ import './PersonItem.css'
 import '../../../profile/profile.css'
 import { timeConverter } from '../../../../common/utils/timestamp';
 import { chatUserVar } from '../../../../common/cache';
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { Active_Chat_User } from '../../../../common/queries/Active_Chat_User';
+import ALL_SEEN from '../../../../common/queries/ALL_SEEN';
 
 
 export interface ChatItemEntity {
@@ -20,9 +21,9 @@ export interface ChatItemEntity {
 
 
 const ChatItem: React.FC<ChatItemEntity> = (user: ChatItemEntity) => {
-  const unseen = (user.numberOfUnseen != undefined) || (user.numberOfUnseen !== 0)
+  const unseen = (user.numberOfUnseen != undefined) && (user.numberOfUnseen !== 0)
   const userClicked = useQuery(Active_Chat_User)
-
+  const [setAllSeen] = useMutation(ALL_SEEN)
   const handleClick = () => {
 
     chatUserVar({
@@ -31,7 +32,15 @@ const ChatItem: React.FC<ChatItemEntity> = (user: ChatItemEntity) => {
       username: user.username,
       imgURL: user.imageURL
     })
-    console.log(userClicked)
+    setAllSeen(
+      {
+        variables: {
+          userId: user.id
+        }
+      }
+    )
+
+
 
   }
   const profilePicture = (user.imageURL === undefined || user.imageURL === null) ?
@@ -60,6 +69,7 @@ const ChatItem: React.FC<ChatItemEntity> = (user: ChatItemEntity) => {
   <FollowButton id={id} following={isFollowing} />*/}
 
           {//if showing convwersation show number of unseen messages
+            unseen &&
             <div className="w-4 min-w-min  rounded-full mr-auto
         bg-red-600 grid place-items-center  text-white  text-xs font-semibold px-1">
               {user.numberOfUnseen}

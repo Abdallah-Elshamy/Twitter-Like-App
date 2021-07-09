@@ -31,11 +31,6 @@ function HomeTweets() {
     }
     if (loading) return <Loading />;
     if (error) return <p>`Error! this is the one ${error.message}`</p>;
-<<<<<<< HEAD
-    console.log("all tweets", data?.getFeed?.tweets)
-    console.log("page is", page)
-=======
->>>>>>> 578a584023afcd46a0bfd77f40d9c2586f9d31b4
 
     return (
         <InfiniteScroll

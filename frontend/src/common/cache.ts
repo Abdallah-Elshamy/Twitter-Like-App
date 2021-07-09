@@ -82,6 +82,46 @@ const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
     },
     keyArgs,
 });
+const createPaginationAndCombineChatsElements = (keyArgs: any[]) => ({
+    merge(existing: any, incoming: any) {
+        const merged = existing
+            ? { totalCount: existing.totalCount, messages: [...existing.messages] }
+            : { totalCount: 0, messages: [] };
+        merged.totalCount = incoming.totalCount;
+        let i = 0;
+        let j = 0;
+        let k = 0;
+        for (i = 0; i < merged.messages.length; i++) {
+            for (j = k; j < incoming.messages.length; j++) {
+                if (
+                    parseInt(merged.messages[i].__ref.split(":")[1]) <
+                    parseInt(incoming.messages[j].__ref.split(":")[1])
+                ) {
+                    merged.messages.unshift(incoming.messages[j]);
+                    k++;
+                    break;
+                }
+                if (merged.messages[i].__ref == incoming.messages[j].__ref) {
+                    merged.messages[i] = incoming.messages[j];
+                    k++;
+                    break;
+                }
+            }
+        }
+        if (i == merged.messages.length) i--;
+        for (j = k; j < incoming.messages.length; j++) {
+            merged.messages[++i] = incoming.messages[j];
+        }
+        merged.messages.slice(0, i + 1);
+        console.log("merged is", merged)
+
+        return merged;
+    },
+    read(existing: any) {
+        return existing;
+    },
+    keyArgs,
+});
 const createPaginationAndCombineTweetElements = (keyArgs: any[]) => ({
     merge(existing: any, incoming: any) {
         // const merged = existing ? existing:incoming
@@ -181,6 +221,7 @@ export const cache: InMemoryCache = new InMemoryCache({
                 reportedTweets: createPaginationAndCombineTweetsElements([]),
                 reportedUsers: createPaginationAndCombineUsersElements([]),
                 NSFWTweets: createPaginationAndCombineTweetsElements([]),
+                getChatHistory: createPaginationAndCombineChatsElements(["otherUserId"]),
                 // tweet: createPaginationAndCombineTweetElements(["id", "isSFW"])
             },
         },

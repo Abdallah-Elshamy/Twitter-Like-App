@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const CHAT_HISTORY = gql`
-query getChatHistory ($otherUserId: ID!) {
-  getChatHistory(otherUserId: $otherUserId ) {
+query getChatHistory ($otherUserId: ID!, $page: Int) {
+  getChatHistory(otherUserId: $otherUserId, page: $page ) {
     totalCount
     messages{
       id

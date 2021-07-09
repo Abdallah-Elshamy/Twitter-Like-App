@@ -117,10 +117,6 @@ const handlePathFollower = () => {
 
             < button onClick={() => setEdit(true)} className={"pf--follow-btn rounded-full px-3 font-semibold text-xm  py-2 mt-3 "}>
               Edit Profile
-<<<<<<< HEAD
-            </button > :
-              <FollowButton id={user.id} following={user.isFollowing} user={user} py="py-2" px="px-4" />
-=======
             </button > 
 
             </div>
@@ -131,10 +127,9 @@ const handlePathFollower = () => {
            
             <i className="fas fa-envelope" ></i>
             </button > 
-              <FollowButton id={user.id} following={user.isFollowing} py="py-2" px="px-4" />
+              <FollowButton id={user.id} following={user.isFollowing} user={user} py="py-2" px="px-4" />
              
               </div>
->>>>>>> 578a584023afcd46a0bfd77f40d9c2586f9d31b4
             }
 
 

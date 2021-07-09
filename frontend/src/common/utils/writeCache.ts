@@ -5,6 +5,7 @@ import { parseJwt } from "../decode";
 import { apolloClient } from "../apolloClient";
 import ReportedTweets from "../queries/reportedTweets";
 import ReportedUsers from "../queries/reportedUsers";
+import { CHAT_HISTORY } from "../queries/getChatHistory"
 import { gql } from "@apollo/client";
 import { cache } from "../cache";
 
@@ -213,6 +214,37 @@ const decrementTweetsProfileData = (
             },
         });
 };
+
+export const updateChatMessagesForSendMessage = async(cache: any, {data}: any, otherUserId: any) => {
+    const newMessage = data.sendMessage
+    let messages: any = cache.readQuery({
+        query: CHAT_HISTORY,
+        variables: {
+            otherUserId
+        },
+    });
+    if (!messages) {
+        messages = await apolloClient.query({
+            query: CHAT_HISTORY,
+            variables: {
+                otherUserId,
+            },
+        });
+    }
+    messages &&
+        cache.writeQuery({
+            query: CHAT_HISTORY,
+            variables: {
+                otherUserId,
+            },
+            data: {
+                getChatHistory: {
+                    messages: [newMessage, ...(messages?.getChatHistory?.messages || [])],
+                    totalCount: messages?.getChatHistory?.totalCount + 1,
+                },
+            },
+        });
+}
 
 export const updateTweetsCacheForCreateTweet = async (
     cache: any,

@@ -13,7 +13,7 @@ export const ChatList: React.FC = () => {
     const [conPage, setConPage] = useState(1)
 
 
-    return <div className="w-full h-full">
+    return <div className="w-full">
         <div className="top-bar p-4" >
             <SearchBar />
 

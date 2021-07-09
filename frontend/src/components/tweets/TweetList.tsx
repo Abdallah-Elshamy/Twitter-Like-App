@@ -65,13 +65,9 @@ const TweetList: React.FC<TweetFilter> = (props) => {
         })
     }
     if (loading) return <Fragment><br /> <br /> <Loading size={30} /></Fragment>;
-<<<<<<< HEAD
     if (error) return <p>Something went wrong :(</p>;
     console.log("Tweets data", oldData)
     console.log("data is", data)
-=======
-    if (error) return <p>`Error! ${error.message}`</p>;
->>>>>>> 578a584023afcd46a0bfd77f40d9c2586f9d31b4
     return (
         <InfiniteScroll
             dataLength={data?.tweets?.tweets?.length || 0}

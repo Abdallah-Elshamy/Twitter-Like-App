@@ -24,16 +24,7 @@ const ChatConv: React.FC<PersonListProps> = (props) => {
 
   let { data, loading, error, fetchMore } = useQuery(GET_CHAT_CONV)
 
-  useEffect(() => {
-    console.log("from useEffect")
-    return chatUserVar({
-      id: list[0].with.id,
-      name: list[0].with.name,
-      username: list[0].with.username,
-      imgURL: list[0].with.imageURL
-    })
-
-  }, [])
+  
 
   console.log(data)
   if (!loading && data && data?.getConversationHistory?.conversations?.length === 10

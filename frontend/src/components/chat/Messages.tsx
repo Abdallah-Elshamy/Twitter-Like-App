@@ -3,14 +3,15 @@ import ALL_SEEN from '../../common/queries/ALL_SEEN';
 import { CHAT_HISTORY } from "../../common/queries/getChatHistory"
 import SEND_MESSAGE_sub from '../../common/queries/getChatSubscription';
 import FoF from '../../UI/FoF/FoF';
+import InfiniteScroll from "react-infinite-scroll-component";
 import Loading from '../../UI/Loading';
 
 import './Chat.css';
 
 const Messages: React.FC<any> = ({ userID }) => {
 
-  const { data, loading, error } = useQuery(CHAT_HISTORY, {
-    variables: { otherUserId: userID }
+  const { data, loading, error, fetchMore } = useQuery(CHAT_HISTORY, {
+    variables: { otherUserId: userID, page:1 }
   })
   console.log(userID)
   const [setAllSeen] = useMutation(ALL_SEEN)
@@ -32,27 +33,62 @@ const Messages: React.FC<any> = ({ userID }) => {
     setAllSeen(
       {
         variables: {
-          userId: userID
+          userId: userID,
         }
       }
     )
   }
+  // return (
+
+  //   <div onClick={setSeen} onScroll={setSeen}>
+
+  //     { (!loading) && data && [...data.getChatHistory.messages].reverse().map((message: any) => {
+  //       return (
+  //         <div className="messages" key={message.id}>
+  //           <Message message={message.message} user={message.from.id} otherUserId={userID} />
+  //         </div>
+  //       );
+  //     })
+  //     }
+  //     { (subData) ? (<div><p> {subData.messageSent.message}</p></div>) : null}
+
+  //   </div>
+  // )
   return (
-
-    <div onClick={setSeen} onScroll={setSeen}>
-
-      { (!loading) && data && [...data.getChatHistory.messages].reverse().map((message: any) => {
+    <div id="scrollableChat" style={{ height: "100vh", overflow: "auto", display: 'flex',
+    flexDirection: 'column-reverse', }}>
+      <InfiniteScroll
+            dataLength={data?.getChatHistory?.messages?.length || 0}
+            next={() => {
+                return fetchMore({
+                    variables: {
+                        otherUserId: userID,
+                        page: Math.floor((data?.getChatHistory?.messages?.length || 20) / 20) + 1,
+                    },
+                });
+            }}
+            style={{
+                overflow: "hidden"
+            }}
+            inverse={true}
+            className="pb-24"
+            hasMore={data?.getChatHistory?.totalCount > data?.getChatHistory?.messages?.length || false}
+            loader={<Loading />}
+            scrollableTarget="scrollableChat"
+        >
+            {data && [...data?.getChatHistory?.messages].reverse().map((message: any) => {
         return (
           <div className="messages" key={message.id}>
             <Message message={message.message} user={message.from.id} otherUserId={userID} />
           </div>
         );
-      })
-      }
-      { (subData) ? (<div><p> {subData.messageSent.message}</p></div>) : null}
-
+      })}
+        </InfiniteScroll>
+        { (subData) ? (<div><p> {subData.messageSent.message}</p></div>) : null}
     </div>
+    
   )
+  
 };
 
 

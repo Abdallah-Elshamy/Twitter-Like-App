@@ -75,28 +75,14 @@ const PersonList: React.FC<PersonListProps> = (props) => {
         >
             {list.map((person) => {
                 return (
-<<<<<<< HEAD
-                    <PersonItem
-                        key={person.userName}
-                        id={person.id}
-                        name={person.name}
-                        userName={person.userName}
-                        followed={person.followed}
-                        imageURL={person.imageURL}
-                        isFollowing={person.isFollowing}
-                        bio={person.bio}
-                        loggedUser={loggedUser}
-                        user={person}
-                    />
-=======
                     !fromChat ?
                         <PersonItem
-                            key={person.username}
+                            key={person.userName}
                             id={person.id}
                             name={person.name}
-                            username={person.username}
+                            userName={person.userName}
                             followed={person.followed}
-                            imageURI={person.imageURI}
+                            imageURL={person.imageURL}
                             isFollowing={person.isFollowing}
                             bio={person.bio}
                             loggedUser={loggedUser}
@@ -107,10 +93,9 @@ const PersonList: React.FC<PersonListProps> = (props) => {
                             key={person.id}
                             id={person.id}
                             name={person.name}
-                            username={person.username}
-                            imageURL={person.imageURI}
+                            username={person.userName}
+                            imageURL={person.imageURL}
                         />
->>>>>>> 578a584023afcd46a0bfd77f40d9c2586f9d31b4
                 );
             })}
         </InfiniteScroll>

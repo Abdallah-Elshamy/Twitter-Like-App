@@ -48,24 +48,26 @@ export const ChatPage: React.FC = () => {
             </div>
           </header>
 
-          <div style={{ height: "100vh", overflow: "scroll" }}>
+          <div >
             <div className="container">
               {/* {error && <p>ERROR</p>} */}
-              <Messages userID={userID} />
+              <Messages userID={2} />
             </div>
-            <Input userID={userID} />
+            <Input userID={2} />
           </div>
 
         </article>
 
-        <aside className="sb-right">
+        <aside  className="sb-right" style={{height: "100vh",overflow: "auto" }}>
 
-          <header className="top-bar px-3 py-2">
+          <header className="top-bar px-3 py-2"> 
             <div className="font-bold text-lg">
               Messages
                 </div>
-          </header>
+          </header> 
           <ChatList />
+
+
         </aside>
 
       </main>

@@ -17,11 +17,7 @@ import DangerConfirmationDialog from "../../../../UI/Dialogs/DangerConfirmationD
 import ErrorDialog from "../../../../UI/Dialogs/ErroDialog"
 
 
-<<<<<<< HEAD
-const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, userName, followed = false, imageURL, numberOfFollowers, loggedUser, user }) => {
-=======
-const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, username, followed = false, imageURI, numberOfFollowers, loggedUser, user, fromChat }) => {
->>>>>>> 578a584023afcd46a0bfd77f40d9c2586f9d31b4
+const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, userName, followed = false, imageURL, numberOfFollowers, loggedUser, user, fromChat }) => {
   const history = useHistory();
   const location = useLocation();
   const [banUser] = useMutation(BanUser, {

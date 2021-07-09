@@ -5,9 +5,102 @@ import { parseJwt } from "../decode";
 import { apolloClient } from "../apolloClient";
 import ReportedTweets from "../queries/reportedTweets";
 import ReportedUsers from "../queries/reportedUsers";
+import UnseenMessageCount from "../queries/unseenMessageCount"
 import { CHAT_HISTORY } from "../queries/getChatHistory"
+import {GET_CHAT_CONV} from "../queries/GET_CHAT_CONV"
 import { gql } from "@apollo/client";
 import { cache } from "../cache";
+
+const createConvElement = async(chatMessage: any, isFrom: any) => {
+    const convElement:any = {}
+    const user = isFrom? chatMessage.from:chatMessage.to;
+    convElement.with = user;
+    const unseenMessages = await apolloClient.query({
+        query: UnseenMessageCount,
+        variables: {
+            userId: user?.id,
+        },
+    });
+    convElement.unseenMessageCount = unseenMessages?.data?.getUnseenMessagesCountFromUser;
+    convElement.lastMessage = {message: chatMessage?.message, createdAt: chatMessage?.createdAt}
+    return convElement;
+}
+
+const sendReceiveMessage = async(chatMessage: any, isFrom: any) => {
+    const user = isFrom? chatMessage.from:chatMessage.to;
+    let conversation:any = {}
+    let conversations: any = cache.readQuery({
+        query: GET_CHAT_CONV
+    });
+    if (!conversations) {
+        conversations = await apolloClient.query({
+            query: GET_CHAT_CONV,
+        });
+    }
+    let flage = 0;
+    for (let conversation_data of conversations?.getConversationHistory?.conversations) {
+        if(conversation_data?.with?.id === user?.id) {
+            conversation.with = conversation_data?.with;
+            conversation.unseenMessageCount = isFrom?(conversation_data?.unseenMessageCount || 0) + 1 : (conversation_data?.unseenMessageCount || 0);
+            conversation.lastMessage = {message: chatMessage?.message, createdAt: chatMessage?.createdAt}
+            flage = 1;
+            break;
+        }
+    }
+    if(!flage) {
+        conversation = await createConvElement(chatMessage, isFrom);
+    }
+    const conversations_array:any = []
+    conversations_array.push(conversation);
+    flage = 0;
+    for (let conversation_data of conversations?.getConversationHistory?.conversations) {
+        if(conversation_data?.with?.id !== user?.id || flage) {
+            conversations_array.push(conversation_data);
+        }
+        else {
+            flage = 1;
+        }
+    }
+    conversations &&
+        cache.writeQuery({
+            query: GET_CHAT_CONV,
+            data: {
+                getConversationHistory: {
+                    __typename: "SendReceiveMessage",
+                    conversations: [...conversations_array],
+                    totalCount: conversations?.getConversationHistory?.totalCount,
+                },
+            },
+        });
+
+    let messages: any = cache.readQuery({
+        query: CHAT_HISTORY,
+        variables: {
+            otherUserId: parseInt(user?.id)
+        },
+    });
+    if (!messages) {
+        messages = await apolloClient.query({
+            query: CHAT_HISTORY,
+            variables: {
+                otherUserId: parseInt(user?.id),
+            },
+        });
+    }
+    messages &&
+        cache.writeQuery({
+            query: CHAT_HISTORY,
+            variables: {
+                otherUserId: parseInt(user?.id)
+            },
+            data: {
+                getChatHistory: {
+                    messages: [chatMessage, ...(messages?.getChatHistory?.messages || [])],
+                    totalCount: messages?.getChatHistory?.totalCount + 1,
+                },
+            },
+        });
+}
 
 const writeTweetsFeedData = async (
     isSFW: boolean,
@@ -217,33 +310,34 @@ const decrementTweetsProfileData = (
 
 export const updateChatMessagesForSendMessage = async(cache: any, {data}: any, otherUserId: any) => {
     const newMessage = data.sendMessage
-    let messages: any = cache.readQuery({
-        query: CHAT_HISTORY,
-        variables: {
-            otherUserId
-        },
-    });
-    if (!messages) {
-        messages = await apolloClient.query({
-            query: CHAT_HISTORY,
-            variables: {
-                otherUserId,
-            },
-        });
-    }
-    messages &&
-        cache.writeQuery({
-            query: CHAT_HISTORY,
-            variables: {
-                otherUserId,
-            },
-            data: {
-                getChatHistory: {
-                    messages: [newMessage, ...(messages?.getChatHistory?.messages || [])],
-                    totalCount: messages?.getChatHistory?.totalCount + 1,
-                },
-            },
-        });
+    await sendReceiveMessage(newMessage, false);
+    // let messages: any = cache.readQuery({
+    //     query: CHAT_HISTORY,
+    //     variables: {
+    //         otherUserId
+    //     },
+    // });
+    // if (!messages) {
+    //     messages = await apolloClient.query({
+    //         query: CHAT_HISTORY,
+    //         variables: {
+    //             otherUserId,
+    //         },
+    //     });
+    // }
+    // messages &&
+    //     cache.writeQuery({
+    //         query: CHAT_HISTORY,
+    //         variables: {
+    //             otherUserId,
+    //         },
+    //         data: {
+    //             getChatHistory: {
+    //                 messages: [newMessage, ...(messages?.getChatHistory?.messages || [])],
+    //                 totalCount: messages?.getChatHistory?.totalCount + 1,
+    //             },
+    //         },
+    //     });
 }
 
 export const updateTweetsCacheForCreateTweet = async (

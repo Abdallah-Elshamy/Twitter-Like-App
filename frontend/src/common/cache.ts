@@ -182,10 +182,13 @@ const createPaginationAndCombineUsersElements = (keyArgs: any[]) => ({
 
 const createPaginationAndCombineConvElements = (keyArgs: any[]) => ({
     merge(existing: any, incoming: any) {
+        console.log("incoming is", incoming)
+        console.log("exisitng is", existing)
         if (
             incoming?.__typename &&
-            incoming?.__typename == "SendReceiveMessage"
+            incoming?.__typename === "SendReceiveMessage"
         ) {
+            console.log("should return")
             return incoming;
         }
         const merged = existing

@@ -27,14 +27,6 @@ const ChatConv: React.FC<PersonListProps> = (props) => {
   
 
   console.log(data)
-  if (!loading && data && data?.getConversationHistory?.conversations?.length === 20
-    && data?.getConversationHistory?.totalCount > 20) {
-    fetchMore({
-      variables: {
-        page: 2,
-      },
-    })
-  }
   if (loading) return <Loading />
   if (error) return <h1 className="text-lg text-center pt-4 text-gray-500">Something went wrong :( </h1>
 

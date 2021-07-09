@@ -51,9 +51,9 @@ export const ChatPage: React.FC = () => {
           <div >
             <div className="container">
               {/* {error && <p>ERROR</p>} */}
-              <Messages userID={1} />
+              <Messages userID={8} />
             </div>
-            <Input userID={1} />
+            <Input userID={8} />
           </div>
 
         </article>

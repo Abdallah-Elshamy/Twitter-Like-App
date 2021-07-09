@@ -90,6 +90,21 @@ export default {
         totalCount: ChatMessage.count(searchConditions),
       };
     },
+    getUnseenMessagesCountFromUser:async(parent:any, args:{userId: number}, context:any, info:any) => {
+      const {userId} = args
+      const { user, authError } = context.req;
+      if (authError) {
+        throw authError;
+      }
+      const searchConditions = {
+        where: {
+          to: user.id,
+          from: userId,
+          isSeen: false,
+        },
+      };
+      return await ChatMessage.count(searchConditions)
+    },
     getConversationHistory: async (
       parent: any,
       args: { page: number },

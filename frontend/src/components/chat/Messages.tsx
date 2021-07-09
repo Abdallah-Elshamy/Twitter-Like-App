@@ -5,6 +5,7 @@ import SEND_MESSAGE_sub from '../../common/queries/getChatSubscription';
 import FoF from '../../UI/FoF/FoF';
 import InfiniteScroll from "react-infinite-scroll-component";
 import Loading from '../../UI/Loading';
+import {useRef, useEffect} from "react"
 
 import './Chat.css';
 
@@ -16,14 +17,25 @@ const Messages: React.FC<any> = ({ userID }) => {
   console.log(userID)
   const [setAllSeen] = useMutation(ALL_SEEN)
 
-
-  const { data: subData } = useSubscription(SEND_MESSAGE_sub, {
-    onSubscriptionData() {
-      console.log("arrive Message")
+  const messagesEndRef = useRef<any>(null)
+  const listInnerRef = useRef<any>()
+  // const { data: subData } = useSubscription(SEND_MESSAGE_sub, {
+  //   onSubscriptionData() {
+  //     console.log("arrive Message")
+  //   }
+  // })
+  // subData && console.log("sub data", subData)
+  const scrollToBottom = () => {
+    if (!messagesEndRef || !messagesEndRef?.current) return;
+    const {scrollTop} = listInnerRef?.current
+    if (scrollTop === 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
     }
-  })
-  subData && console.log("sub data", subData)
-
+    
+  }
+  useEffect(() => {
+    scrollToBottom()
+  }, [data]);
   if (userID == "-1" || userID == null) return <Loading size="20" />
   if (userID == "0") return <FoF fof={false} msg={"You don't have any message"} secMsg={"try searching for some user"} />
 
@@ -56,7 +68,8 @@ const Messages: React.FC<any> = ({ userID }) => {
   // )
   return (
     <div id="scrollableChat" style={{ height: "100vh", overflow: "auto", display: 'flex',
-    flexDirection: 'column-reverse', }}>
+    flexDirection: 'column-reverse', }} className="relative" ref={listInnerRef}>
+      <p className="absolute top-0" ref={messagesEndRef}></p>
       <InfiniteScroll
             dataLength={data?.getChatHistory?.messages?.length || 0}
             next={() => {
@@ -71,20 +84,23 @@ const Messages: React.FC<any> = ({ userID }) => {
                 overflow: "hidden"
             }}
             inverse={true}
-            className="pb-24"
+            className="pb-24 h-screen pt-10"
             hasMore={data?.getChatHistory?.totalCount > data?.getChatHistory?.messages?.length || false}
             loader={<Loading />}
             scrollableTarget="scrollableChat"
         >
             {data && [...data?.getChatHistory?.messages].reverse().map((message: any) => {
         return (
-          <div className="messages" key={message.id}>
-            <Message message={message.message} user={message.from.id} otherUserId={userID} />
+          <div className="messages" key={message.id}  >
+            <Message message={message.message} user={message.from.id} otherUserId={userID}  />
+            <div ></div>
           </div>
         );
       })}
+        
+
         </InfiniteScroll>
-        { (subData) ? (<div><p> {subData.messageSent.message}</p></div>) : null}
+        {/* { (subData) ? (<div><p> {subData.messageSent.message}</p></div>) : null} */}
     </div>
     
   )

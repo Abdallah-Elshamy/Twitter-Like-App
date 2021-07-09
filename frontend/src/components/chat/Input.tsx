@@ -10,9 +10,7 @@ import './Chat.css';
 const Input: React.FC<any> = ({ userID }) => {
 
   const [sendMessage, { data }] = useMutation(SEND_MESSAGE, {
-    update(cache, data) {
-      updateChatMessagesForSendMessage(cache, data, userID)
-    }
+    update: (cache, data) => updateChatMessagesForSendMessage(cache, data)
   });
   const [message, setMessage] = useState("")
 

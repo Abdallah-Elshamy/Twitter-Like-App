@@ -16,7 +16,8 @@ import ExtendedTweet from "../components/tweets/ExtendedTweet/ExtendedTweet";
 import FollowWall from "../components/profile/FollowWall";
 import {useSubscription} from "@apollo/client"
 import LiveFeed from "../common/queries/liveFeed"
-import {updateLiveFeed} from "../common/utils/writeCache"
+import {updateLiveFeed, updateChatMessagesForReceiveMessage} from "../common/utils/writeCache"
+import GetChatSub from "../common/queries/getChatSubscription"
 import {useState} from "react"
 import { ChatPage } from "../components/chat/ChatPage";
 
@@ -115,6 +116,7 @@ export const Routing = () => {
 
 const PrivateRoute = ({ children, ...rest }: any) => {
   const [prevData, setData] = useState<any>(undefined)
+  const [prevChatData, setChatData] = useState<any>(undefined)
   let {data: subFeedData, loading} = useSubscription(LiveFeed, {
     onSubscriptionData() {
         if (!subFeedData) return;
@@ -122,6 +124,15 @@ const PrivateRoute = ({ children, ...rest }: any) => {
         setData(subFeedData);
         console.log("subFeed", subFeedData)
         !loading && subFeedData && updateLiveFeed(subFeedData.liveFeed)
+    },
+  })
+  let {data: subChatData, loading: chatLoading} = useSubscription(GetChatSub, {
+    onSubscriptionData() {
+        if (!subChatData) return;
+        if (prevChatData && subChatData.messageSent.id === prevChatData.messageSent.id) return;
+        setChatData(subChatData);
+        console.log("subChatData", subChatData)
+        !chatLoading && subChatData && updateChatMessagesForReceiveMessage(subChatData.messageSent)
     },
   })
   let auth = localStorage.getItem('token') ? true : false

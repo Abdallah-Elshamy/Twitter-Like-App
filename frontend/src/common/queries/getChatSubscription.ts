@@ -1,11 +1,11 @@
 import { gql } from "@apollo/client";
 
-export const SEND_MESSAGE_sub = gql`
+const GetChatSub = gql`
 subscription messageSent
 { messageSent {
       id
-      from {userName id},
-      to {userName id},
+      from {userName id name imageURL},
+      to {userName id name imageURL},
       message
       createdAt
       updatedAt
@@ -13,4 +13,4 @@ subscription messageSent
     }
   }
 `
-export default SEND_MESSAGE_sub;
+export default GetChatSub;

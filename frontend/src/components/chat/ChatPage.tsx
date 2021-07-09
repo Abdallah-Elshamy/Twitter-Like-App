@@ -13,7 +13,7 @@ import "./Chat.css"
 export const ChatPage: React.FC = () => {
 
   const { data, loading, error } = useQuery(Active_Chat_User)
-  console.log(data)
+  console.log("active chat users is",data)
 
   if (loading) return <p> loading </p>
   console.log("error: " + error)
@@ -51,9 +51,9 @@ export const ChatPage: React.FC = () => {
           <div >
             <div className="container">
               {/* {error && <p>ERROR</p>} */}
-              <Messages userID={8} />
+              <Messages userID={data?.chatUser?.id} />
             </div>
-            <Input userID={8} />
+            <Input userID={data?.chatUser?.id} />
           </div>
 
         </article>

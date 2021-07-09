@@ -55,7 +55,8 @@ const PersonList: React.FC<PersonListProps> = (props) => {
     if (list.length === 0)
         return <h1 className="text-lg text-center pt-4">No Results</h1>;
     return (
-        <InfiniteScroll
+        <div id={fromChat?"scrollableUsers":""} style={fromChat?{ height: "100vh", overflow: "auto"}:{}}>
+            <InfiniteScroll
             dataLength={list?.length || 0}
             next={() => {
                 setPage(Math.floor((list?.length || 10) / 10) + 1);
@@ -71,7 +72,8 @@ const PersonList: React.FC<PersonListProps> = (props) => {
             style={{
                 overflow: "hidden"
             }}
-            className="pb-20"
+            className="mb-48"
+            scrollableTarget="scrollableUsers"
         >
             {list.map((person) => {
                 return (
@@ -99,6 +101,8 @@ const PersonList: React.FC<PersonListProps> = (props) => {
                 );
             })}
         </InfiniteScroll>
+        </div>
+        
 
     )
 }

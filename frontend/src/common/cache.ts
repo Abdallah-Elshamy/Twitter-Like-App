@@ -180,6 +180,27 @@ const createPaginationAndCombineUsersElements = (keyArgs: any[]) => ({
     keyArgs,
 });
 
+const createPaginationAndCombineConvElements = (keyArgs: any[]) => ({
+    merge(existing: any, incoming: any) {
+        if (
+            incoming?.__typename &&
+            incoming?.__typename == "SendReceiveMessage"
+        ) {
+            return incoming;
+        }
+        const merged = existing
+            ? { totalCount: existing.totalCount, conversations: [...existing.conversations] }
+            : { totalCount: 0, conversations: [] };
+        merged.totalCount = incoming.totalCount;
+        merged.conversations = [...merged.conversations, ...incoming.conversations]
+        return merged;
+    },
+    read(existing: any) {
+        return existing;
+    },
+    keyArgs,
+});
+
 export const cache: InMemoryCache = new InMemoryCache({
     typePolicies: {
         Query: {
@@ -222,6 +243,7 @@ export const cache: InMemoryCache = new InMemoryCache({
                 reportedUsers: createPaginationAndCombineUsersElements([]),
                 NSFWTweets: createPaginationAndCombineTweetsElements([]),
                 getChatHistory: createPaginationAndCombineChatsElements(["otherUserId"]),
+                getConversationHistory: createPaginationAndCombineConvElements([]),
                 // tweet: createPaginationAndCombineTweetElements(["id", "isSFW"])
             },
         },

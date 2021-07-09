@@ -14,8 +14,9 @@ export interface PersonEntity {
   imageURL?: string,
   bio?: string,
   isFollowing?: Boolean
-  loggedUser?: any 
+  loggedUser?: any
   user?: any
+  fromChat?: Boolean
 }
 
 export interface User {

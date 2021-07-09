@@ -25,13 +25,26 @@ export default gql`
         messageBody: String!
     }
 
+    type Conversation {
+        with: User!
+        unseenMessageCount: Int!
+        lastMessage: ChatMessage!
+    }
+
+    type PaginatedConversations {
+        totalCount: Int!
+        conversations: [Conversation]!
+    }
+
     extend type Query {
         getChatHistory(otherUserId: ID!, page: Int): PaginatedChatMessages!
         getUnseenMessages(page: Int): PaginatedChatMessages!
+        getConversationHistory(page: Int): PaginatedConversations!
     }
 
     extend type Mutation {
         sendMessage(message: SendMessageInput!): ChatMessage!
         setMessageSeen(messageId: ID!): Boolean!
+        setAllMessagesFromUserSeen(userId: ID!): Boolean!
     }
 `;

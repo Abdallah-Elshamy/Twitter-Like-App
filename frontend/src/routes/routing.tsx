@@ -18,6 +18,8 @@ import {useSubscription} from "@apollo/client"
 import LiveFeed from "../common/queries/liveFeed"
 import {updateLiveFeed} from "../common/utils/writeCache"
 import {useState} from "react"
+import { ChatPage } from "../components/chat/ChatPage";
+
 
 export const Routing = () => {
   
@@ -37,8 +39,12 @@ export const Routing = () => {
           <Setting />
         </PrivateRoute>
 
+        <PrivateRoute path="/chat">
+          <ChatPage />
+        </PrivateRoute>
+
         <PrivateRoute path="/profile/following">
-          <FollowWall   FollowType = "following" />
+          <FollowWall FollowType = "following" />
         </PrivateRoute>
 
         <PrivateRoute path="/profile/follower">
@@ -46,7 +52,7 @@ export const Routing = () => {
         </PrivateRoute>
 
         <Route path='/:id/following'>
-        <FollowWall   FollowType = "following" />
+        <FollowWall FollowType = "following" />
         </Route>
 
         <Route path='/:id/follower'>
@@ -67,7 +73,7 @@ export const Routing = () => {
         </Route>
 
         <PrivateRoute path="/messages">
-          <Messages />
+          <ChatPage />
         </PrivateRoute>
 
 
@@ -78,6 +84,7 @@ export const Routing = () => {
         <AdminRoute path="/admin">
           <AdminDashBoard />
         </AdminRoute>
+
         <PrivateRoute path="/Notifications">
           <Notifications />
         </PrivateRoute>
@@ -204,11 +211,6 @@ function Setting() {
   return <h2>setting</h2>;
 }
 
-
-
-function Messages() {
-  return <h2>Messages</h2>;
-}
 function Notifications() {
   return <h2>Notifications</h2>;
 }

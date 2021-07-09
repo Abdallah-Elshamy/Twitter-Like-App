@@ -85,14 +85,14 @@ const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
 const createPaginationAndCombineTweetElements = (keyArgs: any[]) => ({
     merge(existing: any, incoming: any) {
         // const merged = existing ? existing:incoming
-            // ? { totalCount: existing.totalCount, tweets: [...existing.tweets] }
-            // : { totalCount: 0, tweets: [] };
+        // ? { totalCount: existing.totalCount, tweets: [...existing.tweets] }
+        // : { totalCount: 0, tweets: [] };
         if (incoming.id) {
             console.log("incoming is", incoming.replies)
-        const merged = {...incoming, replies:{totalCount: incoming.replies.totalCount, tweets: [...incoming.replies.tweets]}}
-        console.log("merged is", merged)
-        if(merged) merged.replies.tweets = [...existing.replies.tweets, incoming.replies.tweets]
-        return merged;
+            const merged = { ...incoming, replies: { totalCount: incoming.replies.totalCount, tweets: [...incoming.replies.tweets] } }
+            console.log("merged is", merged)
+            if (merged) merged.replies.tweets = [...existing.replies.tweets, incoming.replies.tweets]
+            return merged;
         }
         // return incoming
     },
@@ -149,6 +149,11 @@ export const cache: InMemoryCache = new InMemoryCache({
                         return searchBarVar();
                     },
                 },
+                chatUser: {
+                    read() {
+                        return chatUserVar();
+                    },
+                },
                 EditProfileImage: {
                     read() {
                         return EditProfileImageVal();
@@ -201,5 +206,13 @@ export const EditProfileBgVal: ReactiveVar<{
 });
 
 export const SFW: ReactiveVar<{ value: boolean }> = makeVar<any>({
-    value:  localStorage.getItem("SFW") ? JSON.parse(localStorage.getItem("SFW")!): true
+    value: localStorage.getItem("SFW") ? JSON.parse(localStorage.getItem("SFW")!) : true
 });
+
+export const chatUserVar: ReactiveVar<any> = makeVar<any>({
+    id: undefined,
+    name: undefined,
+    username: undefined,
+    imgURL: undefined
+});
+

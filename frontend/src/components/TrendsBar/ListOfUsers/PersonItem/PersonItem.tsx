@@ -1,7 +1,7 @@
-import React from 'react';
-import {ToolBox} from "../../../sideBar/toolbox/toolbox"
+import React, { Fragment } from 'react';
+import { ToolBox } from "../../../sideBar/toolbox/toolbox"
 import { PersonEntity } from '../../../../common/TypesAndInterfaces';
-import {useMutation} from "@apollo/client"
+import { useMutation } from "@apollo/client"
 import './PersonItem.css'
 import '../../../profile/profile.css'
 import FollowButton from '../../../FollowButton/FollowButton';
@@ -11,13 +11,17 @@ import BanUser from "../../../../common/queries/banUser"
 import UnbanUser from "../../../../common/queries/unbanUser"
 import ReportUser from "../../../../common/queries/reportUser"
 import IgnoreReportedUser from "../../../../common/queries/ignoreReportedUser"
-import {updateUsersCacheForBanUser, updateUsersCacheForIgnoreReportedUser, updateUsersCacheForUnBanUser, updateUsersCacheForReportUser} from "../../../../common/utils/writeCache"
-import {CustomDialog} from 'react-st-modal'
+import { updateUsersCacheForBanUser, updateUsersCacheForIgnoreReportedUser, updateUsersCacheForUnBanUser, updateUsersCacheForReportUser } from "../../../../common/utils/writeCache"
+import { CustomDialog } from 'react-st-modal'
 import DangerConfirmationDialog from "../../../../UI/Dialogs/DangerConfirmationDialog"
 import ErrorDialog from "../../../../UI/Dialogs/ErroDialog"
 
 
+<<<<<<< HEAD
 const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, userName, followed = false, imageURL, numberOfFollowers, loggedUser, user }) => {
+=======
+const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, username, followed = false, imageURI, numberOfFollowers, loggedUser, user, fromChat }) => {
+>>>>>>> 578a584023afcd46a0bfd77f40d9c2586f9d31b4
   const history = useHistory();
   const location = useLocation();
   const [banUser] = useMutation(BanUser, {
@@ -47,10 +51,10 @@ const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, userNam
     })
 
   }
-  const handleToolBoxButtons = async(e: any, func:any, message:any, title:any) => {
+  const handleToolBoxButtons = async (e: any, func: any, message: any, title: any) => {
     e.stopPropagation();
     try {
-      const result = await CustomDialog(<DangerConfirmationDialog message={message}/>, {
+      const result = await CustomDialog(<DangerConfirmationDialog message={message} />, {
         title,
         showCloseIcon: false,
       });
@@ -60,7 +64,7 @@ const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, userNam
             userId: id
           }
         })
-      }  
+      }
     }
     catch (e) {
       const error = await CustomDialog(<ErrorDialog message={e.message} />, {
@@ -69,10 +73,10 @@ const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, userNam
       });
     }
   }
-  const handleBanButton = (e:any) => {
+  const handleBanButton = (e: any) => {
     handleToolBoxButtons(e, banUser, "Are you sure you want to ban this user?", "Confirm Ban")
   }
-  const handleIgnoreButton = (e:any) => {
+  const handleIgnoreButton = (e: any) => {
     handleToolBoxButtons(e, ignoreReportedUser, "Are you sure you want to ignore this reported user?", "Confirm Ignore")
   }
   const handleUnbanButton = (e: any) => {
@@ -97,26 +101,27 @@ const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, userNam
         <p className="person-item-username"><span className="text-xm">@</span>{userName}</p>
         <p>{bio}</p>
       </div>
+
       <div className="relative mt-10 left-7">
         {localStorage.getItem('token') && (id == parseJwt(localStorage.getItem('token')).id) ? null :
           <FollowButton id={id} following={isFollowing} user={user}/>}
       </div>
       <ToolBox
-          design={
-            <i className="fas fa-ellipsis-h hover:bg-gray-400 p-1 px-2 rounded-full cursor-pointer"></i>
-          }
-        >
-          <ul className=" bg-gray-100 mb-40 right-8 absolute  z-10 cursor-pointer " >
+        design={
+          <i className="fas fa-ellipsis-h hover:bg-gray-400 p-1 px-2 rounded-full cursor-pointer"></i>
+        }
+      >
+        <ul className=" bg-gray-100 mb-40 right-8 absolute  z-10 cursor-pointer " >
           {loggedUser?.isAdmin && loggedUser.id != id && !user?.isBanned ? <button onClick={handleBanButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
-          " >Ban</button>: loggedUser?.isAdmin && user?.isBanned ? <button onClick={handleUnbanButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
-          " >Unban</button>: null}
+          " >Ban</button> : loggedUser?.isAdmin && user?.isBanned ? <button onClick={handleUnbanButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
+          " >Unban</button> : null}
           {loggedUser?.isAdmin && location.pathname.includes("/admin") ? <button onClick={handleIgnoreButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
-          " >Ignore</button>:null}
-          {loggedUser?.id != id && !user.isBanned? <button onClick={handleReportUserButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
-          " >Report</button>: null}
+          " >Ignore</button> : null}
+          {loggedUser?.id != id && !user.isBanned ? <button onClick={handleReportUserButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200
+          " >Report</button> : null}
 
-          </ul>
-        </ToolBox>
+        </ul>
+      </ToolBox>
     </div>
   )
 }

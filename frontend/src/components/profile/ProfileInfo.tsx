@@ -48,6 +48,12 @@ const handlePathFollower = () => {
   })
   }
 
+  const handleMessage = () => {
+    location.push({
+      pathname: "/message" + location.location.pathname 
+    })
+    }
+
   return (
 
     <Fragment>
@@ -106,11 +112,29 @@ const handlePathFollower = () => {
         </div>
 
         <div className="pf--info">
-          <div className="pf--flw-btn-div p-3 h-12">
-            {self ? < button onClick={() => setEdit(true)} className={"pf--follow-btn rounded-full px-3 font-semibold text-xm  py-2 mt-3 "}>
+          <div className="pf--flw-btn-div p-3 h-12 mt-3">
+            {self ?<div>
+
+            < button onClick={() => setEdit(true)} className={"pf--follow-btn rounded-full px-3 font-semibold text-xm  py-2 mt-3 "}>
               Edit Profile
+<<<<<<< HEAD
             </button > :
               <FollowButton id={user.id} following={user.isFollowing} user={user} py="py-2" px="px-4" />
+=======
+            </button > 
+
+            </div>
+            :
+            <div>
+{/* TODO handle when we get the path handle route */}
+            < button  onClick={ handleMessage } className={"pf--follow-btn rounded-full px-3 font-semibold text-xm  py-2 mt-3 mr-4 "}>
+           
+            <i className="fas fa-envelope" ></i>
+            </button > 
+              <FollowButton id={user.id} following={user.isFollowing} py="py-2" px="px-4" />
+             
+              </div>
+>>>>>>> 578a584023afcd46a0bfd77f40d9c2586f9d31b4
             }
 
 

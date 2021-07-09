@@ -41,7 +41,7 @@ export function FlootProfile () {
       const userYear:number = (data.user.birthDate).split("-", 1)
       const currentYear = new Date()
       const age = currentYear.getFullYear() - userYear   ; 
-      console.log (data2,age, userYear, currentYear.getFullYear())
+
       return (
 
          

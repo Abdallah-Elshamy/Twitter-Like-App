@@ -12,7 +12,23 @@ import { gql } from "@apollo/client";
 import { cache } from "../cache";
 import ALL_SEEN from '../queries/ALL_SEEN';
 import SetMessageSeen from "../queries/setMessageSeen"
+import AllUnseenMessagesCount from "../queries/allUnseenMessagesCount"
 
+
+const incrementDecrementAllUnseenMessagesCount = (value: number) => {
+    const messagesCountData:any = cache.readQuery({
+        query: AllUnseenMessagesCount
+    })
+    cache.writeQuery({
+        query: AllUnseenMessagesCount,
+        data: {
+            getUnseenMessages: {
+                totalCount: messagesCountData?.getUnseenMessages?.totalCount + value,
+                __typename: "PaginatedChatMessages"
+            }
+        }
+    })
+}
 const createConvElement = async(chatMessage: any, isFrom: any) => {
     const convElement:any = {}
     const user = isFrom? chatMessage.from:chatMessage.to;
@@ -30,21 +46,27 @@ const createConvElement = async(chatMessage: any, isFrom: any) => {
 }
 
 const sendReceiveMessage = async(chatMessage: any, isFrom: any) => {
+    
     const user = isFrom? chatMessage.from:chatMessage.to;
     let conversation:any = {}
     let conversations: any = cache.readQuery({
         query: GET_CHAT_CONV
     });
+    let decrementor = 0;
     if (!conversations) {
         conversations = await apolloClient.query({
             query: GET_CHAT_CONV,
         });
+        conversations = conversations.data;
+        decrementor = -1
+
     }
+    console.log("conversations is ", conversations)
     let flage = 0;
     for (let conversation_data of conversations?.getConversationHistory?.conversations) {
         if(conversation_data?.with?.id === user?.id) {
             conversation.with = conversation_data?.with;
-            conversation.unseenMessageCount = isFrom?(conversation_data?.unseenMessageCount || 0) + 1 : (conversation_data?.unseenMessageCount || 0);
+            conversation.unseenMessageCount = isFrom?(conversation_data?.unseenMessageCount || 0) + 1 + decrementor : (conversation_data?.unseenMessageCount || 0);
             const time = isFrom?new Date(chatMessage?.createdAt).getTime():chatMessage?.createdAt
             conversation.lastMessage = {message: chatMessage?.message, createdAt: time}
             flage = 1;
@@ -95,6 +117,8 @@ const sendReceiveMessage = async(chatMessage: any, isFrom: any) => {
                 otherUserId: user?.id,
             },
         });
+        messages = messages.data;
+        decrementor = -1
     }
     messages &&
         cache.writeQuery({
@@ -105,10 +129,11 @@ const sendReceiveMessage = async(chatMessage: any, isFrom: any) => {
             data: {
                 getChatHistory: {
                     messages: [chatMessage, ...(messages?.getChatHistory?.messages || [])],
-                    totalCount: messages?.getChatHistory?.totalCount + 1,
+                    totalCount: messages?.getChatHistory?.totalCount + 1 + decrementor,
                 },
             },
         });
+    isFrom && incrementDecrementAllUnseenMessagesCount(1);
 }
 
 const setUnseensToZero = (userId: any) => {
@@ -123,6 +148,7 @@ const setUnseensToZero = (userId: any) => {
         if(conversation_data?.with?.id === userId) {
             conversation.with = conversation_data?.with;
             callMutation = conversation_data.unseenMessageCount>0?1:0;
+            incrementDecrementAllUnseenMessagesCount(-1 * conversation_data.unseenMessageCount);
             conversation.unseenMessageCount = 0;
             conversation.lastMessage = conversation_data?.lastMessage;
             flage = 1;

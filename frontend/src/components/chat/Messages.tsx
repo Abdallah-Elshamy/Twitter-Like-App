@@ -95,7 +95,7 @@ const Messages: React.FC<any> = ({ userID }) => {
           overflow: "hidden"
         }}
         inverse={true}
-        className="pb-24 h-screen"
+        className="pb-24 h-screen mt-10"
         hasMore={data?.getChatHistory?.totalCount > data?.getChatHistory?.messages?.length || false}
         loader={<Loading />}
         scrollableTarget="scrollableChat"

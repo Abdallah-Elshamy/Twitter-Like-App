@@ -3,7 +3,8 @@ import './sideBarItem'
 
 interface SideBar_Item {
   item_name?: string,
-  icon_name: string
+  icon_name: string,
+  countUnseen?: number
 }
 
 export class SideBarItem extends Component<SideBar_Item>{
@@ -20,6 +21,9 @@ export class SideBarItem extends Component<SideBar_Item>{
             hover:rounded-full focus:shadow-outline-none align-middle items-center transition">
                 <i className={`mr-2 px-2 text-lg ${this.props.icon_name}`} ></i>
                 <b className=" font-semibold text-right text-xl hidden md:inline-block"> {this.props.item_name} </b>
+                {this.props.countUnseen? <b className="ml-4 bg-red-500 rounded-full text-white p-1 px-2" >{this.props.countUnseen}</b>: null}
+                
+                
               </button>
 
             </div>

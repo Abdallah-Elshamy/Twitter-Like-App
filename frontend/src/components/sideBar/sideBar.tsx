@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react'
+import {useQuery} from '@apollo/client'
 import { Link } from "react-router-dom";
 import '../../App.css';
 import "../../styles/layout.css"
@@ -9,11 +10,17 @@ import { TweetButton } from './tweetButton/tweetButton'
 import { FlootProfile } from './flootProfile/flootProfile'
 import Modal from '../../UI/Modal/Modal';
 import PostTweet from '../tweets/PostTweet';
+import AllUnseenMessagesCount from "../../common/queries/allUnseenMessagesCount"
 
 export function SideBar() {
   let loggedUser;
+  const {data: unSeenCountData, loading, error} = useQuery(AllUnseenMessagesCount);
   if (localStorage.getItem("token")) {
     loggedUser = parseJwt(localStorage.getItem("token")!)
+  }
+  let unSeenCount = 0
+  if(!loading && unSeenCountData) {
+    unSeenCount = (unSeenCountData?.getUnseenMessages?.totalCount || 0)
   }
   const [edit, setEdit] = useState<boolean>(false);
   const modalClosed = () => setEdit(false);
@@ -54,7 +61,7 @@ export function SideBar() {
       </Link>
 
       <Link to="/messages">
-        <SideBarItem item_name='Messages' icon_name="fas fa-envelope" />
+        <SideBarItem item_name='Messages' icon_name="fas fa-envelope" countUnseen={unSeenCount}/>
       </Link>
 
       <Link to="/profile">

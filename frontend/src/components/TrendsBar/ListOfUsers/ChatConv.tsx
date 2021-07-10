@@ -20,11 +20,11 @@ const ChatConv: React.FC<PersonListProps> = (props) => {
   if (localStorage.getItem("token")) {
     loggedUser = parseJwt(localStorage?.getItem("token")!)
   }
-  var unique: any=[]
+  var unique: any = []
 
   let { data, loading, error, fetchMore } = useQuery(GET_CHAT_CONV)
 
-  
+
 
   console.log(data)
   if (loading) return <Loading />
@@ -32,48 +32,55 @@ const ChatConv: React.FC<PersonListProps> = (props) => {
 
 
   const list: any[] = data.getConversationHistory.conversations
-
+  if (!loading && !error) {
+    chatUserVar({
+      id: 3,
+      name: list[0].with.name,
+      username: list[0].with.username,
+      imgURL: list[0].with.imageURL
+    })
+  }
   return (
-    <div id="scrollableConv" style={{ height: "100vh", overflow: "auto"}}>
+    <div id="scrollableConv" style={{ height: "100vh", overflow: "auto" }}>
       <InfiniteScroll
-      dataLength={list?.length || 0}
-      next={() => {
-        props.setPage(Math.floor((list?.length || 20) / 20) + 1);
-        return fetchMore({
-          variables: {
-            page: Math.floor((list?.length || 20) / 20) + 1,
+        dataLength={list?.length || 0}
+        next={() => {
+          props.setPage(Math.floor((list?.length || 20) / 20) + 1);
+          return fetchMore({
+            variables: {
+              page: Math.floor((list?.length || 20) / 20) + 1,
 
-          },
-        });
-      }}
-      hasMore={data?.getConversationHistory?.totalCount > list?.length || false}
-      loader={<Loading />}
-      scrollableTarget="scrollableConv"
+            },
+          });
+        }}
+        hasMore={data?.getConversationHistory?.totalCount > list?.length || false}
+        loader={<Loading />}
+        scrollableTarget="scrollableConv"
 
-      className="mb-48"
-    >
-      {
-        list.map((person) => {
-          if(!unique.includes(person.with.id)){
-            unique.push(person.with.id)
-            return (
-              <ChatItem
-                key={person.with.id}
-                id={person.with.id}
-                name={person.with.name}
-                username={person.with.userName}
-                imageURL={person.with.imageURL}
-                numberOfUnseen={person.unseenMessageCount}
-                lastMessage={person.lastMessage.message}
-                createdAt={person.lastMessage.createdAt}
-              />
-            )
-          }
-          
-        })}
-    </InfiniteScroll>
+        className="mb-48"
+      >
+        {
+          list.map((person) => {
+            if (!unique.includes(person.with.id)) {
+              unique.push(person.with.id)
+              return (
+                <ChatItem
+                  key={person.with.id}
+                  id={person.with.id}
+                  name={person.with.name}
+                  username={person.with.userName}
+                  imageURL={person.with.imageURL}
+                  numberOfUnseen={person.unseenMessageCount}
+                  lastMessage={person.lastMessage.message}
+                  createdAt={person.lastMessage.createdAt}
+                />
+              )
+            }
+
+          })}
+      </InfiniteScroll>
     </div>
-    
+
 
   )
 }

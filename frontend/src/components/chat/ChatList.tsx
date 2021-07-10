@@ -23,7 +23,7 @@ export const ChatList: React.FC = () => {
                 <PersonList page={page} queryName="Get_Search_Result" searchQ={searchQ} setPage={setPage} fromChat={true} ></PersonList>
             </div>
             :
-            <div>
+            <div className="w-full h-full">
                 <ChatConv setPage={setConPage} page={page}></ChatConv>
             </div>
         }

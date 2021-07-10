@@ -56,7 +56,9 @@ const ChatConv: React.FC<PersonListProps> = (props) => {
         hasMore={data?.getConversationHistory?.totalCount > list?.length || false}
         loader={<Loading />}
         scrollableTarget="scrollableConv"
-
+        style={{
+          overflow: "hidden"
+        }}
         className="mb-48"
       >
         {

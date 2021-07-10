@@ -57,7 +57,12 @@ const sendReceiveMessage = async(chatMessage: any, isFrom: any) => {
     flage = 0;
     for (let conversation_data of conversations?.getConversationHistory?.conversations) {
         if(conversation_data?.with?.id !== user?.id || flage) {
-            conversations_array.push(conversation_data);
+            if(conversation_data?.with?.id === user?.id) {
+                conversations_array.push(conversation);
+            } else {
+                conversations_array.push(conversation_data);
+            }
+            
         }
         else {
             flage = 1;
@@ -102,6 +107,46 @@ const sendReceiveMessage = async(chatMessage: any, isFrom: any) => {
                 },
             },
         });
+}
+
+export const setUnseenConvToZero = (userId: any) => {
+    let conversation:any = {}
+    const conversations_array:any = []
+    let conversations: any = cache.readQuery({
+        query: GET_CHAT_CONV
+    });
+    let flage = 0;
+    for (let conversation_data of conversations?.getConversationHistory?.conversations) {
+        if(conversation_data?.with?.id === userId) {
+            conversation.with = conversation_data?.with;
+            conversation.unseenMessageCount = 0;
+            conversation.lastMessage = conversation_data?.lastMessage;
+            flage = 1;
+            break;
+        }
+    }
+    if(!flage) {
+        return
+    }
+    for (let conversation_data of conversations?.getConversationHistory?.conversations) {
+        if(conversation_data?.with?.id === userId) {
+            conversations_array.push(conversation);
+        } else {
+            conversations_array.push(conversation_data);
+        }
+    }
+    conversations &&
+        cache.writeQuery({
+            query: GET_CHAT_CONV,
+            data: {
+                getConversationHistory: {
+                    __typename: "SendReceiveMessage",
+                    conversations: [...conversations_array],
+                    totalCount: conversations?.getConversationHistory?.totalCount,
+                },
+            },
+        });
+
 }
 
 const writeTweetsFeedData = async (

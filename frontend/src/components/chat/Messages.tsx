@@ -23,8 +23,6 @@ const Messages: React.FC<any> = ({ userID }) => {
   })
   subData && console.log("sub data", subData)
 
-  if (userID == "-1" || userID == null) return <Loading size="20" />
-  if (userID == "0") return <FoF fof={false} msg={"You don't have any message"} secMsg={"try searching for some user"} />
 
   if (loading) return <Loading></Loading>
 

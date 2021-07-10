@@ -24,18 +24,8 @@ const ChatConv: React.FC<PersonListProps> = (props) => {
 
   let { data, loading, error, fetchMore } = useQuery(GET_CHAT_CONV)
 
-  useEffect(() => {
-    console.log("from useEffect")
-    return chatUserVar({
-      id: list[0].with.id,
-      name: list[0].with.name,
-      username: list[0].with.username,
-      imgURL: list[0].with.imageURL
-    })
 
-  }, [])
 
-  console.log(data)
   if (!loading && data && data?.getConversationHistory?.conversations?.length === 10
     && data?.getConversationHistory?.totalCount > 10) {
     fetchMore({
@@ -49,7 +39,14 @@ const ChatConv: React.FC<PersonListProps> = (props) => {
 
 
   const list: any[] = data.getConversationHistory.conversations
-
+  if (!loading && !error) {
+    chatUserVar({
+      id: 3,
+      name: list[0].with.name,
+      username: list[0].with.username,
+      imgURL: list[0].with.imageURL
+    })
+  }
   return (
     <InfiniteScroll
       dataLength={list?.length || 0}
@@ -72,7 +69,7 @@ const ChatConv: React.FC<PersonListProps> = (props) => {
         list.map((person, i) => {
           return (
             <ChatItem
-              key={person.with.id + i}
+              key={i}
               id={person.with.id}
               name={person.with.name}
               username={person.with.userName}

@@ -29,7 +29,7 @@ export const ChatPage: React.FC = () => {
         </aside>
 
 
-        <article className="wall" style={{ height: "100vh", overflow: "hidden" }} >
+        <article className="wall" style={{ height: "100%", overflow: "hidden" }} >
           <header className="top-bar px-3 py-2 space-y-0 -mt-2">
             <div>
               <div className="flex">
@@ -46,7 +46,7 @@ export const ChatPage: React.FC = () => {
             </div>
           </header>
 
-          <div style={{ height: "100vh", overflow: "scroll" }}>
+          <div style={{ height: "100%", overflow: "hidden" }}>
             {error ? <FoF fof={false}
               msg="You don’t have a message selected"
               secMsg="Select one or search for some people"
@@ -60,7 +60,7 @@ export const ChatPage: React.FC = () => {
 
         </article>
 
-        <aside className="sb-right" style={{ height: "100vh", overflow: "hidden" }}>
+        <aside className="sb-right" style={{ height: "100%", overflow: "hidden" }}>
 
           <header className="top-bar px-3 py-2">
             <div className="font-bold text-lg">

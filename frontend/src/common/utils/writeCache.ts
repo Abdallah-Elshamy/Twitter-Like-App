@@ -10,6 +10,8 @@ import { CHAT_HISTORY } from "../queries/getChatHistory"
 import {GET_CHAT_CONV} from "../queries/GET_CHAT_CONV"
 import { gql } from "@apollo/client";
 import { cache } from "../cache";
+import ALL_SEEN from '../queries/ALL_SEEN';
+import SetMessageSeen from "../queries/setMessageSeen"
 
 const createConvElement = async(chatMessage: any, isFrom: any) => {
     const convElement:any = {}
@@ -109,16 +111,18 @@ const sendReceiveMessage = async(chatMessage: any, isFrom: any) => {
         });
 }
 
-export const setUnseenConvToZero = (userId: any) => {
+const setUnseensToZero = (userId: any) => {
     let conversation:any = {}
     const conversations_array:any = []
     let conversations: any = cache.readQuery({
         query: GET_CHAT_CONV
     });
     let flage = 0;
+    let callMutation = 0;
     for (let conversation_data of conversations?.getConversationHistory?.conversations) {
         if(conversation_data?.with?.id === userId) {
             conversation.with = conversation_data?.with;
+            callMutation = conversation_data.unseenMessageCount>0?1:0;
             conversation.unseenMessageCount = 0;
             conversation.lastMessage = conversation_data?.lastMessage;
             flage = 1;
@@ -126,7 +130,7 @@ export const setUnseenConvToZero = (userId: any) => {
         }
     }
     if(!flage) {
-        return
+        return 0
     }
     for (let conversation_data of conversations?.getConversationHistory?.conversations) {
         if(conversation_data?.with?.id === userId) {
@@ -146,7 +150,41 @@ export const setUnseenConvToZero = (userId: any) => {
                 },
             },
         });
+    return callMutation;
+}
 
+export const setUnseenConvToZero = (userId: any) => {
+    if (setUnseensToZero(userId)){
+        try {
+            apolloClient.mutate({
+                mutation: ALL_SEEN,
+                variables:{
+                    userId
+                }
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+}
+
+export const liveSetUnseenConvToZero = (chatMessage: any) => {
+    const profile = parseJwt(localStorage.getItem("token"));
+    const from = chatMessage.from;
+    console.log("profile id", profile.id)
+    if(from.id === profile.id) return;
+    if (setUnseensToZero(from.id)){
+        try {
+            apolloClient.mutate({
+                mutation: SetMessageSeen,
+                variables:{
+                    messageId: chatMessage.id
+                }
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
 }
 
 const writeTweetsFeedData = async (

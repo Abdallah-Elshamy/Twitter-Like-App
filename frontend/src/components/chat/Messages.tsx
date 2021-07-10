@@ -6,6 +6,7 @@ import FoF from '../../UI/FoF/FoF';
 import InfiniteScroll from "react-infinite-scroll-component";
 import Loading from '../../UI/Loading';
 import { useRef, useEffect } from "react"
+import {setUnseenConvToZero, liveSetUnseenConvToZero} from "../../common/utils/writeCache"
 
 import './Chat.css';
 
@@ -28,10 +29,18 @@ const Messages: React.FC<any> = ({ userID }) => {
   const scrollToBottom = () => {
     if (!messagesEndRef || !messagesEndRef?.current) return;
     const { scrollTop } = listInnerRef?.current
-    if (scrollTop === 0) {
+    if (scrollTop > -5 && scrollTop < 5) {
+      liveSetUnseenConvToZero(data?.getChatHistory?.messages[0]);
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
     }
 
+  }
+  const onReachedBottom = () => {
+    if (!messagesEndRef || !messagesEndRef?.current) return;
+    const { scrollTop } = listInnerRef?.current
+    if (scrollTop > -5 && scrollTop < 5) {
+      setUnseenConvToZero(userID)
+    }
   }
   useEffect(() => {
     scrollToBottom()
@@ -70,7 +79,7 @@ const Messages: React.FC<any> = ({ userID }) => {
     <div id="scrollableChat" style={{
       height: "100vh", overflow: "auto", display: 'flex',
       flexDirection: 'column-reverse',
-    }} className="relative" ref={listInnerRef}>
+    }} className="relative" ref={listInnerRef} onScroll={onReachedBottom}>
       <p className="absolute top-0" ref={messagesEndRef}></p>
       <InfiniteScroll
         dataLength={data?.getChatHistory?.messages?.length || 0}

@@ -4,6 +4,7 @@ import React, { Fragment, useState } from 'react';
 import { SEND_MESSAGE } from "../../common/queries/sendMessage"
 import {updateChatMessagesForSendMessage} from "../../common/utils/writeCache"
 import './Chat.css';
+import {setUnseenConvToZero} from "../../common/utils/writeCache"
 
 
 
@@ -16,6 +17,7 @@ const Input: React.FC<any> = ({ userID }) => {
 
   const handleSend = (event: any) => {
     event.preventDefault()
+    setUnseenConvToZero(userID)
     if (message.length > 0) {
       sendMessage({
         variables: {

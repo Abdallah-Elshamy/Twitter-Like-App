@@ -2,9 +2,9 @@ import { useMutation } from '@apollo/client';
 import { send } from 'process';
 import React, { Fragment, useState } from 'react';
 import { SEND_MESSAGE } from "../../common/queries/sendMessage"
-import {updateChatMessagesForSendMessage} from "../../common/utils/writeCache"
+import { updateChatMessagesForSendMessage } from "../../common/utils/writeCache"
 import './Chat.css';
-import {setUnseenConvToZero} from "../../common/utils/writeCache"
+import { setUnseenConvToZero } from "../../common/utils/writeCache"
 
 
 
@@ -33,7 +33,7 @@ const Input: React.FC<any> = ({ userID }) => {
   };
   return (
     <Fragment>
-      <form className="form">
+      <div className="form">
         <input
           className="input"
           type="text"
@@ -43,7 +43,7 @@ const Input: React.FC<any> = ({ userID }) => {
           onKeyPress={event => event.key === 'Enter' ? () => handleSend(event) : null}
         />
         <button className="sendButton" onClick={(e) => handleSend(e)}>Send</button>
-      </form>
+      </div>
     </Fragment>
   )
 }

@@ -6,7 +6,7 @@ import FoF from '../../UI/FoF/FoF';
 import InfiniteScroll from "react-infinite-scroll-component";
 import Loading from '../../UI/Loading';
 import { useRef, useEffect } from "react"
-import {setUnseenConvToZero, liveSetUnseenConvToZero} from "../../common/utils/writeCache"
+import { setUnseenConvToZero, liveSetUnseenConvToZero } from "../../common/utils/writeCache"
 
 import './Chat.css';
 
@@ -77,7 +77,7 @@ const Messages: React.FC<any> = ({ userID }) => {
   // )
   return (
     <div id="scrollableChat" style={{
-      height: "100vh", overflow: "auto", display: 'flex',
+      height: "95vh", overflow: "auto", display: 'flex',
       flexDirection: 'column-reverse',
     }} className="relative" ref={listInnerRef} onScroll={onReachedBottom}>
       <p className="absolute top-0" ref={messagesEndRef}></p>

@@ -1,12 +1,12 @@
 import React, { Fragment, useRef } from 'react';
 import './PersonItem.css'
 import '../../../profile/profile.css'
-import { timeConverter } from '../../../../common/utils/timestamp';
+import { timeDiff } from '../../../../common/utils/timediff';
 import { chatUserVar } from '../../../../common/cache';
 import { useMutation, useQuery } from '@apollo/client';
 import { Active_Chat_User } from '../../../../common/queries/Active_Chat_User';
 import ALL_SEEN from '../../../../common/queries/ALL_SEEN';
-import {setUnseenConvToZero} from "../../../../common/utils/writeCache"
+import { setUnseenConvToZero } from "../../../../common/utils/writeCache"
 
 
 export interface ChatItemEntity {
@@ -30,7 +30,7 @@ const ChatItem: React.FC<ChatItemEntity> = (user: ChatItemEntity) => {
       name: user.name,
       username: user.username,
       imgURL: user.imageURL
-    })  
+    })
     setUnseenConvToZero(user?.id)
   }
   const profilePicture = (user.imageURL === undefined || user.imageURL === null) ?
@@ -51,7 +51,7 @@ const ChatItem: React.FC<ChatItemEntity> = (user: ChatItemEntity) => {
         <div className="flex-grow">
           <div className="flex">
             <h1 className="person-item-name inline-block  text-xm font-bold mr-1">{user.name}</h1>
-            <p className="person-item-username"><span className="inline-block text-xm">@</span>{user.username}</p>
+            <p className="person-item-username hidden md:block"><span className="inline-block text-xm">@</span>{user.username}</p>
           </div>
 
           <div className="flex justify-between"><span className="truncate w-44">{user.lastMessage}</span>
@@ -70,7 +70,7 @@ const ChatItem: React.FC<ChatItemEntity> = (user: ChatItemEntity) => {
 
           }
 
-          <div>{user.createdAt ? timeConverter(Number(user.createdAt), true, false) : null}</div>
+          <div className="ZZZzzz">{user.createdAt ? timeDiff(Number(user.createdAt)) : null}</div>
         </div>
       </div>
     </Fragment >

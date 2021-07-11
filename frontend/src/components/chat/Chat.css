@@ -2,9 +2,9 @@
 .container {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-evenly;
   background: #ffffff;
-  margin-bottom: 100px;
+  height: 100vh;
 }
 
 /* messages */
@@ -16,21 +16,22 @@
 }
 
 .form {
-  border-top: 1px solid #d3d3d3;
-  bottom: 0px;
-  width: 41%;
-  border-radius: 20px 20px 0px 0px; 
-  border-right: none;
-  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .input {
   border: none;
-  padding: 2%;
-  width: 80%;
+  display: inline-block;
+  padding-left:8px ;
+  width: 100%;
   height: 100%;
   font-size: 1.2em;
-  border-radius: 20px 20px 0px 0px; 
+  outline: none;
 }
 
 input:focus,
@@ -44,10 +45,8 @@ select:focus {
   text-transform: uppercase;
   text-decoration: none;
   background: #1da1f2;
-  padding: 20px;
+  padding: 16px 32px;
   display: inline-block;
-  width: 19%;
-  border-radius: 0px 20px 0px 0px; 
   outline: none;
   border: none;
 }
@@ -57,7 +56,7 @@ button:focus {outline:0;}
 .messageBoxR {
   background: #f3f3f3;
   border-radius: 20px 20px 20px 0px; 
-  padding: 5px 20px;
+  padding: 8px 16px;
   color: white;
   display: inline-block;
   max-width: 80%;

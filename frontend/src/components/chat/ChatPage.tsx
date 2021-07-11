@@ -29,7 +29,7 @@ export const ChatPage: React.FC = () => {
         </aside>
 
 
-        <article className="wall" style={{ height: "100vh", overflow: "hidden" }} >
+        <div className="wall" style={{ height: "100vh", overflow: "none" }} >
           <header className="top-bar px-3 py-2 space-y-0 -mt-2">
             <div>
               <div className="flex">
@@ -46,22 +46,28 @@ export const ChatPage: React.FC = () => {
             </div>
           </header>
 
-          <div style={{ height: "100vh", overflow: "hidden" }}>
+          <div >
             {error ? <FoF fof={false}
               msg="You don’t have a message selected"
               secMsg="Select one or search for some people"
             ></FoF> :
               <Fragment><div className="container">
                 {/* {error && <p>ERROR</p>} */}
-                {userID?<Messages userID={userID} />:<FoF fof={false} msg={"You don't have any message"} secMsg={"try searching for some user"} />}
-                
+                {userID ? <Fragment>
+                  <Messages userID={userID} />
+                  <Input userID={userID} />
+                </Fragment> :
+                  <FoF fof={false} msg={"You don't have any message"} secMsg={"try searching for some user"} />}
+
+
               </div>
-                <Input userID={userID} /></Fragment>}
+              </Fragment>}
+
           </div>
 
-        </article>
+        </div>
 
-        <aside className="sb-right" style={{ height: "100vh", overflow: "hidden" }}>
+        <div className="sb-right" style={{ height: "100vh", overflow: "hidden" }}>
 
           <header className="top-bar px-3 py-2">
             <div className="font-bold text-lg">
@@ -71,7 +77,7 @@ export const ChatPage: React.FC = () => {
           <ChatList />
 
 
-        </aside>
+        </div>
 
       </main>
     </Fragment>

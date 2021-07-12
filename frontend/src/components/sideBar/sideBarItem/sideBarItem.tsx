@@ -16,7 +16,7 @@ export class SideBarItem extends Component<SideBar_Item>{
           <nav className="md:pb-0 md:overflow-y-auto mt-2">
 
             <div>
-              <button className="block  py-2 mt-3 font-semibold md:mt-0 not-italic hover:text-gray-900 rounded-full bg-white text-black
+              <button className="block lg:mx-12 py-3 mt-3 font-semibold md:mt-0 not-italic hover:text-gray-900 rounded-full bg-white text-black
             focus:ring-offset-gray-100  hover:bg-blue-100 focus:bg-blue-100 focus:outline-none focus:text-blue-500 
             hover:rounded-full focus:shadow-outline-none align-middle items-center transition">
                 <i className={`mr-2 px-2 text-lg ${this.props.icon_name}`} ></i>

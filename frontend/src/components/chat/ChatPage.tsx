@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react';
 import { SideBar } from '../sideBar/sideBar';
 import { ChatList } from './ChatList';
-import avatar from "../../routes/mjv-d5z8_400x400.jpg"
 import Messages from './Messages';
 import Input from './Input';
 import { Active_Chat_User } from '../../common/queries/Active_Chat_User';
@@ -50,14 +49,14 @@ export const ChatPage: React.FC = () => {
             {error ? <FoF fof={false}
               msg="You don’t have a message selected"
               secMsg="Select one or search for some people"
+              className="mt-60"
             ></FoF> :
               <Fragment><div className="container">
-                {/* {error && <p>ERROR</p>} */}
                 {userID ? <Fragment>
                   <Messages userID={userID} />
                   <Input userID={userID} />
                 </Fragment> :
-                  <FoF fof={false} msg={"You don't have any message"} secMsg={"try searching for some user"} />}
+                  <FoF  fof={false} msg={"You don't have any message"} secMsg={"try searching for some user"}/>}
 
 
               </div>

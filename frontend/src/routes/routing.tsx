@@ -3,7 +3,7 @@ import {
   Route,
   Redirect
 } from "react-router-dom";
-import { NotFoundPage } from '../components/notFound/notFound';
+
 import { LandingPage } from '../components/Register/landingPage/landingPage';
 import { SignUpForm } from '../components/Register/signup_form/signup';
 import Explore from './Explore';
@@ -58,10 +58,6 @@ export const Routing = () => {
 
         <Route path='/:id/follower'>
         <FollowWall FollowType ='follower' />
-        </Route>
-
-        <Route path="/error">
-          <NotFoundPage />
         </Route>
 
         <PublicRoute path="/forget_password">

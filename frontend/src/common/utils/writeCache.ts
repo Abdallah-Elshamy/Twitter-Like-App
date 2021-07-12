@@ -195,6 +195,7 @@ export const setUnseenConvToZero = (userId: any) => {
 }
 
 export const liveSetUnseenConvToZero = (chatMessage: any) => {
+    if(!chatMessage) return;
     const profile = parseJwt(localStorage.getItem("token"));
     const from = chatMessage.from;
     console.log("profile id", profile.id)

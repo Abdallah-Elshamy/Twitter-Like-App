@@ -1,16 +1,18 @@
 import React from 'react'
 import ReactHtmlParser from 'react-html-parser';
+import {Redirect} from 'react-router-dom'
 
 type props = {
   tweet: string
 }
 
 const HashtagExtractor: React.FC<props> = (props) => {
-  //flag indecates if wee are in hashtag
+
   var regexp = new RegExp('#([^\\s]*)', 'g');
   let tweet = props.tweet.replace(regexp, `
-  <span class="text-blue-500 pointer hover:text-blue-400" 
-  onClick={ gotoHashtag}>#$1</span>
+<a href ="/hashtag/$1" onclick ="return false">
+<span class="text-blue-500 pointer hover:text-blue-400" 
+  >#$1</span></a>  
   `);
   console.log(tweet)
   return (

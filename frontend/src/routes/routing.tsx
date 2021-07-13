@@ -20,6 +20,7 @@ import { updateLiveFeed, updateChatMessagesForReceiveMessage } from "../common/u
 import GetChatSub from "../common/queries/getChatSubscription"
 import { useState } from "react"
 import { ChatPage } from "../components/chat/ChatPage";
+import HashtagTweets from "../components/tweets/HashtagTweets";
 
 
 export const Routing = () => {
@@ -91,6 +92,9 @@ export const Routing = () => {
           <Home />
         </PrivateRoute>
 
+        <Route path="/hashtag/:word">
+          <HashtagTweets />
+        </Route>
 
         <PrivateRoute path="/tweet/:id">
           <ExtendedTweet />
@@ -100,9 +104,12 @@ export const Routing = () => {
           <Profile />
         </PrivateRoute>
 
+
         <PrivateRoute path='/:id'>
           <Profile />
         </PrivateRoute>
+
+
 
       </Switch>
 

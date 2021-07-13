@@ -1,12 +1,21 @@
 import React from 'react';
+import { useHistory } from 'react-router';
 
 import { Trend } from '../../../../common/TypesAndInterfaces';
 
 import './TrendItem.css'
 
 const TrendItem: React.FC<Trend> = ({ trendName, numOfTweets }) => {
+  const history = useHistory();
+
+  const gotoHashtag = () => {
+    history.push({
+      pathname: '/hashtag/' + trendName,
+    })
+
+  }
   return (
-    <div className="trend-item flex  justify-between items-center p-3">
+    <div className="trend-item flex  justify-between items-center p-3" onClick={(e) => { gotoHashtag(); e.stopPropagation() }}>
       <div className="trend-info">
         <h1 className="trend-name mb-1 text-xm font-bold">#{trendName}</h1>
         <p>{numOfTweets}</p>

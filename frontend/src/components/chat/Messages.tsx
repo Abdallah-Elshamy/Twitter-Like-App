@@ -20,12 +20,7 @@ const Messages: React.FC<any> = ({ userID }) => {
 
   const messagesEndRef = useRef<any>(null)
   const listInnerRef = useRef<any>()
-  // const { data: subData } = useSubscription(SEND_MESSAGE_sub, {
-  //   onSubscriptionData() {
-  //     console.log("arrive Message")
-  //   }
-  // })
-  // subData && console.log("sub data", subData)
+
   const scrollToBottom = () => {
     if (!messagesEndRef || !messagesEndRef?.current) return;
     const { scrollTop } = listInnerRef?.current
@@ -104,14 +99,13 @@ const Messages: React.FC<any> = ({ userID }) => {
           return (
             <div className="messages" key={message.id}  >
               <Message message={message.message} user={message.from.id} otherUserId={userID} />
-              <div ></div>
             </div>
           );
         })}
 
 
       </InfiniteScroll>
-      {/* { (subData) ? (<div><p> {subData.messageSent.message}</p></div>) : null} */}
+
     </div>
 
   )

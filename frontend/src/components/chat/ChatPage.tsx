@@ -9,9 +9,9 @@ import { useQuery } from '@apollo/client';
 import "./Chat.css"
 import FoF from '../../UI/FoF/FoF';
 
-
 export const ChatPage: React.FC = () => {
 
+ 
   const { data, loading, error } = useQuery(Active_Chat_User)
 
 
@@ -32,25 +32,44 @@ export const ChatPage: React.FC = () => {
           <header className="top-bar px-3 py-2 space-y-0 -mt-2">
             <div>
               <div className="flex">
+{/* 
+              <Link to ="">
 
+              <i className="fa fa-arrow-left  p--main-color mr-3" aria-hidden="true"></i>
+
+              </Link> */}
                 {imgURL && <div className="person-item-image w-7 h-7  rounded-full  flex-none mr-2">
                   <img src={imgURL}
                     alt="avatar" />
                 </div>}
 
                 <div className="space-y-0 ">
-                  <h3 className="text-lg font-bold ">{name}</h3>
+
+
+                <h3 className="text-lg font-bold ">{name}</h3>
                 </div>
               </div>
             </div>
           </header>
 
-          <div >
-            {error ? <FoF fof={false}
-              msg="You don’t have a message selected"
-              secMsg="Select one or search for some people"
-              className="mt-60"
-            ></FoF> :
+          <div>
+            { error ? <div>
+              <div className="hidden lg:block md:block">
+                <FoF fof={false}
+                className="mt-60 "
+                msg="You don’t have a message selected"
+                secMsg="Select one or search for some people"
+              ></FoF> 
+          </div>
+
+
+            <div className="md:hidden">
+              <div className="wall mb-80" style={{ height: "100vh", overflow: "hidden"}}>
+                    <ChatList />
+                    </div>
+                </div>
+            </div>
+            :
               <Fragment><div className="container">
                 {userID ? <Fragment>
                   <Messages userID={userID} />

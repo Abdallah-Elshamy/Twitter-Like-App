@@ -27,7 +27,7 @@ export function SideBar() {
 
   return (
 
-    <div className="px-2 fixed top-0">
+    <div className="px-2 fixed top-0 lg:w-64 w-16">
       <div className="wall">
         <Modal show={edit} modalClosed={modalClosed} className="pb-4">
 

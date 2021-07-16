@@ -14,6 +14,8 @@ const app: Application = express();
 
 app.use(auth);
 
+
+
 const apolloServer: ApolloServer = new ApolloServer({
     typeDefs,
     resolvers,

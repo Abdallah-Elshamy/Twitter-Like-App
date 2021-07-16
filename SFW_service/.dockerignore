@@ -1,0 +1,6 @@
+*env
+*env3
+env
+__pycache__
+service.yml
+deployment.yml

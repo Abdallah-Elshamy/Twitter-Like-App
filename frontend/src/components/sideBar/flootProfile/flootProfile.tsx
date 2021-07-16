@@ -50,7 +50,7 @@ export function FlootProfile() {
            focus:ring-2  focus:ring-offset-gray-100  lg:w-60"  design={
           <div className="flex justify-center items-start lg:p-3" >
 
-            <div className="person-item-image w-6 h-6 lg:w-11 lg:h-11  rounded-full flex-none mr-2 ">
+            <div className="tweet-icon block ml-4 m-1 w-6 h-6 lg:w-11 lg:h-11  rounded-full flex-none mr-2 ">
               <img src={data.user.imageURL || avatar}
                 alt="avatar" />
             </div>

@@ -6,7 +6,7 @@ import FoF from '../../UI/FoF/FoF';
 import ReactPlayer from 'react-player'
 import React, { Fragment, useState } from 'react'
 import Viewer from 'react-viewer';
-
+import HashtagExtractor from '../../common/utils/HashtagExtractor';
 
 
 function QuotedTweet({ OTweet }: any) {
@@ -87,7 +87,8 @@ const displayUploadedFiles=(urls:string[])=> {
               {/* the text/media of the original tweet */}
               <div className="tweet-content pb-4 pt-2">
                 <span>
-                  {OTweet.text}
+                  {}
+                <HashtagExtractor tweet={OTweet.text + ''} />
                 </span>
                 {(OTweet.mediaURLs) && 
                 <div className="gg-box-small" onClick={(e) => e.stopPropagation()}>
@@ -127,7 +128,7 @@ const displayUploadedFiles=(urls:string[])=> {
             {/* the text/media of the original tweet */}
             <div className="tweet-content mx-2 pb-4 pt-2">
               <span>
-                {OTweet.text}
+                <HashtagExtractor tweet={OTweet.text + ''} />
                 {(OTweet.mediaURLs) && 
                 <div className="gg-box-small" onClick={(e) => e.stopPropagation()}>
 

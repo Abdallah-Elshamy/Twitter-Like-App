@@ -5,24 +5,33 @@ import TweetInfo from './TweetInfo';
 import TweetImg from './TweetImg';
 import Viewer from 'react-viewer';
 import ReactPlayer from 'react-player'
-import {cache} from "../../common/cache"
-import {useMutation} from "@apollo/client"
-import {CustomDialog} from 'react-st-modal'
+import { cache } from "../../common/cache"
+import { useMutation } from "@apollo/client"
+import { CustomDialog } from 'react-st-modal'
 import LikeTweet from "../../common/queries/likeTweet"
 import UnlikeTweet from "../../common/queries/unlikeTweet"
 import ErrorDialog from "../../UI/Dialogs/ErroDialog"
-import {updateTweetsCacheForLikeTweet, updateTweetsCacheForUnlikeTweet} from "../../common/utils/writeCache"
+import { updateTweetsCacheForLikeTweet, updateTweetsCacheForUnlikeTweet } from "../../common/utils/writeCache"
 import TweetToolbarIcons from './TweetToolbarIcons';
 import QuotedTweet from './QoutedTweet';
 import { Link } from 'react-router-dom';
+
 import FoF from '../../UI/FoF/FoF';
 import Retweet from './Retweet';
+import HashtagExtractor from '../../common/utils/HashtagExtractor';
 
 
 function Tweet(props: any) {
-  let img:any =[]
+
+  let img: any = []
   const history = useHistory();
-  const [ visible, setVisible ] = React.useState(false);
+  const [visible, setVisible] = React.useState(false);
+  const gotoHashtag = (hash: string) => {
+    history.push({
+      pathname: '/hashtag/' + hash,
+    })
+	console.log("gash is"+hash)
+  }
   const [likeTweet] = useMutation(LikeTweet, {
     update(cache) {
       updateTweetsCacheForLikeTweet(cache, props.tweet.id, props.loggedUser.id, false)
@@ -35,52 +44,56 @@ function Tweet(props: any) {
       updateTweetsCacheForUnlikeTweet(cache, props.tweet.id, props.loggedUser.id, true)
     }
   })
-  const displayUploadedFiles=(urls:string[])=> {
-    if (urls.length > 0){ 
-    if (urls[0].includes(".com/videos/")){
-      return <div style={{height:"300px"}} >
-      <ReactPlayer url={urls[0]} height="300px" width="500px"  controls={true}/>
-      </div>
+  const displayUploadedFiles = (urls: string[]) => {
+    if (urls.length > 0) {
+      if (urls[0].includes(".com/videos/")) {
+        return <div style={{ height: "300px" }} >
+          <ReactPlayer url={urls[0]} height="300px" width="500px" controls={true} />
+        </div>
+      }
+      else {
+        const check = (urls.length == 3) ? true : false
+        img = urls.map((url) => { return { src: url } })
+        return (
+          <Fragment>
+            {urls.map((url, i) =>
+              <img
+                className="Img"
+                style={{
+                  gridRow: (check && (i == 1)) ? " 1/3" : "",
+                  gridColumn: (check && (i == 1)) ? " 2/3" : "",
+                  height: ((check && (i == 1)) || (urls.length == 1 && i == 0) || (urls.length == 2)) ? "300px" : "",
+                  objectFit: "cover"
+                }}
+                key={i} src={url} onClick={(e) => { e.stopPropagation(); setVisible(true); }} alt="tweet" />
+            )}
+            <Viewer
+              visible={visible}
+              onClose={() => { setVisible(false); }}
+              images={img}
+              drag={false}
+            />
+          </Fragment>
+        )
+      }
     }
-    else {
-    const check = (urls.length == 3)? true : false
-    img = urls.map ((url)=> {return {src:url}})
-    return  (
-      <Fragment>
-        {urls.map((url, i) =>
-      <img 
-      className="Img"
-      style={{gridRow:(check && (i==1))?" 1/3":"",
-      gridColumn: (check && (i==1))?" 2/3":"", 
-      height: ((check && (i==1)) || (urls.length == 1 && i == 0) || (urls.length ==2) )?"300px":"", 
-      objectFit: "cover"}} 
-      key={i}  src={url} onClick={(e) => {e.stopPropagation(); setVisible(true); }}  alt="tweet"/>
-      )}
-      <Viewer
-      visible={visible}
-      onClose={() => { setVisible(false); } }
-      images={img}
-      drag={false}
-      />
-      </Fragment>
-      )}}
 
   }
-  const handleLikeButton = async(e: any) => {
+  const handleLikeButton = async (e: any) => {
     let tryingToLike: boolean;
     try {
-      if(!props.isLiked) {
+      if (!props.isLiked) {
         tryingToLike = true;
         cache.modify({
           id: `Tweet:${props.id}`,
           fields: {
-              isLiked() {
-                  return true;
-              },
-              likesCount(cachedLikesCount: any){
-                  return cachedLikesCount + 1
-              }
-          },  
+            isLiked() {
+              return true;
+            },
+            likesCount(cachedLikesCount: any) {
+              return cachedLikesCount + 1
+            }
+          },
         });
         await likeTweet({
           variables: {
@@ -92,13 +105,13 @@ function Tweet(props: any) {
         cache.modify({
           id: `Tweet:${props.id}`,
           fields: {
-              isLiked() {
-                  return false;
-              },
-              likesCount(cachedLikesCount: any){
-                return cachedLikesCount - 1
+            isLiked() {
+              return false;
+            },
+            likesCount(cachedLikesCount: any) {
+              return cachedLikesCount - 1
             }
-          },  
+          },
         });
         await unlikeTweet({
           variables: {
@@ -106,32 +119,32 @@ function Tweet(props: any) {
           }
         })
       }
-      
+
     } catch (e) {
       let unliked: any
       cache.modify({
         id: `Tweet:${props.id}`,
         fields: {
-            isLiked(cachedIsLiked: any) {
-                unliked = cachedIsLiked
-                return !unliked;
-            },
-            likesCount(cachedLikesCount: any){
-                if (tryingToLike) {
-                  return cachedLikesCount - 1
-                }
-                else {
-                  return cachedLikesCount + 1
-                }
+          isLiked(cachedIsLiked: any) {
+            unliked = cachedIsLiked
+            return !unliked;
+          },
+          likesCount(cachedLikesCount: any) {
+            if (tryingToLike) {
+              return cachedLikesCount - 1
             }
-        },  
+            else {
+              return cachedLikesCount + 1
+            }
+          }
+        },
       });
       const error = await CustomDialog(<ErrorDialog message={"Something went wrong please try again!"} />, {
         title: 'Error!',
         showCloseIcon: false,
       });
-      }
     }
+  }
   const goToTweet = () => {
     history.push({
       pathname: '/tweet/' + props.id,
@@ -165,14 +178,14 @@ function Tweet(props: any) {
 
             <div className="tweet-content ml-2">
               <span onClick={(e) => e.stopPropagation()}>
-                {props.text}
+                <HashtagExtractor tweet={props.text + ''} />
               </span>
-              {(props.mediaURLs) && 
+              {(props.mediaURLs) &&
                 <div className="gg-box" onClick={(e) => e.stopPropagation()}>
 
-                { displayUploadedFiles(props.mediaURLs) }
+                  {displayUploadedFiles(props.mediaURLs)}
 
-              </div>}
+                </div>}
               <TweetToolbarIcons
                 tweetId={props.id}
                 state={props.state}
@@ -180,7 +193,7 @@ function Tweet(props: any) {
                 likesCount={props.likesCount}
                 isLiked={props.isLiked}
                 tweet={props.tweet}
-                handleLikeButton = {handleLikeButton}
+                handleLikeButton={handleLikeButton}
                 quotedRetweetsCount={props.quotedRetweetsCount}
                 retweetsCount={props.retweetsCount}
                 isRetweeted={props.isRetweeted}
@@ -206,7 +219,7 @@ function Tweet(props: any) {
               id={props.user.id}
               userId={props.user.id}
               tweetId={props.id}
-              handleLikeButton = {handleLikeButton}
+              handleLikeButton={handleLikeButton}
               loggedUser={props.loggedUser}
               tweetMediaUrls={props.mediaUrls}
               tweet={props.tweet}
@@ -215,10 +228,17 @@ function Tweet(props: any) {
 
             {/* the added design of Reply design  */}
             <div className="-mt-2 ">
+<<<<<<< HEAD
               <Link onClick={(e) => e.stopPropagation()} 
               to={'/tweet/' + props?.repliedToTweet?.id} 
               className=" p--light-color inline-block ml-2 hover:underline">
               Repling to  </Link>
+=======
+              <Link onClick={(e) => e.stopPropagation()}
+                to={'/tweet/' + props.repliedToTweet.id}
+                className=" p--light-color inline-block ml-2 hover:underline">
+                Repling to  </Link>
+>>>>>>> 4e5286ca9e8a530a703d54350d790fc4ab335ecf
 
               <Link onClick={e => { e.stopPropagation() }}
                 to={'/' + props?.repliedToTweet?.user?.id}
@@ -229,19 +249,19 @@ function Tweet(props: any) {
             {/* the text/media of the original tweet */}
             <div className="tweet-content ml-2 pb-4">
               <span onClick={(e) => e.stopPropagation()}>
-                {props.text}
+                <HashtagExtractor tweet={props.text} />
               </span>
-              {(props.mediaURLs) && 
+              {(props.mediaURLs) &&
                 <div className="gg-box" onClick={(e) => e.stopPropagation()}>
 
-                { displayUploadedFiles(props.mediaURLs) }
+                  {displayUploadedFiles(props.mediaURLs)}
 
-              </div>}
+                </div>}
               <TweetToolbarIcons
                 tweetId={props.id}
                 state={props.state}
                 isLiked={props.isLiked}
-                handleLikeButton = {handleLikeButton}
+                handleLikeButton={handleLikeButton}
                 repliesCount={props.repliesCount}
                 likesCount={props.likesCount}
                 quotedRetweetsCount={props.quotedRetweetsCount}
@@ -278,23 +298,23 @@ function Tweet(props: any) {
             {/* the text/media of the original tweet */}
             <div className="tweet-content ml-2" >
               <span onClick={(e) => e.stopPropagation()}>
-                {props.text}
+                <HashtagExtractor tweet={props.text} />
               </span>
-              {(props.mediaURLs) && 
+              {(props.mediaURLs) &&
                 <div className="gg-box" onClick={(e) => e.stopPropagation()}>
 
-                { displayUploadedFiles(props.mediaURLs) }
+                  {displayUploadedFiles(props.mediaURLs)}
 
-              </div>}
+                </div>}
               <QuotedTweet OTweet={props.originalTweet} repliedToTweet={props.repliedToTweet} />
-              
+
               <TweetToolbarIcons
                 tweetId={props.id}
-                state = {props.state}
+                state={props.state}
                 repliesCount={props.repliesCount}
                 likesCount={props.likesCount}
                 quotedRetweetsCount={props.quotedRetweetsCount}
-                handleLikeButton = {handleLikeButton}
+                handleLikeButton={handleLikeButton}
                 isLiked={props.isLiked}
                 retweetsCount={props.retweetsCount}
                 isRetweeted={props.isRetweeted}
@@ -315,7 +335,7 @@ function Tweet(props: any) {
         {
 
           (!props.originalTweet || props.originalTweet.state === "R")
-             ? null :
+            ? null :
 
             <Fragment>
               <p className="font-bold px-4 text-gray-600">

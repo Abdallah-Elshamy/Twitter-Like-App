@@ -14,7 +14,7 @@ import { CustomDialog } from 'react-st-modal'
 import DangerConfirmationDialog from "../../UI/Dialogs/DangerConfirmationDialog"
 import ErrorDialog from "../../UI/Dialogs/ErroDialog"
 import {updateTweetsCacheForDeleteTweet, updateTweetsCacheForIgnoreReportedTweet, updateUsersCacheForBanUser, updateUsersCacheForUnBanUser, updateTweetsCacheForReportTweet, updateUsersCacheForReportUser} from "../../common/utils/writeCache"
-
+import { timeDiff } from '../../common/utils/timediff';
 export interface TweetData {
   user?: {
     imageURL?: string
@@ -150,7 +150,7 @@ function TweetInfo(props: any) {
     <div className={`flex flex-row my-1 ml-2  w-full ${props.className}`}>
       <a onClick={(e) => { goToProfile(); e.stopPropagation() }} className="font-bold mr-1 hover:underline cursor-pointer">{props.name}</a>
       <p className="p--light-color" onClick={(e) => e.stopPropagation()}> @{props.userName}. </p>
-      <p className="p--light-color px-1 hover:underline" onClick={(e) => e.stopPropagation()}> {props.createdAt ? timeConverter(Number(props.createdAt)) : null}</p>
+      <p className="p--light-color px-1 hover:underline" onClick={(e) => e.stopPropagation()}> {props.createdAt ? timeDiff(Number(props.createdAt)) : null}</p>
       <span onClick={(e) => e.stopPropagation()} className="tweet-ellipsis p--light-color z-10 inline-block float-right">
 
         {/*Don't display settings in qouted tweet*/}

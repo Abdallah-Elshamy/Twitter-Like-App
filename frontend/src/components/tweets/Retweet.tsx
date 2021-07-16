@@ -22,7 +22,7 @@ const Retweet: React.FC<any> = (props: any) => {
       isSFW: sfw.SFW.value,
     }
   })
-  
+  console.log("retweeted data is", data)
   if (loading) return (<div className="mt-8" ><Loading /></div>)
   if (error) return <FoF
     msg="This tweet doesn’t exist"

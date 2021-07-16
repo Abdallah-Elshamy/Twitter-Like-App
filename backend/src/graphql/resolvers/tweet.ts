@@ -1001,7 +1001,7 @@ export default {
                             following: payload.liveFeed.userId,
                         },
                     });
-                    return isFollower !== null;
+                    return isFollower !== null && context.connection.context.id !== payload.liveFeed.userId;
                 }
             ),
         },

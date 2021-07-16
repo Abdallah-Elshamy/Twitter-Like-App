@@ -49,6 +49,7 @@ function TweetToolbarIcons(props: any) {
   const handleRetweetButton = async(e: any) => {
     let tryingToRetweet: boolean;
     try {
+      console.log("retweeting now")
       if(!props.isRetweeted) {
         tryingToRetweet = true;
         cache.modify({

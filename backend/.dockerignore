@@ -1,0 +1,7 @@
+node_modules
+dist
+.env
+uploads
+secret-backend.yml
+service.yml
+deployment.yml

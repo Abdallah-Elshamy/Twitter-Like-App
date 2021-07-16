@@ -39,7 +39,8 @@ const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
                 incoming?.__typename == "LikeTweet" ||
                 incoming?.__typename == "UnlikeTweet" ||
                 incoming?.__typename == "QuoteRetweet" ||
-                incoming?.__typename == "DeleteTweet")
+                incoming?.__typename == "DeleteTweet" ||
+                incoming?.__typename == "NewTweets")
         ) {
             return incoming;
         }

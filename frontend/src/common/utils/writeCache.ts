@@ -212,6 +212,7 @@ const writeTweetsFeedData = async (
     cache: any,
     newTweet: any
 ) => {
+    let overideFlag = 0;
     let feedData: any = cache.readQuery({
         query: FeedTweets,
         variables: {
@@ -225,6 +226,12 @@ const writeTweetsFeedData = async (
                 isSFW,
             },
         });
+        feedData = feedData?.data
+        feedData = feedData?.data
+        if(feedData?.getFeed?.tweets[0]?.id === newTweet?.id)
+        {
+            overideFlag = 1;
+        }
     }
     feedData &&
         cache.writeQuery({
@@ -234,8 +241,9 @@ const writeTweetsFeedData = async (
             },
             data: {
                 getFeed: {
-                    tweets: [newTweet, ...(feedData?.getFeed?.tweets || [])],
-                    totalCount: feedData?.getFeed?.totalCount + 1,
+                    __typename: "NewTweets",
+                    tweets: overideFlag?[...(feedData?.getFeed?.tweets || [])]: [newTweet, ...(feedData?.getFeed?.tweets)],
+                    totalCount: overideFlag?feedData?.getFeed?.totalCount : feedData?.getFeed?.totalCount + 1,
                 },
             },
         });
@@ -245,6 +253,7 @@ const writeTweetsFeedDataFromEnd = async (
     cache: any,
     newTweet: any
 ) => {
+    let overideFlag = 0;
     let feedData: any = cache.readQuery({
         query: FeedTweets,
         variables: {
@@ -258,6 +267,11 @@ const writeTweetsFeedDataFromEnd = async (
                 isSFW,
             },
         });
+        feedData = feedData?.data
+        if(feedData?.getFeed?.tweets[0]?.id === newTweet?.id)
+        {
+            overideFlag = 1;
+        }
     }
     console.log("feed data is", feedData)
     // await Promise.all(feedData)
@@ -270,13 +284,13 @@ const writeTweetsFeedDataFromEnd = async (
             data: {
                 getFeed: {
                     __typename: "QuoteRetweet",
-                    tweets: [...(feedData?.getFeed?.tweets), newTweet],
-                    totalCount: feedData?.getFeed?.totalCount + 1,
+                    tweets: overideFlag?[...(feedData?.getFeed?.tweets || [])]: [...(feedData?.getFeed?.tweets), newTweet],
+                    totalCount: overideFlag?feedData?.getFeed?.totalCount : feedData?.getFeed?.totalCount + 1,
                 },
             },
         });
 };
-const decrementTweetsFeedData = (isSFW: boolean, cache: any) => {
+const decrementTweetsFeedData = (isSFW: boolean, cache: any, decBy: number = 1) => {
     const feedData: any = cache.readQuery({
         query: FeedTweets,
         variables: {
@@ -293,7 +307,7 @@ const decrementTweetsFeedData = (isSFW: boolean, cache: any) => {
                 getFeed: {
                     __typename: "DeleteTweet",
                     tweets: [...(feedData.getFeed.tweets || [])],
-                    totalCount: feedData.getFeed.totalCount - 1,
+                    totalCount: feedData.getFeed.totalCount - decBy,
                 },
             },
         });
@@ -320,7 +334,7 @@ const incrementTweetsCount = (cache: any, userId: number) => {
         });
 };
 
-const decrementTweetsCount = (cache: any, userId: number) => {
+const decrementTweetsCount = (cache: any, userId: number, decBy: number = 1) => {
     const user = cache.readQuery({
         query: LoggedUser,
         variables: {
@@ -334,7 +348,7 @@ const decrementTweetsCount = (cache: any, userId: number) => {
             fields: {
                 tweets(prevTweets: any) {
                     const newTweets = { ...prevTweets };
-                    newTweets.totalCount--;
+                    newTweets.totalCount-=decBy;
                     return newTweets;
                 },
             },
@@ -348,6 +362,7 @@ const writeTweetsProfileData = async (
     filter: string,
     newTweet: any
 ) => {
+    let overideFlag = 0;
     let tweets: any = cache.readQuery({
         query: Tweets,
         variables: {
@@ -365,6 +380,11 @@ const writeTweetsProfileData = async (
                 isSFW,
             },
         });
+        tweets = tweets?.data;
+        if(tweets?.tweets?.tweets[0]?.id === newTweet?.id)
+        {
+            overideFlag = 1;
+        }
     }
     tweets &&
         cache.writeQuery({
@@ -376,8 +396,9 @@ const writeTweetsProfileData = async (
             },
             data: {
                 tweets: {
-                    tweets: [newTweet, ...(tweets?.tweets?.tweets || [])],
-                    totalCount: tweets?.tweets?.totalCount + 1,
+                    __typename: "NewTweets",
+                    tweets: overideFlag?[...(tweets?.tweets?.tweets || [])]:[newTweet, ...(tweets?.tweets?.tweets || [])],
+                    totalCount: overideFlag?tweets?.tweets?.totalCount : tweets?.tweets?.totalCount + 1,
                 },
             },
         });
@@ -387,7 +408,8 @@ const decrementTweetsProfileData = (
     isSFW: boolean,
     cache: any,
     userId: number,
-    filter: string
+    filter: string,
+    decBy: number = 1
 ) => {
     const tweets: any = cache.readQuery({
         query: Tweets,
@@ -409,7 +431,7 @@ const decrementTweetsProfileData = (
                 tweets: {
                     __typename: "DeleteTweet",
                     tweets: [...(tweets?.tweets?.tweets || [])],
-                    totalCount: tweets.tweets.totalCount - 1,
+                    totalCount: tweets.tweets.totalCount - decBy,
                 },
             },
         });
@@ -546,7 +568,9 @@ export const updateTweetsCacheForCreateReply = async (
 
 export const updateTweetsCacheForDeleteTweet = (cache: any, tweet: any) => {
     const profile = parseJwt(localStorage.getItem("token"));
+    let myRetweet = 0;
     if (tweet?.user?.id == profile?.id) {
+        myRetweet = 1;
         decrementTweetsCount(cache, profile.id);
         decrementTweetsProfileData(true, cache, profile.id, "");
         decrementTweetsProfileData(false, cache, profile.id, "");
@@ -578,15 +602,15 @@ export const updateTweetsCacheForDeleteTweet = (cache: any, tweet: any) => {
             cache.evict({ id: normalizedId });
         }
         if (retweetedTweet?.user?.__ref.split(":")[1] === profile?.id?.toString()) {
-            decrementTweetsCount(cache, profile.id);
-            decrementTweetsProfileData(true, cache, profile.id, "");
-            decrementTweetsProfileData(false, cache, profile.id, "");
-            decrementTweetsProfileData(true, cache, profile.id, "replies&tweets");
-            decrementTweetsProfileData(false, cache, profile.id, "replies&tweets");
+            decrementTweetsCount(cache, profile.id, 1 + myRetweet);
+            decrementTweetsProfileData(true, cache, profile.id, "", 1 + myRetweet);
+            decrementTweetsProfileData(false, cache, profile.id, "", 1 + myRetweet);
+            decrementTweetsProfileData(true, cache, profile.id, "replies&tweets", 1 + myRetweet);
+            decrementTweetsProfileData(false, cache, profile.id, "replies&tweets", 1 + myRetweet);
 
         }
-        decrementTweetsFeedData(true, cache);
-        decrementTweetsFeedData(false, cache);
+        decrementTweetsFeedData(true, cache, 1 + retweetedTweets.length);
+        decrementTweetsFeedData(false, cache, 1 + retweetedTweets.length);
     }
     if (tweet.state === "C") {
         console.log("retweet is ", tweet)

@@ -82,6 +82,7 @@ function Tweet(props: any) {
   const handleLikeButton = async (e: any) => {
     let tryingToLike: boolean;
     try {
+      console.log("handle like is called ")
       if (!props.isLiked) {
         tryingToLike = true;
         cache.modify({

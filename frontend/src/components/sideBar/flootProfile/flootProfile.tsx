@@ -22,11 +22,12 @@ export function FlootProfile() {
   const handleSFW = () => {
     (sfw) ? setsfw(false) : setsfw(true)
   }
-  useEffect(() => {
-    const local = localStorage.getItem('SFW')
-    if (local === "true") { setsfw(true) }
-    else (setsfw(false))
-  }, [])
+  // useEffect(() => {
+  //   const local = JSON.parse(localStorage.getItem('SFW')!)
+  //   console.log("local is", local)
+  //   if (local === "true") { setsfw(true) }
+  //   else (setsfw(false))
+  // }, [])
   useEffect(() => {
     SFW({ value: sfw })
     localStorage.setItem('SFW', JSON.stringify(sfw))

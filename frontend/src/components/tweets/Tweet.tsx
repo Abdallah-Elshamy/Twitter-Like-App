@@ -228,17 +228,10 @@ function Tweet(props: any) {
 
             {/* the added design of Reply design  */}
             <div className="-mt-2 ">
-<<<<<<< HEAD
               <Link onClick={(e) => e.stopPropagation()} 
               to={'/tweet/' + props?.repliedToTweet?.id} 
               className=" p--light-color inline-block ml-2 hover:underline">
               Repling to  </Link>
-=======
-              <Link onClick={(e) => e.stopPropagation()}
-                to={'/tweet/' + props.repliedToTweet.id}
-                className=" p--light-color inline-block ml-2 hover:underline">
-                Repling to  </Link>
->>>>>>> 4e5286ca9e8a530a703d54350d790fc4ab335ecf
 
               <Link onClick={e => { e.stopPropagation() }}
                 to={'/' + props?.repliedToTweet?.user?.id}

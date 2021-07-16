@@ -557,6 +557,7 @@ export const updateTweetsCacheForDeleteTweet = (cache: any, tweet: any) => {
             decrementTweetsProfileData(false, cache, profile.id, "media");
         }
     }
+    decrementTweetFromReportedTweets(cache);
     decrementTweetsFeedData(true, cache);
     decrementTweetsFeedData(false, cache);
     if (tweet?.isLiked) {
@@ -651,6 +652,23 @@ export const updateTweetsCacheForIgnoreReportedTweet = (
             },
         });
 };
+
+const decrementTweetFromReportedTweets = (cache: any) => {
+    let reportedTweets: any = cache.readQuery({
+        query: ReportedTweets,
+    });
+    reportedTweets &&
+        cache.writeQuery({
+            query: ReportedTweets,
+            data: {
+                reportedTweets: {
+                    __typename: "DeleteTweet",
+                    tweets: [...(reportedTweets.reportedTweets.tweets || [])],
+                    totalCount: reportedTweets.reportedTweets.totalCount - 1,
+                },
+            },
+        });
+}
 
 const removeUserFromReportedUsers = (cache: any, user: any) => {
     let reportedUsers: any = cache.readQuery({

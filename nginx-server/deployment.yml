@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: twitter-proxy
+  labels:
+    app: twitter-proxy
+  
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: twitter-proxy
+  template:
+    metadata:
+      labels:
+        app: twitter-proxy
+    spec:
+      containers:
+      - image: abdallahelshamy/twitter-proxy
+        name: twitter-proxy
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+      restartPolicy: Always

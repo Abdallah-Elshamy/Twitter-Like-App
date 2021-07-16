@@ -20,8 +20,8 @@ function HomeTweets() {
     let [page, setPage] = useState(Math.floor((data?.getFeed?.tweets?.length || 10) / 10));
 
     
-    if (!loading && data && data?.getFeed?.tweets?.length == 10 && data?.getFeed?.totalCount > 10 && page === 1) {
-        setPage(page + 1)
+    if (!loading && data && data?.getFeed?.tweets?.length <= 10 && data?.getFeed?.totalCount > 10) {
+        // setPage(page + 1)
         fetchMore({
             variables: {
                 isSFW: sfw.SFW.value,

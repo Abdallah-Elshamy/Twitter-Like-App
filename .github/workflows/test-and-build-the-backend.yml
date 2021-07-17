@@ -18,6 +18,16 @@ jobs:
         run: npm install 
       - working-directory: ./backend
         run: npm run test
+        env:
+          DATABASE_URI:  ${{ secrets.DATABASE_URI }}
+          PORT: '8000'
+          TEST_DATABASE_URI: ${{ secrets.TEST_DATABASE_URI }}
+          TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+          UPLOADS_S3_BUCKET: ${{ secrets.UPLOADS_S3_BUCKET }}
+          SIGNED_URL_EXPIRATION: '300'
+          S3_USER: ${{ secrets.S3_USER }}
+          S3_REGION: ${{ secrets.S3_REGION }}
+          RABBIT_MQ_URI: ${{ secrets.RABBIT_MQ_URI }}
   
   build:
     runs-on: ubuntu-latest

@@ -26,9 +26,9 @@ if (!OTweet ){
 const displayUploadedFiles=(urls:string[])=> {
   if (urls.length > 0){ 
   if (urls[0].includes(".com/videos/")){
-    return <div style={{height:"300px"}} >
-    <ReactPlayer url={urls[0]} height="300px" width="500px"  controls={true}/>
-    </div>
+    return      (   <Fragment>
+    <ReactPlayer className="player" url={urls[0]} height="93%" width="95%" controls={true} />
+    </Fragment>)
   }
   else {
   const check = (urls.length == 3)? true : false

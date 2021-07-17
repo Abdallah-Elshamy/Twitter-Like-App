@@ -23,7 +23,7 @@ export function Logout() {
     }
     return (
         <div>
-            <button className=" mt-1 w-28 text-center block px-4 py-2 text-sm text-gray-700  hover:bg-red-200  hover:text-gray-900 
+            <button className=" mt-1 w-28 text-center block px-4 py-2 m-auto text-sm text-gray-700  hover:bg-red-200  hover:text-gray-900 
          hover:rounded-full rounded-full"  onClick={() => logoutSubmit()}>logout</button>
 
         </div>

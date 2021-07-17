@@ -18,7 +18,7 @@ import { Link } from 'react-router-dom';
 
 import FoF from '../../UI/FoF/FoF';
 import Retweet from './Retweet';
-import HashtagExtractor from '../../common/utils/HashtagExtractor';
+import HashtagExtractor from './HashtagExtractor';
 
 
 function Tweet(props: any) {
@@ -30,7 +30,7 @@ function Tweet(props: any) {
     history.push({
       pathname: '/hashtag/' + hash,
     })
-	console.log("gash is"+hash)
+
   }
   const [likeTweet] = useMutation(LikeTweet, {
     update(cache) {
@@ -161,7 +161,7 @@ function Tweet(props: any) {
     case "O":
       return <div>
         <div className="tweet-box mt-2" onClick={e => { goToTweet(); e.stopPropagation() }} >
-          <TweetImg imageURL={props.user.imageURL} id={props.user?.id} className="tweet-icon " />
+          <TweetImg imageURL={props.user.imageURL} id={props.user?.id} className="tweet-icon mr-1" />
 
           <div className="tweet-aside ">
             <TweetInfo
@@ -177,7 +177,7 @@ function Tweet(props: any) {
             />
 
             <div className="tweet-content ml-2">
-              <span onClick={(e) => e.stopPropagation()}>
+              <span>
                 <HashtagExtractor tweet={props.text + ''} />
               </span>
               {(props.mediaURLs) &&
@@ -230,8 +230,8 @@ function Tweet(props: any) {
             <div className="-mt-2 ">
               <Link onClick={(e) => e.stopPropagation()}
                 to={'/tweet/' + props.repliedToTweet.id}
-                className=" p--light-color inline-block ml-2 hover:underline">
-                Repling to  </Link>
+                className=" p--light-color inline-block ml-2 mr-1 hover:underline">
+                repling to  </Link>
 
               <Link onClick={e => { e.stopPropagation() }}
                 to={'/' + props?.repliedToTweet?.user?.id}
@@ -240,8 +240,8 @@ function Tweet(props: any) {
             </div>
 
             {/* the text/media of the original tweet */}
-            <div className="tweet-content ml-2 pb-4">
-              <span onClick={(e) => e.stopPropagation()}>
+            <div className="tweet-content ml-1 pb-4">
+              <span >
                 <HashtagExtractor tweet={props.text} />
               </span>
               {(props.mediaURLs) &&
@@ -272,10 +272,10 @@ function Tweet(props: any) {
     case "Q":
       return <div>
         {/* the design of tweet */}
-        <div className="flex p-2" onClick={goToTweet} >
-          <TweetImg imageURL={props.user.imageURL} id={props.user?.id} className="tweet-icon " />
+        <div className="flex p-2 px-4" onClick={goToTweet} >
+          <TweetImg imageURL={props.user.imageURL} id={props.user?.id} className="tweet-icon mr-1" />
 
-          <div className="w-full">
+          <div className="w-full   tweet-aside">
             <TweetInfo
               userName={props.user?.userName}
               createdAt={props.createdAt}
@@ -290,7 +290,7 @@ function Tweet(props: any) {
 
             {/* the text/media of the original tweet */}
             <div className="tweet-content ml-2" >
-              <span onClick={(e) => e.stopPropagation()}>
+              <span >
                 <HashtagExtractor tweet={props.text} />
               </span>
               {(props.mediaURLs) &&

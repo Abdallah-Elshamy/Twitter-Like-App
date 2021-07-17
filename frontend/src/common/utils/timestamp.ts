@@ -1,4 +1,4 @@
-export function timeConverter(UNIX_timestamp: number, hours?: Boolean,days?:false): string {
+export function timeConverter(UNIX_timestamp: number, hours?: Boolean,days:boolean=false): string {
   var a = new Date(UNIX_timestamp);
   var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   var year = a.getFullYear();

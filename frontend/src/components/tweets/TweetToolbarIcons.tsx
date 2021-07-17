@@ -183,15 +183,15 @@ function TweetToolbarIcons(props: any) {
 
 
       <a onClick={(e) => { replySetEdit(true); e.stopPropagation() }}>
-        <i className="fas fa-reply text-base font-sm " ></i>
+        <i className="fas fa-reply text-base font-sm transform hover:scale-110" ></i>
         <span>{props.repliesCount}</span>
       </a>
 
       <a onClick={(e) => e.stopPropagation()}>
         <ToolBox
           design={
-            <div className="border-0">
-              <i className={`fas fa-retweet text-base font-sm  ${props.isRetweeted ? "text-green-500" : ""}`}></i>
+            <div className="border-0 ">
+              <i className={`fas fa-retweet text-base font-sm  transform hover:scale-110  ${props.isRetweeted ? "text-green-500" : ""}`}></i>
               <span>{Number(props.quotedRetweetsCount + props.retweetsCount)} </span>
             </div>
           }

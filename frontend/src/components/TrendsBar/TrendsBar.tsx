@@ -54,7 +54,7 @@ const TrendsBar: React.FC<Props> = () => {
         <ListOfUsers list={followRec} />
       </SideList>
       <SideList title="What's happening now " redirect="/explore" >
-        <CurrentTrends />
+        <CurrentTrends limit={3} />
       </SideList>
       <Footer />
 

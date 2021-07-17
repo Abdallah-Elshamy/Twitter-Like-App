@@ -50,7 +50,7 @@ export function FlootProfile() {
            focus:ring-2  focus:ring-offset-gray-100  lg:w-60"  design={
           <div className="flex justify-center items-start lg:p-3" >
 
-            <div className="tweet-icon block ml-4 m-1 w-6 h-6 lg:w-11 lg:h-11  rounded-full flex-none mr-2 ">
+            <div className="tweet-icon block ml-4 m-1 w-4 h-4 lg:w-11 lg:h-11  rounded-full flex-none mr-2 ">
               <img src={data.user.imageURL || avatar}
                 alt="avatar" />
             </div>
@@ -64,13 +64,13 @@ export function FlootProfile() {
           </div>
         }>
 
-        <ul className="mt-52 px-12" >
-          <a href="/profile" className="mt-1 w-28 block px-4 py-2 text-sm text-gray-700 hover:bg-blue-200 
+        <ul className="w-32 mt-20 m-auto bg-white z-100 py-2 overflow-hidden" >
+          <a href="/profile" className="mt-1 w-28  block px-4 m-auto py-2 text-sm text-gray-700 hover:bg-blue-200 
           hover:text-gray-900 rounded-full">My Account</a>
 
           {
             (age > 18) &&
-            <button className="mt-1 w-28 block px-4 py-2 text-sm text-gray-700 hover:bg-blue-200 
+            <button className="mt-1 w-28 block px-4 py-2 text-sm m-auto text-gray-700 hover:bg-blue-200 
             hover:text-gray-900 hover:rounded-full rounded-full focus:outline-none"
               onClick={handleSFW}>{(sfw) ? 'Set NSFW' : 'Set SFW'}</button>
           }

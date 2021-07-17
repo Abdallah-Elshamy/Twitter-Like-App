@@ -15,7 +15,7 @@
   border-right: solid 0.5px var(--extra-light);
   border-left: solid 0.5px var(--extra-light);
   height: auto;
-  min-width: 400px;
+  min-width: 300px;
   overflow: hidden;
 }
 .p--light-color {

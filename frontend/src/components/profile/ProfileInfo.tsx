@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import Viewer from 'react-viewer';
 import FollowButton from '../FollowButton/FollowButton';
-
+import { chatUserVar } from '../../common/cache';
 
 const ProfileInfo: React.FC<{ user: User, self: boolean }> = ({ user, self }) => {
 
@@ -48,11 +48,7 @@ const handlePathFollower = () => {
   })
   }
 
-  const handleMessage = () => {
-    location.push({
-      pathname: "/message" + location.location.pathname 
-    })
-    }
+ 
 
   return (
 
@@ -114,7 +110,6 @@ const handlePathFollower = () => {
         <div className="pf--info">
           <div className="pf--flw-btn-div p-3 h-12 mt-3">
             {self ?<div>
-
             < button onClick={() => setEdit(true)} className={"pf--follow-btn rounded-full px-3 font-semibold text-xm  py-2 mt-3 "}>
               Edit Profile
             </button > 
@@ -123,10 +118,7 @@ const handlePathFollower = () => {
             :
             <div>
 {/* TODO handle when we get the path handle route */}
-            < button  onClick={ handleMessage } className={"pf--follow-btn rounded-full px-3 font-semibold text-xm  py-2 mt-3 mr-4 "}>
            
-            <i className="fas fa-envelope" ></i>
-            </button > 
               <FollowButton id={user.id} following={user.isFollowing} user={user} py="py-2" px="px-4" />
              
               </div>
@@ -141,7 +133,8 @@ const handlePathFollower = () => {
             <div className="p--light-color pb-1">
               <span className="pr-2"><i className="fa fa-map-marker" aria-hidden="true"></i> Egypt ... cairo</span>
               <span className="px-2" ><i className="fa fa-gift" aria-hidden="true"></i> Born {user.birthDate} </span>
-              <span className="px-2"><i className="fa fa-calendar" aria-hidden="true"></i> Joined {user.createdAt ? timeConverter(Number(user.createdAt), false) : null}</span>
+              <span className="px-2"><i className="fa fa-calendar" aria-hidden="true"></i> Joined {user.createdAt ? 
+timeConverter(Number(user.createdAt), false,true) : null}</span>
             </div>
             <div className="font-bold pb-1 space-x-2 ">
               {/* fetch followers count  */}

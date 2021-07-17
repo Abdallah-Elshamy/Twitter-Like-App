@@ -6,7 +6,7 @@
 }
 
 .tweet-box {
-  cursor: pointer;
+
   font-size: 17px;
   font-weight: 400;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
@@ -14,6 +14,7 @@
   padding: 0px 15px 0px 15px;
   display: grid;
   grid-template-columns: 0.1fr 0.9fr;
+margin-top:8px
 }
 
 .tweet-icon {
@@ -44,6 +45,7 @@ svg {
   height: 50px;
   border-radius: 50%;
   object-fit: cover;
+  flex-shrink: 0;
 }
 
 .tweet-aside {
@@ -51,7 +53,7 @@ svg {
 }
 
 .tweet-content {
-  padding: 2px;
+
   font-weight: 400;
 }
 

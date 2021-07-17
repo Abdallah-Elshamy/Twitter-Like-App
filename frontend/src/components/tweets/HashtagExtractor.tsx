@@ -14,7 +14,7 @@ const HashtagExtractor: React.FC<props> = (props) => {
 <span class="text-blue-500 pointer hover:text-blue-400" 
   >#$1</span></a>  
   `);
-  console.log(tweet)
+
   return (
     <div >{ReactHtmlParser(tweet)}</div>
   );

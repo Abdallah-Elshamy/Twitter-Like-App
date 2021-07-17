@@ -6,7 +6,7 @@ import FoF from '../../UI/FoF/FoF';
 import ReactPlayer from 'react-player'
 import React, { Fragment, useState } from 'react'
 import Viewer from 'react-viewer';
-import HashtagExtractor from '../../common/utils/HashtagExtractor';
+import HashtagExtractor from './HashtagExtractor';
 
 
 function QuotedTweet({ OTweet }: any) {

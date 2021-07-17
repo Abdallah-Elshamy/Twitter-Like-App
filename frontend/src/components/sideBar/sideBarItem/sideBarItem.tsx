@@ -29,7 +29,7 @@ console.log ("ifActive", props.className)
               {props.countUnseen ? <b className="text-xs bg-blue-400 rounded-full py-2 mb-2 text-white p-1 mr-1">{props.countUnseen}
                 <i className={`px-1 ${props.icon_name}`} ></i>
               </b>
-                : <i className={`lg:mr-2 mt-1  px-2 text-lg ${props.icon_name}  ${props.className}` } ></i>}
+                : <i className={`lg:mr-2 mt-1 m-auto px-2 text-lg ${props.icon_name}  ${props.className}` } ></i>}
               <b className={`font-semibold text-right text-xl hidden lg:inline-block ${props.className}`}> {props.item_name} </b>
             </button>
 

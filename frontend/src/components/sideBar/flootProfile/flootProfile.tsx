@@ -63,14 +63,14 @@ export function FlootProfile() {
           </div>
         }>
 
-        <ul className="mt-52 px-12" >
-          <a href="/profile" className="mt-1 w-28 block px-4 py-2 text-sm text-gray-700 hover:bg-blue-200 
+        <ul className="mt-32 px-12" >
+          <a href="/profile" className="mt-1 w-28 block px-4 py-2 m-auto text-sm text-gray-700 hover:bg-blue-200 
           hover:text-gray-900 rounded-full">My Account</a>
 
           {
             (age > 18) &&
             <button className="mt-1 w-28 block px-4 py-2 text-sm text-gray-700 hover:bg-blue-200 
-            hover:text-gray-900 hover:rounded-full rounded-full focus:outline-none"
+            hover:text-gray-900 hover:rounded-full m-auto rounded-full focus:outline-none"
               onClick={handleSFW}>{(sfw) ? 'Set NSFW' : 'Set SFW'}</button>
           }
           <Logout />

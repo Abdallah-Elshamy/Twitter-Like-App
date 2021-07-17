@@ -15,7 +15,7 @@ const TrendItem: React.FC<Trend> = ({ trendName, numOfTweets }) => {
 
   }
   return (
-    <div className="trend-item flex cursor-pointer justify-between items-center p-3" onClick={(e) => { gotoHashtag(); e.stopPropagation() }}>
+    <div className="trend-item flex cursor-pointer justify-between items-center p-3 w-full " onClick={(e) => { gotoHashtag(); e.stopPropagation() }}>
       <div className="trend-info">
         <h1 className="trend-name mb-1 text-xm font-bold">#{trendName}</h1>
         <p>{numOfTweets}</p>

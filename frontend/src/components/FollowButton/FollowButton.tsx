@@ -70,7 +70,8 @@ const FollowButton: React.FC<Props> = ({ id, py = "py-0.5", px = "px-2", followi
       }
       
     } catch (e) {
-      console.log("error", e)
+      console.log("error", e.message)
+      if(e.message === "Cannot read property 'split' of undefined") return;
       cache.modify({
         id: `User:${id}`,
         fields: {

@@ -46,7 +46,7 @@ const PostTweet = ({originalId = '', postType = 'tweet', closeModal}: Arg)  => {
     text: ""
   }
   if (localStorage.getItem('token')) var profile = parseJwt(localStorage.getItem('token'))
-  const { loading: userLoad, data: userData, error: userError } = useQuery(LoggedUser, { variables: { id: profile.id } });
+  const { loading: userLoad, data: userData, error: userError } = useQuery(LoggedUser, { variables: { id: profile?.id } });
   const [createTweet, { data }] = useMutation(Post_Tweet, {
     update: updateTweetsCacheForCreateTweet
   });

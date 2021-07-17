@@ -17,7 +17,7 @@ export function FlootProfile() {
   const sfw_initial = localStorage.getItem("SFW") ? JSON.parse(localStorage.getItem("SFW")!) : true;
   console.log("initial sfw", sfw_initial)
   const [sfw, setsfw] = useState(sfw_initial)
-  const { error, loading, data } = useQuery(LoggedUser, { variables: { id: profile.id } });
+  const { error, loading, data } = useQuery(LoggedUser, { variables: { id: profile?.id } });
 
   const handleSFW = () => {
     (sfw) ? setsfw(false) : setsfw(true)
@@ -30,12 +30,13 @@ export function FlootProfile() {
   // }, [])
   useEffect(() => {
     SFW({ value: sfw })
+    
     localStorage.setItem('SFW', JSON.stringify(sfw))
   }, [sfw])
   const data2 = useQuery(Get_SFW).data
 
   if (loading) return (<div className="mt-8" ><Loading /></div>)
-  if (error) return <p>`Error! ${error.message}`</p>
+  if (error) return null
 
 
   const userYear: number = (data.user.birthDate).split("-", 1)

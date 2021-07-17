@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from "react-router-dom";
 import { useApolloClient } from '@apollo/client'
 import { changeSubscriptionToken } from "../../../common/apolloClient"
-
+import {NewTweetsCount} from "../../../common/cache"
 
 
 
@@ -19,6 +19,7 @@ export function Logout() {
         await client.clearStore()
         changeSubscriptionToken(null)
         console.log("store reseted")
+        NewTweetsCount({ value: 0 })
         history.push('/')
     }
     return (

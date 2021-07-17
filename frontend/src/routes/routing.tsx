@@ -24,6 +24,7 @@ import HashtagTweets from "../components/tweets/HashtagTweets";
 
 
 export const Routing = () => {
+  
 
   return (
     <div>
@@ -66,9 +67,9 @@ export const Routing = () => {
         </PublicRoute>
 
 
-        <Route path="/explore">
+        <PrivateRoute path="/explore">
           <Explore />
-        </Route>
+        </PrivateRoute>
 
         <PrivateRoute path="/messages">
           <ChatPage />
@@ -182,6 +183,26 @@ const PublicRoute = ({ children, ...rest }: any) => {
 }
 
 const AdminRoute = ({ children, ...rest }: any) => {
+  const [prevData, setData] = useState<any>(undefined)
+  const [prevChatData, setChatData] = useState<any>(undefined)
+  let { data: subFeedData, loading } = useSubscription(LiveFeed, {
+    onSubscriptionData() {
+      if (!subFeedData) return;
+      if (prevData && subFeedData.liveFeed.id === prevData.liveFeed.id) return;
+      setData(subFeedData);
+      console.log("subFeed", subFeedData)
+      !loading && subFeedData && updateLiveFeed(subFeedData.liveFeed)
+    },
+  })
+  let { data: subChatData, loading: chatLoading } = useSubscription(GetChatSub, {
+    onSubscriptionData() {
+      if (!subChatData) return;
+      if (prevChatData && subChatData.messageSent.id === prevChatData.messageSent.id) return;
+      setChatData(subChatData);
+      console.log("subChatData", subChatData)
+      !chatLoading && subChatData && updateChatMessagesForReceiveMessage(subChatData.messageSent)
+    },
+  })
   const token = localStorage.getItem('token')
   if (!token) {
     return (

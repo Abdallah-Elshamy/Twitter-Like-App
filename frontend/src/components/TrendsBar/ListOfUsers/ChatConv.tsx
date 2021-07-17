@@ -32,14 +32,14 @@ const ChatConv: React.FC<PersonListProps> = (props) => {
 
 
   const list: any[] = data.getConversationHistory.conversations
-  if (!loading && !error) {
-    chatUserVar({
-      id: 3,
-      name: list[0].with.name,
-      username: list[0].with.username,
-      imgURL: list[0].with.imageURL
-    })
-  }
+  // if (!loading && !error) {
+  //   chatUserVar({
+  //     id: 3,
+  //     name: list[0].with.name,
+  //     username: list[0].with.username,
+  //     imgURL: list[0].with.imageURL
+  //   })
+  // }
   return (
     <div id="scrollableConv" style={{ height: "100vh", overflow: "auto" }}>
       <InfiniteScroll

@@ -13,6 +13,8 @@ import { cache } from "../cache";
 import ALL_SEEN from '../queries/ALL_SEEN';
 import SetMessageSeen from "../queries/setMessageSeen"
 import AllUnseenMessagesCount from "../queries/allUnseenMessagesCount"
+import {NewTweetsCount} from "../cache"
+import NewTweetsCountQuery from "../queries/newTweetsCount"
 
 
 const incrementDecrementAllUnseenMessagesCount = (value: number) => {
@@ -1065,15 +1067,25 @@ export const updateLoggedUserQueryForFollow = (cache:any, user:any) => {
                 return prevCount + 1;
             },
             following(prevFollowing: any) {
-                if (user.id > parseInt(prevFollowing.users[prevFollowing.users.length - 1].__ref.split(":")[1])) {
-                    console.log("here now")
-                    return {
-                        totalCount: prevFollowing.totalCount + 1,
-                        users: [...prevFollowing.users, user]
+                if (prevFollowing.users.length <= 20 || parseInt(user.id) > (parseInt(prevFollowing.users[prevFollowing.users.length - 1]?.__ref?.split(":")[1]) || parseInt(prevFollowing.users[prevFollowing.users.length - 1]?.id) )) {
+                    if(parseInt(user.id) > (parseInt(prevFollowing.users[prevFollowing.users.length - 1]?.__ref?.split(":")[1]) || parseInt(prevFollowing.users[prevFollowing.users.length - 1]?.id)))
+                    {
+                        return {
+                            totalCount: prevFollowing.totalCount + 1,
+                            users: [user, ...prevFollowing.users]
+                        }
+                    }
+                    else if(prevFollowing.totalCount === prevFollowing.users.length){
+                        return {
+                            totalCount: prevFollowing.totalCount + 1,
+                            users: [...prevFollowing.users, user]
+                        }
                     }
                 }
                 else {
+                    console.log("here in increment");
                     return {
+                        
                         totalCount: prevFollowing.totalCount + 1,
                         users: [...prevFollowing.users]
                     }
@@ -1106,7 +1118,7 @@ export const updateLoggedUserQueryForUnFollow = (cache:any, user:any) => {
                     users: prevFollowing.users.filter((filteredUser:any) => {
                         console.log("filtered user", filteredUser)
                         console.log("the user", user)
-                        return filteredUser.__ref !== `User:${user.id}`
+                        return !(filteredUser.id == user.id || filteredUser.__ref == `User:${user.id}`)
                     })
                 }
             }
@@ -1157,6 +1169,10 @@ export const updateLiveFeed = (tweet: any) => {
             },
         });
     }
-    writeTweetsFeedDataFromEnd(true, cache, tweet);
+    const newTweetsCount: any = cache.readQuery({
+        query: NewTweetsCountQuery
+    })
+    NewTweetsCount({ value: newTweetsCount.NewTweetsCount.value + 1});
+    // writeTweetsFeedDataFromEnd(true, cache, tweet);
     writeTweetsFeedDataFromEnd(false, cache, tweet);
 }

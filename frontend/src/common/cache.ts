@@ -236,6 +236,12 @@ export const cache: InMemoryCache = new InMemoryCache({
                         return SFW();
                     },
                 },
+                NewTweetsCount: {
+                    read() {
+                        return NewTweetsCount();
+                    },
+                },
+
                 getFeed: createPaginationAndCombineTweetsElements(["isSFW"]),
                 tweets: createPaginationAndCombineTweetsElements([
                     "userId",
@@ -275,6 +281,10 @@ export const EditProfileBgVal: ReactiveVar<{
 
 export const SFW: ReactiveVar<{ value: boolean }> = makeVar<any>({
     value: localStorage.getItem("SFW") ? JSON.parse(localStorage.getItem("SFW")!) : true
+});
+
+export const NewTweetsCount: ReactiveVar<{ value: number }> = makeVar<any>({
+    value: 0
 });
 
 export const chatUserVar: ReactiveVar<any> = makeVar<any>({

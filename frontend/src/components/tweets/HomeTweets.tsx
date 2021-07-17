@@ -8,24 +8,31 @@ import Loading from "../../UI/Loading";
 import { Get_SFW } from "../../common/queries/GET_SFW";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { parseJwt } from '../../common/utils/jwtDecoder'
+import NewTweetsCount from "../../common/queries/newTweetsCount"
 
 function HomeTweets() {
     const sfw = useQuery(Get_SFW).data;
     const loggedUser = parseJwt(localStorage.getItem('token')!)
+    const {data: newTweetsCount} = useQuery(NewTweetsCount)
     const { loading, error, data, fetchMore } = useQuery(FeedTweets, {
         variables: {
             isSFW: sfw.SFW.value,
         },
     });
-    let [page, setPage] = useState(Math.floor((data?.getFeed?.tweets?.length || 10) / 10));
+    const sfwValue = sfw.SFW.value;
+    const newTweetsCountValue = newTweetsCount.NewTweetsCount.value
+    const sfwPage = Math.floor((data?.getFeed?.tweets?.length + newTweetsCountValue || 10) / 10) ;
+    const nsfwPage = Math.floor((data?.getFeed?.tweets?.length || 10) / 10);
+    let [page, setPage] = useState(sfwValue?sfwPage:nsfwPage);
 
-    
-    if (!loading && data && data?.getFeed?.tweets?.length <= 10 && data?.getFeed?.totalCount > 10 && page !== 2) {
-        setPage(2)
+    console.log("new Tweets count", newTweetsCount.NewTweetsCount.value)
+    console.log("new Tweets count", newTweetsCount.NewTweetsCount.value)
+
+    if (!loading && data && data?.getFeed?.tweets?.length <= 10 && data?.getFeed?.totalCount > 10) {
         fetchMore({
             variables: {
                 isSFW: sfw.SFW.value,
-                page: 2,
+                page: sfwValue? sfwPage + 1 : nsfwPage + 1,
             },
         })
     }
@@ -36,15 +43,15 @@ function HomeTweets() {
         <InfiniteScroll
             dataLength={data?.getFeed?.tweets?.length || 0}
             next={() => {
-                setPage(page + 1);
+                setPage(sfwValue?sfwPage + 1: nsfwPage + 1);
                 return fetchMore({
                     variables: {
                         isSFW: sfw.SFW.value,
-                        page: page + 1,
+                        page: sfwValue?sfwPage + 1: nsfwPage + 1,
                     },
                 });
             }}
-            hasMore={data?.getFeed?.totalCount > data?.getFeed?.tweets?.length || false}
+            hasMore={data?.getFeed?.totalCount > data?.getFeed?.tweets?.length +  newTweetsCountValue|| false}
             loader={<Loading />}
             style={{
                 overflow: "hidden"

@@ -149,14 +149,14 @@ function TweetInfo(props: any) {
 
     <div className={`flex flex-row my-1 ml-2  w-full ${props.className}`}>
       <a onClick={(e) => { goToProfile(); e.stopPropagation() }} className="font-bold mr-1 hover:underline cursor-pointer">{props.name}</a>
-      <p className="p--light-color" onClick={(e) => e.stopPropagation()}> @{props.userName}. </p>
-      <p className="p--light-color px-1 hover:underline" onClick={(e) => e.stopPropagation()}> {props.createdAt ? timeDiff(Number(props.createdAt)) : null}</p>
+      <p onClick={(e) => { goToProfile(); e.stopPropagation() }} className="p--light-color  hover:underline cursor-pointer" > @{props.userName}. </p>
+      <p className="p--light-color px-1 hover:underline cursor-pointer" onClick={(e) => e.stopPropagation()}> {props.createdAt ? timeDiff(Number(props.createdAt)) : null}</p>
       <span onClick={(e) => e.stopPropagation()} className="tweet-ellipsis p--light-color z-10 inline-block float-right">
 
         {/*Don't display settings in qouted tweet*/}
         {(props.type === 'Q') ? null :
           <ToolBox
-            design={<i className="fas fa-ellipsis-h"></i>}
+            design={<i className="fas fa-ellipsis-h hover:p-2 rounded-full p-1 px-2 hover:bg-gray-200"></i>}
           >
             <ul className=" bg-gray-100 mb-40 right-8 absolute z-10 cursor-pointer" >
           {props?.loggedUser?.isAdmin && props?.loggedUser?.id != tweet?.user?.id && !tweet?.user?.isBanned ? <button onClick={handleBanButton} className="mt-1 w-40 text-center outline:none block px-4 py-2 text-sm text-red-700 bg-gray-100 hover:bg-gray-200

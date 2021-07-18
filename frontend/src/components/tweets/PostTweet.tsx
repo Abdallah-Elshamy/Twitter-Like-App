@@ -104,8 +104,8 @@ const PostTweet = ({originalId = '', postType = 'tweet', closeModal}: Arg)  => {
 
   const displayUploadedFiles=(urls:string[])=> {
     if (type.includes("video")) {
-      return <div style={{height:"300px"}} ref={heightRef} >
-        <ReactPlayer url={urls[0]} height="300px" width="500px"  controls={true}/>
+      return <div  ref={heightRef} >
+        <ReactPlayer url={urls[0]} height="93%" width="95%"  controls={true}/>
          
             </div>
           

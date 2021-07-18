@@ -13,7 +13,7 @@ import NSFWTweets from "../../common/queries/NSFWTweets"
 import InfiniteScroll from "react-infinite-scroll-component";
 import { parseJwt } from "../../common/decode";
 import { GET_TWEET_REPLIES } from "../../common/queries/GET_TWEET_REPLIES"
-import { Hash_Tweets } from "../../common/queries/Hash_Tweets"
+
 
 export interface TweetFilter {
     filter?: string;
@@ -21,10 +21,11 @@ export interface TweetFilter {
     setPage: any;
     id?: any;
     queryName?: string;
-    word?: string
+
 }
 
 const TweetList: React.FC<TweetFilter> = (props) => {
+
     TweetList.defaultProps = {
         queryName: "Tweets"
     }
@@ -33,7 +34,7 @@ const TweetList: React.FC<TweetFilter> = (props) => {
         ReportedTweets,
         Tweets,
         GET_TWEET_REPLIES,
-        Hash_Tweets
+
     }
     const { filter, page, setPage } = props;
     const sfw = useQuery(Get_SFW).data;
@@ -44,11 +45,11 @@ const TweetList: React.FC<TweetFilter> = (props) => {
             filter: filter,
             isSFW: sfw.SFW.value,
             tweetId: props.id,
-            word: props.word
+
         },
     });
     const oldData = useRef()
-    console.log(props.word)
+
     if (data?.reportedTweets) {
         data = { tweets: data.reportedTweets }
     }
@@ -58,17 +59,16 @@ const TweetList: React.FC<TweetFilter> = (props) => {
     if (data?.tweet?.replies) {
         data = { tweets: data.tweet.replies }
     }
-    if (data?.hashtag?.tweets) {
-        data = { tweets: data.hashtag.tweets }
-    }
-    if (!loading && data && data?.tweets?.tweets?.length == 10 && data?.tweets?.totalCount > 10) {
+    
+    if (!loading && data && data?.tweets?.tweets?.length == 10 && data?.tweets?.totalCount > 10 ) {
         fetchMore({
             variables: {
                 userId: props.id,
                 isSFW: sfw.SFW.value,
                 page: 2,
                 filter: filter,
-                tweetId: props.id
+                tweetId: props.id,
+
             },
         })
     }
@@ -88,7 +88,8 @@ const TweetList: React.FC<TweetFilter> = (props) => {
                         isSFW: sfw.SFW.value,
                         page: Math.floor((data?.tweets?.tweets?.length || 10) / 10) + 1,
                         filter: filter,
-                        tweetId: props.id
+                        tweetId: props.id,
+
                     },
                 });
             }}

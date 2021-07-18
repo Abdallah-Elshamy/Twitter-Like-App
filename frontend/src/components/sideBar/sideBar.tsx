@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react'
 import { useQuery } from '@apollo/client'
-import { Link } from "react-router-dom";
+import { Link , useLocation} from "react-router-dom";
 import '../../App.css';
 import "../../styles/layout.css"
 import { parseJwt } from "../../common/utils/jwtDecoder"
@@ -25,6 +25,16 @@ export function SideBar() {
   const [edit, setEdit] = useState<boolean>(false);
   const modalClosed = () => setEdit(false);
 
+  const location = useLocation();
+  const { pathname } = location;
+  const splitLocation = pathname.split("/");
+
+  
+  // const [isActive, setIsActive] = React.useState(false)
+  // React.useEffect(() => {
+  //   setIsActive(location.pathname ==)
+  // }, [location]);
+
   return (
 
     <div className="px-2 fixed top-0 lg:w-64 w-16">
@@ -45,30 +55,30 @@ export function SideBar() {
 
 
       <Link to="/">
-        <SideBarItem item_name='   ' icon_name="fab fa-twitter" />
+        <SideBarItem  item_name='   ' icon_name="fab fa-twitter"  />
       </Link>
 
       <Link to="/">
-        <SideBarItem item_name='Home' icon_name="	fas fa-home" />
+        <SideBarItem className={splitLocation[1]=="" ?"aactive":""} item_name='Home' icon_name="	fas fa-home" />
       </Link>
 
       <Link to="/explore">
-        <SideBarItem item_name='Explore' icon_name="fas fa-hashtag" />
+        <SideBarItem className={splitLocation[1]=="explore" ?"aactive":""} item_name='Explore' icon_name="fas fa-hashtag" />
       </Link>
 
 
 
       <Link to="/messages">
-        <SideBarItem item_name='Messages' icon_name="fas fa-envelope" countUnseen={unSeenCount} />
+        <SideBarItem className={splitLocation[1]=="messages" ?"aactive":""} item_name='Messages' icon_name="fas fa-envelope" countUnseen={unSeenCount} />
       </Link>
 
       <Link to="/profile">
-        <SideBarItem item_name='Profile ' icon_name="fas fa-user" />
+        <SideBarItem className={splitLocation[1]=="profile" ?"aactive":""} item_name='Profile ' icon_name="fas fa-user" />
       </Link>
 
 
       {loggedUser?.isAdmin ? <Link to='/admin'>
-        <SideBarItem item_name='Admin' icon_name="fas fa-user-lock" />
+        <SideBarItem className={splitLocation[1]=="admin" ?"aactive":""} item_name='Admin' icon_name="fas fa-user-lock" />
       </Link> : null}
 
       < FlootProfile />

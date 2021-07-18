@@ -183,16 +183,16 @@ function TweetToolbarIcons(props: any) {
 
 
 
-      <a onClick={(e) => { replySetEdit(true); e.stopPropagation() }}>
-        <i className="fas fa-reply text-base font-sm " ></i>
+      <a onClick={(e) => { replySetEdit(true); e.stopPropagation() }} className="cursor-pointer">
+        <i className="fas fa-reply text-base font-sm transform hover:scale-110" ></i>
         <span>{props.repliesCount}</span>
       </a>
 
-      <a onClick={(e) => e.stopPropagation()}>
+      <a onClick={(e) => e.stopPropagation()} className="cursor-pointer">
         <ToolBox
           design={
-            <div className="border-0">
-              <i className={`fas fa-retweet text-base font-sm  ${props.isRetweeted ? "text-green-500" : ""}`}></i>
+            <div className="border-0 ">
+              <i className={`fas fa-retweet text-base font-sm  transform hover:scale-110  ${props.isRetweeted ? "text-green-500" : ""}`}></i>
               <span>{Number(props.quotedRetweetsCount + props.retweetsCount)} </span>
             </div>
           }
@@ -202,22 +202,22 @@ function TweetToolbarIcons(props: any) {
             {!props.isRetweeted ?
               <button onClick={(e) => {
                 handleRetweetButton(e);
-              }} className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
+              }} className="mt-1 cursor-pointer w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" disabled={rtData && rtData.loading} >Retweet</button>
               :
               <button onClick={(e) => {
                 handleRetweetButton(e)
-              }} className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
+              }} className="cursor-pointer mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" disabled={rtData && rtData.loading} >Undo retweet</button>
             }
-            <a className="mt-1 w-40 text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
+            <a className="mt-1 w-40 cursor-pointer text-center block px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200
           hover:text-gray-900" onClick={(e) => { setEdit(true); e.stopPropagation() }}>Quote Retweet</a>
 
           </ul>
         </ToolBox>
       </a>
 
-      <button onClick={(e) => {props.handleLikeButton(); e.stopPropagation()}} className="outline-none focus:outline-none">
+      <button onClick={(e) => {props.handleLikeButton(); e.stopPropagation()}} className="outline-none focus:outline-none ">
       <i className={"text-base font-sm rounded-3xl transform hover:scale-110 "+(props.isLiked?"fas fa-heart text-red-600":"far fa-heart")}></i>
         <span>{props.likesCount}</span>
       </button>

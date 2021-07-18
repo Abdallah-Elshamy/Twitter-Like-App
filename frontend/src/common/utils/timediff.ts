@@ -2,7 +2,7 @@ export const timeDiff = (t: number) => {
   const now = new Date().getTime()
   const msgTime = new Date(t).getTime();
   let diff = Math.ceil((now - msgTime) / 1000);
-  console.log(diff)
+
   if (diff < 60) return diff + " secs"
   diff = Math.ceil(diff / 60)
   if (diff < 60) return diff + " mins"

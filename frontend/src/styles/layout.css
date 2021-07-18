@@ -10,12 +10,16 @@
   flex-shrink: 0;
   width: 256px;
 }
+.sb-right{
+min-width:400px;
+}
+
 .wall {
   flex-grow: 1;
   border-right: solid 0.5px var(--extra-light);
   border-left: solid 0.5px var(--extra-light);
   height: auto;
-  min-width: 400px;
+  min-width: 300px;
   overflow: hidden;
 }
 .p--light-color {
@@ -39,13 +43,15 @@
 }
 
 @media (max-width: 640px) {
- .sb-right{
-   display: none;
- } 
+ 
 }
 
 @media (max-width: 1024px) {
+.sb-right{
+   display: none;
+ } 
  .sb-left {
   width: 56px;
 }
+
 }

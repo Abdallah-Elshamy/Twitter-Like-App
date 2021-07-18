@@ -6,7 +6,7 @@ import FoF from '../../UI/FoF/FoF';
 import ReactPlayer from 'react-player'
 import React, { Fragment, useState } from 'react'
 import Viewer from 'react-viewer';
-import HashtagExtractor from '../../common/utils/HashtagExtractor';
+import HashtagExtractor from './HashtagExtractor';
 
 
 function QuotedTweet({ OTweet }: any) {
@@ -26,9 +26,9 @@ if (!OTweet ){
 const displayUploadedFiles=(urls:string[])=> {
   if (urls.length > 0){ 
   if (urls[0].includes(".com/videos/")){
-    return <div style={{height:"300px"}} >
-    <ReactPlayer url={urls[0]} height="300px" width="500px"  controls={true}/>
-    </div>
+    return      (   <Fragment>
+    <ReactPlayer className="player" url={urls[0]} height="93%" width="95%" controls={true} />
+    </Fragment>)
   }
   else {
   const check = (urls.length == 3)? true : false

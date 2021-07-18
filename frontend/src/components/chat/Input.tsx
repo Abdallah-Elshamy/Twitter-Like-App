@@ -40,7 +40,7 @@ const Input: React.FC<any> = ({ userID }) => {
           placeholder="Type a message...."
           value={message}
           onChange={({ target: { value } }) => setMessage(value)}
-          onKeyPress={event => event.key === 'Enter' ? () => handleSend(event) : null}
+          onKeyPress={event => event.key === 'Enter' ?  handleSend(event) : null}
         />
         <button className="sendButton" onClick={(e) => handleSend(e)}>Send</button>
       </div>

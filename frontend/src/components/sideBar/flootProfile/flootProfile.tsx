@@ -6,7 +6,6 @@ import { parseJwt } from '../../../common/decode';
 import { LoggedUser } from '../../../common/queries/Userqery';
 import Loading from "../../../UI/Loading"
 import avatar from "../../../routes/mjv-d5z8_400x400.jpg"
-import { Get_SFW } from '../../../common/queries/GET_SFW';
 import { SFW } from '../../../common/cache'
 
 export function FlootProfile() {
@@ -21,18 +20,11 @@ export function FlootProfile() {
   const handleSFW = () => {
     (sfw) ? setsfw(false) : setsfw(true)
   }
-  // useEffect(() => {
-  //   const local = JSON.parse(localStorage.getItem('SFW')!)
-  //   console.log("local is", local)
-  //   if (local === "true") { setsfw(true) }
-  //   else (setsfw(false))
-  // }, [])
   useEffect(() => {
     SFW({ value: sfw })
     
     localStorage.setItem('SFW', JSON.stringify(sfw))
   }, [sfw])
-  const data2 = useQuery(Get_SFW).data
 
   if (loading) return (<div className="mt-8" ><Loading /></div>)
   if (error) return null

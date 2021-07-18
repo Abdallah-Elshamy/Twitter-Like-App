@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { ToolBox } from "../../../sideBar/toolbox/toolbox"
 import { PersonEntity } from '../../../../common/TypesAndInterfaces';
 import { useMutation } from "@apollo/client"
@@ -63,7 +63,7 @@ const TrendItem: React.FC<PersonEntity> = ({ id, bio, isFollowing, name, userNam
       }
     }
     catch (e) {
-      const error = await CustomDialog(<ErrorDialog message={e.message} />, {
+      await CustomDialog(<ErrorDialog message={e.message} />, {
         title: 'Error!',
         showCloseIcon: false,
       });

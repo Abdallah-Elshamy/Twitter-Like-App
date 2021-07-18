@@ -1,7 +1,5 @@
-import { useMutation, useQuery, useSubscription } from '@apollo/client';
-import ALL_SEEN from '../../common/queries/ALL_SEEN';
+import { useQuery } from '@apollo/client';
 import { CHAT_HISTORY } from "../../common/queries/getChatHistory"
-import SEND_MESSAGE_sub from '../../common/queries/getChatSubscription';
 import FoF from '../../UI/FoF/FoF';
 import InfiniteScroll from "react-infinite-scroll-component";
 import Loading from '../../UI/Loading';
@@ -12,11 +10,9 @@ import './Chat.css';
 
 const Messages: React.FC<any> = ({ userID }) => {
 
-  const { data, loading, error, fetchMore } = useQuery(CHAT_HISTORY, {
+  const { data, loading, fetchMore } = useQuery(CHAT_HISTORY, {
     variables: { otherUserId: userID, page: 1 }
   })
-  console.log(userID)
-  const [setAllSeen] = useMutation(ALL_SEEN)
 
   const messagesEndRef = useRef<any>(null)
   const listInnerRef = useRef<any>()
@@ -44,16 +40,6 @@ const Messages: React.FC<any> = ({ userID }) => {
   if (userID == "0") return <FoF fof={false} msg={"You don't have any message"} secMsg={"try searching for some user"} />
 
   if (loading) return <Loading></Loading>
-
-  const setSeen = () => {
-    setAllSeen(
-      {
-        variables: {
-          userId: userID,
-        }
-      }
-    )
-  }
   // return (
 
   //   <div onClick={setSeen} onScroll={setSeen}>

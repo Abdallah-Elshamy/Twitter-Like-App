@@ -1,5 +1,4 @@
 import { useMutation } from '@apollo/client';
-import { send } from 'process';
 import React, { Fragment, useState } from 'react';
 import { SEND_MESSAGE } from "../../common/queries/sendMessage"
 import { updateChatMessagesForSendMessage } from "../../common/utils/writeCache"
@@ -27,7 +26,6 @@ const Input: React.FC<any> = ({ userID }) => {
           }
         }
       });
-      console.log(data)
       setMessage("")
     }
   };

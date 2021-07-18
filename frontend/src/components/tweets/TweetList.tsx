@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo, useRef } from "react";
+import React, { Fragment, useRef } from "react";
 
 import { useQuery } from "@apollo/client";
 // import Tweet from '../Tweet';
@@ -74,8 +74,6 @@ const TweetList: React.FC<TweetFilter> = (props) => {
     }
     if (loading) return <Fragment><br /> <br /> <Loading size={30} /></Fragment>;
     if (error) return <p>Something went wrong :(</p>;
-    console.log("Tweets data", oldData)
-    console.log("data is", data)
     return (
         <InfiniteScroll
             dataLength={data?.tweets?.tweets?.length || 0}

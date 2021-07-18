@@ -1,16 +1,10 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment } from 'react';
 import '../../styles/layout.css'
 import Tweet from './Tweet';
 import { TweetData } from './TweetData_interface'
 import { useQuery, } from '@apollo/client';
-import { GET_SINGLE_TWEET } from './../../common/queries/GET_SINGLE_TWEET';
-import { Get_SFW } from './../../common/queries/GET_SFW';
 import Loading from './../../UI/Loading';
-import FoF from './../../UI/FoF/FoF';
 import { parseJwt } from '../../common/decode';
-import { GET_TWEET_REPLIES } from '../../common/queries/GET_TWEET_REPLIES';
-import TweetListForSingleTweet from "./TweetListForSingleTweet"
-import TweetList from './TweetList';
 import { useLocation } from 'react-router';
 import TrendsBar from '../TrendsBar/TrendsBar';
 import { SideBar } from '../sideBar/sideBar';
@@ -18,9 +12,7 @@ import { Link } from 'react-router-dom';
 import { Hash_Tweets } from "../../common/queries/Hash_Tweets"
 const HashtagTweets: React.FC<any> = (props: any) => {
 
-  const sfw = useQuery(Get_SFW).data;
   const loggedUser = parseJwt(localStorage.getItem('token')!)
-  const [page, setPage] = useState<any>(1);
   const location = useLocation()
   let hashtag = location.pathname.substr(9)
 	
@@ -30,8 +22,6 @@ let { loading, error, data } = useQuery<any>(Hash_Tweets, {
         },
     });
 
-
-console.log("data from hashtag",data)
   return (
 	
     <main className="main-container">

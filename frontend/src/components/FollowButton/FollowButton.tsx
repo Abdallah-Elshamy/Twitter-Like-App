@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/client';
-import React, { useState } from 'react';
+import React from 'react';
 import { FOLLOW, UNFOLLOW } from '../../common/queries/Follow';
 import './FollowButton.css'
 import {cache} from "../../common/cache"
@@ -15,13 +15,10 @@ type Props = {
   user:any
 }
 const FollowButton: React.FC<Props> = ({ id, py = "py-0.5", px = "px-2", following = false, user }) => {
-  const [followingState, setFollowing] = useState(following)
   const [follow] = useMutation(FOLLOW, {
     update(cache) {
       const userNew = {...user}
-      console.log("user to be followed is", user)
       userNew.isFollowing= true
-      console.log("user to be followed after is", userNew)
       updateLoggedUserQueryForFollow(cache, userNew)
     }
   })
@@ -34,11 +31,8 @@ const FollowButton: React.FC<Props> = ({ id, py = "py-0.5", px = "px-2", followi
   })
 
   const handleFollowButton = async(e: any) => {
-    let tryingToFollow: boolean;
-    console.log("called")
     try {
       if(!following) {
-        tryingToFollow = true;
         cache.modify({
           id: `User:${id}`,
           fields: {
@@ -53,7 +47,6 @@ const FollowButton: React.FC<Props> = ({ id, py = "py-0.5", px = "px-2", followi
           }
         })
       } else {
-        tryingToFollow = false;
         cache.modify({
           id: `User:${id}`,
           fields: {
@@ -70,7 +63,6 @@ const FollowButton: React.FC<Props> = ({ id, py = "py-0.5", px = "px-2", followi
       }
       
     } catch (e) {
-      console.log("error", e.message)
       if(e.message === "Cannot read property 'split' of undefined") return;
       cache.modify({
         id: `User:${id}`,
@@ -81,7 +73,7 @@ const FollowButton: React.FC<Props> = ({ id, py = "py-0.5", px = "px-2", followi
         },  
       });
   
-      const error = await CustomDialog(<ErrorDialog message={"Something went wrong please try again!"} />, {
+      await CustomDialog(<ErrorDialog message={"Something went wrong please try again!"} />, {
         title: 'Error!',
         showCloseIcon: false,
       });

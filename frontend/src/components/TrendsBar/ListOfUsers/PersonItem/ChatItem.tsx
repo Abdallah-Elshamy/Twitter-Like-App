@@ -1,11 +1,8 @@
-import React, { Fragment, useRef } from 'react';
+import React, { Fragment } from 'react';
 import './PersonItem.css'
 import '../../../profile/profile.css'
 import { timeDiff } from '../../../../common/utils/timediff';
 import { chatUserVar } from '../../../../common/cache';
-import { useMutation, useQuery } from '@apollo/client';
-import { Active_Chat_User } from '../../../../common/queries/Active_Chat_User';
-import ALL_SEEN from '../../../../common/queries/ALL_SEEN';
 import { setUnseenConvToZero } from "../../../../common/utils/writeCache"
 
 
@@ -23,7 +20,6 @@ export interface ChatItemEntity {
 
 const ChatItem: React.FC<ChatItemEntity> = (user: ChatItemEntity) => {
   const unseen = (user.numberOfUnseen != undefined) && (user.numberOfUnseen !== 0)
-  const [setAllSeen] = useMutation(ALL_SEEN)
   const handleClick = () => {
     chatUserVar({
       id: user.id,

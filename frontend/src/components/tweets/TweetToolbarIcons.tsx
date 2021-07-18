@@ -29,7 +29,6 @@ function TweetToolbarIcons(props: any) {
     const retweetedTweet: any = allTweetsInCache.filter((tweet: any) => {
       return tweet?.originalTweet?.__ref === `Tweet:${props.tweetId}` && tweet?.user?.__ref === `User:${loggedUser.id}` && tweet?.state === "R"
     })[0]
-    console.log("retweetedTweet", retweetedTweet)
     if (retweetedTweet){
       const normalizedId = cache.identify({
         id: retweetedTweet.id,
@@ -49,7 +48,6 @@ function TweetToolbarIcons(props: any) {
   const handleRetweetButton = async(e: any) => {
     let tryingToRetweet: boolean;
     try {
-      console.log("retweeting now")
       if(!props.isRetweeted) {
         tryingToRetweet = true;
         cache.modify({
@@ -89,7 +87,6 @@ function TweetToolbarIcons(props: any) {
       }
       
     } catch (e) {
-      console.log("error", e)
       let unretweeted: any
       cache.modify({
         id: `Tweet:${props.tweetId}`,

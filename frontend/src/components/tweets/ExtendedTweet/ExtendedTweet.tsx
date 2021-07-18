@@ -32,7 +32,6 @@ const ExtendedTweet: React.FC = () => {
   if (error) return <FoF
     msg="This tweet doesn’t exist"
   />
-  data && console.log("tweet data", data)
   const tweet: TweetData = data.tweet
   return (
     <Fragment>

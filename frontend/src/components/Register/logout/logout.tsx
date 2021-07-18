@@ -18,7 +18,6 @@ export function Logout() {
         localStorage.clear()
         await client.clearStore()
         changeSubscriptionToken(null)
-        console.log("store reseted")
         NewTweetsCount({ value: 0 })
         history.push('/')
     }

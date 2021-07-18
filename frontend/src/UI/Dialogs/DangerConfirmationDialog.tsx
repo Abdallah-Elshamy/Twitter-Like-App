@@ -1,4 +1,3 @@
-import {useState} from "react"
 import { useDialog } from 'react-st-modal';
 
 function DeleteConfirmationDialog(props: any) {

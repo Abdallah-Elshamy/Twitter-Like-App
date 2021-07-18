@@ -1,6 +1,6 @@
 
 import { useQuery } from '@apollo/client';
-import React, { Fragment, useState } from 'react';
+import React from 'react';
 import { Get_Search_Result } from '../../../common/queries/Get_Search_Result';
 import { PersonEntity } from '../../../common/TypesAndInterfaces';
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -8,7 +8,7 @@ import PersonItem from "./PersonItem/PersonItem";
 import Loading from '../../../UI/Loading';
 import ReportedUsers from "../../../common/queries/reportedUsers"
 import { parseJwt } from "../../../common/utils/jwtDecoder"
-import ChatItem, { ChatItemEntity } from './PersonItem/ChatItem';
+import ChatItem from './PersonItem/ChatItem';
 
 interface PersonListProps {
     queryName: string;
@@ -23,7 +23,7 @@ const PersonList: React.FC<PersonListProps> = (props) => {
     if (localStorage.getItem("token")) {
         loggedUser = parseJwt(localStorage?.getItem("token")!)
     }
-    const { page, setPage, searchQ, fromChat } = props
+    const { setPage, searchQ, fromChat } = props
     PersonList.defaultProps = {
         queryName: "Get_Search_Result"
     }
@@ -51,7 +51,6 @@ const PersonList: React.FC<PersonListProps> = (props) => {
     const list: PersonEntity[] = data.users.users
 
 
-    console.log("person list", list)
     if (list.length === 0)
         return <h1 className="text-lg text-center pt-4">No Results</h1>;
     return (

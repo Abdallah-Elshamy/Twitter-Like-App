@@ -6,7 +6,6 @@ import '../../App.css';
 import "../../styles/layout.css"
 import { parseJwt } from "../../common/utils/jwtDecoder"
 import { SideBarItem } from './sideBarItem/sideBarItem'
-import { TweetButton } from './tweetButton/tweetButton'
 import { FlootProfile } from './flootProfile/flootProfile'
 import Modal from '../../UI/Modal/Modal';
 import PostTweet from '../tweets/PostTweet';
@@ -14,7 +13,7 @@ import AllUnseenMessagesCount from "../../common/queries/allUnseenMessagesCount"
 
 export function SideBar() {
   let loggedUser;
-  const { data: unSeenCountData, loading, error } = useQuery(AllUnseenMessagesCount);
+  const { data: unSeenCountData, loading } = useQuery(AllUnseenMessagesCount);
   if (localStorage.getItem("token")) {
     loggedUser = parseJwt(localStorage.getItem("token")!)
   }

@@ -21,7 +21,6 @@ function ProfileWall() {
   }
 
   const location = useLocation()
-  console.log(location.pathname.substr(1))
   const match = useRouteMatch();
   const path = location.pathname.substr(1)
   const lastIndex = location.pathname.lastIndexOf('/')

@@ -1,5 +1,4 @@
 import './tweet.css';
-import { timeConverter } from '../../common/utils/timestamp';
 import { ToolBox } from '../sideBar/toolbox/toolbox';
 import deleteTweetMutation from '../../common/queries/deleteTweet'
 import IgnoreReportedTweet from "../../common/queries/ignoreReportedTweet"
@@ -8,7 +7,7 @@ import UnbanUser from "../../common/queries/unbanUser"
 import ReportTweet from "../../common/queries/reportTweet"
 import ReportUser from "../../common/queries/reportUser"
 import { DeleteMedia } from '../../common/queries/DeleteMedia'
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useMutation } from "@apollo/client"
 import { CustomDialog } from 'react-st-modal'
 import DangerConfirmationDialog from "../../UI/Dialogs/DangerConfirmationDialog"

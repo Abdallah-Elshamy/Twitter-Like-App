@@ -9,7 +9,6 @@ import { Link } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import Viewer from 'react-viewer';
 import FollowButton from '../FollowButton/FollowButton';
-import { chatUserVar } from '../../common/cache';
 
 const ProfileInfo: React.FC<{ user: User, self: boolean }> = ({ user, self }) => {
 

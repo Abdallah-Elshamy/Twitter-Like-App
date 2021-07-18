@@ -15,7 +15,7 @@ export const ChatPage: React.FC = () => {
   const { data, loading, error } = useQuery(Active_Chat_User)
 
 
-  if (!error && !loading) var { id: userID, name, username, imgURL } = data.chatUser
+  if (!error && !loading) var { id: userID, name, imgURL } = data.chatUser
 
 
   return (

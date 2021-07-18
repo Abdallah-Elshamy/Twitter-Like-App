@@ -4,7 +4,6 @@ import { LoggedUser } from "../../common/queries/Userqery";
 import { parseJwt } from "../../common/decode";
 import Loading from "../../UI/Loading";
 import FoF from "../../UI/FoF/FoF";
-import TrendItem from "../TrendsBar/ListOfUsers/PersonItem/PersonItem";
 import { Link, useLocation  } from "react-router-dom";
 import {updateUserQuery} from "../../common/utils/writeCache"
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -21,7 +20,6 @@ let ID: any ;
  if (localStorage.getItem('token')) {
     profile = parseJwt(localStorage.getItem('token'))
   }
-  let currentId = profile.id
 
 const location = useLocation();
 const path = location.pathname.split("/")[1];

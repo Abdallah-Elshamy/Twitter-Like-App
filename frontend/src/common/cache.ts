@@ -1,35 +1,6 @@
 import { InMemoryCache, makeVar, ReactiveVar } from "@apollo/client";
 import { searchBarValue } from "./TypesAndInterfaces";
 
-const createPaginationAndCombine = (keyArgs: any[]) => ({
-    merge(existing: any, incoming: any) {
-        const merged = existing ? existing.slice(0) : [];
-
-        let breakFlag = 0;
-        let i = 0;
-        let j = 0;
-        for (i = 0; i < merged.length; i++) {
-            if (breakFlag) break;
-            for (j = 0; j < incoming.length; j++) {
-                if (merged[i].__ref == incoming[j].__ref) {
-                    breakFlag = 1;
-                    i -= 2;
-                    break;
-                }
-            }
-            j = 0;
-        }
-        if (i == merged.length) i--;
-        for (; j < incoming.length; j++) {
-            merged[++i] = incoming[j];
-        }
-        return merged.slice(0, i + 1);
-    },
-    read(existing: any) {
-        return existing;
-    },
-    keyArgs,
-});
 const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
     merge(existing: any, incoming: any) {
         if (
@@ -44,8 +15,6 @@ const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
         ) {
             return incoming;
         }
-        console.log("existing is", existing)
-        console.log("incoming is", incoming)
         const merged = existing
             ? { totalCount: existing.totalCount, tweets: [...existing.tweets] }
             : { totalCount: 0, tweets: [] };
@@ -75,7 +44,6 @@ const createPaginationAndCombineTweetsElements = (keyArgs: any[]) => ({
             merged.tweets[++i] = incoming.tweets[j];
         }
         merged.tweets.slice(0, i + 1);
-        console.log("merged is", merged)
 
         return merged;
     },
@@ -115,28 +83,8 @@ const createPaginationAndCombineChatsElements = (keyArgs: any[]) => ({
             merged.messages[++i] = incoming.messages[j];
         }
         merged.messages.slice(0, i + 1);
-        console.log("merged is", merged)
 
         return merged;
-    },
-    read(existing: any) {
-        return existing;
-    },
-    keyArgs,
-});
-const createPaginationAndCombineTweetElements = (keyArgs: any[]) => ({
-    merge(existing: any, incoming: any) {
-        // const merged = existing ? existing:incoming
-        // ? { totalCount: existing.totalCount, tweets: [...existing.tweets] }
-        // : { totalCount: 0, tweets: [] };
-        if (incoming.id) {
-            console.log("incoming is", incoming.replies)
-            const merged = { ...incoming, replies: { totalCount: incoming.replies.totalCount, tweets: [...incoming.replies.tweets] } }
-            console.log("merged is", merged)
-            if (merged) merged.replies.tweets = [...existing.replies.tweets, incoming.replies.tweets]
-            return merged;
-        }
-        // return incoming
     },
     read(existing: any) {
         return existing;
@@ -184,13 +132,10 @@ const createPaginationAndCombineUsersElements = (keyArgs: any[]) => ({
 
 const createPaginationAndCombineConvElements = (keyArgs: any[]) => ({
     merge(existing: any, incoming: any) {
-        console.log("incoming is", incoming)
-        console.log("exisitng is", existing)
         if (
             incoming?.__typename &&
             incoming?.__typename === "SendReceiveMessage"
         ) {
-            console.log("should return")
             return incoming;
         }
         const merged = existing

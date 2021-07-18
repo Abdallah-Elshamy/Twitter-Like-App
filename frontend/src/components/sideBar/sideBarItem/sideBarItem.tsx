@@ -1,19 +1,8 @@
-import React, { Component } from 'react'
+import React from 'react'
 import './sideBarItem'
 import './item.css';
-import  {
-  useLocation
-} from "react-router-dom";
-
-
-interface SideBar_Item {
-  item_name?: string,
-  icon_name: string,
-  countUnseen?: number
-}
 
 export function SideBarItem  (props:any){
-console.log ("ifActive", props.className)
 
 
     return (

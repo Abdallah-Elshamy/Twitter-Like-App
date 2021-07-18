@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment} from 'react'
 import './tweet.css';
 import { useHistory } from 'react-router';
 import TweetInfo from './TweetInfo';
@@ -83,7 +83,6 @@ function Tweet(props: any) {
   const handleLikeButton = async (e: any) => {
     let tryingToLike: boolean;
     try {
-      console.log("handle like is called ")
       if (!props.isLiked) {
         tryingToLike = true;
         cache.modify({

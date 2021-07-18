@@ -32,11 +32,9 @@ const wsLink: any = new WebSocketLink({
     },
 });
 export const changeSubscriptionToken = (token: any) => {
-    console.log("function is called");
     if (wsLink.subscriptionClient.connectionParams.authToken === token) return;
     wsLink.subscriptionClient.connectionParams.authToken = token;
     wsLink.subscriptionClient.close();
-    console.log("token is", token);
     if (token !== null) {
         wsLink.subscriptionClient.connect();
     }

@@ -63,7 +63,6 @@ const sendReceiveMessage = async(chatMessage: any, isFrom: any) => {
         decrementor = -1
 
     }
-    console.log("conversations is ", conversations)
     let flage = 0;
     for (let conversation_data of conversations?.getConversationHistory?.conversations) {
         if(conversation_data?.with?.id === user?.id) {
@@ -184,7 +183,6 @@ export const setUnseenConvToZero = (userId: any) => {
                 }
             })
         } catch (error) {
-            console.log(error)
         }
     }
 }
@@ -193,7 +191,6 @@ export const liveSetUnseenConvToZero = (chatMessage: any) => {
     if(!chatMessage) return;
     const profile = parseJwt(localStorage.getItem("token"));
     const from = chatMessage.from;
-    console.log("profile id", profile.id)
     if(from.id === profile.id) return;
     if (setUnseensToZero(from.id)){
         try {
@@ -204,7 +201,6 @@ export const liveSetUnseenConvToZero = (chatMessage: any) => {
                 }
             })
         } catch (error) {
-            console.log(error)
         }
     }
 }
@@ -275,7 +271,6 @@ const writeTweetsFeedDataFromEnd = async (
             overideFlag = 1;
         }
     }
-    console.log("feed data is", feedData)
     // await Promise.all(feedData)
     feedData?.getFeed &&
         cache.writeQuery({
@@ -478,7 +473,6 @@ export const updateTweetsCacheForCreateQuotedRetweet = async (
 ) => {
     const profile = parseJwt(localStorage.getItem("token"));
     const newTweet = data.createQuotedRetweet;
-    console.log("original", newTweet.originalTweet);
     cache.modify({
         id: `Tweet:${newTweet.originalTweet.id}`,
         fields: {
@@ -615,7 +609,6 @@ export const updateTweetsCacheForDeleteTweet = (cache: any, tweet: any) => {
         decrementTweetsFeedData(false, cache, 1 + retweetedTweets.length);
     }
     if (tweet.state === "C") {
-        console.log("retweet is ", tweet)
         cache.modify({
             id: `Tweet:${tweet?.repliedToTweet?.id}`,
             fields: {
@@ -1004,8 +997,6 @@ export const updateTweetQuery  = (prevResult: any, {fetchMoreResult: newTweet}: 
 }
 
 export const updateUserQuery = (prevResult: any, {fetchMoreResult: newUser}: any) => {
-    console.log("prev result", prevResult)
-    console.log("new result", newUser)
     let newResult = {...newUser}
     newResult.user = {...newUser.user}
     newResult.user.following = {...newUser.user.following}
@@ -1063,7 +1054,6 @@ export const updateLoggedUserQueryForFollow = (cache:any, user:any) => {
         id: `User:${profile.id}`,
         fields: {
             followingCount(prevCount: any) {
-                console.log("prev count", prevCount)
                 return prevCount + 1;
             },
             following(prevFollowing: any) {
@@ -1083,7 +1073,6 @@ export const updateLoggedUserQueryForFollow = (cache:any, user:any) => {
                     }
                 }
                 else {
-                    console.log("here in increment");
                     return {
                         
                         totalCount: prevFollowing.totalCount + 1,
@@ -1104,20 +1093,16 @@ export const updateLoggedUserQueryForUnFollow = (cache:any, user:any) => {
             id: profile.id,
         },
     });
-    console.log("user",  user)
     userData && cache.modify({
         id: `User:${profile.id}`,
         fields: {
             followingCount(prevCount: any) {
-                console.log("prev count", prevCount)
                 return prevCount - 1;
             },
             following(prevFollowing: any) {
                 return {
                     totalCount: prevFollowing.totalCount - 1,
                     users: prevFollowing.users.filter((filteredUser:any) => {
-                        console.log("filtered user", filteredUser)
-                        console.log("the user", user)
                         return !(filteredUser.id == user.id || filteredUser.__ref == `User:${user.id}`)
                     })
                 }

@@ -25,9 +25,6 @@ function HomeTweets() {
     const nsfwPage = Math.floor((data?.getFeed?.tweets?.length || 10) / 10);
     let [page, setPage] = useState(sfwValue?sfwPage:nsfwPage);
 
-    console.log("new Tweets count", newTweetsCount.NewTweetsCount.value)
-    console.log("new Tweets count", newTweetsCount.NewTweetsCount.value)
-
     if (!loading && data && data?.getFeed?.tweets?.length <= 10 && data?.getFeed?.totalCount > 10) {
         fetchMore({
             variables: {

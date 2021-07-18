@@ -4,13 +4,11 @@ import * as Yup from "yup"
 import { TweetButton } from '../sideBar/tweetButton/tweetButton'
 import { Post_Tweet, Post_QRetweet, Post_Reply } from '../../common/queries/createTweet'
 import {updateTweetsCacheForCreateTweet, updateTweetsCacheForCreateQuotedRetweet, updateTweetsCacheForCreateReply} from "../../common/utils/writeCache"
-import { Tweets } from '../../common/queries/TweetQuery'
-import { FeedTweets } from '../../common/queries/Feedtweets'
 import './tweet.css';
 import avatar from "../../routes/mjv-d5z8_400x400.jpg";
 import { parseJwt } from '../../common/decode';
 import axios from 'axios';
-import { useQuery, gql, useMutation } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 import Viewer from 'react-viewer';
 import { LoggedUser } from '../../common/queries/Userqery';
 import ReactPlayer from 'react-player'
@@ -73,7 +71,6 @@ const PostTweet = ({originalId = '', postType = 'tweet', closeModal}: Arg)  => {
           'Content-Type': media.type
         }
       })
-      // console.log ("url", url.config.url.split('?')[0])
       return url.config.url.split('?')[0]
     })
     return await Promise.all(urlsData)
@@ -85,7 +82,6 @@ const PostTweet = ({originalId = '', postType = 'tweet', closeModal}: Arg)  => {
     setmedias ([...medias, e.target.files[0]]) 
     setmediaURLs( [...mediaURLs, URL.createObjectURL(e.target.files[0])])
     refetch()
-    console.log(media, mediaURL)
     e.currentTarget.value =null
 
   }
@@ -180,11 +176,9 @@ const PostTweet = ({originalId = '', postType = 'tweet', closeModal}: Arg)  => {
               }
 
             } catch(e) {
-              console.log("the error message", e)
               
             }
             if (postType === "reply" || postType === "Qretweet") {
-              console.log("called modal close")
               closeModal()
             }
             setmedia (false)

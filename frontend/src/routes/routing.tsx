@@ -126,7 +126,6 @@ const PrivateRoute = ({ children, ...rest }: any) => {
       if (!subFeedData) return;
       if (prevData && subFeedData.liveFeed.id === prevData.liveFeed.id) return;
       setData(subFeedData);
-      console.log("subFeed", subFeedData)
       !loading && subFeedData && updateLiveFeed(subFeedData.liveFeed)
     },
   })
@@ -135,7 +134,6 @@ const PrivateRoute = ({ children, ...rest }: any) => {
       if (!subChatData) return;
       if (prevChatData && subChatData.messageSent.id === prevChatData.messageSent.id) return;
       setChatData(subChatData);
-      console.log("subChatData", subChatData)
       !chatLoading && subChatData && updateChatMessagesForReceiveMessage(subChatData.messageSent)
     },
   })
@@ -190,7 +188,6 @@ const AdminRoute = ({ children, ...rest }: any) => {
       if (!subFeedData) return;
       if (prevData && subFeedData.liveFeed.id === prevData.liveFeed.id) return;
       setData(subFeedData);
-      console.log("subFeed", subFeedData)
       !loading && subFeedData && updateLiveFeed(subFeedData.liveFeed)
     },
   })
@@ -199,7 +196,6 @@ const AdminRoute = ({ children, ...rest }: any) => {
       if (!subChatData) return;
       if (prevChatData && subChatData.messageSent.id === prevChatData.messageSent.id) return;
       setChatData(subChatData);
-      console.log("subChatData", subChatData)
       !chatLoading && subChatData && updateChatMessagesForReceiveMessage(subChatData.messageSent)
     },
   })

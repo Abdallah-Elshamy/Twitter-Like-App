@@ -1,13 +1,10 @@
 
 import { useQuery } from '@apollo/client';
-import React, { Fragment, useEffect, useState } from 'react';
+import React from 'react';
 import InfiniteScroll from "react-infinite-scroll-component";
 import Loading from '../../../UI/Loading';
-import { parseJwt } from "../../../common/utils/jwtDecoder"
-import ChatItem, { ChatItemEntity } from './PersonItem/ChatItem';
+import ChatItem from './PersonItem/ChatItem';
 import { GET_CHAT_CONV } from '../../../common/queries/GET_CHAT_CONV';
-import { chatUserVar } from '../../../common/cache';
-import { Active_Chat_User } from '../../../common/queries/Active_Chat_User';
 
 interface PersonListProps {
   page: number;
@@ -15,18 +12,12 @@ interface PersonListProps {
 }
 
 const ChatConv: React.FC<PersonListProps> = (props) => {
-
-  let loggedUser: any;
-  if (localStorage.getItem("token")) {
-    loggedUser = parseJwt(localStorage?.getItem("token")!)
-  }
   var unique: any = []
 
   let { data, loading, error, fetchMore } = useQuery(GET_CHAT_CONV)
 
 
 
-  console.log(data)
   if (loading) return <Loading />
   if (error) return <h1 className="text-lg text-center pt-4 text-gray-500">Something went wrong :( </h1>
 

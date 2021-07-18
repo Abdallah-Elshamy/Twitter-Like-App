@@ -43,13 +43,13 @@ min-width:400px;
 }
 
 @media (max-width: 640px) {
- 
+  
 }
 
 @media (max-width: 1024px) {
-.sb-right{
-   display: none;
- } 
+  .sb-right{
+    display: none;
+  } 
  .sb-left {
   width: 56px;
 }

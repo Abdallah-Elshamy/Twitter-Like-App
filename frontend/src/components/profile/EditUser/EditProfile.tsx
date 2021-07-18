@@ -36,7 +36,6 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
 
   const [editUser, { loading: mutLoading }] = useMutation(EditUser)
   const [deleteMedia] = useMutation(DeleteMedia)
-  //console.log(delData, delError)
   const { data: avatarData } = useQuery(GetEditProfileImage)
   if (avatarData) {
     var { EditProfileImage: { Image, ImageURL } } = avatarData
@@ -44,10 +43,8 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
 
   const { data: BgData } = useQuery(GetEditBgImage)
   if (BgData) {
-    //console.assert(BgData, "happened")
 
     var { EditProfileBg: { BgImage, BgImageURL } } = BgData
-    // console.log(BgImageURL)
   }
 
   const { data: APIENDPOINT, loading, refetch } = useQuery(gql`query{getUploadURL}`)
@@ -130,7 +127,6 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
           })
         }
       }
-      //console.log(`profile link:${pfUrl}\nbackground link:${bgUrl}\n`)
       await editUser({
         variables:
         {

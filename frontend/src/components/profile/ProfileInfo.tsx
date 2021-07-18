@@ -36,14 +36,16 @@ const ProfileInfo: React.FC<{ user: User, self: boolean }> = ({ user, self }) =>
 
 const location = useHistory();
 const handlePathFollowing = () => {
+  const base = location.location.pathname.split("/")[0]+"/"+location.location.pathname.split("/")[1]
   location.push({
-    pathname: location.location.pathname + "/following"
+    pathname: base + "/following"
   })
   }
   
 const handlePathFollower = () => {
+  const base = location.location.pathname.split("/")[0]+"/"+location.location.pathname.split("/")[1]
   location.push({
-    pathname: location.location.pathname + "/follower"
+    pathname: base + "/follower"
   })
   }
 

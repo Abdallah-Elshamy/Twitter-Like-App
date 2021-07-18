@@ -22,8 +22,9 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: twitter-backend:latest
-          context: ${{ github.workspace }}/backend
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/twitter-backend:latest
+          context: ./backend/
+          file: ./backend/Dockerfile
       - name: Image digest
         run: echo ${{ steps.docker_build_backend.outputs.digest }}
   sfw:
@@ -41,7 +42,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: twitter-sfw:latest
-          context: ${{ github.workspace }}/SFW_service
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/twitter-sfw:latest
+          context: ./SFW_service/
+          file: ./SFW_service/Dockerfile
       - name: Image digest
         run: echo ${{ steps.docker_build_sfw.outputs.digest }}

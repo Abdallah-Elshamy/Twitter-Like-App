@@ -85,7 +85,7 @@ export const ChatPage: React.FC = () => {
 
         </div>
 
-        <div className="sb-right" style={{ height: "100vh", overflow: "hidden" }}>
+        <div className="sb-right-chat" style={{ height: "100vh", overflow: "hidden" }}>
 
           <header className="top-bar px-3 py-2">
             <div className="font-bold text-lg">

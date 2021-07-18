@@ -56,14 +56,14 @@ export function FlootProfile() {
             <i className=" fas fa-ellipsis-h hidden lg:block"></i>
           </div>
         }>
-
-        <ul className="mt-32 px-12" >
-          <a href="/profile" className="mt-1 w-28 block px-4 py-2 m-auto text-sm text-gray-700 hover:bg-blue-200 
-          hover:text-gray-900 rounded-full">My Account</a>
+          
+        <ul className="mt-56 px-13" >
+          <a href="/profile" className="mt-1 bg-white w-28 block px-4 py-2 text-sm text-gray-700 hover:bg-blue-200 
+            hover:text-gray-900 hover:rounded-full m-auto rounded-full focus:outline-none">My Account</a>
 
           {
             (age > 18) &&
-            <button className="mt-1 w-28 block px-4 py-2 text-sm text-gray-700 hover:bg-blue-200 
+            <button className="mt-1 bg-white w-28 block px-4 py-2 text-sm text-gray-700 hover:bg-blue-200 
             hover:text-gray-900 hover:rounded-full m-auto rounded-full focus:outline-none"
               onClick={handleSFW}>{(sfw) ? 'Set NSFW' : 'Set SFW'}</button>
           }

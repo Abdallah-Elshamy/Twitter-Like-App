@@ -36,7 +36,6 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
 
   const [editUser, { loading: mutLoading }] = useMutation(EditUser)
   const [deleteMedia] = useMutation(DeleteMedia)
-  //console.log(delData, delError)
   const { data: avatarData } = useQuery(GetEditProfileImage)
   if (avatarData) {
     var { EditProfileImage: { Image, ImageURL } } = avatarData
@@ -44,10 +43,8 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
 
   const { data: BgData } = useQuery(GetEditBgImage)
   if (BgData) {
-    //console.assert(BgData, "happened")
 
     var { EditProfileBg: { BgImage, BgImageURL } } = BgData
-    // console.log(BgImageURL)
   }
 
   const { data: APIENDPOINT, loading, refetch } = useQuery(gql`query{getUploadURL}`)
@@ -123,7 +120,6 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
 
           let lastIndex = Number(user.coverImageURL?.lastIndexOf('/')) + 1
           let id = user.coverImageURL?.substr(lastIndex || 0)
-          console.log(id)
           deleteMedia({
             variables: {
               id: id
@@ -131,7 +127,6 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
           })
         }
       }
-      //console.log(`profile link:${pfUrl}\nbackground link:${bgUrl}\n`)
       await editUser({
         variables:
         {
@@ -179,7 +174,6 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
 
   const handleBgPreview = (e: any) => {
 
-    console.log("After change")
     EditProfileBgVal({
       BgImage: e.target.files[0],
       BgImageURL: URL.createObjectURL(e.target.files[0])
@@ -204,6 +198,7 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
           {loadingSave ? <Loading size={30} /> :
             <h1 className="font-bold font-lg">Edit Profile</h1>
           }
+         
         </div>
 
         <div>
@@ -272,7 +267,6 @@ const EditProfile: React.FC<Props> = ({ user, close, show }) => {
           <Formik initialValues={initialValues}
             validationSchema={validationSchema}
             innerRef={formRef} onSubmit={(values, actions) => {
-              console.log({ values, actions });
 
             }}>
             {({ values, setFieldValue, errors, touched }) => (<form>

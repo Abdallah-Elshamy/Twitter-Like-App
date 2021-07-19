@@ -24,7 +24,7 @@ interface CustomeError extends Error {
 }
 
 interface CustomUser extends User {
-    isAdmin: boolean;
+    isAdmin?: boolean;
 }
 
 interface CustomeRequest extends Request {
@@ -671,9 +671,9 @@ export default {
                     transaction,
                     repliedToTweet.id,
                     repliedToTweet.threadTweet ||
-                        (repliedToTweet.state === "O"
-                            ? repliedToTweet.id
-                            : undefined)
+                    (repliedToTweet.state === "O"
+                        ? repliedToTweet.id
+                        : undefined)
                 );
                 const hashtags = await Hashtag.bulkCreate(hashtags_mapped, {
                     transaction,
@@ -1001,7 +1001,7 @@ export default {
                             following: payload.liveFeed.userId,
                         },
                     });
-                    return isFollower !== null;
+                    return isFollower !== null && context.connection.context.id !== payload.liveFeed.userId;
                 }
             ),
         },
@@ -1120,10 +1120,18 @@ export default {
         isLiked: async (
             parent: Tweet,
             args: any,
-            context: { req: CustomeRequest }
+            context: { req: CustomeRequest, User: User }
         ) => {
-            const { user, authError } = context.req;
-            if (authError) {
+            let user = undefined
+            let authError: CustomeError
+            if(context?.req) {
+                user = context.req.user!;
+                authError = context.req.authError!;
+            }
+            else if (context?.User) {
+                user = context.User
+            }
+            if (!user) {
                 return false;
             }
             const like = await Likes.findOne({
@@ -1144,10 +1152,18 @@ export default {
         isRetweeted: async (
             parent: Tweet,
             args: any,
-            context: { req: CustomeRequest }
+            context: { req: CustomeRequest, User: CustomUser }
         ) => {
-            const { user, authError } = context.req;
-            if (authError) {
+            let user = undefined
+            let authError: CustomeError
+            if(context?.req) {
+                user = context.req.user!;
+                authError = context.req.authError!;
+            }
+            else if (context?.User) {
+                user = context.User
+            }
+            if (!user) {
                 return false;
             }
             const tweet = await Tweet.findOne({

@@ -21,22 +21,15 @@ state = {
     this.onClickOutsideHandler = this.onClickOutsideHandler.bind(this);
   }
   
-  onClickHandler  = (e:any) => {
-      this.setState(state => {
-        if (this.state.isOpen){
-          return {
-            isOpen: false
-          };
-        }
-        else {
-          return {
-            isOpen: true
-          };
-        }
-
-      });
-    };
-
+  onClickHandler = (e: any) => {
+      e.stopPropagation();
+      if (this.state.isOpen  ){
+          this.setState({ isOpen: false });
+      }
+      else {
+          this.setState({ isOpen: true });
+      }
+  };
     componentDidMount() {
         document.addEventListener("mousedown", this.onClickOutsideHandler);
     }
@@ -51,17 +44,24 @@ state = {
       }
     }
   
+    handleClose = (event:any ) => {
+      this.setState({ isOpen: false  });
+      this.onClickHandler(event);
+      event.stopPropagation();
+  }
+
+
     render() {
       return (
         <Fragment>
-        <div className="flex-initial relative"  ref={this.toggleContainer}>
+        <div className="flex-initial relative "  ref={this.toggleContainer}>
          {this.state.isOpen && (
           <div>
            { this.props.children}
           </div>
         )}
  <div>
-      <a className= {`${this.props.className}`} onClick={this.onClickHandler}>
+      <a className= {`${this.props.className}`} onClick={(e) => {this.handleClose(e); }} >
         <div>
       { this.props.design}
       </div>

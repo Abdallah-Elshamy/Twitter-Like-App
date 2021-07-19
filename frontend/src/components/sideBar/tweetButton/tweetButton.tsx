@@ -18,7 +18,7 @@ export class TweetButton extends Component<Button_info> {
                 <button
                     className={
                         this.props.disabled
-                            ? `bg-gray-400 rounded-3xl transform transition duration-300 text-red cursor-wait text-white ${this.props.className}`
+                            ? `bg-gray-400 rounded-3xl transform transition duration-300 text-red cursor-not-allowed text-white ${this.props.className}`
                             : ` focus:outline-none 
           transform transition hover:scale-110 duration-300 
           hover:shadow-md sidebar_tw_btn ${this.props.className}`

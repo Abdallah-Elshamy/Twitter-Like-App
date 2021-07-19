@@ -8,6 +8,7 @@ import './../styles/layout.css'
 import HomeTweets from './tweets/HomeTweets';
 import PostTweet from './tweets/PostTweet'
 
+
 function Home() {
   return (
     <Fragment>
@@ -18,9 +19,11 @@ function Home() {
             <div className="font-bold text-lg">
               Home
         </div>
+
           </header>
           <PostTweet />
           <HomeTweets />
+
         </article>
         <aside className="sb-right"><TrendsBar /></aside>
 

@@ -6,6 +6,7 @@
 }
 
 .tweet-box {
+
   font-size: 17px;
   font-weight: 400;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
@@ -13,42 +14,54 @@
   padding: 0px 15px 0px 15px;
   display: grid;
   grid-template-columns: 0.1fr 0.9fr;
-  cursor: pointer;
-  border-bottom: solid 0.5px var(--extra-light);
-  min-height: 90px;
-  padding-top: 10px;
+margin-top:8px
 }
-.tweet-icon{
+
+.tweet-icon {
   width: 50px;
   height: 50px;
-
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
 }
+
+.tweet-small-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.tweet-small-icon img,
+svg {
+  width: 30px;
+  height: 30px;
+}
+
 .tweet-icon img,
 svg {
-  width: 100%;
-  height: 100%;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  object-fit:cover;
+  object-fit: cover;
+  flex-shrink: 0;
 }
+
 .tweet-aside {
   height: 100%;
 }
-/* .tweet-icon {
-} */
 
 .tweet-content {
-  padding: 4px;
+
   font-weight: 400;
 }
+
 /* slove word without space pb */
 .tweet-content > p {
   word-break: break-word;
 }
 
-.tweet-data {
-  display: flex;
-  flex-direction: row;
-}
 .tweet-ellipsis {
   cursor: pointer;
   margin-left: auto;
@@ -57,7 +70,7 @@ svg {
 .tweet-toolbar {
   /* height: 30%; */
   /* font-size: 18px; */
-  margin: 5px 50px 5px 0px;
+  margin: 0px 30px 0px 0px;
   display: flex;
   justify-content: space-between;
 }
@@ -71,4 +84,62 @@ svg {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif;
   color: #0f1419;
+}
+.gg-box {
+  display: grid;
+  width: 100%;
+  max-height: 320px;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  /* grid-template-rows: repeat(auto-fit, minmax(10rem, 1fr)); */
+  grid-auto-flow: row;
+  grid-gap: 5px;
+  border-collapse: separate;
+  overflow: hidden;
+  border-radius: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+
+  /* margin: 20px 0; */
+}
+.gg-box-small {
+  display: grid;
+  width: 100%;
+  max-height: 200px;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  /* grid-template-rows: repeat(auto-fit, minmax(10rem, 1fr)); */
+  grid-auto-flow: row;
+  grid-gap: 5px;
+  border-collapse: separate;
+  overflow: hidden;
+  border-radius: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.third {
+  grid-row: span 2;
+}
+.gg-box .Img {
+  cursor: pointer;
+  object-fit: cover;
+  width: 100%;
+  height: 150px;
+  /* min-height: 100%; */
+  /* min-height: 150px; */
+  /* border-radius: 10px; */
+}
+
+.gg-box-small .Img {
+  cursor: pointer;
+  object-fit: cover;
+  width: 100%;
+  height: 100px;
+  /* min-height: 100%; */
+  /* min-height: 150px; */
+  /* border-radius: 10px; */
+}
+
+.extra {
+  grid-row: 1/3;
+  grid-column: 2/3;
+  height: 240px;
 }

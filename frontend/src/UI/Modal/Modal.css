@@ -2,7 +2,7 @@
    left:50%;
    top:50px;
 
-    position: absolute;
+    position: fixed;
     z-index: 1000;
     background-color: white;
     width: 680px;

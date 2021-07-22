@@ -136,6 +136,7 @@ const setUnseensToZero = (userId: any) => {
     let conversations: any = cache.readQuery({
         query: GET_CHAT_CONV
     });
+    if(!conversations?.getConversationHistory?.conversations) return 0
     let flage = 0;
     let callMutation = 0;
     for (let conversation_data of conversations?.getConversationHistory?.conversations) {

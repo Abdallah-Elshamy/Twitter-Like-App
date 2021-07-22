@@ -26,12 +26,7 @@ function Tweet(props: any) {
   let img: any = []
   const history = useHistory();
   const [visible, setVisible] = React.useState(false);
-  const gotoHashtag = (hash: string) => {
-    history.push({
-      pathname: '/hashtag/' + hash,
-    })
 
-  }
   const [likeTweet] = useMutation(LikeTweet, {
     update(cache) {
       updateTweetsCacheForLikeTweet(cache, props.tweet.id, props.loggedUser.id, false)

@@ -39,6 +39,7 @@ export default gql`
     extend type Query {
         getChatHistory(otherUserId: ID!, page: Int): PaginatedChatMessages!
         getUnseenMessages(page: Int): PaginatedChatMessages!
+        getUnseenMessagesCountFromUser(userId: ID!): Int!
         getConversationHistory(page: Int): PaginatedConversations!
     }
 

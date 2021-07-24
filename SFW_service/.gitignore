@@ -1,6 +1,9 @@
 *env
 *env3
+*env2
+env*
 env
+
 media_files/*
 !media_files/.gitkeep
 .vscode

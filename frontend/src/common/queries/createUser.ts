@@ -9,6 +9,7 @@ mutation createUser ($userInput: UserCreateInput!) {
     email
     bio
     createdAt 
+    isBanned
   }
 }
 `;

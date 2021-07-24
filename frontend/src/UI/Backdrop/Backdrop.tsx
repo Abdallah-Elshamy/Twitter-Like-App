@@ -9,7 +9,7 @@ const backdrop: React.FC<Props> = ({ show, clicked }) => {
   return (
     show ? <div
       className="Backdrop"
-      onClick={clicked}
+      onClick={(e) => {e.stopPropagation() ; clicked(e)}}
     ></div> : null
   )
 }

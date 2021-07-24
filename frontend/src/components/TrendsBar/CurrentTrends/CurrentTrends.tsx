@@ -6,14 +6,14 @@ import Loading from '../../../UI/Loading';
 import TrendItem from './TrendItem/TrendItem';
 
 
-const CurrentTrends: React.FC = () => {
+const CurrentTrends: React.FC<any> = ({limit=10}) => {
 
 
   const { data, loading, error } = useQuery(GET_HASHTAGS, { variables: { page: 0 } })
   if (loading) return <Loading />
   if (error) return <h1 className="text-lg text-center pt-4 text-gray-500">Something went wrong :( </h1>
   const trends = data.hashtags.hashtags
-  const trendsList = trends.map((trend: any) => {
+  const trendsList = trends.slice(0,limit).map((trend: any) => {
     return ({
       trendName: trend.word,
       numOfTweets: trend.tweets.totalCount

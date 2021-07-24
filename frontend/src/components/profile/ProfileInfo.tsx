@@ -6,9 +6,9 @@ import EditProfile from './EditUser/EditProfile';
 import { timeConverter } from '../../common/utils/timestamp';
 import { EditProfileBgVal, EditProfileImageVal } from '../../common/cache';
 import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router';
 import Viewer from 'react-viewer';
 import FollowButton from '../FollowButton/FollowButton';
-
 
 const ProfileInfo: React.FC<{ user: User, self: boolean }> = ({ user, self }) => {
 
@@ -34,6 +34,22 @@ const ProfileInfo: React.FC<{ user: User, self: boolean }> = ({ user, self }) =>
     setEdit(false)
   }
 
+const location = useHistory();
+const handlePathFollowing = () => {
+  const base = location.location.pathname.split("/")[0]+"/"+location.location.pathname.split("/")[1]
+  location.push({
+    pathname: base + "/following"
+  })
+  }
+  
+const handlePathFollower = () => {
+  const base = location.location.pathname.split("/")[0]+"/"+location.location.pathname.split("/")[1]
+  location.push({
+    pathname: base + "/follower"
+  })
+  }
+
+ 
 
   return (
 
@@ -93,11 +109,20 @@ const ProfileInfo: React.FC<{ user: User, self: boolean }> = ({ user, self }) =>
         </div>
 
         <div className="pf--info">
-          <div className="pf--flw-btn-div p-3 h-12">
-            {self ? < button onClick={() => setEdit(true)} className={"pf--follow-btn rounded-full px-3 font-semibold text-xm  py-2 mt-3 "}>
+          <div className="pf--flw-btn-div p-3 h-12 mt-3">
+            {self ?<div>
+            < button onClick={() => setEdit(true)} className={"pf--follow-btn rounded-full px-3 font-semibold text-xm  py-2 mt-3 "}>
               Edit Profile
-            </button > :
-              <FollowButton id={user.id} following={user.isFollowing} py="py-2" px="px-4" />
+            </button > 
+
+            </div>
+            :
+            <div>
+{/* TODO handle when we get the path handle route */}
+           
+              <FollowButton id={user.id} following={user.isFollowing} user={user} py="py-2" px="px-4" />
+             
+              </div>
             }
 
 
@@ -109,12 +134,13 @@ const ProfileInfo: React.FC<{ user: User, self: boolean }> = ({ user, self }) =>
             <div className="p--light-color pb-1">
               <span className="pr-2"><i className="fa fa-map-marker" aria-hidden="true"></i> Egypt ... cairo</span>
               <span className="px-2" ><i className="fa fa-gift" aria-hidden="true"></i> Born {user.birthDate} </span>
-              <span className="px-2"><i className="fa fa-calendar" aria-hidden="true"></i> Joined {user.createdAt ? timeConverter(Number(user.createdAt), false) : null}</span>
+              <span className="px-2"><i className="fa fa-calendar" aria-hidden="true"></i> Joined {user.createdAt ? 
+timeConverter(Number(user.createdAt), false,true) : null}</span>
             </div>
-            <div className="font-bold pb-1">
-              {/* featch followers count  */}
-              <a href="/"> {Number(user.followingCount) - 1} <span className="p--light-color mr-4 ">Following</span> </a>
-              <a href="/">{Number(user.followersCount) - 1} <span className="p--light-color mr-4">Follower</span> </a>
+            <div className="font-bold pb-1 space-x-2 ">
+              {/* fetch followers count  */}
+              <a onClick={ handlePathFollowing } className ="hover:underline"> {Number(user.followingCount) - 1} <span className="p--light-color mr-4 hover:underline">Following</span> </a>
+              <a onClick={ handlePathFollower }  className="hover:underline "> {Number(user.followersCount) - 1} <span className="p--light-color mr-4">Follower</span> </a>
             </div>
           </div>
         </div>

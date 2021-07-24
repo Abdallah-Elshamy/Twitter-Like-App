@@ -7,6 +7,7 @@ import { TweetButton } from "./../../sideBar/tweetButton/tweetButton";
 import { Logo } from "./../../logo/logo";
 import { LOGIN } from "../../../common/queries/login_query";
 import * as Yup from "yup";
+import {changeSubscriptionToken} from "../../../common/apolloClient"
 
 export function Login() {
     const routeHistory = useHistory();
@@ -16,6 +17,7 @@ export function Login() {
     const navigate = (route: string) => routeHistory.push(route);
     if (!loading && !error && data) {
         localStorage.setItem("token", data.login.token);
+        changeSubscriptionToken(`Bearer ${data.login.token}`)
         navigate("/");
     }
     const signInValidationSchema = Yup.object().shape({

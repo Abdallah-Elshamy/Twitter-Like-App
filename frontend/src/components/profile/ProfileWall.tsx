@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import { Fragment, useState } from 'react';
 import '../../App.css';
 import './profile.css';
 import ProfileInfo from "./ProfileInfo";
@@ -28,11 +28,9 @@ function ProfileWall() {
 
 
   if (lastIndex !== 0) urlId = urlId.substr(0, lastIndex - 1)
-  console.log(urlId)
   if (urlId === 'profile' ||
     (profile && urlId == profile.id)) {
     ID = profile.id; self = true;
-    console.log(typeof urlId, typeof profile.id)
   }
   else ID = urlId
 
@@ -51,6 +49,7 @@ function ProfileWall() {
   return (
     < Fragment >
       <ProfileInfo user={data.user} self={self} />
+
       <nav >
         <ul className="pf--nav-ul ">
           <NavLink exact activeClassName="active" className="pf--nav-link" to={match.url}>
@@ -75,8 +74,6 @@ function ProfileWall() {
             path={match.url}
             render={() => (
               <TweetList filter={``} page={tweetsPage} setPage={setTweetsPage} id={ID} />
-              // to test paganation go to profileWallPage
-              // <Profilewallpage  filter={``}/>
             )}
           />
           <Route

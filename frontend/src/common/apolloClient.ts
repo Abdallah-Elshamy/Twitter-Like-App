@@ -5,7 +5,7 @@ import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 
 const httpLink = createHttpLink({
-    uri: "http://a5b1279ecb17e424d925ed09d683d85b-727092253.eu-central-1.elb.amazonaws.com:8080/graphql",
+    uri: "http://localhost:8000/graphql",
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -18,7 +18,7 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const wsLink: any = new WebSocketLink({
-    uri: "ws://a5b1279ecb17e424d925ed09d683d85b-727092253.eu-central-1.elb.amazonaws.com:8080/subscriptions",
+    uri: "ws://localhost:8000/subscriptions",
     options: {
         reconnect: true,
         connectionParams: () => {

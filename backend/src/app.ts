@@ -72,6 +72,9 @@ app.use((req: Request, res: Response, next: NextFunction): void => {
     next();
 });
 
+app.use((error: any, req: any, res: any, next: any) => {
+    console.log(error)
+})
 const serverPromise = db.sync().then(() => {
     // Disable SFW regular check in testing environment 
     if (!process.env.TEST_ENVIROMENT) {

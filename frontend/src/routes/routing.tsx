@@ -122,19 +122,23 @@ const PrivateRoute = ({ children, ...rest }: any) => {
   const [prevData, setData] = useState<any>(undefined)
   const [prevChatData, setChatData] = useState<any>(undefined)
   let { data: subFeedData, loading } = useSubscription(LiveFeed, {
-    onSubscriptionData() {
-      if (!subFeedData) return;
-      if (prevData && subFeedData.liveFeed.id === prevData.liveFeed.id) return;
-      setData(subFeedData);
-      !loading && subFeedData && updateLiveFeed(subFeedData.liveFeed)
+    onSubscriptionData({
+      subscriptionData
+    }) {
+      if (!subscriptionData?.data) return;
+      if (prevData && subscriptionData?.data?.liveFeed.id === prevData.liveFeed.id) return;
+      setData(subscriptionData?.data);
+      subscriptionData?.data?.liveFeed && updateLiveFeed(subscriptionData?.data?.liveFeed)
     },
   })
   let { data: subChatData, loading: chatLoading } = useSubscription(GetChatSub, {
-    onSubscriptionData() {
-      if (!subChatData) return;
-      if (prevChatData && subChatData.messageSent.id === prevChatData.messageSent.id) return;
-      setChatData(subChatData);
-      !chatLoading && subChatData && updateChatMessagesForReceiveMessage(subChatData.messageSent)
+    onSubscriptionData({
+      subscriptionData,
+    }) {
+      if (!subscriptionData?.data) return;
+      if (prevChatData && subscriptionData?.data?.messageSent.id === prevChatData.messageSent.id) return;
+      setChatData(subscriptionData?.data);
+      subscriptionData?.data?.messageSent && updateChatMessagesForReceiveMessage(subscriptionData?.data?.messageSent)
     },
   })
   let auth = localStorage.getItem('token') ? true : false
@@ -184,19 +188,23 @@ const AdminRoute = ({ children, ...rest }: any) => {
   const [prevData, setData] = useState<any>(undefined)
   const [prevChatData, setChatData] = useState<any>(undefined)
   let { data: subFeedData, loading } = useSubscription(LiveFeed, {
-    onSubscriptionData() {
-      if (!subFeedData) return;
-      if (prevData && subFeedData.liveFeed.id === prevData.liveFeed.id) return;
-      setData(subFeedData);
-      !loading && subFeedData && updateLiveFeed(subFeedData.liveFeed)
+    onSubscriptionData({
+      subscriptionData
+    }) {
+      if (!subscriptionData?.data) return;
+      if (prevData && subscriptionData?.data?.liveFeed.id === prevData.liveFeed.id) return;
+      setData(subscriptionData?.data);
+      subscriptionData?.data?.liveFeed && updateLiveFeed(subscriptionData?.data?.liveFeed)
     },
   })
   let { data: subChatData, loading: chatLoading } = useSubscription(GetChatSub, {
-    onSubscriptionData() {
-      if (!subChatData) return;
-      if (prevChatData && subChatData.messageSent.id === prevChatData.messageSent.id) return;
-      setChatData(subChatData);
-      !chatLoading && subChatData && updateChatMessagesForReceiveMessage(subChatData.messageSent)
+    onSubscriptionData({
+      subscriptionData,
+    }) {
+      if (!subscriptionData?.data) return;
+      if (prevChatData && subscriptionData?.data?.messageSent.id === prevChatData.messageSent.id) return;
+      setChatData(subscriptionData?.data);
+      subscriptionData?.data?.messageSent && updateChatMessagesForReceiveMessage(subscriptionData?.data?.messageSent)
     },
   })
   const token = localStorage.getItem('token')

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: twitter-sfw
+  labels:
+    app: twitter-sfw
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: twitter-sfw
+  template:
+    metadata:
+      labels:
+        app: twitter-sfw
+    spec:
+      containers:
+      - name: twitter-sfw
+        image: abdallahelshamy/twitter-sfw
+        ports:
+        - containerPort: 8080

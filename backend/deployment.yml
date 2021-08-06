@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: twitter-backend
+  labels:
+    app: twitter-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: twitter-backend
+  template:
+    metadata:
+      labels:
+        app: twitter-backend
+    spec:
+      containers:
+      - name: twitter-backend
+        image: abdallahelshamy/twitter-backend
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - secretRef: 
+            name: secret-backend

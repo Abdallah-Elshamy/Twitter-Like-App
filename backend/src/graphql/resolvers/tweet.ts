@@ -994,8 +994,8 @@ export default {
             },
             subscribe: withFilter(
                 () => pubsub.asyncIterator(["LIVE_FEED"]),
-                (payload: any, args: any, context: any) => {
-                    const isFollower = Follows.findOne({
+                async (payload: any, args: any, context: any) => {
+                    const isFollower = await Follows.findOne({
                         where: {
                             follower: context.connection.context.id,
                             following: payload.liveFeed.userId,

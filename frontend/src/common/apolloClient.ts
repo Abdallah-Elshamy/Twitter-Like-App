@@ -20,7 +20,7 @@ const authLink = setContext((_, { headers }) => {
 const wsLink: any = new WebSocketLink({
     uri: "ws://localhost:8000/subscriptions",
     options: {
-        reconnect: false,
+        reconnect: true,
         connectionParams: () => {
             if (localStorage.getItem("token")) {
                 return {
